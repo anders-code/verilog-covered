@@ -307,7 +307,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       } else {
         *ptr = '\0';
         ptr++;
-        defparam_add( argv[i], vector_from_string( ptr ) );
+        defparam_add( argv[i], vector_from_string( &ptr ) );
       }
       
     } else if( strncmp( "-T", argv[i], 2 ) == 0 ) {
@@ -402,6 +402,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.41  2003/10/28 13:28:00  phase1geo
+ Updates for more FSM attribute handling.  Not quite there yet but full regression
+ still passes.
+
  Revision 1.40  2003/10/10 20:52:07  phase1geo
  Initial submission of FSM expression allowance code.  We are still not quite
  there yet, but we are getting close.

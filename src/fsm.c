@@ -144,6 +144,10 @@ void fsm_create_tables( fsm* table ) {
     expression_operate( curr_arc->from_state );
     expression_operate( curr_arc->to_state   );
 
+    printf( "In fsm_create_tables\n" );
+    vector_display( curr_arc->from_state->value );
+    vector_display( curr_arc->to_state->value );
+
     /* Set table entry in table, if possible */
     arc_add( &(table->table), table->to_state->value->width, curr_arc->from_state->value, curr_arc->to_state->value, 0 );
 
@@ -775,6 +779,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.29  2003/10/28 13:28:00  phase1geo
+ Updates for more FSM attribute handling.  Not quite there yet but full regression
+ still passes.
+
  Revision 1.28  2003/10/28 00:18:05  phase1geo
  Adding initial support for inline attributes to specify FSMs.  Still more
  work to go but full regression still passes at this point.
