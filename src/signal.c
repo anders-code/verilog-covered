@@ -181,7 +181,10 @@ bool signal_db_read( char** line, module* curr_mod ) {
           */
           if( (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG) ||
               (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL) ||
-              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL) ) {
+              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL) ||
+              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_PARAM)    ||
+              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_PARAM_SBIT) ||
+              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_PARAM_MBIT) ) {
             expression_set_value( expl->exp, sig->value );
           }
 
@@ -364,6 +367,11 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.29  2003/02/26 23:00:50  phase1geo
+ Fixing bug with single-bit parameter handling (param4.v diagnostic miscompare
+ between Linux and Irix OS's).  Updates to testsuite and new diagnostic added
+ for additional testing in this area.
+
  Revision 1.28  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.
