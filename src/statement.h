@@ -22,13 +22,16 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope );
 bool statement_db_read( char** line, module* curr_mod );
 
 //! Connects statement sequence to next statement.
-void statement_connect( statement* curr_stmt, statement* next_stmt );
+void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_stop );
 
 //! Deallocates statement memory and associated expression tree from the heap.
 void statement_dealloc( statement* stmt );
 
 
 /* $Log$
+/* Revision 1.5  2002/06/27 12:36:47  phase1geo
+/* Fixing bugs with scoring.  I think I got it this time.
+/*
 /* Revision 1.4  2002/06/24 04:54:48  phase1geo
 /* More fixes and code additions to make statements work properly.  Still not
 /* there at this point.
