@@ -19,7 +19,7 @@ statement* statement_create( expression* exp );
 void statement_db_write( statement* stmt, FILE* ofile, char* scope );
 
 //! Reads in statement line from specified string and stores statement in specified module.
-bool statement_db_read( char** line, module* curr_mod );
+bool statement_db_read( char** line, module* curr_mod, int read_mode );
 
 //! Connects statement sequence to next statement.
 void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_stop );
@@ -29,6 +29,10 @@ void statement_dealloc( statement* stmt );
 
 
 /* $Log$
+/* Revision 1.6  2002/06/28 03:04:59  phase1geo
+/* Fixing more errors found by diagnostics.  Things are running pretty well at
+/* this point with current diagnostics.  Still some report output problems.
+/*
 /* Revision 1.5  2002/06/27 12:36:47  phase1geo
 /* Fixing bugs with scoring.  I think I got it this time.
 /*

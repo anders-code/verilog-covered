@@ -331,9 +331,9 @@ int command_report( int argc, char** argv ) {
   } else {
 
     if( report_instance ) {
-      db_read( input_db, READ_MODE_NO_MERGE );
+      db_read( input_db, READ_MODE_REPORT_NO_MERGE );
     } else {
-      db_read( input_db, READ_MODE_MOD_MERGE );
+      db_read( input_db, READ_MODE_REPORT_MOD_MERGE );
     }
 
   }
@@ -348,6 +348,10 @@ int command_report( int argc, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.6  2002/06/28 03:04:59  phase1geo
+/* Fixing more errors found by diagnostics.  Things are running pretty well at
+/* this point with current diagnostics.  Still some report output problems.
+/*
 /* Revision 1.5  2002/06/25 21:46:10  phase1geo
 /* Fixes to simulator and reporting.  Still some bugs here.
 /*
