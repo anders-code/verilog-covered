@@ -304,6 +304,7 @@ void db_add_instance( char* scope, char* modname ) {
 
     snprintf( msg, 4096, "In db_add_instance, instance: %s, module: %s", scope, modname );
     print_output( msg, DEBUG );
+    printf( "%s\n", msg );
 
     /* Create new module node */
     mod       = module_create();
@@ -963,6 +964,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.43  2002/07/17 21:45:56  phase1geo
+/* Fixing case where `define does not set to a value.  Looking into problem
+/* with embedded instances (at least 3 deep).
+/*
 /* Revision 1.42  2002/07/17 00:13:57  phase1geo
 /* Added support for -e option and informally tested.
 /*
