@@ -32,8 +32,19 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head, 
 //! Transforms an override module parameter into an instance parameter.
 void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** itail );
 
+//! Deallocates specified module parameter and possibly entire module parameter list.
+void mod_parm_dealloc( mod_parm* parm, bool recursive );
+
+//! Deallocates specified instance parameter and possibly entire instance parameter list.
+void inst_parm_dealloc( inst_parm* parm, bool recursive );
+
 
 /* $Log$
+/* Revision 1.7  2002/09/25 02:51:44  phase1geo
+/* Removing need of vector nibble array allocation and deallocation during
+/* expression resizing for efficiency and bug reduction.  Other enhancements
+/* for parameter support.  Parameter stuff still not quite complete.
+/*
 /* Revision 1.6  2002/09/23 01:37:45  phase1geo
 /* Need to make some changes to the inst_parm structure and some associated
 /* functionality for efficiency purposes.  This checkin contains most of the

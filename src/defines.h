@@ -845,14 +845,10 @@ struct inst_parm_s;
 typedef struct inst_parm_s inst_parm;
 
 struct inst_parm_s {
-  char*        name;   /*!< Name of associated parameter (no hierarchy)         */
-  vector*      value;  /*!< Pointer to value of instance parameter              */
-  unsigned int suppl;  /*!< Supplemental field containing type and order number */
-  exp_link*    exp_head; /*!< Pointer to head of expression list for dependents */
-  exp_link*    exp_tail; /*!< Pointer to tail of expression list for dependents */
-  sig_link*    sig_head; /*!< Pointer to head of signal list for dependents     */
-  sig_link*    sig_tail; /*!< Pointer to tail of signal list for dependents     */
-  inst_parm*   next;   /*!< Pointer to next instance parameter in list          */
+  char*        name;     /*!< Name of associated parameter (no hierarchy)         */
+  vector*      value;    /*!< Pointer to value of instance parameter              */
+  mod_parm*    mparm;    /*!< Pointer to base module parameter                    */
+  inst_parm*   next;     /*!< Pointer to next instance parameter in list          */
 };
 
 //------------------------------------------------------------------------------
@@ -976,6 +972,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.46  2002/09/25 02:51:44  phase1geo
+/* Removing need of vector nibble array allocation and deallocation during
+/* expression resizing for efficiency and bug reduction.  Other enhancements
+/* for parameter support.  Parameter stuff still not quite complete.
+/*
 /* Revision 1.45  2002/09/21 07:03:28  phase1geo
 /* Attached all parameter functions into db.c.  Just need to finish getting
 /* parser to correctly add override parameters.  Once this is complete, phase 3

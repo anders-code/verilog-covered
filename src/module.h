@@ -20,7 +20,7 @@ void module_init( module* mod );
 module* module_create();
 
 //! Writes contents of provided module to specified output.
-bool module_db_write( module* mod, char* scope, FILE* file );
+bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst );
 
 //! Read contents of current line from specified file, creates module and adds to module list.
 bool module_db_read( module* mod, char* scope, char** line );
@@ -41,6 +41,11 @@ void module_clean( module* mod );
 void module_dealloc( module* mod );
 
 /* $Log$
+/* Revision 1.5  2002/09/25 02:51:44  phase1geo
+/* Removing need of vector nibble array allocation and deallocation during
+/* expression resizing for efficiency and bug reduction.  Other enhancements
+/* for parameter support.  Parameter stuff still not quite complete.
+/*
 /* Revision 1.4  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and

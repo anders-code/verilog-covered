@@ -332,7 +332,6 @@ int command_score( int argc, int last_arg, char** argv ) {
     /* Deallocate memory for search engine */
     search_free_lists();
 
-    free_safe( top_module );
     free_safe( output_db );
     free_safe( vcd_file );
 
@@ -350,6 +349,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.23  2002/09/25 02:51:44  phase1geo
+/* Removing need of vector nibble array allocation and deallocation during
+/* expression resizing for efficiency and bug reduction.  Other enhancements
+/* for parameter support.  Parameter stuff still not quite complete.
+/*
 /* Revision 1.22  2002/09/21 04:11:32  phase1geo
 /* Completed phase 1 for adding in parameter support.  Main code is written
 /* that will create an instance parameter from a given module parameter in
