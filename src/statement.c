@@ -467,7 +467,7 @@ int statement_get_last_line_helper( statement* stmt, statement* base ) {
     if( (stmt->next_false == NULL) || (stmt->next_false == base) ) {
       last_exp   = expression_get_last_line_expr( stmt->exp );
       last_false = last_exp->line;
-    } else if( ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) != 0 ) {
+    } else if( ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
       last_false = statement_get_last_line_helper( stmt->next_false, base );
     }
 
@@ -475,7 +475,7 @@ int statement_get_last_line_helper( statement* stmt, statement* base ) {
     if( (stmt->next_true == NULL) || (stmt->next_true == base) ) {
       last_exp  = expression_get_last_line_expr( stmt->exp );
       last_true = last_exp->line;
-    } else if( ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) != 0 ) {
+    } else if( ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
       last_true = statement_get_last_line_helper( stmt->next_true, base );
     }
 
@@ -621,6 +621,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.52  2005/02/07 05:10:15  phase1geo
+ Fixing bug in statement_get_last_line calculator.  Updated regression for this
+ fix.
+
  Revision 1.51  2005/02/04 23:55:54  phase1geo
  Adding code to support race condition information in CDD files.  All code is
  now in place for writing/reading this data to/from the CDD file (although
