@@ -61,6 +61,9 @@ exp_link* exp_link_find( expression* exp, exp_link* head );
 /*! \brief Finds specified signal in given sig_link list. */
 sig_link* sig_link_find( signal* sig, sig_link* head );
 
+/*! \brief Finds specified FSM structure in fsm_link list. */
+fsm_link* fsm_link_find( fsm* table, fsm_link* head );
+
 /*! \brief Finds specified module in given mod_link list. */
 mod_link* mod_link_find( module* mod, mod_link* head );
 
@@ -93,6 +96,10 @@ void mod_link_delete_list( mod_link* head );
 
 /*
  $Log$
+ Revision 1.12  2003/10/28 00:18:06  phase1geo
+ Adding initial support for inline attributes to specify FSMs.  Still more
+ work to go but full regression still passes at this point.
+
  Revision 1.11  2003/08/25 13:02:04  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these
