@@ -31,6 +31,11 @@
 #define INTEGER_WIDTH	   (SIZEOF_INT * 8)
 
 /*!
+ Length of user_msg global string (used for inputs to snprintf calls).
+*/
+#define USER_MSG_LENGTH  4096
+
+/*!
  \addtogroup output_type Output type
 
  The following defines are used by the print_output function to
@@ -1008,6 +1013,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.49  2002/10/11 05:23:21  phase1geo
+/* Removing local user message allocation and replacing with global to help
+/* with memory efficiency.
+/*
 /* Revision 1.48  2002/10/11 04:24:01  phase1geo
 /* This checkin represents some major code renovation in the score command to
 /* fully accommodate parameter support.  All parameter support is in at this

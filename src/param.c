@@ -23,6 +23,7 @@
 inst_parm* defparam_head = NULL;   /*!< Pointer to head of parameter list for global defparams */
 inst_parm* defparam_tail = NULL;   /*!< Pointer to tail of parameter list for global defparams */
 
+extern char user_msg[USER_MSG_LENGTH];
 
 /*!
  \param name  Name of parameter value to find.
@@ -247,8 +248,6 @@ inst_parm* inst_parm_add( char* scope, vector* value, mod_parm* mparm, inst_parm
 */
 void defparam_add( char* scope, vector* value ) {
 
-  char err_msg[4096];  /* Error message to display to user */
-
   assert( scope != NULL );
 
   if( inst_parm_find( scope, defparam_head ) == NULL ) {
@@ -257,8 +256,8 @@ void defparam_add( char* scope, vector* value ) {
 
   } else {
 
-    snprintf( err_msg, 4096, "Parameter (%s) value is assigned more than once", scope );
-    print_output( err_msg, FATAL );
+    snprintf( user_msg, USER_MSG_LENGTH, "Parameter (%s) value is assigned more than once", scope );
+    print_output( user_msg, FATAL );
     exit( 1 );
 
   }
@@ -280,16 +279,14 @@ void defparam_add( char* scope, vector* value ) {
  a parameter value is used without being defined).
 */
 void param_find_and_set_expr_value( expression* expr, inst_parm* icurr ) {
-  
-  char err_msg[4096];  /* Error message to user */
-  
+    
   while( (icurr != NULL) && (exp_link_find( expr, icurr->mparm->exp_head ) == NULL) ) {
     icurr = icurr->next;
   }
   
   if( icurr == NULL ) {
-    snprintf( err_msg, 4096, "Parameter used in expression but not defined in current module, line %d", expr->line );
-    print_output( err_msg, FATAL );
+    snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, line %d", expr->line );
+    print_output( user_msg, FATAL );
     exit( 1 );
   }
   
@@ -654,6 +651,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 
 /* $Log$
+/* Revision 1.18  2002/10/11 05:23:21  phase1geo
+/* Removing local user message allocation and replacing with global to help
+/* with memory efficiency.
+/*
 /* Revision 1.17  2002/10/11 04:24:02  phase1geo
 /* This checkin represents some major code renovation in the score command to
 /* fully accommodate parameter support.  All parameter support is in at this

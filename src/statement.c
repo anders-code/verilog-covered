@@ -95,6 +95,8 @@
 
 stmt_loop_link* stmt_loop_stack = NULL;
 
+extern char user_msg[USER_MSG_LENGTH];
+
 
 /*!
  \param exp   Pointer to root expression of expression tree for this statement.
@@ -521,6 +523,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.31  2002/10/11 05:23:21  phase1geo
+/* Removing local user message allocation and replacing with global to help
+/* with memory efficiency.
+/*
 /* Revision 1.30  2002/07/18 02:33:24  phase1geo
 /* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
 /* now work.
