@@ -36,7 +36,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type );
 void db_add_defparam( char* name, expression* expr );
 
 /*! \brief Adds specified vsignal to vsignal list.  Called by parser. */
-void db_add_signal( char* name, static_expr* left, static_expr* right );
+void db_add_signal( char* name, static_expr* left, static_expr* right, int inport );
 
 /*! \brief Called when the endmodule keyword is parsed. */
 void db_end_module( int end_line );
@@ -103,6 +103,9 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.37  2004/12/18 16:23:17  phase1geo
+ More race condition checking updates.
+
  Revision 1.36  2004/04/19 04:54:55  phase1geo
  Adding first and last column information to expression and related code.  This is
  not working correctly yet.
