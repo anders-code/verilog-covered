@@ -4,7 +4,13 @@
  \date     12/1/2001
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -350,6 +356,10 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.25  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.24  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

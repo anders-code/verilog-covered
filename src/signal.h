@@ -13,35 +13,40 @@
 #include "defines.h"
 
 
-/*! Initializes specified signal with specified values. */
+/*! \brief Initializes specified signal with specified values. */
 void signal_init( signal* sig, char* name, vector* value );
 
-/*! Creates a new signal based on the information passed to this function. */
+/*! \brief Creates a new signal based on the information passed to this function. */
 signal* signal_create( char* name, int width, int lsb );
 
-/*! Outputs this signal information to specified file. */
+/*! \brief Outputs this signal information to specified file. */
 void signal_db_write( signal* sig, FILE* file, char* modname );
 
-/*! Reads signal information from specified file. */
+/*! \brief Reads signal information from specified file. */
 bool signal_db_read( char** line, module* curr_mod );
 
-/*! Reads and merges two signals, placing result into base signal. */
+/*! \brief Reads and merges two signals, placing result into base signal. */
 bool signal_db_merge( signal* base, char** line );
 
-/*! Assigns specified VCD value to specified signal. */
+/*! \brief Assigns specified VCD value to specified signal. */
 void signal_vcd_assign( signal* sig, char* value );
 
-/*! Adds an expression to the signal list. */
+/*! \brief Adds an expression to the signal list. */
 void signal_add_expression( signal* sig, expression* expr );
 
-/*! Displays signal contents to standard output. */
+/*! \brief Displays signal contents to standard output. */
 void signal_display( signal* sig );
 
-/*! Deallocates the memory used for this signal. */
+/*! \brief Deallocates the memory used for this signal. */
 void signal_dealloc( signal* sig );
+
 
 /*
  $Log$
+ Revision 1.9  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.8  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 
