@@ -453,14 +453,16 @@ int command_report( int argc, int last_arg, char** argv ) {
     } else {
 
       if( report_instance ) {
-        db_read( input_db, READ_MODE_REPORT_NO_MERGE );
+        if( db_read( input_db, READ_MODE_REPORT_NO_MERGE ) ) {
+          report_generate( ofile );
+        }
       } else {
-        db_read( input_db, READ_MODE_REPORT_MOD_MERGE );
+        if( db_read( input_db, READ_MODE_REPORT_MOD_MERGE ) ) {
+          report_generate( ofile );
+        }
       }
 
     }
-
-    report_generate( ofile );
 
     fclose( ofile );
 
@@ -473,6 +475,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.20  2003/02/18 20:17:03  phase1geo
+ Making use of scored flag in CDD file.  Causing report command to exit early
+ if it is working on a CDD file which has not been scored.  Updated testsuite
+ for these changes.
+
  Revision 1.19  2002/12/29 06:09:32  phase1geo
  Fixing bug where output was not squelched in report command when -Q option
  is specified.  Fixed bug in preprocessor where spaces where added in when newlines
