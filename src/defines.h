@@ -835,6 +835,9 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.32  2002/07/11 16:59:10  phase1geo
+/* Added release information to NEWS for upcoming release.
+/*
 /* Revision 1.31  2002/07/10 13:15:57  phase1geo
 /* Adding case1.1.v Verilog diagnostic to check default case statement.  There
 /* were reporting problems related to this.  Report problems have been fixed and
