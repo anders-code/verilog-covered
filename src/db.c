@@ -640,7 +640,7 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
 
     /* Create new FSM structure if this signal is an FSM state variable */
     if( (fv = fsm_is_fsm_out_variable( curr_module->name, name )) != NULL ) {
-      printf( "FSM found in module (%s) with output state variable (%s)\n", curr_module->name, name );
+      // printf( "FSM found in module (%s) with output state variable (%s)\n", curr_module->name, name );
       sig->table = fsm_create( sig );
       /* If input variable was already found, setup FSM */
       if( fv->isig != NULL ) {
@@ -650,10 +650,16 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
         fv->table = sig->table;
       }
       fsm_link_add( sig->table, &(curr_module->fsm_head), &(curr_module->fsm_tail) );
-    } else if( (fv = fsm_is_fsm_in_variable( curr_module->name, name )) != NULL ) {
-      printf( "FSM found in module (%s) with input state variable (%s)\n", curr_module->name, name );
+    }
+    if( (fv = fsm_is_fsm_in_variable( curr_module->name, name )) != NULL ) {
+      // printf( "FSM found in module (%s) with input state variable (%s)\n", curr_module->name, name );
       if( fv->table != NULL ) {
-        fv->table->from_sig = sig;
+        /* If the input and output states are the same, create a dummy signal */
+        if( fv->table->to_sig == sig ) {
+          fv->table->from_sig = signal_create( "*", sig->value->width, sig->value->lsb );
+        } else {
+          fv->table->from_sig = sig;
+        }
         fsm_var_remove( fv );
       } else {
         fv->isig = sig;
@@ -1223,6 +1229,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.100  2003/09/22 03:46:24  phase1geo
+ Adding support for single state variable FSMs.  Allow two different ways to
+ specify FSMs on command-line.  Added diagnostics to verify new functionality.
+
  Revision 1.99  2003/09/12 04:47:00  phase1geo
  More fixes for new FSM arc transition protocol.  Everything seems to work now
  except that state hits are not being counted correctly.
