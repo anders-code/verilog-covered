@@ -14,6 +14,9 @@
 /*! \brief Creates a new symtable entry and adds it to the specified symbol table. */
 symtable* symtable_add( char* sym, signal* sig, int msb, int lsb, symtable** symtab );
 
+/*! \brief Searches symbol table for specified symbol and returns pointer to signal. */
+signal* symtable_find_signal( char* sym, symtable* symtab );
+
 /*! \brief Sets all matching symtable entries to specified value */
 int symtable_find_and_set( char* sym, symtable* symtab, char* value );
 
@@ -29,6 +32,13 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.10  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.9  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.

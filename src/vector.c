@@ -685,6 +685,31 @@ int vector_get_type( vector* vec ) {
 }
 
 /*!
+ \param vec  Pointer to vector to check for unknowns.
+
+ \return Returns TRUE if the specified vector contains unknown values; otherwise, returns FALSE.
+
+ Checks specified vector for any X or Z values and returns TRUE if any are found; otherwise,
+ returns a value of false.  This function is useful to be called before vector_to_int is called.
+*/
+bool vector_is_unknown( vector* vec ) {
+
+  bool unknown = FALSE;  /* Specifies if vector contains unknown values */
+  int  i;                /* Loop iterator                               */
+  int  val;              /* Bit value of current bit                    */
+
+  for( i=0; i<vec->width; i++ ) {
+    val = vector_bit_val( vec->value, i );
+    if( (val == 0x2) || (val == 0x3) ) {
+      unknown = TRUE;
+    }
+  }
+
+  return( unknown );
+
+}
+
+/*!
  \param vec  Pointer to vector to convert into integer.
 
  \return Returns integer value of specified vector.
@@ -1166,24 +1191,31 @@ void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
 void vector_op_lshift( vector* tgt, vector* left, vector* right ) {
 
   int    shift_val;    /* Number of bits to shift left */
-  nibble zero = 0;     /* Zero value for zero-fill     */
+  nibble zero    = 0;  /* Zero value for zero-fill     */
+  nibble unknown = 2;  /* X-value for unknown fill     */
   int    i;            /* Loop iterator                */
 
-  shift_val = vector_to_int( right );
+  if( vector_is_unknown( right ) ) {
 
-  if( shift_val >= left->width ) {
-   
-    shift_val = left->width;
+    for( i=0; i<tgt->width; i++ ) {
+      vector_set_value( tgt, &unknown, 1, 0, i );
+    }
 
   } else {
 
-    vector_set_value( tgt, left->value, (left->width - shift_val), left->lsb, shift_val );
+    shift_val = vector_to_int( right );
 
-  }
+    if( shift_val >= left->width ) {
+      shift_val = left->width;
+    } else {
+      vector_set_value( tgt, left->value, (left->width - shift_val), left->lsb, shift_val );
+    }
 
-  /* Zero-fill LSBs */
-  for( i=0; i<shift_val; i++ ) {
-    vector_set_value( tgt, &zero, 1, 0, i );
+    /* Zero-fill LSBs */
+    for( i=0; i<shift_val; i++ ) {
+      vector_set_value( tgt, &zero, 1, 0, i );
+    }
+
   }
     
 }
@@ -1199,24 +1231,31 @@ void vector_op_lshift( vector* tgt, vector* left, vector* right ) {
 void vector_op_rshift( vector* tgt, vector* left, vector* right ) {
 
   int    shift_val;    /* Number of bits to shift left */
-  nibble zero = 0;     /* Zero value for zero-fill     */
+  nibble zero    = 0;  /* Zero value for zero-fill     */
+  nibble unknown = 2;  /* X-value for unknown fill     */
   int    i;            /* Loop iterator                */
 
-  shift_val = vector_to_int( right );
+  if( vector_is_unknown( right ) ) {
 
-  if( shift_val >= left->width ) {
-   
-    shift_val = left->width;
+    for( i=0; i<tgt->width; i++ ) {
+      vector_set_value( tgt, &unknown, 1, 0, i );
+    }
 
   } else {
 
-    vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
+    shift_val = vector_to_int( right );
 
-  }
+    if( shift_val >= left->width ) {
+      shift_val = left->width;
+    } else {
+      vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
+    }
 
-  /* Zero-fill LSBs */
-  for( i=(left->width - shift_val); i<left->width; i++ ) {
-    vector_set_value( tgt, &zero, 1, 0, i );
+    /* Zero-fill LSBs */
+    for( i=(left->width - shift_val); i<left->width; i++ ) {
+      vector_set_value( tgt, &zero, 1, 0, i );
+    }
+
   }
 
 }
@@ -1474,6 +1513,13 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.35  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.34  2003/02/14 00:00:30  phase1geo
  Fixing bug with vector_vcd_assign when signal being assigned has an LSB that
  is greater than 0.

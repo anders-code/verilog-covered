@@ -308,6 +308,11 @@ void vcd_parse_sim( FILE* vcd ) {
 
   }
 
+  /* Simulate the last timestep now */
+  if( last_timestep >= 0 ) {
+    db_do_timestep( last_timestep );
+  }
+
 }
 
 /*!
@@ -337,6 +342,13 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.10  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.9  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.
