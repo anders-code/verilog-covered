@@ -220,8 +220,9 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-view", argv[i], 5 ) == 0 ) {
 
-      report_gui        = TRUE;
-      report_comb_depth = REPORT_VERBOSE;
+      report_gui          = TRUE;
+      report_comb_depth   = REPORT_VERBOSE;
+      flag_use_line_width = TRUE;
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
@@ -674,6 +675,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.38  2004/08/13 20:45:05  phase1geo
+ More added for combinational logic verbose reporting.  At this point, the
+ code is being output with underlines that can move up and down the expression
+ tree.  No expression reporting is being done at this time, however.
+
  Revision 1.37  2004/08/11 22:11:39  phase1geo
  Initial beginnings of combinational logic verbose reporting to GUI.
 
