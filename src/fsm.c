@@ -167,23 +167,23 @@ void fsm_check_for_unused_vars() {
   if( fsm_var_head != NULL ) {
 
     print_output( "The following FSM state variables were not found:", WARNING );
-    print_output( "  Module                     Variable", WARNING );
-    print_output( "  -------------------------  -------------------------", WARNING );
+    print_output( "Module                     Variable", WARNING_WRAP );
+    print_output( "-------------------------  -------------------------", WARNING_WRAP );
 
     curr = fsm_var_head;
     while( curr != NULL ) {
       if( curr->isig == NULL ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "  %-25.25s  %-25.25s", curr->mod, curr->ivar );
-        print_output( user_msg, WARNING );
+        snprintf( user_msg, USER_MSG_LENGTH, "%-25.25s  %-25.25s", curr->mod, curr->ivar );
+        print_output( user_msg, WARNING_WRAP );
       }
       if( curr->table == NULL ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "  %-25.25s  %-25.25s", curr->mod, curr->ovar );
-        print_output( user_msg, WARNING );
+        snprintf( user_msg, USER_MSG_LENGTH, "%-25.25s  %-25.25s", curr->mod, curr->ovar );
+        print_output( user_msg, WARNING_WRAP );
       }
       curr = curr->next;
     }
 
-    fprintf( stderr, "\n" );
+    print_output( "", WARNING_WRAP );
 
   }
 
@@ -903,6 +903,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.17  2003/09/22 19:42:31  phase1geo
+ Adding print_output WARNING_WRAP and FATAL_WRAP lines to allow multi-line
+ error output to be properly formatted to the output stream.
+
  Revision 1.16  2003/09/22 03:46:24  phase1geo
  Adding support for single state variable FSMs.  Allow two different ways to
  specify FSMs on command-line.  Added diagnostics to verify new functionality.
