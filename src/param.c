@@ -626,7 +626,6 @@ void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** ita
 /*!
  \param iparm  Pointer to instance parameter to output to file.
  \param file   Pointer to file handle to write parameter contents to.
- \param scope  Current scope of parameter to output.
 
  Prints contents of specified instance parameter to the specified output stream.
  Parameters get output in the same format as signals (they type specified for parameters
@@ -634,7 +633,7 @@ void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** ita
  that the current signal is a parameter and not a signal, and should therefore not
  be scored as a signal.
 */
-void param_db_write( inst_parm* iparm, FILE* file, char* scope ) {
+void param_db_write( inst_parm* iparm, FILE* file ) {
 
   exp_link* curr;      /* Pointer to current expression link element */
 
@@ -645,10 +644,9 @@ void param_db_write( inst_parm* iparm, FILE* file, char* scope ) {
   if( iparm->name != NULL ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d #%s %s 0 ",
+    fprintf( file, "%d #%s 0 ",
       DB_TYPE_SIGNAL,
-      iparm->name,
-      scope
+      iparm->name
     );
 
     vector_db_write( iparm->value, file, TRUE );
@@ -724,6 +722,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.32  2004/01/08 23:24:41  phase1geo
+ Removing unnecessary scope information from signals, expressions and
+ statements to reduce file sizes of CDDs and slightly speeds up fscanf
+ function calls.  Updated regression for this fix.
+
  Revision 1.31  2003/11/29 06:55:48  phase1geo
  Fixing leftover bugs in better report output changes.  Fixed bug in param.c
  where parameters found in RHS expressions that were part of statements that
