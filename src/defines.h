@@ -1055,6 +1055,8 @@ typedef struct symtable_s symtable;
 struct symtable_s {
   char*     sym;          /*!< Name of VCD-specified signal                */
   signal*   sig;          /*!< Pointer to signal for this symbol           */
+  int       msb;          /*!< Most significant bit of value to set        */
+  int       lsb;          /*!< Least significant bit of value to set       */
   char*     value;        /*!< String representation of last current value */
   int       size;         /*!< Number of bytes allowed storage for value   */
   symtable* right;        /*!< Pointer to next symtable entry to the right */
@@ -1161,6 +1163,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.67  2003/02/13 23:44:08  phase1geo
+ Tentative fix for VCD file reading.  Not sure if it works correctly when
+ original signal LSB is != 0.  Icarus Verilog testsuite passes.
+
  Revision 1.66  2003/02/12 14:56:22  phase1geo
  Adding info.c and info.h files to handle new general information line in
  CDD file.  Support for this new feature is not complete at this time.
