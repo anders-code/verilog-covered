@@ -262,7 +262,7 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
     *line = *line + chars_read;
 
-    if( (curr_mod == NULL) || (strcmp( curr_mod->scope, modname ) != 0) ) {
+    if( curr_mod == NULL ) {
 
       print_output( "Internal error:  statement in database written before its module", FATAL );
       retval = FALSE;
@@ -521,6 +521,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.30  2002/07/18 02:33:24  phase1geo
+/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+/* now work.
+/*
 /* Revision 1.29  2002/07/14 05:10:42  phase1geo
 /* Added support for signal concatenation in score and report commands.  Fixed
 /* bugs in this code (and multiplication).

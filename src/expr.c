@@ -287,7 +287,7 @@ bool expression_db_read( char** line, module* curr_mod ) {
     *line = *line + chars_read;
 
     /* Find module instance name */
-    if( (curr_mod == NULL) || (strcmp( curr_mod->scope, modname ) != 0) ) {
+    if( curr_mod == NULL ) {
 
       snprintf( msg, 4096, "Internal error:  expression (%d) in database written before its module", id );
       print_output( msg, FATAL );
@@ -839,6 +839,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.42  2002/07/18 02:33:23  phase1geo
+/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+/* now work.
+/*
 /* Revision 1.41  2002/07/17 06:27:18  phase1geo
 /* Added start for fixes to bit select code starting with single bit selection.
 /* Full regression passes with addition of sbit_sel1 diagnostic.

@@ -180,7 +180,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
       }
 
       /* Add signal to signal list */
-      if( (curr_mod == NULL) || (strcmp( curr_mod->scope, modname ) != 0) ) {
+      if( curr_mod == NULL ) {
         print_output( "Internal error:  signal in database written before its module", FATAL );
         retval = FALSE;
       } else {
@@ -348,6 +348,10 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.10  2002/07/18 02:33:24  phase1geo
+/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+/* now work.
+/*
 /* Revision 1.9  2002/07/17 06:27:18  phase1geo
 /* Added start for fixes to bit select code starting with single bit selection.
 /* Full regression passes with addition of sbit_sel1 diagnostic.
