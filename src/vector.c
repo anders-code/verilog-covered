@@ -741,7 +741,7 @@ int vector_to_int( vector* vec ) {
 
   width = (vec->width > (SIZEOF_INT * 8)) ? 32 : vec->width;
 
-  for( i=(width - 1); i>=vec->lsb; i-- ) {
+  for( i=((width - 1) + vec->lsb); i>=vec->lsb; i-- ) {
     switch( (vec->value[i/4] >> ((i%4)*2)) & 0x3 ) {
       case 0 :  retval = (retval << 1) | 0;  break;
       case 1 :  retval = (retval << 1) | 1;  break;
@@ -1528,6 +1528,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.38  2003/09/15 01:13:57  phase1geo
+ Fixing bug in vector_to_int() function when LSB is not 0.  Fixing
+ bug in arc_state_to_string() function in creating string version of state.
+
  Revision 1.37  2003/08/10 03:50:10  phase1geo
  More development documentation updates.  All global variables are now
  documented correctly.  Also fixed some generated documentation warnings.
