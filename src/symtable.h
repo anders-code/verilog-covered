@@ -11,20 +11,17 @@
 #include "defines.h"
 
 
-/*! \brief Creates a new symtable entry and adds it to the specified symbol table. */
-symtable* symtable_add( char* sym, signal* sig, int msb, int lsb, symtable** symtab );
+/*! \brief Creates a new symtable structure and initializes if this is specified. */
+symtable* symtable_create( signal* sig, int msb, int lsb, bool init );
 
-/*! \brief Searches symbol table for specified symbol and returns pointer to signal. */
-signal* symtable_find_signal( char* sym, symtable* symtab );
+/*! \brief Creates a new symtable entry and adds it to the specified symbol table. */
+void symtable_add( char* sym, signal* sig, int msb, int lsb );
 
 /*! \brief Sets all matching symtable entries to specified value */
-int symtable_find_and_set( char* sym, symtable* symtab, char* value );
-
-/*! \brief Copies all matching symtable entries from from_tab to to_tab and assigns value to it */
-void symtable_move_and_set( char* sym, symtable* from_tab, char* value, symtable** to_tab );
+void symtable_set_value( char* sym, char* value );
 
 /*! \brief Assigns stored values to all associated signals stored in specified symbol table. */
-void symtable_assign( symtable* symtab );
+void symtable_assign( bool presim );
 
 /*! \brief Deallocates all symtable entries for specified symbol table. */
 void symtable_dealloc( symtable* symtab );
@@ -32,6 +29,9 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.11  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.10  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making
