@@ -126,7 +126,7 @@ bool search_add_file( char* file ) {
   char* tmp;             /* Temporary filename             */
   char  msg[4096];       /* Display message string         */
 
-  if( file_exists( file ) && (str_link_find( tmp, use_files_head ) == NULL) ) {
+  if( file_exists( file ) && (str_link_find( file, use_files_head ) == NULL) ) {
     tmp = strdup( file );
     str_link_add( tmp, &use_files_head, &use_files_tail );
   } else {
@@ -210,6 +210,11 @@ void search_free_lists() {
 }
 
 /* $Log$
+/* Revision 1.9  2002/08/19 21:36:26  phase1geo
+/* Fixing memory corruption bug in score function for adding Verilog modules
+/* to use_files list.  This caused a core dump to occur when the -f option
+/* was used.
+/*
 /* Revision 1.8  2002/07/20 20:48:09  phase1geo
 /* Fixing a bug that caused the same file to be added to the use_files list
 /* more than once.  A filename will only appear once in this list now.  Updates

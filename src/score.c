@@ -207,7 +207,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         read_command_file( argv[i], &arg_list, &arg_num );
         retval = score_parse_args( arg_num, -1, arg_list );
         for( j=0; j<arg_num; j++ ) {
-          free_safe( arg_list[i] );
+          free_safe( arg_list[j] );
         }
         free_safe( arg_list );
       } else {
@@ -331,6 +331,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.18  2002/08/19 21:36:25  phase1geo
+/* Fixing memory corruption bug in score function for adding Verilog modules
+/* to use_files list.  This caused a core dump to occur when the -f option
+/* was used.
+/*
 /* Revision 1.17  2002/07/21 00:08:58  phase1geo
 /* Updating score usage information.  Updated manstyle user documentation though
 /* there seems to be some problem getting the HTML generated from this.  Getting
