@@ -179,7 +179,7 @@ bool db_read( char* file, int read_mode ) {
               
                 /* Find module in instance tree and do a module merge */
                 if( (foundinst = instance_find_scope( instance_root, curr_scope )) == NULL ) {
-                  print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
+                  print_output( "Attempting to merge two databases derived from different designs.  Unable to merge.", FATAL );
                   retval = FALSE;
                 } else {
                   /* Perform module merge */
@@ -251,7 +251,7 @@ bool db_read( char* file, int read_mode ) {
               
       /* Find module in instance tree and do a module merge */
       if( (foundinst = instance_find_scope( instance_root, curr_scope )) == NULL ) {
-        print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
+        print_output( "1 Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
         retval = FALSE;
       } else {
         /* Perform module merge */
@@ -960,6 +960,9 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.49  2002/07/23 12:56:22  phase1geo
+/* Fixing some memory overflow issues.  Still getting core dumps in some areas.
+/*
 /* Revision 1.48  2002/07/22 05:24:46  phase1geo
 /* Creating new VCD parser.  This should have performance benefits as well as
 /* have the ability to handle any problems that come up in parsing.

@@ -105,7 +105,7 @@ void vector_merge( vector* base, vector* in ) {
     assert( base->value != NULL );
     assert( in->value != NULL );
 
-    for( i=0; i<base->width; i++ ) {
+    for( i=0; i<VECTOR_SIZE( base->width ); i++ ) {
       base->value[i] = (base->value[i] & VECTOR_MERGE_MASK) | (in->value[i] & VECTOR_MERGE_MASK);
     }
 
@@ -1369,6 +1369,9 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.14  2002/07/23 12:56:22  phase1geo
+/* Fixing some memory overflow issues.  Still getting core dumps in some areas.
+/*
 /* Revision 1.13  2002/07/17 06:27:18  phase1geo
 /* Added start for fixes to bit select code starting with single bit selection.
 /* Full regression passes with addition of sbit_sel1 diagnostic.

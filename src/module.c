@@ -78,6 +78,8 @@ void module_merge( module* base, module* in ) {
   assert( in != NULL );
   assert( in->name != NULL );
 
+  printf( "In module_merge, merging module: %s\n", base->name );
+
   if( strcmp( base->name, in->name ) != 0 ) {
 
     snprintf( msg, 4096, "Modules with different names being merged (%s, %s)\n",
@@ -111,6 +113,9 @@ void module_merge( module* base, module* in ) {
     /* Merge module signals */
     curr_base_sig = base->sig_head;
     curr_in_sig   = in->sig_head;
+
+    printf( "base:\n" );  sig_link_display( curr_base_sig );
+    printf( "in:\n" );    sig_link_display( curr_in_sig );
 
     while( (curr_base_sig != NULL) && (curr_in_sig != NULL) ) {
       signal_merge( curr_base_sig->sig, curr_in_sig->sig );
@@ -297,15 +302,13 @@ void module_clean( module* mod ) {
       mod->filename = NULL;
     }
 
-    /* Free signal list */
-    sig_link_delete_list( mod->sig_head );
-    mod->sig_head = NULL;
-
-    // module_display_expressions( mod );
-
     /* Free expression list */
     exp_link_delete_list( mod->exp_head, TRUE );
     mod->exp_head = NULL;
+
+    /* Free signal list */
+    sig_link_delete_list( mod->sig_head );
+    mod->sig_head = NULL;
 
     /* Free statement list */
     stmt_link_delete_list( mod->stmt_head );
@@ -338,6 +341,9 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.11  2002/07/23 12:56:22  phase1geo
+/* Fixing some memory overflow issues.  Still getting core dumps in some areas.
+/*
 /* Revision 1.10  2002/07/20 18:46:38  phase1geo
 /* Causing fully covered modules to not be output in reports.  Adding
 /* instance3.v diagnostic to verify this works correctly.
