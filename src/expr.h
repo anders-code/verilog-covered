@@ -35,7 +35,7 @@ int expression_get_last_line( expression* expr );
 void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link** tail );
 
 /*! \brief Writes this expression to the specified database file. */
-void expression_db_write( expression* expr, FILE* file, char* scope );
+void expression_db_write( expression* expr, FILE* file );
 
 /*! \brief Reads current line of specified file and parses for expression information. */
 bool expression_db_read( char** line, module* curr_mod, bool eval );
@@ -64,6 +64,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.24  2004/01/08 23:24:41  phase1geo
+ Removing unnecessary scope information from signals, expressions and
+ statements to reduce file sizes of CDDs and slightly speeds up fscanf
+ function calls.  Updated regression for this fix.
+
  Revision 1.23  2003/11/30 21:50:45  phase1geo
  Modifying line_collect_uncovered function to create array containing all physical
  lines (rather than just uncovered statement starting line values) for more
