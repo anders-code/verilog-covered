@@ -266,7 +266,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       i++;
       retval = search_add_file( argv[i] );
 
-    } else if( strncmp( "+libext+.", argv[i], 8 ) == 0 ) {
+    } else if( strncmp( "+libext+", argv[i], 8 ) == 0 ) {
 
       retval = search_add_extensions( argv[i] + 8 );
 
@@ -410,6 +410,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.47  2005/01/03 23:00:35  phase1geo
+ Fixing library extension parser.
+
  Revision 1.46  2004/12/17 22:29:36  phase1geo
  More code added to race condition feature.  Still not usable.
 
