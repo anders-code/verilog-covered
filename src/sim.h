@@ -18,6 +18,10 @@ void sim_expr_changed( expression* expr );
 /*! \brief Adds specified statement to pre-simulation statement queue. */
 void sim_add_stmt_to_queue( statement* stmt );
 
+void sim_set_curr_wait_signals();
+
+void sim_clear_curr_wait_signals();
+
 /*! \brief Searches pre-simulation queue for specified signal name. */
 bool sim_is_curr_wait_signal( signal* sig );
 
@@ -30,6 +34,9 @@ void sim_simulate();
 
 /*
  $Log$
+ Revision 1.9  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.8  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making
