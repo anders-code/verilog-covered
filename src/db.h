@@ -56,6 +56,9 @@ statement* db_create_statement( expression* exp );
 /*! \brief Adds specified statement to current module's statement list.  Called by parser. */
 void db_add_statement( statement* stmt, statement* start );
 
+/*! \brief Removes specified statement and associated expression from list and memory. */
+void db_remove_statement( statement* stmt );
+
 /*! \brief Connects one statement block to another. */
 void db_statement_connect( statement* curr_stmt, statement* next_stmt );
 
@@ -89,6 +92,10 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.27  2003/01/25 22:39:02  phase1geo
+ Fixing case where statement is found to be unsupported in middle of statement
+ tree.  The entire statement tree is removed from consideration for simulation.
+
  Revision 1.26  2002/12/11 14:51:57  phase1geo
  Fixes compiler errors from last checkin.
 

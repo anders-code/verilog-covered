@@ -800,6 +800,26 @@ void db_add_statement( statement* stmt, statement* start ) {
 }
 
 /*!
+ \param stmt  Pointer to statement to remove from memory.
+
+ Removes specified statement expression from current module expression list and deallocates
+ both the expression and statement from heap memory.  Called when a statement structure is
+ found to contain a statement that is not supported by Covered.
+*/
+void db_remove_statement( statement* stmt ) {
+
+  /* Remove expression from current module expression list */
+  exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail) );
+
+  /* Deallocate expression tree for this statement */
+  expression_dealloc( stmt->exp, FALSE );
+
+  /* Deallocate statement itself */
+  statement_dealloc( stmt );
+
+}
+
+/*!
  \param stmt       Pointer to statement to connect true path to.
  \param next_true  Pointer to statement to run if statement evaluates to TRUE.
 
@@ -1092,6 +1112,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.80  2003/01/25 22:39:02  phase1geo
+ Fixing case where statement is found to be unsupported in middle of statement
+ tree.  The entire statement tree is removed from consideration for simulation.
+
  Revision 1.79  2003/01/06 00:44:21  phase1geo
  Updates to NEWS, ChangeLog, development documentation and user documentation
  for new 0.2pre1_20030105 release.
