@@ -13,7 +13,7 @@
 #include "defines.h"
 
 /*! \brief Creates and initializes new FSM structure. */
-fsm* fsm_create( expression* from_state, expression* to_state, bool make_table );
+fsm* fsm_create( expression* from_state, expression* to_state );
 
 /*! \brief Adds new FSM arc structure to specified FSMs arc list. */
 void fsm_add_arc( fsm* table, expression* from_state, expression* to_state );
@@ -44,6 +44,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.12  2003/11/07 05:18:40  phase1geo
+ Adding working code for inline FSM attribute handling.  Full regression fails
+ at this point but the code seems to be working correctly.
+
  Revision 1.11  2003/10/13 12:27:25  phase1geo
  More fixes to FSM stuff.
 
