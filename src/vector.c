@@ -985,7 +985,8 @@ void vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
 
   /* Set pointer to LSB */
   ptr = (value + strlen( value )) - 1;
-  i   = lsb;
+  i   = (lsb > 0) ? (lsb - vec->lsb) : 0;
+  msb = (lsb > 0) ? (msb - vec->lsb) : msb;
     
   while( ptr >= value ) {
 
@@ -1473,6 +1474,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.34  2003/02/14 00:00:30  phase1geo
+ Fixing bug with vector_vcd_assign when signal being assigned has an LSB that
+ is greater than 0.
+
  Revision 1.33  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.
