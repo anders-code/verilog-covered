@@ -26,6 +26,7 @@ void module_init( module* mod ) {
     
   mod->name      = NULL;
   mod->filename  = NULL;
+  mod->stat      = NULL;
   mod->sig_head  = NULL;
   mod->sig_tail  = NULL;
   mod->exp_head  = NULL;
@@ -337,6 +338,10 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.10  2002/07/20 18:46:38  phase1geo
+/* Causing fully covered modules to not be output in reports.  Adding
+/* instance3.v diagnostic to verify this works correctly.
+/*
 /* Revision 1.9  2002/07/18 02:33:24  phase1geo
 /* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
 /* now work.
