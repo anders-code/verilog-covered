@@ -25,10 +25,13 @@
 00034 <font class="keywordtype">void</font> <a class="code" href="search_8c.html#a20">search_free_lists</a>();
 00035 
 00036 <font class="comment">/* $Log$
-00036 <font class="comment">/* Revision 1.11  2002/07/05 04:11:43  phase1geo
-00036 <font class="comment">/* Correcting case, casex and casez equality calculation to conform to correct
-00036 <font class="comment">/* equality check for each case type.  Verified that case statements work correctly
-00036 <font class="comment">/* at this point.  Added diagnostics to verify case statements.
+00036 <font class="comment">/* Revision 1.12  2002/07/05 16:49:07  phase1geo
+00036 <font class="comment">/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
+00036 <font class="comment">/* the reverse order (last changes are stored instead of first for timestamp).
+00036 <font class="comment">/* Fixed problem with AEDGE operator to handle vector value changes correctly.
+00036 <font class="comment">/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
+00036 <font class="comment">/* Full regression passes; however, the recent changes seem to have impacted
+00036 <font class="comment">/* performance -- need to look into this.
 00036 <font class="comment">/*</font>
 00037 <font class="comment">/* Revision 1.2  2002/07/03 03:31:11  phase1geo</font>
 00038 <font class="comment">/* Adding RCS Log strings in files that were missing them so that file version</font>
@@ -38,7 +41,7 @@
 00042 
 00043 <font class="preprocessor">#endif</font>
 00044 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Thu Jul 4 23:10:37 2002 for Covered by
+</pre></div><hr><address align="right"><small>Generated on Fri Jul 5 11:45:40 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

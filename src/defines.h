@@ -734,6 +734,7 @@ typedef struct symtable_s symtable;
 struct symtable_s {
   char*     sym;          /*!< Name of VCD-specified signal                */
   signal*   sig;          /*!< Pointer to signal for this symbol           */
+  char*     value;        /*!< String representation of last current value */
   symtable* right;        /*!< Pointer to next symtable entry to the right */
   symtable* left;         /*!< Pointer to next symtable entry to the left  */
 };
@@ -825,6 +826,14 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.27  2002/07/05 16:49:47  phase1geo
+/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
+/* the reverse order (last changes are stored instead of first for timestamp).
+/* Fixed problem with AEDGE operator to handle vector value changes correctly.
+/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
+/* Full regression passes; however, the recent changes seem to have impacted
+/* performance -- need to look into this.
+/*
 /* Revision 1.26  2002/07/05 05:00:13  phase1geo
 /* Removing CASE, CASEX, and CASEZ from line and combinational logic results.
 /*

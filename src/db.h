@@ -58,19 +58,24 @@ void db_set_vcd_scope( char* scope );
 //! Adds symbol to signal specified by name.
 void db_assign_symbol( char* name, char* symbol );
 
-//! Finds specified signal and returns TRUE if found.
-bool db_symbol_found( char* symbol );
+//! Sets the found symbol value to specified character value.  Called by VCD lexer.
+void db_set_symbol_char( char* sym, char value );
 
-//! Finds specified signal, sets the value and adds its expression to expression queue. 
-void db_find_set_add_signal( char* symbol, vector* vec );
-
-//! Returns width of signal for specified symbol.
-int db_get_signal_size( char* symbol );
+//! Sets the found symbol value to specified string value.  Called by VCD lexer.
+void db_set_symbol_string( char* sym, char* value );
 
 //! Performs a timestep for all signal changes during this timestep.
 void db_do_timestep( int time ); 
 
 /* $Log$
+/* Revision 1.10  2002/07/05 16:49:47  phase1geo
+/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
+/* the reverse order (last changes are stored instead of first for timestamp).
+/* Fixed problem with AEDGE operator to handle vector value changes correctly.
+/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
+/* Full regression passes; however, the recent changes seem to have impacted
+/* performance -- need to look into this.
+/*
 /* Revision 1.9  2002/07/03 21:30:52  phase1geo
 /* Fixed remaining issues with always statements.  Full regression is running
 /* error free at this point.  Regenerated documentation.  Added EOR expression
