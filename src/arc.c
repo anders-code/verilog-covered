@@ -527,8 +527,10 @@ void arc_compare_all_states( char* arcs, int start, bool left ) {
   int entry_size;    /* Characters needed to store one entry */
   int i;             /* Loop iterator                        */
   int j;             /* Loop iterator                        */
+  int hit_forward;   /* Set to 1 if start has a forward hit  */
 
-  entry_size = arc_get_entry_width( arc_get_width( arcs ) );
+  entry_size  = arc_get_entry_width( arc_get_width( arcs ) );
+  hit_forward = arc_get_entry_suppl( arcs, start, ARC_HIT_F );
 
   // printf( "Comparing against start: %d, left: %d\n", start, left );
 
@@ -559,10 +561,18 @@ void arc_compare_all_states( char* arcs, int start, bool left ) {
 
       if( arc_compare_states( arcs, state1_index, state1_pos, state2_index, state2_pos ) ) {
         // printf( "Found match\n" );
-        if( j == 0 ) {
-          arc_set_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L, 1 );
+        if( hit_forward == 0 ) {
+          if( left ) {
+            arc_set_entry_suppl( arcs, start, ARC_NOT_UNIQUE_L, 1 );
+          } else {
+            arc_set_entry_suppl( arcs, (start - 1), ARC_NOT_UNIQUE_R, 1 );
+          }
         } else {
-          arc_set_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R, 1 );
+          if( j == 0 ) {
+            arc_set_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L, 1 );
+          } else {
+            arc_set_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R, 1 );
+          }
         }
       }
 
@@ -1098,6 +1108,11 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.19  2003/11/08 04:21:26  phase1geo
+ Adding several new FSM diagnostics to regression suite to verify inline
+ attributes.  Fixed bug in arc.c where states were not being identified
+ correctly as unique or not.
+
  Revision 1.18  2003/11/08 03:38:50  phase1geo
  Adding new FSM diagnostics to regression suite and fixing problem that was causing
  regressions to fail.
