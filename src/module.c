@@ -392,7 +392,7 @@ void module_clean( module* mod ) {
     mod->exp_tail = NULL;
 
     /* Free signal list */
-    sig_link_delete_list( mod->sig_head );
+    sig_link_delete_list( mod->sig_head, TRUE );
     mod->sig_head = NULL;
     mod->sig_tail = NULL;
 
@@ -432,6 +432,13 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.29  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.28  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules
