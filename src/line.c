@@ -167,13 +167,13 @@ bool line_get_module_summary( char* mod_name, int* total, int* hit ) {
   bool      retval = TRUE;  /* Return value for this function */
   module    mod;            /* Module used for searching      */
   mod_link* modl;           /* Pointer to found module link   */
-  char      tmp[4];         /* Temporary string for total     */
+  char      tmp[21];        /* Temporary string for total     */
 
   mod.name = mod_name;
 
   if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
 
-    snprintf( tmp, 4, "%3.0f", modl->mod->stat->line_total );
+    snprintf( tmp, 21, "%20.0f", modl->mod->stat->line_total );
     assert( sscanf( tmp, "%d", total ) == 1 );
     *hit = modl->mod->stat->line_hit;
 
@@ -477,6 +477,11 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.44  2004/04/01 22:54:38  phase1geo
+ Making text field read-only.  Adding message when reading in new CDD files
+ (as status information -- this is not working correctly yet).  Fixing bug
+ in line.c when getting total lines summary information.
+
  Revision 1.43  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,
