@@ -18,6 +18,7 @@
 
 #include "defines.h"
 #include "util.h"
+#include "link.h"
 
 /*!
  If set to TRUE, suppresses all non-fatal error messages from being displayed.
@@ -251,7 +252,9 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
           tmpchars = strlen( dirp->d_name ) + strlen( dir ) + 2;
           tmpfile  = (char*)malloc_safe( tmpchars );
           snprintf( tmpfile, tmpchars, "%s/%s", dir, dirp->d_name );
-          str_link_add( tmpfile, file_head, file_tail );
+          if( str_link_find( tmpfile, *file_head ) == NULL ) {
+            str_link_add( tmpfile, file_head, file_tail );
+          }
         }
       }
     }
@@ -489,6 +492,11 @@ void gen_space( char* spaces, int num_spaces ) {
 }
 
 /* $Log$
+/* Revision 1.9  2002/07/20 20:48:09  phase1geo
+/* Fixing a bug that caused the same file to be added to the use_files list
+/* more than once.  A filename will only appear once in this list now.  Updates
+/* to the TODO list.
+/*
 /* Revision 1.8  2002/07/18 22:02:35  phase1geo
 /* In the middle of making improvements/fixes to the expression/signal
 /* binding phase.
