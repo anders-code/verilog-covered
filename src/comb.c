@@ -48,6 +48,7 @@ extern bool         report_covered;
 extern unsigned int report_comb_depth;
 extern bool         report_instance;
 extern char         leading_hierarchy[4096];
+extern char         second_hierarchy[4096];
 extern int          line_width;
 
 
@@ -1429,7 +1430,7 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   if( report_covered ) {
     fprintf( ofile, "    Hit Combinations\n\n" );
   } else { 
-    fprintf( ofile, "    Missed Combinations\n\n" );
+    fprintf( ofile, "    Missed Combinations  (* = missed value)\n\n" );
   }
 
   /* Display current instance missed lines */
@@ -1452,7 +1453,7 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
       /* Output underlining feature for missed expressions */
       combination_underline( ofile, code, code_depth, unexec_exp );
-      fprintf( ofile, "\n\n" );
+      fprintf( ofile, "\n" );
 
       /* Output logical combinations that missed complete coverage */
       combination_list_missed( ofile, unexec_exp, 0 );
@@ -1462,8 +1463,6 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
     stmt_iter_get_next_in_order( &stmti );
 
   }
-
-  fprintf( ofile, "\n" );
 
 }
 
@@ -1551,29 +1550,34 @@ void combination_module_verbose( FILE* ofile, mod_link* head ) {
 */
 void combination_report( FILE* ofile, bool verbose ) {
 
-  bool missed_found;      /* If set to TRUE, indicates combinations were missed */
+  bool missed_found;  /* If set to TRUE, indicates combinations were missed */
+  char tmp[4096];     /* Temporary string value                             */
 
-  fprintf( ofile, "\n\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   COMBINATIONAL LOGIC COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
 
   if( report_instance ) {
 
-    fprintf( ofile, "COMBINATIONAL LOGIC COVERAGE RESULTS\n" );
-    fprintf( ofile, "------------------------------------\n" );
+    if( strcmp( leading_hierarchy, second_hierarchy ) != 0 ) {
+      strcpy( tmp, "<NA>" );
+    } else {
+      strcpy( tmp, leading_hierarchy );
+    }
+
     fprintf( ofile, "Instance                                               Logic Combinations\n" );
     fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = combination_instance_summary( ofile, instance_root, leading_hierarchy );
+    missed_found = combination_instance_summary( ofile, instance_root, tmp );
     
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      combination_instance_verbose( ofile, instance_root, leading_hierarchy );
+      combination_instance_verbose( ofile, instance_root, tmp );
     }
 
   } else {
 
-    fprintf( ofile, "COMBINATIONAL LOGIC COVERAGE RESULTS\n" );
-    fprintf( ofile, "------------------------------------\n" );
     fprintf( ofile, "Module                    Filename                     Logical Combinations\n" );
     fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1587,14 +1591,20 @@ void combination_report( FILE* ofile, bool verbose ) {
 
   }
 
-  fprintf( ofile, "=====================================================================================================================\n" );
-  fprintf( ofile, "\n" );
+  fprintf( ofile, "\n\n" );
 
 }
 
 
 /*
  $Log$
+ Revision 1.89  2004/01/31 18:58:35  phase1geo
+ Finished reformatting of reports.  Fixed bug where merged reports with
+ different leading hierarchies were outputting the leading hierarchy of one
+ which lead to confusion when interpreting reports.  Also made modification
+ to information line in CDD file for these cases.  Full regression runs clean
+ with Icarus Verilog at this point.
+
  Revision 1.88  2004/01/30 23:23:22  phase1geo
  More report output improvements.  Still not ready with regressions.
 
