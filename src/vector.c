@@ -1107,11 +1107,11 @@ void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
   bool   done = FALSE;  /* Specifies continuation of comparison */
   nibble value;         /* Result to be stored in tgt           */
 
-  /* Determine at which bit position to begin comparing */
+  /* Determine at which bit position to begin comparing, start at MSB of smallest vector */
   if( left->width > right->width ) {
-    pos = left->width - 1;
-  } else {
     pos = right->width - 1;
+  } else {
+    pos = left->width - 1;
   }
 
   while( (pos >= 0) && !done ) {
@@ -1513,6 +1513,12 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.36  2003/08/10 00:05:16  phase1geo
+ Fixing bug with posedge, negedge and anyedge expressions such that these expressions
+ must be armed before they are able to be evaluated.  Fixing bug in vector compare function
+ to cause compare to occur on smallest vector size (rather than on largest).  Updated regression
+ files and added new diagnostics to test event fix.
+
  Revision 1.35  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making
