@@ -80,7 +80,7 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
 
     } else if( SUPPL_OP( expr->suppl ) == EXP_OP_STATIC ) {
 
-      switch( vector_get_type( expr->value ) ) {
+      switch( expr->value->suppl ) {
 
         case DECIMAL :
           snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
@@ -328,6 +328,10 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
 
 /*
  $Log$
+ Revision 1.27  2003/10/11 05:15:07  phase1geo
+ Updates for code optimizations for vector value data type (integers to chars).
+ Updated regression for changes.
+
  Revision 1.26  2002/12/05 14:45:17  phase1geo
  Removing assertion error from instance6.1 failure; however, this case does not
  work correctly according to instance6.2.v diagnostic.  Added @(...) output in
