@@ -45,7 +45,7 @@ void db_end_module();
 signal* db_find_signal( char* name );
 
 /*! \brief Creates new expression from specified information.  Called by parser and db_add_expression. */
-expression* db_create_expression( expression* right, expression* left, int op, int line, char* sig_name );
+expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, char* sig_name );
 
 /*! \brief Adds specified expression to expression list.  Called by parser. */
 void db_add_expression( expression* root );
@@ -98,6 +98,10 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.32  2003/11/26 23:14:41  phase1geo
+ Adding code to include left-hand-side expressions of statements for report
+ outputting purposes.  Full regression does not yet pass.
+
  Revision 1.31  2003/10/28 00:18:05  phase1geo
  Adding initial support for inline attributes to specify FSMs.  Still more
  work to go but full regression still passes at this point.

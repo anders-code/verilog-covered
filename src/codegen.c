@@ -276,6 +276,9 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
           case EXP_OP_CASE     :  code_size = 13; strcpy( code_format, "case( %s ) %s :" );   both = TRUE;   break;
           case EXP_OP_CASEX    :  code_size = 14; strcpy( code_format, "casex( %s ) %s :" );  both = TRUE;   break;
           case EXP_OP_CASEZ    :  code_size = 15; strcpy( code_format, "casez( %s ) %s :" );  both = TRUE;   break;
+          case EXP_OP_ASSIGN   :  code_size = 12; strcpy( code_format, "assign %s = %s" );    both = TRUE;   break;
+          case EXP_OP_BASSIGN  :  code_size = 4;  strcpy( code_format, "%s = %s" );           both = TRUE;   break;
+          case EXP_OP_NASSIGN  :  code_size = 5;  strcpy( code_format, "%s <= %s" );          both = TRUE;   break;
           default:  break;
         }
 
@@ -328,6 +331,10 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
 
 /*
  $Log$
+ Revision 1.28  2003/11/26 23:14:41  phase1geo
+ Adding code to include left-hand-side expressions of statements for report
+ outputting purposes.  Full regression does not yet pass.
+
  Revision 1.27  2003/10/11 05:15:07  phase1geo
  Updates for code optimizations for vector value data type (integers to chars).
  Updated regression for changes.

@@ -17,7 +17,7 @@
 void expression_create_value( expression* exp, int width, bool data );
 
 /*! \brief Creates new expression. */
-expression* expression_create( expression* right, expression* left, int op, int id, int line, bool data );
+expression* expression_create( expression* right, expression* left, int op, bool lhs, int id, int line, bool data );
 
 /*! \brief Sets the specified expression value to the specified vector value. */
 void expression_set_value( expression* exp, vector* vec );
@@ -61,6 +61,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.22  2003/11/26 23:14:41  phase1geo
+ Adding code to include left-hand-side expressions of statements for report
+ outputting purposes.  Full regression does not yet pass.
+
  Revision 1.21  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 
