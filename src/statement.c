@@ -262,7 +262,7 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
     *line = *line + chars_read;
 
-    if( (curr_mod == NULL) || (strcmp( curr_mod->name, modname ) != 0) ) {
+    if( (curr_mod == NULL) || (strcmp( curr_mod->scope, modname ) != 0) ) {
 
       print_output( "Internal error:  statement in database written before its module", FATAL );
       retval = FALSE;
@@ -518,6 +518,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.26  2002/07/08 12:35:31  phase1geo
+/* Added initial support for library searching.  Code seems to be broken at the
+/* moment.
+/*
 /* Revision 1.25  2002/07/05 16:49:47  phase1geo
 /* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
 /* the reverse order (last changes are stored instead of first for timestamp).

@@ -275,9 +275,10 @@ bool expression_db_read( char** line, module* curr_mod ) {
     *line = *line + chars_read;
 
     /* Find module instance name */
-    if( (curr_mod == NULL) || (strcmp( curr_mod->name, modname ) != 0) ) {
+    if( (curr_mod == NULL) || (strcmp( curr_mod->scope, modname ) != 0) ) {
 
-      print_output( "Internal error:  expression in database written before its module", FATAL );
+      snprintf( msg, 4096, "Internal error:  expression (%d) in database written before its module", id );
+      print_output( msg, FATAL );
       retval = FALSE;
 
     } else {
@@ -792,6 +793,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.32  2002/07/08 12:35:31  phase1geo
+/* Added initial support for library searching.  Code seems to be broken at the
+/* moment.
+/*
 /* Revision 1.31  2002/07/05 16:49:47  phase1geo
 /* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
 /* the reverse order (last changes are stored instead of first for timestamp).

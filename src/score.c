@@ -227,7 +227,8 @@ bool score_parse_args( int argc, char** argv ) {
 */
 int command_score( int argc, char** argv ) {
 
-  int retval = 0;    /* Return value for this function */
+  int  retval = 0;   /* Return value for this function */
+  char msg[4096];    /* Message to user                */
 
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
@@ -262,7 +263,8 @@ int command_score( int argc, char** argv ) {
     printf( "\n***  Scoring completed successfully!  ***\n" );
     printf( "\n" );
     printf( "Dynamic memory allocated:   %ld bytes\n", largest_malloc_size );
-    // printf( "Allocated memory remaining: %ld bytes\n", curr_malloc_size );
+    snprintf( msg, 4096, "Allocated memory remaining: %ld bytes\n", curr_malloc_size );
+    print_output( msg, NORMAL );
     printf( "\n" );
 
   }
@@ -272,6 +274,10 @@ int command_score( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.7  2002/07/08 12:35:31  phase1geo
+/* Added initial support for library searching.  Code seems to be broken at the
+/* moment.
+/*
 /* Revision 1.6  2002/07/03 21:30:53  phase1geo
 /* Fixed remaining issues with always statements.  Full regression is running
 /* error free at this point.  Regenerated documentation.  Added EOR expression

@@ -180,7 +180,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
       }
 
       /* Add signal to signal list */
-      if( (curr_mod == NULL) || (strcmp( curr_mod->name, modname ) != 0) ) {
+      if( (curr_mod == NULL) || (strcmp( curr_mod->scope, modname ) != 0) ) {
         print_output( "Internal error:  signal in database written before its module", FATAL );
         retval = FALSE;
       } else {
@@ -378,6 +378,10 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.8  2002/07/08 12:35:31  phase1geo
+/* Added initial support for library searching.  Code seems to be broken at the
+/* moment.
+/*
 /* Revision 1.7  2002/07/05 16:49:47  phase1geo
 /* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
 /* the reverse order (last changes are stored instead of first for timestamp).
