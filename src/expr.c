@@ -396,11 +396,13 @@ void expression_operate( expression* expr ) {
   int     intval2;                       /* Temporary integer value for *, /, %   */
   nibble  value1a;                       /* 1-bit nibble value                    */
   nibble  value1b;                       /* 1-bit nibble value                    */
-  nibble  value32[ VECTOR_SIZE( 32 ) ];  /* 32-bit nibble value                   */            
+  nibble  value32[ VECTOR_SIZE( 32 ) ];  /* 32-bit nibble value                   */
+  char    msg[4096];                     /* Message to user                       */
 
   if( expr != NULL ) {
 
-    // printf( "In expression_operate, id: %d, op: %d\n", expr->id, SUPPL_OP( expr->suppl ) );
+    snprintf( msg, 4096, "In expression_operate, id: %d, op: %d", expr->id, SUPPL_OP( expr->suppl ) );
+    print_output( msg, NORMAL );
 
     assert( expr->value != NULL );
 
@@ -693,12 +695,15 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_CASE :
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ );
+        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
         break;
 
       case EXP_OP_CASEX :
+        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CXEQ );
+        break;
+
       case EXP_OP_CASEZ :
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
+        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CZEQ );
         break;
 
       default :
@@ -788,8 +793,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
-/* Revision 1.29  2002/07/05 00:37:37  phase1geo
-/* Small update to CASE handling in scope to avoid future errors.
+/* Revision 1.30  2002/07/05 04:12:46  phase1geo
+/* Correcting case, casex and casez equality calculation to conform to correct
+/* equality check for each case type.  Verified that case statements work correctly
+/* at this point.  Added diagnostics to verify case statements.
 /*
 /* Revision 1.28  2002/07/05 00:10:18  phase1geo
 /* Adding report support for case statements.  Everything outputs fine; however,
