@@ -643,12 +643,12 @@
                                      (SUPPL_OP( x->suppl ) != EXP_OP_PARAM) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_SBIT) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_MBIT) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_DELAY) && \
                                      !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_MBIT_SEL)) && \
-                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND)) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_DELAY)) ? 1 : 0)
+                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND))) ? 1 : 0)
 
 /*!
  Returns a value of TRUE if the specified expression should be immediately evaluated after
@@ -1123,6 +1123,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.58  2002/11/23 21:27:25  phase1geo
+ Fixing bug with combinational logic being output when unmeasurable.
+
  Revision 1.57  2002/11/23 16:10:46  phase1geo
  Updating changelog and development documentation to include FSM description
  (this is a brainstorm on how to handle FSMs when we get to this point).  Fixed
