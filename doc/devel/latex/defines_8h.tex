@@ -1,0 +1,431 @@
+\section{defines.h File Reference}
+\label{defines_8h}\index{defines.h@{defines.h}}
+Contains definitions/structures used in the Covered utility. 
+
+
+{\tt \#include \char`\"{}../config.h\char`\"{}}\par
+\subsection*{Compounds}
+\begin{CompactItemize}
+\item 
+struct {\bf exp\_\-link\_\-s}
+\item 
+struct {\bf expression\_\-s}
+\item 
+struct {\bf mod\_\-inst\_\-s}
+\item 
+struct {\bf mod\_\-link\_\-s}
+\item 
+struct {\bf module\_\-s}
+\item 
+struct {\bf sig\_\-exp\_\-bind\_\-s}
+\item 
+struct {\bf sig\_\-link\_\-s}
+\item 
+struct {\bf signal\_\-s}
+\item 
+struct {\bf signal\_\-width\_\-s}
+\item 
+struct {\bf statement\_\-s}
+\item 
+struct {\bf statistic\_\-s}
+\item 
+struct {\bf stmt\_\-link\_\-s}
+\item 
+struct {\bf str\_\-link\_\-s}
+\item 
+struct {\bf symtable\_\-s}
+\item 
+struct {\bf vector\_\-s}
+\end{CompactItemize}
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define {\bf COVERED\_\-VERSION}\ VERSION
+\item 
+\#define {\bf COVERED\_\-HEADER}\ \char`\"{}$\backslash$n\-Covered \%s -- Verilog Code Coverage Utility$\backslash$n\-Written by Trevor Williams  (trevorw@charter.net)$\backslash$n\-Freely distributable under the GPL license$\backslash$n$\backslash$n\char`\"{}, COVERED\_\-VERSION
+\item 
+\#define {\bf DFLT\_\-OUTPUT\_\-DB}\ \char`\"{}cov.db\char`\"{}
+\item 
+\#define {\bf INTEGER\_\-WIDTH}\ (SIZEOF\_\-INT $\ast$ 8)
+\item 
+\#define {\bf FATAL}\ 1
+\item 
+\#define {\bf WARNING}\ 2
+\item 
+\#define {\bf NORMAL}\ 3
+\item 
+\#define {\bf DB\_\-TYPE\_\-SIGNAL}\ 1
+\item 
+\#define {\bf DB\_\-TYPE\_\-EXPRESSION}\ 2
+\item 
+\#define {\bf DB\_\-TYPE\_\-MODULE}\ 3
+\item 
+\#define {\bf DB\_\-TYPE\_\-STATEMENT}\ 4
+\item 
+\#define {\bf FNAME\_\-SET}\ 1
+\item 
+\#define {\bf FNAME\_\-NOTSET}\ 2
+\item 
+\#define {\bf FNAME\_\-DONTCARE}\ 3
+\item 
+\#define {\bf VECTOR\_\-SET\_\-BIT}\ 0x1
+\item 
+\#define {\bf VECTOR\_\-STATIC\_\-BIT}\ 0x2
+\item 
+\#define {\bf IS\_\-VECTOR\_\-SET}(x)\ (x \& VECTOR\_\-SET\_\-BIT)
+\item 
+\#define {\bf IS\_\-VECTOR\_\-STATIC}(x)\ (x \& VECTOR\_\-STATIC\_\-BIT)
+\item 
+\#define {\bf VECTOR\_\-SIZE}(x)\ (((x \% 4) == 0) ? (x / 4) : ((x / 4) + 1))
+\item 
+\#define {\bf VECTOR\_\-MERGE\_\-MASK}\ 0xff0fff00
+\item 
+\#define {\bf SUPPL\_\-LSB\_\-IN\_\-QUEUE}\ 0
+\item 
+\#define {\bf SUPPL\_\-LSB\_\-EXECUTED}\ 1
+\item 
+\#define {\bf SUPPL\_\-LSB\_\-CHANGED}\ 2
+\item 
+\#define {\bf SUPPL\_\-LSB\_\-MEASURABLE}\ 3
+\item 
+\#define {\bf SUPPL\_\-LSB\_\-FALSE}\ 4
+\item 
+\#define {\bf SUPPL\_\-LSB\_\-TRUE}\ 5
+\item 
+\#define {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED}\ 6
+\item 
+\#define {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED}\ 7
+\item 
+\#define {\bf SUPPL\_\-LSB\_\-OP}\ 8
+\item 
+\#define {\bf SUPPL\_\-LSB\_\-SIG\_\-LSB}\ 16
+\item 
+\#define {\bf SUPPL\_\-MERGE\_\-MASK}\ 0x302
+\item 
+\#define {\bf SUPPL\_\-WAS\_\-EXECUTED}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-EXECUTED) \& 0x1)
+\item 
+\#define {\bf SUPPL\_\-IS\_\-MEASURABLE}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-MEASURABLE) \& 0x1)
+\item 
+\#define {\bf SUPPL\_\-WAS\_\-TRUE}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-TRUE) \& 0x1)
+\item 
+\#define {\bf SUPPL\_\-WAS\_\-FALSE}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-FALSE) \& 0x1)
+\item 
+\#define {\bf SUPPL\_\-IS\_\-LEFT\_\-CHANGED}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-LEFT\_\-CHANGED) \& 0x1)
+\item 
+\#define {\bf SUPPL\_\-IS\_\-RIGHT\_\-CHANGED}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED) \& 0x1)
+\item 
+\#define {\bf SUPPL\_\-COMB\_\-MISSED}(x)\ (SUPPL\_\-IS\_\-MEASURABLE(x) \& ($\sim$SUPPL\_\-WAS\_\-TRUE(x) $|$ $\sim$SUPPL\_\-WAS\_\-FALSE(x)))
+\item 
+\#define {\bf SUPPL\_\-OP}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-OP) \& 0xff)
+\item 
+\#define {\bf READ\_\-MODE\_\-NO\_\-MERGE}\ 0
+\item 
+\#define {\bf READ\_\-MODE\_\-INST\_\-MERGE}\ 1
+\item 
+\#define {\bf READ\_\-MODE\_\-MOD\_\-MERGE}\ 2
+\item 
+\#define {\bf EXP\_\-OP\_\-NONE}\ 0x0
+\item 
+\#define {\bf EXP\_\-OP\_\-SIG}\ 0x1
+\item 
+\#define {\bf EXP\_\-OP\_\-XOR}\ 0x2
+\item 
+\#define {\bf EXP\_\-OP\_\-MULTIPLY}\ 0x3
+\item 
+\#define {\bf EXP\_\-OP\_\-DIVIDE}\ 0x4
+\item 
+\#define {\bf EXP\_\-OP\_\-MOD}\ 0x5
+\item 
+\#define {\bf EXP\_\-OP\_\-ADD}\ 0x6
+\item 
+\#define {\bf EXP\_\-OP\_\-SUBTRACT}\ 0x7
+\item 
+\#define {\bf EXP\_\-OP\_\-AND}\ 0x8
+\item 
+\#define {\bf EXP\_\-OP\_\-OR}\ 0x9
+\item 
+\#define {\bf EXP\_\-OP\_\-NAND}\ 0xa
+\item 
+\#define {\bf EXP\_\-OP\_\-NOR}\ 0xb
+\item 
+\#define {\bf EXP\_\-OP\_\-NXOR}\ 0xc
+\item 
+\#define {\bf EXP\_\-OP\_\-LT}\ 0xd
+\item 
+\#define {\bf EXP\_\-OP\_\-GT}\ 0xe
+\item 
+\#define {\bf EXP\_\-OP\_\-LSHIFT}\ 0xf
+\item 
+\#define {\bf EXP\_\-OP\_\-RSHIFT}\ 0x10
+\item 
+\#define {\bf EXP\_\-OP\_\-EQ}\ 0x11
+\item 
+\#define {\bf EXP\_\-OP\_\-CEQ}\ 0x12
+\item 
+\#define {\bf EXP\_\-OP\_\-LE}\ 0x13
+\item 
+\#define {\bf EXP\_\-OP\_\-GE}\ 0x14
+\item 
+\#define {\bf EXP\_\-OP\_\-NE}\ 0x15
+\item 
+\#define {\bf EXP\_\-OP\_\-CNE}\ 0x16
+\item 
+\#define {\bf EXP\_\-OP\_\-LOR}\ 0x17
+\item 
+\#define {\bf EXP\_\-OP\_\-LAND}\ 0x18
+\item 
+\#define {\bf EXP\_\-OP\_\-COND\_\-T}\ 0x19
+\item 
+\#define {\bf EXP\_\-OP\_\-COND\_\-F}\ 0x1a
+\item 
+\#define {\bf EXP\_\-OP\_\-UINV}\ 0x1b
+\item 
+\#define {\bf EXP\_\-OP\_\-UAND}\ 0x1c
+\item 
+\#define {\bf EXP\_\-OP\_\-UNOT}\ 0x1d
+\item 
+\#define {\bf EXP\_\-OP\_\-UOR}\ 0x1e
+\item 
+\#define {\bf EXP\_\-OP\_\-UXOR}\ 0x1f
+\item 
+\#define {\bf EXP\_\-OP\_\-UNAND}\ 0x20
+\item 
+\#define {\bf EXP\_\-OP\_\-UNOR}\ 0x21
+\item 
+\#define {\bf EXP\_\-OP\_\-UNXOR}\ 0x22
+\item 
+\#define {\bf EXP\_\-OP\_\-SBIT\_\-SEL}\ 0x23
+\item 
+\#define {\bf EXP\_\-OP\_\-MBIT\_\-SEL}\ 0x24
+\item 
+\#define {\bf EXP\_\-OP\_\-EXPAND}\ 0x25
+\item 
+\#define {\bf EXP\_\-OP\_\-CONCAT}\ 0x26
+\item 
+\#define {\bf EXP\_\-OP\_\-PEDGE}\ 0x27
+\item 
+\#define {\bf EXP\_\-OP\_\-NEDGE}\ 0x28
+\item 
+\#define {\bf EXP\_\-OP\_\-AEDGE}\ 0x29
+\item 
+\#define {\bf EXP\_\-OP\_\-STMT}\ 0x2a
+\item 
+\#define {\bf AND\_\-OP\_\-TABLE}\ 0,  0,  0,  0,  0,  1,  2,  2,  0,  2,  2,  2,  0,  2,  2,  2
+\item 
+\#define {\bf OR\_\-OP\_\-TABLE}\ 0,  1,  2,  2,  1,  1,  1,  1,  2,  1,  2,  2,  2,  1,  2,  2
+\item 
+\#define {\bf XOR\_\-OP\_\-TABLE}\ 0,  1,  2,  2,  1,  0,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2
+\item 
+\#define {\bf NAND\_\-OP\_\-TABLE}\ 1,  1,  1,  1,  1,  0,  2,  2,  1,  2,  2,  2,  1,  2,  2,  2
+\item 
+\#define {\bf NOR\_\-OP\_\-TABLE}\ 1,  0,  2,  2,  0,  0,  0,  0,  2,  0,  2,  2,  2,  0,  2,  2
+\item 
+\#define {\bf NXOR\_\-OP\_\-TABLE}\ 1,  0,  2,  2,  0,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,  2
+\item 
+\#define {\bf ADD\_\-OP\_\-TABLE}\ 0,  1,  10, 10, 1,  4,  10, 10, 10, 10, 10, 10, 10, 10, 10, 10
+\item 
+\#define {\bf COMP\_\-LT}\ 0
+\item 
+\#define {\bf COMP\_\-GT}\ 1
+\item 
+\#define {\bf COMP\_\-LE}\ 2
+\item 
+\#define {\bf COMP\_\-GE}\ 3
+\item 
+\#define {\bf COMP\_\-EQ}\ 4
+\item 
+\#define {\bf COMP\_\-NE}\ 5
+\item 
+\#define {\bf COMP\_\-CEQ}\ 6
+\item 
+\#define {\bf COMP\_\-CNE}\ 7
+\item 
+\#define {\bf MAX\_\-BIT\_\-WIDTH}\ 1024
+\item 
+\#define {\bf DECIMAL}\ 0
+\item 
+\#define {\bf BINARY}\ 1
+\item 
+\#define {\bf OCTAL}\ 2
+\item 
+\#define {\bf HEXIDECIMAL}\ 3
+\end{CompactItemize}
+\subsection*{Typedefs}
+\begin{CompactItemize}
+\item 
+typedef unsigned int {\bf nibble}
+\item 
+typedef {\bf str\_\-link\_\-s} {\bf str\_\-link}
+\item 
+typedef {\bf vector\_\-s} {\bf vector}
+\item 
+typedef {\bf expression\_\-s} {\bf expression}
+\item 
+typedef {\bf signal\_\-s} {\bf signal}
+\item 
+typedef {\bf statement\_\-s} {\bf statement}
+\item 
+typedef {\bf exp\_\-link\_\-s} {\bf exp\_\-link}
+\item 
+typedef {\bf stmt\_\-link\_\-s} {\bf stmt\_\-link}
+\item 
+typedef {\bf sig\_\-link\_\-s} {\bf sig\_\-link}
+\item 
+typedef {\bf module\_\-s} {\bf module}
+\item 
+typedef {\bf mod\_\-link\_\-s} {\bf mod\_\-link}
+\item 
+typedef {\bf symtable\_\-s} {\bf symtable}
+\item 
+typedef {\bf signal\_\-width\_\-s} {\bf signal\_\-width}
+\item 
+typedef {\bf sig\_\-exp\_\-bind\_\-s} {\bf sig\_\-exp\_\-bind}
+\item 
+typedef {\bf statistic\_\-s} {\bf statistic}
+\item 
+typedef {\bf mod\_\-inst\_\-s} {\bf mod\_\-inst}
+\end{CompactItemize}
+\subsection*{Enumerations}
+\begin{CompactItemize}
+\item 
+enum {\bf bool} \{ {\bf FALSE}, 
+{\bf TRUE}
+ \}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Contains definitions/structures used in the Covered utility.
+
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+11/27/2001\end{Desc}
+
+
+\subsection{Define Documentation}
+\index{defines.h@{defines.h}!COVERED_HEADER@{COVERED\_\-HEADER}}
+\index{COVERED_HEADER@{COVERED\_\-HEADER}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define COVERED\_\-HEADER\ \char`\"{}$\backslash$n\-Covered \%s -- Verilog Code Coverage Utility$\backslash$n\-Written by Trevor Williams  (trevorw@charter.net)$\backslash$n\-Freely distributable under the GPL license$\backslash$n$\backslash$n\char`\"{}, COVERED\_\-VERSION}\label{defines_8h_a1}
+
+
+This contains the header information specified when executing this tool. \index{defines.h@{defines.h}!COVERED_VERSION@{COVERED\_\-VERSION}}
+\index{COVERED_VERSION@{COVERED\_\-VERSION}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define COVERED\_\-VERSION\ VERSION}\label{defines_8h_a0}
+
+
+Specifies current version of the Covered utility. \index{defines.h@{defines.h}!DFLT_OUTPUT_DB@{DFLT\_\-OUTPUT\_\-DB}}
+\index{DFLT_OUTPUT_DB@{DFLT\_\-OUTPUT\_\-DB}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DFLT\_\-OUTPUT\_\-DB\ \char`\"{}cov.db\char`\"{}}\label{defines_8h_a2}
+
+
+Default database filename if not specified on command-line. \index{defines.h@{defines.h}!INTEGER_WIDTH@{INTEGER\_\-WIDTH}}
+\index{INTEGER_WIDTH@{INTEGER\_\-WIDTH}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define INTEGER\_\-WIDTH\ (SIZEOF\_\-INT $\ast$ 8)}\label{defines_8h_a3}
+
+
+Determine size of integer in bits. 
+
+\subsection{Typedef Documentation}
+\index{defines.h@{defines.h}!exp_link@{exp\_\-link}}
+\index{exp_link@{exp\_\-link}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf exp\_\-link\_\-s} exp\_\-link}\label{defines_8h_a111}
+
+
+\index{defines.h@{defines.h}!expression@{expression}}
+\index{expression@{expression}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf expression\_\-s} expression}\label{defines_8h_a108}
+
+
+\index{defines.h@{defines.h}!mod_inst@{mod\_\-inst}}
+\index{mod_inst@{mod\_\-inst}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-inst\_\-s} mod\_\-inst}\label{defines_8h_a120}
+
+
+\index{defines.h@{defines.h}!mod_link@{mod\_\-link}}
+\index{mod_link@{mod\_\-link}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-link\_\-s} mod\_\-link}\label{defines_8h_a115}
+
+
+\index{defines.h@{defines.h}!module@{module}}
+\index{module@{module}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf module\_\-s} module}\label{defines_8h_a114}
+
+
+\index{defines.h@{defines.h}!nibble@{nibble}}
+\index{nibble@{nibble}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int nibble}\label{defines_8h_a105}
+
+
+A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 bits of 4-state value. Bits 11 - 8 = Toggle01 value for each of the four 4-state bits. Bits 15 - 12 = Toggle10 value for each of the four 4-state bits. Bits 19 - 16 = Indicates if this bit has been previously assigned. Bits 23 - 20 = Static value indicators for each of the four 4-state bits. Bits 27 - 24 = Indicates if this bit was set to a value of 0 (FALSE). Bits 31 - 28 = Indicates if this bit was set to a value of 1 (TRUE). \index{defines.h@{defines.h}!sig_exp_bind@{sig\_\-exp\_\-bind}}
+\index{sig_exp_bind@{sig\_\-exp\_\-bind}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-exp\_\-bind\_\-s} sig\_\-exp\_\-bind}\label{defines_8h_a118}
+
+
+\index{defines.h@{defines.h}!sig_link@{sig\_\-link}}
+\index{sig_link@{sig\_\-link}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-link\_\-s} sig\_\-link}\label{defines_8h_a113}
+
+
+\index{defines.h@{defines.h}!signal@{signal}}
+\index{signal@{signal}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf signal\_\-s} signal}\label{defines_8h_a109}
+
+
+\index{defines.h@{defines.h}!signal_width@{signal\_\-width}}
+\index{signal_width@{signal\_\-width}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf signal\_\-width\_\-s} signal\_\-width}\label{defines_8h_a117}
+
+
+\index{defines.h@{defines.h}!statement@{statement}}
+\index{statement@{statement}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf statement\_\-s} statement}\label{defines_8h_a110}
+
+
+\index{defines.h@{defines.h}!statistic@{statistic}}
+\index{statistic@{statistic}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf statistic\_\-s} statistic}\label{defines_8h_a119}
+
+
+\index{defines.h@{defines.h}!stmt_link@{stmt\_\-link}}
+\index{stmt_link@{stmt\_\-link}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-link\_\-s} stmt\_\-link}\label{defines_8h_a112}
+
+
+\index{defines.h@{defines.h}!str_link@{str\_\-link}}
+\index{str_link@{str\_\-link}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf str\_\-link\_\-s} str\_\-link}\label{defines_8h_a106}
+
+
+\index{defines.h@{defines.h}!symtable@{symtable}}
+\index{symtable@{symtable}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf symtable\_\-s} symtable}\label{defines_8h_a116}
+
+
+\index{defines.h@{defines.h}!vector@{vector}}
+\index{vector@{vector}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf vector\_\-s} vector}\label{defines_8h_a107}
+
+
+
+
+\subsection{Enumeration Type Documentation}
+\index{defines.h@{defines.h}!bool@{bool}}
+\index{bool@{bool}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}enum bool}\label{defines_8h_a123}
+
+
+Defines boolean variables used in most functions. \begin{Desc}
+\item[Enumeration values:]\par
+\begin{description}
+\index{FALSE@{FALSE}!defines.h@{defines.h}}\index{defines.h@{defines.h}!FALSE@{FALSE}}\item[{\em 
+{\em FALSE}\label{defines_8h_a123a121}
+}]Boolean false value \index{TRUE@{TRUE}!defines.h@{defines.h}}\index{defines.h@{defines.h}!TRUE@{TRUE}}\item[{\em 
+{\em TRUE}\label{defines_8h_a123a122}
+}]Boolean true value \end{description}
+\end{Desc}
+
