@@ -1066,8 +1066,6 @@
 
  \par Section 7.3.  Verilog Testing Procedure
 
- \par
-
 <HR>
 
  \par Go To Section...
@@ -1218,6 +1216,9 @@
 
 /*
  $Log$
+ Revision 1.7  2003/08/06 13:23:53  phase1geo
+ Updating Doxygen-generated documentation.  Doxygen updated to version 1.3.3.
+
  Revision 1.6  2003/02/27 03:41:58  phase1geo
  More development documentation updates.
 
