@@ -67,10 +67,9 @@ bool report_covered    = FALSE;
 
 /*!
  If set to a non-zero value, causes Covered to only generate combinational logic
- report information for depths up to the number specified.  If set to 0, all
- combinational logic is evaluated.
+ report information for depths up to the number specified.
 */
-unsigned int report_comb_depth  = 0;
+unsigned int report_comb_depth  = 0xffffffff;
 
 
 char* output_file      = NULL;
@@ -190,7 +189,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
       i++;
       report_comb_depth = atol( argv[i] );
-      print_output( "Report option -d is not implemented at this time.  Skipping this option...", WARNING );
+      // print_output( "Report option -d is not implemented at this time.  Skipping this option...", WARNING );
  
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
@@ -456,6 +455,13 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.14  2002/09/12 05:16:25  phase1geo
+/* Updating all CDD files in regression suite due to change in vector handling.
+/* Modified vectors to assign a default value of 0xaa to unassigned registers
+/* to eliminate bugs where values never assigned and VCD file doesn't contain
+/* information for these.  Added initial working version of depth feature in
+/* report generation.  Updates to man page and parameter documentation.
+/*
 /* Revision 1.13  2002/08/20 05:55:25  phase1geo
 /* Starting to add combination depth option to report command.  Currently, the
 /* option is not implemented.

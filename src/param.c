@@ -57,6 +57,8 @@
 
  -#  Defparam overrides should be applied before default values to eliminate unnecessary default
      parameter expression evaluation.
+
+ -#  Expression trees need to be stored in module parameter lists for parameter expressions.
 */
 
 #include <stdio.h>
@@ -243,6 +245,13 @@ void param_add_defparam( char* scope, vector* value ) {
 }
 
 /* $Log$
+/* Revision 1.5  2002/09/12 05:16:25  phase1geo
+/* Updating all CDD files in regression suite due to change in vector handling.
+/* Modified vectors to assign a default value of 0xaa to unassigned registers
+/* to eliminate bugs where values never assigned and VCD file doesn't contain
+/* information for these.  Added initial working version of depth feature in
+/* report generation.  Updates to man page and parameter documentation.
+/*
 /* Revision 1.4  2002/09/06 03:05:28  phase1geo
 /* Some ideas about handling parameters have been added to these files.  Added
 /* "Special Thanks" section in User's Guide for acknowledgements to people
