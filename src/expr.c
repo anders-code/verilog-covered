@@ -157,8 +157,16 @@ expression* expression_create( expression* right, expression* left, int op, int 
 
     assert( rwidth < 1024 );
     assert( lwidth < 1024 );
-    expression_operate_recursively( left );
-    expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), data );
+
+    /*
+     If the left-hand expression is a known value, go ahead and create the value here; otherwise,
+     hold off because our vector value will be coming.
+    */
+    if( !vector_is_unknown( left->value ) ) {
+      expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), data );
+    } else {
+      expression_create_value( new_expr, 1, data );
+    }
 
   } else if( (op == EXP_OP_LT   ) ||
              (op == EXP_OP_GT   ) ||
@@ -1321,6 +1329,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.86  2003/10/31 01:38:13  phase1geo
+ Adding new expand diagnostics to verify more situations regarding expansion
+ operators.  Fixing expression_create to properly handle all situations of
+ this operator's use.
+
  Revision 1.85  2003/10/30 05:05:11  phase1geo
  Partial fix to bug 832730.  This doesn't seem to completely fix the parameter
  case, however.
