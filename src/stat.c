@@ -19,7 +19,7 @@ statistic* statistic_create() {
 
   statistic* stat;   /* New statistic structure */
 
-  stat = (statistic*)malloc_safe( sizeof( statistic ) );
+  stat = (statistic*)malloc_safe( sizeof( statistic ), __FILE__, __LINE__ );
 
   stat->line_total  = 0;
   stat->line_hit    = 0;
@@ -87,6 +87,15 @@ void statistic_dealloc( statistic* stat ) {
 
 /*
  $Log$
+ Revision 1.6  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.5  2003/11/10 04:25:50  phase1geo
  Adding more FSM diagnostics to regression suite.  All major testing for
  current FSM code should be complete at this time.  A few bug fixes to files
