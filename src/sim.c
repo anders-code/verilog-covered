@@ -70,7 +70,7 @@
 #include "vector.h"
 #include "iter.h"
 #include "link.h"
-#include "signal.h"
+#include "vsignal.h"
 
 
 extern nibble or_optab[OPTAB_SIZE];
@@ -181,7 +181,7 @@ void sim_add_stmt_to_queue( statement* stmt ) {
     /* Set wait signals */
     sigl = stmt->wait_sig_head;
     while( sigl != NULL ) {
-      signal_set_wait_bit( sigl->sig, 1 );
+      vsignal_set_wait_bit( sigl->sig, 1 );
       sigl = sigl->next;
     }
 
@@ -302,7 +302,7 @@ statement* sim_statement( statement* head_stmt ) {
     if( first ) {
       sigl = stmt->wait_sig_head;
       while( sigl != NULL ) {
-        signal_set_wait_bit( sigl->sig, 0 );
+        vsignal_set_wait_bit( sigl->sig, 0 );
         sigl = sigl->next;
       }
       first = FALSE;
@@ -373,7 +373,7 @@ void sim_simulate() {
       /* Set wait bits on current statement */
       sigl = curr_stmt.curr->stmt->wait_sig_head;
       while( sigl != NULL ) {
-        signal_set_wait_bit( sigl->sig, 1 );
+        vsignal_set_wait_bit( sigl->sig, 1 );
         sigl = sigl->next;
       }
       
@@ -388,6 +388,10 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.36  2004/03/30 15:42:15  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.35  2003/11/29 06:55:49  phase1geo
  Fixing leftover bugs in better report output changes.  Fixed bug in param.c
  where parameters found in RHS expressions that were part of statements that

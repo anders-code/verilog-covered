@@ -15,7 +15,7 @@
 symtable* symtable_create();
 
 /*! \brief Creates a new symtable entry and adds it to the specified symbol table. */
-void symtable_add( char* sym, signal* sig, int msb, int lsb );
+void symtable_add( char* sym, vsignal* sig, int msb, int lsb );
 
 /*! \brief Sets all matching symtable entries to specified value */
 void symtable_set_value( char* sym, char* value );
@@ -29,6 +29,10 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.13  2004/03/30 15:42:15  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.12  2003/08/21 21:57:30  phase1geo
  Fixing bug with certain flavors of VCD files that alias signals that have differing
  MSBs and LSBs.  This takes care of the rest of the bugs for the 0.2 stable release.

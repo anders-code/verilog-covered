@@ -5,27 +5,31 @@
  \file     binding.h
  \author   Trevor Williams  (trevorw@charter.net)
  \date     3/4/2002
- \brief    Contains all functions for signal/expression binding.
+ \brief    Contains all functions for vsignal/expression binding.
 */
 
 #include "defines.h"
 
 
-/*! \brief Adds signal and expression to binding list. */
+/*! \brief Adds vsignal and expression to binding list. */
 void bind_add( const char* sig_name, expression* exp, module* mod );
 
 /*! \brief Removes the expression with ID of id from binding list. */
 void bind_remove( int id );
 
-/*! \brief Finds signal in module and bind the expression to this signal. */
+/*! \brief Finds vsignal in module and bind the expression to this vsignal. */
 bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed, bool fsm_bind );
 
-/*! \brief Performs signal/expression bind (performed after parse completed). */
+/*! \brief Performs vsignal/expression bind (performed after parse completed). */
 void bind();
 
 
 /* 
  $Log$
+ Revision 1.12  2004/03/30 15:42:14  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.11  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

@@ -23,7 +23,7 @@ void sim_set_curr_wait_signals();
 void sim_clear_curr_wait_signals();
 
 /*! \brief Searches pre-simulation queue for specified signal name. */
-bool sim_is_curr_wait_signal( signal* sig );
+bool sim_is_curr_wait_signal( vsignal* sig );
 
 /*! \brief Adds static expression values to initial simulator */
 void sim_add_statics();
@@ -34,6 +34,10 @@ void sim_simulate();
 
 /*
  $Log$
+ Revision 1.10  2004/03/30 15:42:15  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.9  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 
