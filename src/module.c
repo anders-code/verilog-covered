@@ -39,6 +39,8 @@ void module_init( module* mod ) {
     
   mod->name       = NULL;
   mod->filename   = NULL;
+  mod->start_line = 0;
+  mod->end_line   = 0;
   mod->stat       = NULL;
   mod->sig_head   = NULL;
   mod->sig_tail   = NULL;
@@ -169,11 +171,13 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", mod->name );
   print_output( user_msg, DEBUG );
 
-  fprintf( file, "%d %s %s %s\n",
+  fprintf( file, "%d %s %s %s %d %d\n",
     DB_TYPE_MODULE,
     mod->name,
     scope,
-    mod->filename
+    mod->filename,
+    mod->start_line,
+    mod->end_line
   );
 
   /* Size all elements in this module if we are in parse mode */
@@ -237,7 +241,7 @@ bool module_db_read( module* mod, char* scope, char** line ) {
   bool    retval = TRUE;    /* Return value for this function      */
   int     chars_read;       /* Number of characters currently read */
 
-  if( sscanf( *line, "%s %s %s%n", mod->name, scope, mod->filename, &chars_read ) == 3 ) {
+  if( sscanf( *line, "%s %s %s %d %d%n", mod->name, scope, mod->filename, &(mod->start_line), &(mod->end_line), &chars_read ) == 5 ) {
 
     *line = *line + chars_read;
 
@@ -472,6 +476,12 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.31  2004/01/04 04:52:03  phase1geo
+ Updating ChangeLog and TODO files.  Adding merge information to INFO line
+ of CDD files and outputting this information to the merged reports.  Adding
+ starting and ending line information to modules and added function for GUI
+ to retrieve this information.  Updating full regression.
+
  Revision 1.30  2003/08/25 13:02:04  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these

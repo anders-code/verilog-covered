@@ -88,8 +88,48 @@ char* module_get_filename( char* mod_name ) {
 
 }
 
+/*!
+ \param mod_name    Name of module to get start and end line numbers for.
+ \param start_line  Pointer to value that will contain starting line number of this module.
+ \param end_line    Pointer to value that will contain ending line number of this module.
+
+ \return Returns a value of TRUE if module was found; otherwise, returns a value of FALSE.
+
+ Finds specified module name in design and returns the starting and ending line numbers of
+ the found module, returning a value of TRUE to the calling function.  If the module was
+ not found in the design, a value of FALSE is returned.
+*/
+bool module_get_start_and_end_lines( char* mod_name, int* start_line, int* end_line ) {
+
+  bool      retval = TRUE;  /* Return value of this function                    */
+  module    mod;            /* Temporary module container used for searching    */
+  mod_link* modl;           /* Pointer to module line containing matched module */
+  
+  mod.name = mod_name;
+
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    *start_line = modl->mod->start_line;
+    *end_line   = modl->mod->end_line;
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
 /*
  $Log$
+ Revision 1.3  2004/01/04 04:52:03  phase1geo
+ Updating ChangeLog and TODO files.  Adding merge information to INFO line
+ of CDD files and outputting this information to the merged reports.  Adding
+ starting and ending line information to modules and added function for GUI
+ to retrieve this information.  Updating full regression.
+
  Revision 1.2  2003/11/29 06:55:48  phase1geo
  Fixing leftover bugs in better report output changes.  Fixed bug in param.c
  where parameters found in RHS expressions that were part of statements that

@@ -31,6 +31,9 @@
 extern char      user_msg[USER_MSG_LENGTH];
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
+extern int       merged_code;
+extern char*     merge_in0;
+extern char*     merge_in1;
 
 /*!
  If set to a boolean value of TRUE, reports the line coverage for the specified database
@@ -400,21 +403,31 @@ void report_print_header( FILE* ofile ) {
   switch( report_comb_depth ) {
     case REPORT_SUMMARY  :
       fprintf( ofile, "Covered -- Verilog Coverage Summarized Report\n" );
-      fprintf( ofile, "=============================================\n" );
+      fprintf( ofile, "=============================================\n\n" );
       break;
     case REPORT_DETAILED :
       fprintf( ofile, "Covered -- Verilog Coverage Detailed Report\n" );
-      fprintf( ofile, "===========================================\n" );
+      fprintf( ofile, "===========================================\n\n" );
       break;
     case REPORT_VERBOSE  :
       fprintf( ofile, "Covered -- Verilog Coverage Verbose Report\n" );
-      fprintf( ofile, "==========================================\n" );
+      fprintf( ofile, "==========================================\n\n" );
       break;
     default:
       break;
   }
 
-  fprintf( ofile, "\n" );
+  if( merged_code == INFO_ONE_MERGED ) {
+    fprintf( ofile, "* Report generated from CDD file that was merged from the following files:\n" );
+    fprintf( ofile, "    %s\n", input_db  );
+    fprintf( ofile, "    %s\n", merge_in0 ); 
+    fprintf( ofile, "=================================================================================\n\n" );
+  } else if( merged_code == INFO_TWO_MERGED ) {
+    fprintf( ofile, "* Report generated from CDD file that was merged from the following files:\n" );
+    fprintf( ofile, "    %s\n", merge_in0 );
+    fprintf( ofile, "    %s\n", merge_in1 );
+    fprintf( ofile, "=================================================================================\n\n" );
+  }
 
 }
 
@@ -570,6 +583,12 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.26  2004/01/04 04:52:03  phase1geo
+ Updating ChangeLog and TODO files.  Adding merge information to INFO line
+ of CDD files and outputting this information to the merged reports.  Adding
+ starting and ending line information to modules and added function for GUI
+ to retrieve this information.  Updating full regression.
+
  Revision 1.25  2003/12/16 23:22:07  phase1geo
  Adding initial code for line width specification for report output.
 
