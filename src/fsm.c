@@ -76,6 +76,7 @@ fsm* fsm_create( expression* from_state, expression* to_state, bool make_table )
   fsm* table;  /* Pointer to newly created FSM */
 
   table             = (fsm*)malloc_safe( sizeof( fsm ) );
+  table->name       = NULL;
   table->from_state = from_state;
   table->to_state   = to_state;
   table->arc_head   = NULL;
@@ -750,6 +751,11 @@ void fsm_dealloc( fsm* table ) {
 
   if( table != NULL ) {
 
+    /* Free name if one was specified */
+    if( table->name != NULL ) {
+      free_safe( table->name );
+    }
+
     /* Deallocate tables */
     arc_dealloc( table->table );
 
@@ -769,6 +775,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.28  2003/10/28 00:18:05  phase1geo
+ Adding initial support for inline attributes to specify FSMs.  Still more
+ work to go but full regression still passes at this point.
+
  Revision 1.27  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 
