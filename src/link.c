@@ -41,7 +41,7 @@ void str_link_add( char* str, str_link** head, str_link** tail ) {
   tmp = (str_link*)malloc_safe( sizeof( str_link ) );
 
   tmp->str   = str;
-  tmp->suppl = '_';
+  tmp->suppl = 0x0;
   tmp->next  = NULL;
 
   if( *head == NULL ) {
@@ -617,6 +617,12 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.16  2003/01/04 09:25:15  phase1geo
+ Fixing file search algorithm to fix bug where unexpected module that was
+ ignored cannot be found.  Added instance7.v diagnostic to verify appropriate
+ handling of this problem.  Added tree.c and tree.h and removed define_t
+ structure in lexer.
+
  Revision 1.15  2003/01/03 02:07:43  phase1geo
  Fixing segmentation fault in lexer caused by not closing the temporary
  input file before unlinking it.  Fixed case where module was parsed but not

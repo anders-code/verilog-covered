@@ -1122,6 +1122,23 @@ struct mod_inst_s {
 };
 
 /*-------------------------------------------------------------------------------*/
+/*!
+ Node for a tree that carries two strings:  a key and a value.  The tree is a binary
+ tree that is sorted by key.
+*/
+struct tnode_s;
+
+typedef struct tnode_s tnode;
+
+struct tnode_s {
+  char*  name;     /*!< Key value for tree node     */
+  char*  value;    /*!< Value of node               */
+  tnode* left;     /*!< Pointer to left child node  */
+  tnode* right;    /*!< Pointer to right child node */
+  tnode* up;       /*!< Pointer to parent node      */
+};
+
+/*-------------------------------------------------------------------------------*/
 
 union expr_stmt_u {
   expression* expr;         /*!< Pointer to expression */
@@ -1131,6 +1148,12 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.64  2003/01/04 09:25:15  phase1geo
+ Fixing file search algorithm to fix bug where unexpected module that was
+ ignored cannot be found.  Added instance7.v diagnostic to verify appropriate
+ handling of this problem.  Added tree.c and tree.h and removed define_t
+ structure in lexer.
+
  Revision 1.63  2003/01/03 05:52:01  phase1geo
  Adding code to help safeguard from segmentation faults due to array overflow
  in VCD parser and symtable.  Reorganized code for symtable symbol lookup and
