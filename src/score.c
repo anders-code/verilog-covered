@@ -25,6 +25,7 @@
 #include "vector.h"
 #include "fsm_arg.h"
 #include "fsm_var.h"
+#include "info.h"
 
 
 char* top_module         = NULL;                /*!< Name of top-level module to score                     */
@@ -368,6 +369,7 @@ int command_score( int argc, int last_arg, char** argv ) {
     /* Parse design */
     if( use_files_head != NULL ) {
       print_output( "Reading design...", NORMAL );
+      info_initialize();
       search_init();
       parse_design( top_module, output_db );
       print_output( "", NORMAL );
@@ -402,6 +404,13 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.43  2004/01/31 18:58:43  phase1geo
+ Finished reformatting of reports.  Fixed bug where merged reports with
+ different leading hierarchies were outputting the leading hierarchy of one
+ which lead to confusion when interpreting reports.  Also made modification
+ to information line in CDD file for these cases.  Full regression runs clean
+ with Icarus Verilog at this point.
+
  Revision 1.42  2004/01/21 22:26:56  phase1geo
  Changed default CDD file name from "cov.db" to "cov.cdd".  Changed instance
  statistic gathering from a child merging algorithm to just calculating

@@ -18,6 +18,7 @@
 #include "defines.h"
 #include "merge.h"
 #include "util.h"
+#include "info.h"
 
 
 extern int merged_code;
@@ -162,6 +163,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
     print_output( "Merging databases...", NORMAL );
 
+    /* Initialize all global information */
+    info_initialize();
+
     /* Read in base database */
     db_read( merge_in0, READ_MODE_MERGE_NO_MERGE );
 
@@ -181,6 +185,13 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.16  2004/01/31 18:58:43  phase1geo
+ Finished reformatting of reports.  Fixed bug where merged reports with
+ different leading hierarchies were outputting the leading hierarchy of one
+ which lead to confusion when interpreting reports.  Also made modification
+ to information line in CDD file for these cases.  Full regression runs clean
+ with Icarus Verilog at this point.
+
  Revision 1.15  2004/01/04 04:52:03  phase1geo
  Updating ChangeLog and TODO files.  Adding merge information to INFO line
  of CDD files and outputting this information to the merged reports.  Adding
