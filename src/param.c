@@ -372,18 +372,18 @@ bool param_set_sig_size( signal* sig, inst_parm* icurr ) {
   bit_sel = vector_to_int( icurr->value );
 
   /* LSB gets set to first value found, we may adjust this later. */
-  if( sig->value->lsb == -1 ) {
+  if( sig->lsb == -1 ) {
     
-    sig->value->lsb = bit_sel;
+    sig->lsb = bit_sel;
     
   } else {
     
     /* LSB is known so adjust the LSB and width with this value */
-    if( sig->value->lsb <= bit_sel ) {
-      sig->value->width = (bit_sel - sig->value->lsb) + 1;
+    if( sig->lsb <= bit_sel ) {
+      sig->value->width = (bit_sel - sig->lsb) + 1;
     } else {
-      sig->value->width = (sig->value->lsb - bit_sel) + 1;
-      sig->value->lsb   = bit_sel;
+      sig->value->width = (sig->lsb - bit_sel) + 1;
+      sig->lsb          = bit_sel;
     }
     
     established = TRUE;
@@ -435,7 +435,7 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
         if( expr->value->value != NULL ) {
           free_safe( expr->value->value );
         }
-        expression_create_value( expr, expr->value->width, expr->value->lsb, TRUE );
+        expression_create_value( expr, expr->value->width, TRUE );
         break;
     }
 
@@ -716,6 +716,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.29  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.28  2003/02/17 22:47:20  phase1geo
  Fixing bug with merging same DUTs from different testbenches.  Updated reports
  to display full path instead of instance name and parent instance name.  Added

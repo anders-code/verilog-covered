@@ -223,7 +223,7 @@ bool fsm_db_read( char** line, module* mod ) {
       if( iexp.id == oexp.id ) {
         table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, iexp.id, 0, FALSE );
         vector_dealloc( table->from_state->value );
-        table->from_state->value = vector_create( iexpl->exp->value->width, iexpl->exp->value->lsb, TRUE );
+        table->from_state->value = vector_create( iexpl->exp->value->width, TRUE );
       } else {
         table->from_state = iexpl->exp;
       }
@@ -769,6 +769,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.27  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.26  2003/10/16 12:27:19  phase1geo
  Fixing bug in arc.c related to non-zero LSBs.
 
