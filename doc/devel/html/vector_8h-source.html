@@ -12,7 +12,7 @@
 00013 <font class="preprocessor">#include "<a class="code" href="defines_8h.html">defines.h</a>"</font>
 00014 
 00015 
-00017 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a7">vector_init</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a113">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
+00017 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a7">vector_init</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a118">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
 00018 
 00020 <a class="code" href="structvector__s.html">vector</a>* <a class="code" href="vector_8c.html#a8">vector_create</a>( <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
 00021 
@@ -22,17 +22,17 @@
 00027 
 00029 <font class="keywordtype">bool</font> <a class="code" href="vector_8c.html#a11">vector_db_read</a>( <a class="code" href="structvector__s.html">vector</a>** vec, <font class="keywordtype">char</font>** line );
 00030 
-00032 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a12">vector_display_toggle01</a>( <a class="code" href="defines_8h.html#a113">nibble</a>* nib, <font class="keywordtype">int</font> width, FILE* ofile );
+00032 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a12">vector_display_toggle01</a>( <a class="code" href="defines_8h.html#a118">nibble</a>* nib, <font class="keywordtype">int</font> width, FILE* ofile );
 00033 
-00035 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a13">vector_display_toggle10</a>( <a class="code" href="defines_8h.html#a113">nibble</a>* nib, <font class="keywordtype">int</font> width, FILE* ofile );
+00035 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a13">vector_display_toggle10</a>( <a class="code" href="defines_8h.html#a118">nibble</a>* nib, <font class="keywordtype">int</font> width, FILE* ofile );
 00036 
-00038 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a14">vector_display_nibble</a>( <a class="code" href="defines_8h.html#a113">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
+00038 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a14">vector_display_nibble</a>( <a class="code" href="defines_8h.html#a118">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
 00039 
 00041 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a15">vector_display</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
 00042 
-00044 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a17">vector_set_bit</a>( <a class="code" href="defines_8h.html#a113">nibble</a>* nib, <a class="code" href="defines_8h.html#a113">nibble</a> value, <font class="keywordtype">int</font> pos );
+00044 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a17">vector_set_bit</a>( <a class="code" href="defines_8h.html#a118">nibble</a>* nib, <a class="code" href="defines_8h.html#a118">nibble</a> value, <font class="keywordtype">int</font> pos );
 00045 
-00047 <font class="keywordtype">bool</font> <a class="code" href="vector_8c.html#a24">vector_set_value</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a113">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> from_lsb, <font class="keywordtype">int</font> to_lsb );
+00047 <font class="keywordtype">bool</font> <a class="code" href="vector_8c.html#a24">vector_set_value</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a118">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> from_lsb, <font class="keywordtype">int</font> to_lsb );
 00048 
 00050 <font class="keywordtype">int</font> <a class="code" href="vector_8c.html#a25">vector_to_int</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
 00051 
@@ -62,17 +62,17 @@
 00087 
 00089 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a37">vector_unary_inv</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
 00090 
-00092 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a38">vector_unary_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src, <a class="code" href="defines_8h.html#a113">nibble</a>* optab );
+00092 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a38">vector_unary_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src, <a class="code" href="defines_8h.html#a118">nibble</a>* optab );
 00093 
 00095 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a39">vector_unary_not</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
 00096 
 00098 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a40">vector_dealloc</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
 00099 
 00100 <font class="comment">/* $Log$
-00100 <font class="comment">/* Revision 1.10  2002/07/03 21:29:50  phase1geo
-00100 <font class="comment">/* Fixed remaining issues with always statements.  Full regression is running
-00100 <font class="comment">/* error free at this point.  Regenerated documentation.  Added EOR expression
-00100 <font class="comment">/* operation to handle the or expression in event lists.
+00100 <font class="comment">/* Revision 1.11  2002/07/05 04:11:43  phase1geo
+00100 <font class="comment">/* Correcting case, casex and casez equality calculation to conform to correct
+00100 <font class="comment">/* equality check for each case type.  Verified that case statements work correctly
+00100 <font class="comment">/* at this point.  Added diagnostics to verify case statements.
 00100 <font class="comment">/*</font>
 00101 <font class="comment">/* Revision 1.4  2002/07/03 03:31:11  phase1geo</font>
 00102 <font class="comment">/* Adding RCS Log strings in files that were missing them so that file version</font>
@@ -82,7 +82,7 @@
 00106 
 00107 <font class="preprocessor">#endif</font>
 00108 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Wed Jul 3 16:28:34 2002 for Covered by
+</pre></div><hr><address align="right"><small>Generated on Thu Jul 4 23:10:37 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>
