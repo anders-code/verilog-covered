@@ -187,6 +187,7 @@ void instance_resolve_params( mod_parm* mparm, mod_inst* inst ) {
       assert( PARAM_TYPE( mparm ) == PARAM_TYPE_OVERRIDE );
       param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
     }
+    
     mparm = mparm->next;
   }
 
@@ -447,6 +448,11 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 }
 
 /* $Log$
+/* Revision 1.15  2002/09/23 01:37:45  phase1geo
+/* Need to make some changes to the inst_parm structure and some associated
+/* functionality for efficiency purposes.  This checkin contains most of the
+/* changes to the parser (with the exception of signal sizing).
+/*
 /* Revision 1.14  2002/09/21 07:03:28  phase1geo
 /* Attached all parameter functions into db.c.  Just need to finish getting
 /* parser to correctly add override parameters.  Once this is complete, phase 3

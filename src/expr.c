@@ -650,10 +650,12 @@ void expression_operate( expression* expr ) {
 
       case EXP_OP_STATIC :
       case EXP_OP_SIG    :
+      case EXP_OP_PARAM  :
       case EXP_OP_LAST   :
         break;
 
-      case EXP_OP_SBIT_SEL :
+      case EXP_OP_SBIT_SEL   :
+      case EXP_OP_PARAM_SBIT :
         vector_init( &vec1, &value1a, 1, 0 );
         vector_unary_op( &vec1, expr->right->value, or_optab );
         if( (vec1.value[0] & 0x3) != 2 ) {  
@@ -664,7 +666,8 @@ void expression_operate( expression* expr ) {
         }
         break;
 
-      case EXP_OP_MBIT_SEL :
+      case EXP_OP_MBIT_SEL   :
+      case EXP_OP_PARAM_MBIT :
         vector_init( &vec1, &value1a, 1, 0 );
         vector_init( &vec2, &value1b, 1, 0 );
         vector_unary_op( &vec1, expr->right->value, or_optab );
@@ -881,6 +884,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.48  2002/09/23 01:37:44  phase1geo
+/* Need to make some changes to the inst_parm structure and some associated
+/* functionality for efficiency purposes.  This checkin contains most of the
+/* changes to the parser (with the exception of signal sizing).
+/*
 /* Revision 1.47  2002/09/19 05:25:19  phase1geo
 /* Fixing incorrect simulation of static values and fixing reports generated
 /* from these static expressions.  Also includes some modifications for parameters

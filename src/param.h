@@ -17,6 +17,12 @@ mod_parm* mod_parm_find( char* name, mod_parm* parm );
 //! Creates new module parameter and adds it to the specified list.
 mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head, mod_parm** tail );
 
+//! Outputs contents of module parameter list to standard output.
+void mod_parm_display( mod_parm* mparm );
+
+//! Searches specified instance parameter list for matching parameter.
+inst_parm* inst_parm_find( char* name, inst_parm* parm );
+
 //! Adds parameter override to defparam list.
 void defparam_add( char* scope, vector* expr );
 
@@ -28,6 +34,11 @@ void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** ita
 
 
 /* $Log$
+/* Revision 1.6  2002/09/23 01:37:45  phase1geo
+/* Need to make some changes to the inst_parm structure and some associated
+/* functionality for efficiency purposes.  This checkin contains most of the
+/* changes to the parser (with the exception of signal sizing).
+/*
 /* Revision 1.5  2002/09/21 07:03:28  phase1geo
 /* Attached all parameter functions into db.c.  Just need to finish getting
 /* parser to correctly add override parameters.  Once this is complete, phase 3
