@@ -474,7 +474,8 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
       stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
     }
   } else {
-    if( stmt->next_true == stmt->next_false ) {
+    if( (stmt->next_true == stmt->next_false) ||
+        (((stmt->exp->suppl >> SUPPL_LSB_STMT_CONNECTED) & 0x1) == 0) ) {
       if( (stmt->next_true != NULL) && (stmt->next_true != post) ) { 
         statement_set_stop( stmt->next_true, post, TRUE, both );
       }
@@ -488,6 +489,10 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
     }
   }
   
+  if( (stmt->next_true != NULL) && (stmt->next_false != NULL) ) {
+    stmt->exp->suppl = stmt->exp->suppl & ~(0x1 << SUPPL_LSB_STMT_CONNECTED);
+  }
+
 }
 
 /*!
@@ -568,6 +573,12 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.39  2002/12/13 16:49:56  phase1geo
+ Fixing infinite loop bug with statement set_stop function.  Removing
+ hierarchical references from scoring (same problem as defparam statement).
+ Fixing problem with checked in version of param.c and fixing error output
+ in bind() function to be more meaningful to user.
+
  Revision 1.38  2002/12/07 17:46:53  phase1geo
  Fixing bug with handling memory declarations.  Added diagnostic to verify
  that memory declarations are handled properly.  Fixed bug with infinite

@@ -205,7 +205,10 @@ void bind() {
 
     if( modi == NULL ) {
       /* Bad hierarchical reference */
-      snprintf( user_msg, USER_MSG_LENGTH, "Undefined hierarchical reference: %s", curr_seb->sig_name );
+      snprintf( user_msg, USER_MSG_LENGTH, "Undefined hierarchical reference: %s, file: %s, line: %d", 
+                curr_seb->sig_name,
+                curr_seb->mod->filename,
+                curr_seb->exp->line );
       print_output( user_msg, FATAL );
       exit( 1 );
     }
@@ -268,6 +271,12 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.20  2002/12/13 16:49:45  phase1geo
+ Fixing infinite loop bug with statement set_stop function.  Removing
+ hierarchical references from scoring (same problem as defparam statement).
+ Fixing problem with checked in version of param.c and fixing error output
+ in bind() function to be more meaningful to user.
+
  Revision 1.19  2002/11/05 00:20:06  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
