@@ -26,6 +26,9 @@ void statement_connect( statement* curr_stmt, statement* next_stmt );
 /*! \brief Sets stop bits in specified statement tree. */
 void statement_set_stop( statement* stmt, statement* post, bool true_path, bool both );
 
+/*! \brief Calculates the last line of the specified statement tree. */
+int statement_get_last_line( statement* stmt );
+
 /*! \brief Recursively deallocates specified statement tree. */
 void statement_dealloc_recursive( statement* stmt );
 
@@ -35,6 +38,11 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.17  2005/02/04 23:55:54  phase1geo
+ Adding code to support race condition information in CDD files.  All code is
+ now in place for writing/reading this data to/from the CDD file (although
+ nothing is currently done with it and it is currently untested).
+
  Revision 1.16  2004/01/08 23:24:41  phase1geo
  Removing unnecessary scope information from signals, expressions and
  statements to reduce file sizes of CDDs and slightly speeds up fscanf

@@ -9,15 +9,31 @@
            within the specified design.
 */
 
+#include <stdio.h>
+
 #include "defines.h"
 
 
 /*! \brief Checks the current module for race conditions */
 void race_check_modules();
 
+/*! \brief Writes contents of specified race condition block to specified file output */
+bool race_db_write( race_blk* head, FILE* file );
+
+/*! \brief Reads contents from specified line for a race condition block and assigns the new block to the curr_mod */
+bool race_db_read( char** line, module* curr_mod );
+
+/*! \brief Deallocates the specified race condition block from memory */
+void race_blk_delete_list( race_blk* rb );
+
 
 /*
  $Log$
+ Revision 1.9  2005/02/04 23:55:54  phase1geo
+ Adding code to support race condition information in CDD files.  All code is
+ now in place for writing/reading this data to/from the CDD file (although
+ nothing is currently done with it and it is currently untested).
+
  Revision 1.8  2005/01/10 23:03:39  phase1geo
  Added code to properly report race conditions.  Added code to remove statement blocks
  from module when race conditions are found.
