@@ -642,11 +642,11 @@ int command_report( int argc, int last_arg, char** argv ) {
         exit( 1 );
       }
 #else
-      covered_home = strdup( "INSTALL_DIR" );
+      covered_home = strdup( INSTALL_DIR );
 #endif
 
       /* Initialize TCL */
-      tcl_func_initialize( interp );
+      tcl_func_initialize( interp, covered_home );
 
       /* Call the top-level Tcl file */
       main_file = (char*)malloc( strlen( covered_home ) + 30 );
@@ -671,6 +671,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.33  2004/03/25 14:37:07  phase1geo
+ Fixing installation of TCL scripts and usage of the scripts in their installed
+ location.  We are almost ready to create the new development release.
+
  Revision 1.32  2004/03/22 13:26:52  phase1geo
  Updates for upcoming release.  We are not quite ready to release at this point.
 
