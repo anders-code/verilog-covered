@@ -21,6 +21,7 @@ char* output_db  = NULL;    /*!< Name of output score database file to generate 
 char* vcd_file   = NULL;    /*!< Name of VCD output file to parse               */
 
 extern unsigned long largest_malloc_size;
+extern unsigned long curr_malloc_size;
 
 
 /*!
@@ -260,7 +261,8 @@ int command_score( int argc, char** argv ) {
 
     printf( "\n***  Scoring completed successfully!  ***\n" );
     printf( "\n" );
-    printf( "Dynamic memory allocated:  %ld bytes\n", largest_malloc_size );
+    printf( "Dynamic memory allocated:   %ld bytes\n", largest_malloc_size );
+    // printf( "Allocated memory remaining: %ld bytes\n", curr_malloc_size );
     printf( "\n" );
 
   }
@@ -270,6 +272,11 @@ int command_score( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.6  2002/07/03 21:30:53  phase1geo
+/* Fixed remaining issues with always statements.  Full regression is running
+/* error free at this point.  Regenerated documentation.  Added EOR expression
+/* operation to handle the or expression in event lists.
+/*
 /* Revision 1.5  2002/07/02 22:37:35  phase1geo
 /* Changing on-line help command calling.  Regenerated documentation.
 /* */

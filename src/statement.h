@@ -25,13 +25,18 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode );
 void statement_connect( statement* curr_stmt, statement* next_stmt );
 
 //! Sets stop bits in specified statement tree.
-void statement_set_stop( statement* stmt, statement* post, bool true_path );
+void statement_set_stop( statement* stmt, statement* post, bool true_path, bool both );
 
 //! Deallocates statement memory and associated expression tree from the heap.
 void statement_dealloc( statement* stmt );
 
 
 /* $Log$
+/* Revision 1.9  2002/07/03 21:30:53  phase1geo
+/* Fixed remaining issues with always statements.  Full regression is running
+/* error free at this point.  Regenerated documentation.  Added EOR expression
+/* operation to handle the or expression in event lists.
+/*
 /* Revision 1.8  2002/07/01 15:10:42  phase1geo
 /* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
 /* seem to be passing with these fixes.

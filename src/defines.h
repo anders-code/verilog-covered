@@ -418,7 +418,8 @@
 #define EXP_OP_NEDGE	0x28	/*!< 40 negedge operator              */
 #define EXP_OP_AEDGE	0x29	/*!< 41 anyedge operator              */
 #define EXP_OP_LAST     0x2a    /*!< 42 1-bit value holder for parent */
-#define EXP_OP_DELAY    0x2b    /*!< 43 delay operator                */
+#define EXP_OP_EOR      0x2b    /*!< 43 event OR operator             */
+#define EXP_OP_DELAY    0x2c    /*!< 44 delay operator                */
 
 /*! @} */
 
@@ -815,6 +816,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.23  2002/07/03 21:30:52  phase1geo
+/* Fixed remaining issues with always statements.  Full regression is running
+/* error free at this point.  Regenerated documentation.  Added EOR expression
+/* operation to handle the or expression in event lists.
+/*
 /* Revision 1.22  2002/07/03 19:54:36  phase1geo
 /* Adding/fixing code to properly handle always blocks with the event control
 /* structures attached.  Added several new diagnostics to test this ability.
