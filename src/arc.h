@@ -29,7 +29,7 @@ bool arc_db_write( char* arcs, FILE* file );
 bool arc_db_read( char** arcs, char** line );
 
 /*! \brief Merges contents of arc table from line to specified base array. */
-bool arc_db_merge( char* arcs, char** line, bool same );
+bool arc_db_merge( char** arcs, char** line, bool same );
 
 /*! \brief Outputs arc array state values to specified output stream. */
 void arc_display_states( FILE* ofile, char* fstr, char* arcs, bool hit );
@@ -42,6 +42,10 @@ void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.7  2003/09/19 13:25:28  phase1geo
+ Adding new FSM diagnostics including diagnostics to verify FSM merging function.
+ FSM merging code was modified to work correctly.  Full regression passes.
+
  Revision 1.6  2003/09/14 01:09:20  phase1geo
  Added verbose output for FSMs.
 
