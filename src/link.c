@@ -88,7 +88,6 @@ void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail ) {
 
   if( *head == NULL ) {
     *head = *tail = tmp;
-    printf( "Adding statement to head and tail\n" );
   } else {
     (*tail)->next = tmp;
     *tail         = tmp;
@@ -524,6 +523,9 @@ void mod_link_delete_list( mod_link* head ) {
 
 
 /* $Log$
+/* Revision 1.7  2002/06/26 22:09:17  phase1geo
+/* Removing unecessary output and updating regression Makefile.
+/*
 /* Revision 1.6  2002/06/26 03:45:48  phase1geo
 /* Fixing more bugs in simulator and report functions.  About to add support
 /* for delay statements.
