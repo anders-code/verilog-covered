@@ -190,7 +190,7 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
   int    i;      /* Loop iterator                       */
   nibble mask;   /* Mask value for vector value nibbles */
 
-  mask = write_data ? 0x1f : 0x1c;
+  mask = write_data ? 0xf : 0xc;
 
   /* Output vector information to specified file */
   fprintf( file, "%d %d",
@@ -1483,6 +1483,12 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.45  2004/01/16 23:05:01  phase1geo
+ Removing SET bit from being written to CDD files.  This value is meaningless
+ after scoring has completed and sometimes causes miscompares when simulators
+ change.  Updated regression for this change.  This change should also be made
+ to stable release.
+
  Revision 1.44  2003/11/12 17:34:03  phase1geo
  Fixing bug where signals are longer than allowable bit width.
 

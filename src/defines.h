@@ -236,12 +236,10 @@
  Fields that are merged are:
  - TOGGLE0->1
  - TOGGLE1->0
- - SET
- - TYPE
  - FALSE
  - TRUE
 */
-#define VECTOR_MERGE_MASK    0x7c
+#define VECTOR_MERGE_MASK    0x6c
 
 /*! @} */
 
@@ -1580,6 +1578,12 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.99  2004/01/16 23:05:00  phase1geo
+ Removing SET bit from being written to CDD files.  This value is meaningless
+ after scoring has completed and sometimes causes miscompares when simulators
+ change.  Updated regression for this change.  This change should also be made
+ to stable release.
+
  Revision 1.98  2004/01/09 21:57:55  phase1geo
  Fixing bug in combinational logic report generator where partially covered
  expressions were being logged in summary report but not displayed when verbose
