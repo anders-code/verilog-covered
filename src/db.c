@@ -675,15 +675,19 @@ void db_add_expression( expression* root ) {
     
       snprintf( msg, 4096, "In db_add_expression, id: %d, op: %d", root->id, SUPPL_OP( root->suppl ) );
       print_output( msg, DEBUG );
-   
+
+#ifdef DEPRECATED   
       if( (SUPPL_OP( root->suppl ) != EXP_OP_PARAM) &&          (SUPPL_OP( root->suppl ) != EXP_OP_PARAM_SBIT) &&
           (SUPPL_OP( root->suppl ) != EXP_OP_PARAM_MBIT) ) {
+#endif
 
         // Add expression's children first.
         db_add_expression( root->right );
         db_add_expression( root->left );
 
+#ifdef DEPRECATED
       }
+#endif
 
       // Now add this expression to the list.
       exp_link_add( root, &(curr_module->exp_head), &(curr_module->exp_tail) );
@@ -1105,6 +1109,12 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.60  2002/10/01 13:21:24  phase1geo
+/* Fixing bug in report output for single and multi-bit selects.  Also modifying
+/* the way that parameters are dealt with to allow proper handling of run-time
+/* changing bit selects of parameter values.  Full regression passes again and
+/* all report generators have been updated for changes.
+/*
 /* Revision 1.59  2002/09/29 02:16:51  phase1geo
 /* Updates to parameter CDD files for changes affecting these.  Added support
 /* for bit-selecting parameters.  param4.v diagnostic added to verify proper
