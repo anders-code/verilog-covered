@@ -46,6 +46,12 @@ void vector_set_bit( nibble* nib, nibble value, int pos );
 //! Sets specified vector value to new value and maintains coverage history.
 bool vector_set_value( vector* vec, nibble* value, int width, int from_lsb, int to_lsb );
 
+//! Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble
+void vector_set_type( vector* vec, int type );
+
+//! Returns value of vector output type.
+int vector_get_type( vector* vec );
+
 //! Converts vector into integer value.
 int vector_to_int( vector* vec );
 
@@ -98,6 +104,12 @@ void vector_unary_not( vector* tgt, vector* src );
 void vector_dealloc( vector* vec );
 
 /* $Log$
+/* Revision 1.5  2002/07/10 04:57:07  phase1geo
+/* Adding bits to vector nibble to allow us to specify what type of input
+/* static value was read in so that the output value may be displayed in
+/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression
+/* passes.
+/*
 /* Revision 1.4  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src
