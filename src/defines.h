@@ -1043,6 +1043,7 @@ struct symtable_s {
   char*     sym;          /*!< Name of VCD-specified signal                */
   signal*   sig;          /*!< Pointer to signal for this symbol           */
   char*     value;        /*!< String representation of last current value */
+  int       size;         /*!< Number of bytes allowed storage for value   */
   symtable* right;        /*!< Pointer to next symtable entry to the right */
   symtable* left;         /*!< Pointer to next symtable entry to the left  */
 };
@@ -1130,6 +1131,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.63  2003/01/03 05:52:01  phase1geo
+ Adding code to help safeguard from segmentation faults due to array overflow
+ in VCD parser and symtable.  Reorganized code for symtable symbol lookup and
+ value assignment.
+
  Revision 1.62  2002/12/07 17:46:52  phase1geo
  Fixing bug with handling memory declarations.  Added diagnostic to verify
  that memory declarations are handled properly.  Fixed bug with infinite
