@@ -426,7 +426,8 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
 
   // printf( "In statement_set_stop, stmt: %d, post: %d, next_true: %d, next_false: %d\n", stmt->exp->id, post_id, true_id, false_id );
 
-  if( (stmt->next_true == post) && (stmt->next_false == post) ) {
+  if( ((stmt->next_true == post) && (stmt->next_false == post)) ||
+      (stmt->next_false == post) ) {
     if( true_path || both) {
       // printf( "Setting STOP bit for statement %d\n", stmt->exp->id );
       stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
@@ -490,6 +491,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.24  2002/07/04 23:10:12  phase1geo
+/* Added proper support for case, casex, and casez statements in score command.
+/* Report command still incorrect for these statement types.
+/*
 /* Revision 1.23  2002/07/03 21:30:53  phase1geo
 /* Fixed remaining issues with always statements.  Full regression is running
 /* error free at this point.  Regenerated documentation.  Added EOR expression
