@@ -87,6 +87,7 @@ bool db_write( char* file ) {
   }
 
   /* Remove memory allocated for instance_root and mod_head */
+  assert( instance_root->mod != NULL );
   instance_dealloc( instance_root, instance_root->mod->scope );
   mod_link_delete_list( mod_head );
 
@@ -186,7 +187,8 @@ bool db_read( char* file, int read_mode ) {
 
               }
 
-              module_dealloc( curr_module );
+              // Temporarily commenting out to correct no-merge cases.
+              // module_dealloc( curr_module );
 
             }
 
@@ -418,8 +420,6 @@ signal* db_find_signal( char* name ) {
 
   snprintf( msg, 4096, "In db_find_signal, searching for signal %s", name );
   print_output( msg, NORMAL );
-
-  // module_display_signals( curr_module );
 
   /* Create signal to find */
   sig = signal_create( name, 1, 0, TRUE );
@@ -964,6 +964,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.34  2002/07/09 02:04:25  phase1geo
+/* Fixing segmentation fault error due to deallocating a module before we
+/* have completed using it.
+/*
 /* Revision 1.33  2002/07/08 19:02:10  phase1geo
 /* Adding -i option to properly handle modules specified for coverage that
 /* are instantiated within a design without needing to parse parent modules.
