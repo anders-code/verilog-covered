@@ -160,9 +160,6 @@ void sim_expr_changed( expression* expr ) {
   printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( expr->suppl ), expr->id );
   expression_operate( expr );
 
-  /* Indicate that this expression is no longer in the queue. */
-  expr->suppl = expr->suppl & ~(0x1 << SUPPL_LSB_IN_QUEUE);
-
   /* Indicate that this expression has been executed */
   expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_EXECUTED);
 
@@ -273,6 +270,10 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.4  2002/06/23 21:18:22  phase1geo
+/* Added appropriate statement support in parser.  All parts should be in place
+/* and ready to start testing.
+/*
 /* Revision 1.3  2002/06/22 21:08:23  phase1geo
 /* Added simulation engine and tied it to the db.c file.  Simulation engine is
 /* currently untested and will remain so until the parser is updated correctly
