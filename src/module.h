@@ -28,6 +28,9 @@ bool module_db_read( module* mod, char* scope, char** line );
 /*! \brief Reads and merges two modules into base module. */
 bool module_db_merge( module* base, FILE* file, bool same );
 
+/*! \brief Reads and replaces original module with contents of new module. */
+bool module_db_replace( module* base, FILE* file );
+
 /*! \brief Displays signals stored in this module. */
 void module_display_signals( module* mod );
 
@@ -43,6 +46,10 @@ void module_dealloc( module* mod );
 
 /*
  $Log$
+ Revision 1.10  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.9  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules

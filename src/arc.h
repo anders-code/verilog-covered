@@ -34,6 +34,9 @@ bool arc_db_read( char** arcs, char** line );
 /*! \brief Merges contents of arc table from line to specified base array. */
 bool arc_db_merge( char** arcs, char** line, bool same );
 
+/*! \brief Replaces contents of arc table from line to specified base array. */
+bool arc_db_replace( char** arcs, char** line );
+
 /*! \brief Outputs arc array state values to specified output stream. */
 void arc_display_states( FILE* ofile, const char* fstr, const char* arcs, bool hit );
 
@@ -45,6 +48,10 @@ void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.10  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.9  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

@@ -264,6 +264,54 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
 }
 
 /*!
+ \param base  Signal to store replaced data.
+ \param line  Pointer to line of CDD file to parse.
+
+ \return Returns TRUE if parsing successful; otherwise, returns FALSE.
+
+ Parses specified line for vsignal information and performs a replacement
+ of the base with the new vsignal.  If the vsignals are found to be unalike
+ (names are different), an error message is displayed to the user.
+ If both vsignals are the same, perform the replacement.
+*/
+bool vsignal_db_replace( vsignal* base, char** line ) {
+
+  bool retval;      /* Return value of this function         */
+  char name[256];   /* Name of current vsignal               */
+  int  lsb;         /* Least-significant bit of this vsignal */
+  int  chars_read;  /* Number of characters read from line   */
+
+  assert( base != NULL );
+  assert( base->name != NULL );
+
+  if( sscanf( *line, "%s %d %n", name, &lsb, &chars_read ) == 2 ) {
+
+    *line = *line + chars_read;
+
+    if( (strcmp( base->name, name ) != 0) || (base->lsb != lsb) ) {
+
+      print_output( "Attempting to replace a database derived from a different design.  Unable to replace",
+                    FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+
+    } else {
+
+      /* Read in vector information */
+      retval = vector_db_replace( base->value, line );
+
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param sig  Pointer to vsignal to set wait bit to.
  \param val  Value to set wait bit to.
 
@@ -442,6 +490,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.2  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.1  2004/03/30 15:42:15  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.

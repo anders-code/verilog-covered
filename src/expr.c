@@ -789,6 +789,75 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
 }
 
 /*!
+ \param base  Expression to replace data with.
+ \param line  Pointer to CDD line to parse.
+
+ \return Returns TRUE if parse and merge was sucessful; otherwise, returns FALSE.
+
+ Parses specified line for expression information and replaces contents of the
+ original expression with the contents of the newly read expression.  If the two
+ expressions given are not the same (IDs, op, and/or line position differ) we
+ know that the database files being merged were not created from the same design;
+ therefore, display an error message to the user in this case.  If both expressions
+ are the same, perform the replacement.
+*/
+bool expression_db_replace( expression* base, char** line ) {
+
+  bool retval = TRUE;  /* Return value for this function */
+  int  id;             /* Expression ID field            */
+  int  linenum;        /* Expression line number         */
+  int  suppl;          /* Supplemental field             */
+  int  right_id;       /* ID of right child              */
+  int  left_id;        /* ID of left child               */
+  int  chars_read;     /* Number of characters read      */
+
+  assert( base != NULL );
+
+  if( sscanf( *line, "%d %d %x %d %d%n", &id, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 5 ) {
+
+    *line = *line + chars_read;
+
+    if( (base->id != id) || (SUPPL_OP( base->suppl ) != SUPPL_OP( suppl )) ) {
+
+      print_output( "Attempting to replace a database derived from a different design.  Unable to replace",
+                    FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+
+    } else {
+
+      /* Merge expression supplemental fields */
+      base->suppl = suppl;
+
+      if( (SUPPL_OP( suppl ) != EXP_OP_SIG)        &&
+          (SUPPL_OP( suppl ) != EXP_OP_SBIT_SEL)   &&
+          (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL)   &&
+          (SUPPL_OP( suppl ) != EXP_OP_PARAM)      &&
+          (SUPPL_OP( suppl ) != EXP_OP_PARAM_SBIT) &&
+          (SUPPL_OP( suppl ) != EXP_OP_PARAM_MBIT) &&
+          (SUPPL_OP( suppl ) != EXP_OP_ASSIGN)     &&
+          (SUPPL_OP( suppl ) != EXP_OP_BASSIGN)    &&
+          (SUPPL_OP( suppl ) != EXP_OP_NASSIGN)    &&
+          (SUPPL_OP( suppl ) != EXP_OP_IF)         &&
+          ((SUPPL_OP( suppl ) == EXP_OP_STATIC) || (SUPPL_IS_LHS( suppl ) == 0)) ) {
+
+        /* Merge expression vectors */
+        retval = vector_db_replace( base->value, line );
+
+      }
+
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param expr  Pointer to expression to display.
 
  Displays contents of the specified expression to standard output.  This function
@@ -1402,6 +1471,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.96  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.95  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

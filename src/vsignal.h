@@ -28,6 +28,9 @@ bool vsignal_db_read( char** line, module* curr_mod );
 /*! \brief Reads and merges two vsignals, placing result into base vsignal. */
 bool vsignal_db_merge( vsignal* base, char** line, bool same );
 
+/*! \brief Reads and replaces an original vsignal with a new vsignal. */
+bool vsignal_db_replace( vsignal* base, char** line );
+
 /*! \brief Sets value of currently waiting bit of vsignal to specified value. */
 void vsignal_set_wait_bit( vsignal* sig, int val );
 
@@ -52,6 +55,10 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.2  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.1  2004/03/30 15:42:15  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.
