@@ -676,7 +676,7 @@ int vector_to_int( vector* vec ) {
       case 1 :  retval = (retval << 1) | 1;  break;
       default:
         print_output( "Vector converting to integer contains X or Z values", FATAL );
-        assert( ((vec->value[i/4] >> ((i%4)*2)) & 0x3) < 2 );
+        assert( VECTOR_VAL( vec->value[i] ) < 2 );
         break;
     }
   }
@@ -1467,6 +1467,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.42  2003/10/30 05:05:13  phase1geo
+ Partial fix to bug 832730.  This doesn't seem to completely fix the parameter
+ case, however.
+
  Revision 1.41  2003/10/28 13:28:00  phase1geo
  Updates for more FSM attribute handling.  Not quite there yet but full regression
  still passes.
