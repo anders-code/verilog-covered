@@ -283,6 +283,9 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
 
   assert( sig->value != NULL );
 
+  snprintf( user_msg, USER_MSG_LENGTH, "Assigning signal %s to value %s", sig->name, value );
+  print_output( user_msg, DEBUG );
+
   /* Assign value to signal's vector value */
   vector_vcd_assign( sig->value, value, msb, lsb );
 
@@ -367,6 +370,13 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.30  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.29  2003/02/26 23:00:50  phase1geo
  Fixing bug with single-bit parameter handling (param4.v diagnostic miscompare
  between Linux and Irix OS's).  Updates to testsuite and new diagnostic added
