@@ -269,15 +269,15 @@ void sim_simulate() {
     if( curr_stmt.curr->stmt == NULL ) {
       
       if( curr_stmt.curr == presim_stmt_head ) {
-        presim_stmt_head      = (stmt_link*)((int)(curr_stmt.curr->ptr) ^ (int)(curr_stmt.last));
-        presim_stmt_head->ptr = (stmt_link*)((int)(curr_stmt.curr) ^ (int)(presim_stmt_head->ptr));
+        presim_stmt_head      = (stmt_link*)((long int)(curr_stmt.curr->ptr) ^ (long int)(curr_stmt.last));
+        presim_stmt_head->ptr = (stmt_link*)((long int)(curr_stmt.curr) ^ (long int)(presim_stmt_head->ptr));
       } else if( curr_stmt.curr == presim_stmt_tail ) {
         presim_stmt_tail      = curr_stmt.last;
-        presim_stmt_tail->ptr = (stmt_link*)((int)(curr_stmt.curr) ^ (int)(presim_stmt_tail->ptr));
+        presim_stmt_tail->ptr = (stmt_link*)((long int)(curr_stmt.curr) ^ (long int)(presim_stmt_tail->ptr));
       } else {
-        tmp_stmt            = (stmt_link*)((int)(curr_stmt.last) ^ (int)(curr_stmt.curr->ptr));
+        tmp_stmt            = (stmt_link*)((long int)(curr_stmt.last) ^ (long int)(curr_stmt.curr->ptr));
         curr_stmt.last->ptr = tmp_stmt;
-        tmp_stmt->ptr       = (stmt_link*)(((int)(curr_stmt.curr) ^ (int)(tmp_stmt->ptr)) ^ (int)(curr_stmt.last));
+        tmp_stmt->ptr       = (stmt_link*)(((long int)(curr_stmt.curr) ^ (long int)(tmp_stmt->ptr)) ^ (long int)(curr_stmt.last));
       }
       
       tmp_stmt = curr_stmt.curr;
@@ -295,6 +295,10 @@ void sim_simulate() {
 
 
 /* $Log$
+/* Revision 1.23  2002/10/29 13:33:21  phase1geo
+/* Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+/* viewing (removed tabs).  Full regression passes.
+/*
 /* Revision 1.22  2002/10/25 13:43:49  phase1geo
 /* Adding statement iterators for moving in both directions in a list with a single
 /* pointer (two-way).  This allows us to reverse statement lists without additional

@@ -9,6 +9,7 @@
 
 #include "defines.h"
 #include "codegen.h"
+#include "util.h"
 #include "vector.h"
 
 
@@ -280,6 +281,10 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
 
 
 /* $Log$
+/* Revision 1.22  2002/10/29 13:33:21  phase1geo
+/* Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+/* viewing (removed tabs).  Full regression passes.
+/*
 /* Revision 1.21  2002/10/25 03:44:39  phase1geo
 /* Fixing bug in comb.c that caused statically allocated string to be exceeded
 /* which caused memory corruption problems.  Full regression now passes.

@@ -47,7 +47,7 @@ void scope_extract_back( char* scope, char* back, char* rest );
 bool scope_local( char* scope );
 
 //! Performs safe malloc call.
-void* malloc_safe( int size );
+void* malloc_safe(size_t size );
 
 //! Performs safe deallocation of heap memory.
 void free_safe( void* ptr );
@@ -56,6 +56,10 @@ void free_safe( void* ptr );
 void gen_space( char* spaces, int num_spaces );
 
 /* $Log$
+/* Revision 1.6  2002/10/29 13:33:21  phase1geo
+/* Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+/* viewing (removed tabs).  Full regression passes.
+/*
 /* Revision 1.5  2002/07/18 22:02:35  phase1geo
 /* In the middle of making improvements/fixes to the expression/signal
 /* binding phase.

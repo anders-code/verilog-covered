@@ -4,9 +4,16 @@
  \date     7/21/2002
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #include "vcd.h"
 #include "db.h"
@@ -260,6 +267,10 @@ void vcd_parse( char* vcd_file ) {
 }
 
 /* $Log$
+/* Revision 1.5  2002/10/29 13:33:21  phase1geo
+/* Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+/* viewing (removed tabs).  Full regression passes.
+/*
 /* Revision 1.4  2002/10/12 22:21:35  phase1geo
 /* Making code fix for parameters when parameter is used in calculation of
 /* signal size.  Also adding parse ability for real numbers in a VCD file

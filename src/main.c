@@ -4,6 +4,10 @@
  \date     11/26/2001
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -129,6 +133,10 @@ int main( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.8  2002/10/29 13:33:21  phase1geo
+/* Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+/* viewing (removed tabs).  Full regression passes.
+/*
 /* Revision 1.7  2002/07/11 19:12:38  phase1geo
 /* Fixing version number.  Fixing bug with score command if -t option was not
 /* specified to avoid a segmentation fault.

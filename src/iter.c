@@ -37,13 +37,17 @@ void stmt_iter_next( stmt_iter* si ) {
   stmt_link* tmp;    /* Temporary holder for current statement link */
   
   tmp      = si->curr;
-  si->curr = (stmt_link*)((int)si->curr->ptr ^ (int)si->last);
+  si->curr = (stmt_link*)((long int)si->curr->ptr ^ (long int)si->last);
   si->last = tmp;
   
 }
 
 
 /* $Log$
+/* Revision 1.2  2002/10/29 13:33:21  phase1geo
+/* Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+/* viewing (removed tabs).  Full regression passes.
+/*
 /* Revision 1.1  2002/10/25 13:43:49  phase1geo
 /* Adding statement iterators for moving in both directions in a list with a single
 /* pointer (two-way).  This allows us to reverse statement lists without additional
