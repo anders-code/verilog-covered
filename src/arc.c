@@ -1126,14 +1126,6 @@ bool arc_db_replace( char** base, char** line ) {
 
   bool    retval = TRUE;  /* Return value for this function     */
   char*   arcs;           /* Read arc array                     */
-  char*   strl;           /* Left state value string            */
-  char*   strr;           /* Right state value string           */
-  char*   tmpl;           /* Temporary left state value string  */
-  char*   tmpr;           /* Temporary right state value string */
-  vector* vecl;           /* Left state vector value            */
-  vector* vecr;           /* Right state vector value           */
-  int     i;              /* Loop iterator                      */
-  char    str_width[20];  /* Temporary string holder            */
 
   if( arc_db_read( &arcs, line ) ) {
 
@@ -1262,6 +1254,12 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.26  2005/02/05 04:13:27  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.25  2005/01/06 23:51:16  phase1geo
  Intermediate checkin.  Files don't fully compile yet.
 

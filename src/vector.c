@@ -581,7 +581,7 @@ void vector_display_nibble( vec_data* nib, int width ) {
   printf( "      raw value:" );
   
   for( i=(width - 1); i>=0; i-- ) {
-    printf( " %08x", nib[i] );
+    printf( " %08x", nib[i].all );
   }
 
   /* Display nibble value */
@@ -1776,6 +1776,12 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.60  2005/02/05 04:13:30  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.59  2005/01/25 13:42:28  phase1geo
  Fixing segmentation fault problem with race condition checking.  Added race1.1
  to regression.  Removed unnecessary output statements from previous debugging

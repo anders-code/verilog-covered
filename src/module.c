@@ -25,6 +25,7 @@
 #include "link.h"
 #include "iter.h"
 #include "fsm.h"
+#include "race.h"
 
 
 extern char user_msg[USER_MSG_LENGTH];
@@ -375,7 +376,7 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
   curr_base_race = base->race_head;
   while( (curr_base_race != NULL) && retval ) {
     if( readline( file, &curr_line ) ) {
-      if( sscanf( file, "%d%n", &type, &chars_read ) == 1 ) {
+      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type != DB_TYPE_RACE ) {
           retval = FALSE;
@@ -636,6 +637,12 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.38  2005/02/05 04:13:30  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.37  2005/02/04 23:55:53  phase1geo
  Adding code to support race condition information in CDD files.  All code is
  now in place for writing/reading this data to/from the CDD file (although

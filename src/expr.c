@@ -906,7 +906,7 @@ void expression_display( expression* expr ) {
           expr->id,
           expr->line,
 	  expr->col,
-          expr->suppl,
+          expr->suppl.all,
           expr->value->width,
           left_id, 
           right_id );
@@ -1506,6 +1506,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.110  2005/02/05 04:13:29  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.109  2005/01/10 02:59:30  phase1geo
  Code added for race condition checking that checks for signals being assigned
  in multiple statements.  Working on handling bit selects -- this is in progress.

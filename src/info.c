@@ -108,7 +108,7 @@ bool info_db_read( char** line ) {
 
   bool retval = TRUE;  /* Return value for this function                 */
   int  chars_read;     /* Number of characters scanned in from this line */
-  bool scored;         /* Indicates if this file contains scored data    */
+  int  scored;         /* Indicates if this file contains scored data    */
   int  version;        /* Contains CDD version from file                 */
   int  mcode;          /* Temporary merge code                           */
   char tmp[4096];      /* Temporary string                               */
@@ -161,7 +161,7 @@ bool info_db_read( char** line ) {
       }
     }
 
-    flag_scored = scored ? TRUE : flag_scored;
+    flag_scored = (scored == TRUE) ? TRUE : flag_scored;
     merged_code = (merged_code == INFO_NOT_MERGED) ? mcode : merged_code;
 
   } else {
@@ -178,6 +178,12 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.8  2005/02/05 04:13:29  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.7  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

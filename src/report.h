@@ -12,9 +12,18 @@
 /*! \brief Parses command-line for report command and performs report functionality. */
 int command_report( int argc, int last_arg, char** argv );
 
+/*! \brief Reads the CDD and readies the design for reporting */
+bool report_read_cdd_and_ready( char* ifile, int read_mode );
+
 
 /*
  $Log$
+ Revision 1.7  2005/02/05 04:13:30  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.6  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

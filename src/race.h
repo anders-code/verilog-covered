@@ -23,12 +23,24 @@ bool race_db_write( race_blk* head, FILE* file );
 /*! \brief Reads contents from specified line for a race condition block and assigns the new block to the curr_mod */
 bool race_db_read( char** line, module* curr_mod );
 
+/*! \brief Get statistic information for the specified race condition block list */
+void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE_NUM] );
+
+/*! \brief Displays report information for race condition blocks in design */
+void race_report( FILE* ofile, bool verbose );
+
 /*! \brief Deallocates the specified race condition block from memory */
 void race_blk_delete_list( race_blk* rb );
 
 
 /*
  $Log$
+ Revision 1.10  2005/02/05 04:13:30  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.9  2005/02/04 23:55:54  phase1geo
  Adding code to support race condition information in CDD files.  All code is
  now in place for writing/reading this data to/from the CDD file (although
