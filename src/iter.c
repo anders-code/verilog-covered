@@ -102,36 +102,12 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) {
 
 }
 
-/*!
- \param si  Pointer to statement iterator to transform.
-
- Unlinks the stmt_iter link that is pointed to by curr and fixes the statement link to 
- retain order.
-*/
-void stmt_iter_unlink( stmt_iter* si ) {
-
-  stmt_link* tmp;  /* Temporary pointer to statement link */
-
-  /* Set ptr of link beyond curr */
-  tmp = (stmt_link*)((long int)si->curr->ptr ^ (long int)si->last);
-  printf( "last: %p, curr: %p, tmp: %p\n", si->last, si->curr->ptr, tmp );
-
-  if( tmp != NULL ) {
-    printf( "Here tmp was not NULL \n" );
-    tmp->ptr = (stmt_link*)(((long int)tmp->ptr ^ (long int)si->curr) ^ (long int)si->last);
-    printf( "last: %p, tmp->ptr: %p, past tmp: %p\n", si->last, tmp->ptr, (stmt_link*)((long int)tmp->ptr ^ (long int)si->curr) );
-  }
-
-  /* Set ptr of last */
-  if( si->last != NULL ) {
-    si->last->ptr = (stmt_link*)(((long int)si->curr ^ (long int)si->last->ptr) ^ (long int)tmp);
-  }
-
-}
-
-
 /*
  $Log$
+ Revision 1.10  2005/01/24 13:21:44  phase1geo
+ Modifying unlinking algorithm for statement links.  Still getting
+ segmentation fault at this time.
+
  Revision 1.9  2005/01/11 14:24:16  phase1geo
  Intermediate checkin.
 

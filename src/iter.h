@@ -26,11 +26,12 @@ void stmt_iter_find_head( stmt_iter* si, bool skip );
 /*! \brief Sets current iterator to next statement in order. */
 void stmt_iter_get_next_in_order( stmt_iter* si );
 
-/*! \brief Unlinks the stmt_link pointed to by curr. */
-void stmt_iter_unlink( stmt_iter* si );
-
 /*
  $Log$
+ Revision 1.7  2005/01/24 13:21:45  phase1geo
+ Modifying unlinking algorithm for statement links.  Still getting
+ segmentation fault at this time.
+
  Revision 1.6  2005/01/10 23:03:39  phase1geo
  Added code to properly report race conditions.  Added code to remove statement blocks
  from module when race conditions are found.
