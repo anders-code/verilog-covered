@@ -109,7 +109,6 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
       }
       /* If parameter value was found (it should be), adjust expression for new value */
       if( icurr != NULL ) {
-        printf( "NEED TO RESIZE EXPRESSION TREE\n" );
         expression_set_value_and_resize( curr_exp->exp, icurr->value );
       } else {
         assert( icurr != NULL );
@@ -384,6 +383,9 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.16  2002/09/25 05:38:11  phase1geo
+/* Cleaning things up a bit.
+/*
 /* Revision 1.15  2002/09/25 05:36:08  phase1geo
 /* Initial version of parameter support is now in place.  Parameters work on a
 /* basic level.  param1.v tests this basic functionality and param1.cdd contains
