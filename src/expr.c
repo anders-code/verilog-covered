@@ -1288,8 +1288,10 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_BASSIGN :
+#ifdef PERFORM_ASSIGNMENT
         intval1 = 0;
         expression_assign( expr->left, expr->right, &intval1 );
+#endif
         break;
 
       case EXP_OP_ASSIGN :
@@ -1493,6 +1495,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
     switch( lhs->op ) {
       case EXP_OP_SIG      :
         vector_set_value( lhs->value, rhs->value->value, lhs->value->width, *lsb, 0 );
+        vector_display( rhs->value );
 	vector_display( lhs->value );
         *lsb = *lsb + lhs->value->width;
         break;
@@ -1593,6 +1596,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.113  2005/02/11 22:50:33  phase1geo
+ Fixing bug with removing statement blocks that contain statements that cannot
+ currently be handled by Covered correctly.  There was a problem when the bad statement
+ was the last statement in the statement block.  Updated regression accordingly.
+ Added race condition diagnostics that currently are not in regression due to lack
+ of code support for them.  Ifdef'ed out the BASSIGN stuff for this checkin.
+
  Revision 1.112  2005/02/09 14:12:22  phase1geo
  More code for supporting expression assignments.
 

@@ -832,6 +832,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 
   } else {
 
+#ifdef PERFORM_ASSIGNMENT
     /*
      If this is a blocking assignment, set the assigned vector attribute in all signals to the
      left of the blocking assignment operator to TRUE.
@@ -839,6 +840,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
     if( op == EXP_OP_BASSIGN ) {
       expression_set_assigned( expr->left );
     }
+#endif
 
   }
  
@@ -1349,6 +1351,13 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.127  2005/02/11 22:50:31  phase1geo
+ Fixing bug with removing statement blocks that contain statements that cannot
+ currently be handled by Covered correctly.  There was a problem when the bad statement
+ was the last statement in the statement block.  Updated regression accordingly.
+ Added race condition diagnostics that currently are not in regression due to lack
+ of code support for them.  Ifdef'ed out the BASSIGN stuff for this checkin.
+
  Revision 1.126  2005/02/09 14:12:20  phase1geo
  More code for supporting expression assignments.
 
