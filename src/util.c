@@ -443,7 +443,7 @@ void* malloc_safe( size_t size ) {
 
   if( size > 10000 ) {
     print_output( "Allocating memory chunk larger than 10000 bytes.  Possible error.", WARNING );
-    // printf( "  Memory block size request: %ld bytes\n", (long) size );
+    /* printf( "  Memory block size request: %ld bytes\n", (long) size ); */
     assert( size <= 10000 );
   } else if( size <= 0 ) {
     print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL );
@@ -456,12 +456,8 @@ void* malloc_safe( size_t size ) {
     largest_malloc_size = curr_malloc_size;
   }
 
-  // printf( "Malloc size: %ld, curr: %ld, largest: %ld\n", (long) size, curr_malloc_size, largest_malloc_size );
-
   obj = malloc( size );
   
-  // printf( "Allocated memory 0x%lx\n", obj );
-
   if( obj == NULL ) {
     print_output( "Out of heap memory", FATAL );
     exit( 1 );
@@ -480,9 +476,9 @@ void* malloc_safe( size_t size ) {
 */
 void free_safe( void* ptr ) {
 
-  curr_malloc_size -= sizeof( *ptr );
+  /* curr_malloc_size -= sizeof( *ptr ); */
 
-  // printf( "Freeing memory, addr: 0x%lx\n", ptr );
+  /* printf( "Freeing memory, addr: 0x%lx\n", ptr ); */
 
   free( ptr );
 
@@ -510,6 +506,11 @@ void gen_space( char* spaces, int num_spaces ) {
 
 /*
  $Log$
+ Revision 1.17  2002/10/31 23:14:30  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.16  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

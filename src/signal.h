@@ -13,32 +13,37 @@
 #include "defines.h"
 
 
-//! Initializes specified signal with specified values.
+/*! Initializes specified signal with specified values. */
 void signal_init( signal* sig, char* name, vector* value );
 
-//! Creates a new signal based on the information passed to this function.
+/*! Creates a new signal based on the information passed to this function. */
 signal* signal_create( char* name, int width, int lsb );
 
-//! Outputs this signal information to specified file.
+/*! Outputs this signal information to specified file. */
 void signal_db_write( signal* sig, FILE* file, char* modname );
 
-//! Reads signal information from specified file.
+/*! Reads signal information from specified file. */
 bool signal_db_read( char** line, module* curr_mod );
 
-//! Reads and merges two signals, placing result into base signal.
+/*! Reads and merges two signals, placing result into base signal. */
 bool signal_db_merge( signal* base, char** line );
 
-//! Adds an expression to the signal list.
+/*! Adds an expression to the signal list. */
 void signal_add_expression( signal* sig, expression* expr );
 
-//! Displays signal contents to standard output.
+/*! Displays signal contents to standard output. */
 void signal_display( signal* sig );
 
-//! Deallocates the memory used for this signal.
+/*! Deallocates the memory used for this signal. */
 void signal_dealloc( signal* sig );
 
 /*
  $Log$
+ Revision 1.7  2002/10/31 23:14:24  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.6  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

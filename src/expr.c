@@ -230,7 +230,7 @@ void expression_set_value( expression* exp, vector* vec ) {
   assert( exp->value != NULL );
   assert( vec != NULL );
   
-  // printf( "In expression_set_value, exp_id: %d\n", exp->id );
+  /* printf( "In expression_set_value, exp_id: %d\n", exp->id ); */
   
   switch( SUPPL_OP( exp->suppl ) ) {
     case EXP_OP_SIG   :
@@ -295,7 +295,7 @@ void expression_resize( expression* expr, bool recursive ) {
       expression_resize( expr->right, recursive );
     }
     
-    // printf( "Resizing expression %d, op: %d, presize: %d\n", expr->id, SUPPL_OP( expr->suppl ), expr->value->width );
+    /* printf( "Resizing expression %d, op: %d, presize: %d\n", expr->id, SUPPL_OP( expr->suppl ), expr->value->width ); */
 
     switch( SUPPL_OP( expr->suppl ) ) {
 
@@ -384,7 +384,7 @@ void expression_resize( expression* expr, bool recursive ) {
 
     }
 
-    // printf( "Resized expression %d, op: %d, size: %d\n", expr->id, SUPPL_OP( expr->suppl ), expr->value->width );
+    /* printf( "Resized expression %d, op: %d, size: %d\n", expr->id, SUPPL_OP( expr->suppl ), expr->value->width ); */
 
   }
 
@@ -974,8 +974,8 @@ void expression_operate( expression* expr ) {
         if( vector_to_int( expr->left->value ) == 0xffffffff ) {
           vector_from_int( expr->left->value, curr_sim_time );
         }
-        intval1 = vector_to_int( expr->left->value );           // Start time of delay
-        intval2 = vector_to_int( expr->right->value );          // Number of clocks to delay
+        intval1 = vector_to_int( expr->left->value );           /* Start time of delay */
+        intval2 = vector_to_int( expr->right->value );          /* Number of clocks to delay */
         if( ((intval1 + intval2) <= curr_sim_time) || ((curr_sim_time == -1) && (vector_to_int( expr->left->value ) != 0xffffffff)) ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
@@ -1149,6 +1149,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.59  2002/10/31 23:13:43  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.58  2002/10/31 05:22:36  phase1geo
  Fixing bug with reading in an integer value from the expression line into
  a short integer.  Needed to use the 'h' value in the sscanf function.  Also
