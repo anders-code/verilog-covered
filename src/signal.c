@@ -319,7 +319,11 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
   print_output( user_msg, DEBUG );
 
   /* Set signal value to specified value */
-  vector_vcd_assign( sig->value, value, (msb - sig->lsb), (lsb - sig->lsb) );
+  if( lsb > 0 ) {
+    vector_vcd_assign( sig->value, value, (msb - sig->lsb), (lsb - sig->lsb) );
+  } else {
+    vector_vcd_assign( sig->value, value, msb, lsb );
+  }
 
   /* Iterate through signal's expression list */
   curr_expr = sig->exp_head;
@@ -439,6 +443,11 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.43  2003/10/20 16:05:06  phase1geo
+ Fixing bug for older versions of Icarus that does not output the correct
+ bit select in the VCD dumpfile.  Covered will automatically adjust the bit-select
+ range if this occurrence is found in the dumpfile.
+
  Revision 1.42  2003/10/19 04:23:49  phase1geo
  Fixing bug in VCD parser for new Icarus Verilog VCD dumpfile formatting.
  Fixing bug in signal.c for signal merging.  Updates all CDD files to match
