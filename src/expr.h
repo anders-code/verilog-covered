@@ -35,7 +35,7 @@ void expression_db_write( expression* expr, FILE* file, char* scope );
 bool expression_db_read( char** line, module* curr_mod, bool eval );
 
 /*! \brief Reads and merges two expressions and stores result in base expression. */
-bool expression_db_merge( expression* base, char** line );
+bool expression_db_merge( expression* base, char** line, bool same );
 
 /*! \brief Displays the specified expression information. */
 void expression_display( expression* expr );
@@ -58,6 +58,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.19  2002/12/30 05:31:33  phase1geo
+ Fixing bug in module merge for reports when parameterized modules are merged.
+ These modules should not output an error to the user when mismatching modules
+ are found.
+
  Revision 1.18  2002/11/27 03:49:20  phase1geo
  Fixing bugs in score and report commands for regression.  Finally fixed
  static expression calculation to yield proper coverage results for constant

@@ -26,7 +26,7 @@ void vector_db_write( vector* vec, FILE* file, bool write_data );
 bool vector_db_read( vector** vec, char** line );
 
 /*! \brief Reads and merges two vectors, placing the result into base vector. */
-bool vector_db_merge( vector* base, char** line );
+bool vector_db_merge( vector* base, char** line, bool same );
 
 /*! \brief Outputs the toggle01 information from the specified nibble to the specified output stream. */
 void vector_display_toggle01( nibble* nib, int width, int lsb, FILE* ofile );
@@ -112,6 +112,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.14  2002/12/30 05:31:33  phase1geo
+ Fixing bug in module merge for reports when parameterized modules are merged.
+ These modules should not output an error to the user when mismatching modules
+ are found.
+
  Revision 1.13  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

@@ -26,7 +26,7 @@ void signal_db_write( signal* sig, FILE* file, char* modname );
 bool signal_db_read( char** line, module* curr_mod );
 
 /*! \brief Reads and merges two signals, placing result into base signal. */
-bool signal_db_merge( signal* base, char** line );
+bool signal_db_merge( signal* base, char** line, bool same );
 
 /*! \brief Assigns specified VCD value to specified signal. */
 void signal_vcd_assign( signal* sig, char* value );
@@ -43,6 +43,11 @@ void signal_dealloc( signal* sig );
 
 /*
  $Log$
+ Revision 1.10  2002/12/30 05:31:33  phase1geo
+ Fixing bug in module merge for reports when parameterized modules are merged.
+ These modules should not output an error to the user when mismatching modules
+ are found.
+
  Revision 1.9  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

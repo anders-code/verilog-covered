@@ -592,6 +592,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
 /*!
  \param base  Expression to merge data into.
  \param line  Pointer to CDD line to parse.
+ \param same  Specifies if expression to be merged needs to be exactly the same as the existing expression.
 
  \return Returns TRUE if parse and merge was sucessful; otherwise, returns FALSE.
 
@@ -602,7 +603,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
  to the user in this case.  If both expressions are the same, perform the 
  merge.
 */
-bool expression_db_merge( expression* base, char** line ) {
+bool expression_db_merge( expression* base, char** line, bool same ) {
 
   bool retval = TRUE;  /* Return value for this function */
   int  id;             /* Expression ID field            */
@@ -634,7 +635,7 @@ bool expression_db_merge( expression* base, char** line ) {
           (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL) ) {
 
         /* Merge expression vectors */
-        retval = vector_db_merge( base->value, line );
+        retval = vector_db_merge( base->value, line, same );
 
       }
 
@@ -1213,6 +1214,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.72  2002/12/30 05:31:33  phase1geo
+ Fixing bug in module merge for reports when parameterized modules are merged.
+ These modules should not output an error to the user when mismatching modules
+ are found.
+
  Revision 1.71  2002/12/07 17:46:53  phase1geo
  Fixing bug with handling memory declarations.  Added diagnostic to verify
  that memory declarations are handled properly.  Fixed bug with infinite
