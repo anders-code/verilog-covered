@@ -349,7 +349,7 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
  must be in the form of:
 
  \par
- (<parameter>|<constant_value>)->(<parameter>|<constant_value>)
+ (\\<parameter\\>|\\<constant_value\\>)->(\\<parameter\\>|\\<constant_value\\>)
 
  \par
  Each transition is then added to the specified FSM table's arc list which is added to the
@@ -505,6 +505,9 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.11  2003/11/15 04:25:02  phase1geo
+ Fixing syntax error found in Doxygen.
+
  Revision 1.10  2003/11/07 05:18:40  phase1geo
  Adding working code for inline FSM attribute handling.  Full regression fails
  at this point but the code seems to be working correctly.
