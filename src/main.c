@@ -104,7 +104,7 @@ int main( int argc, char** argv ) {
 
         } else {
 
-          print_output( "Unknown command.  Please see \"covered -h\" for more usage.", FATAL );
+          print_output( "Unknown command.  Please see \"covered -h\" for usage.", FATAL );
           retval = -1;
 
         }
@@ -129,6 +129,10 @@ int main( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.7  2002/07/11 19:12:38  phase1geo
+/* Fixing version number.  Fixing bug with score command if -t option was not
+/* specified to avoid a segmentation fault.
+/*
 /* Revision 1.6  2002/07/09 05:02:42  phase1geo
 /* Updating user documentation to reflect new command-line options.
 /*

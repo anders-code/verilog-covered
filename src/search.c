@@ -44,7 +44,13 @@ void search_init() {
   module* mod;       /* Pointer to newly created module node from top module */
 
   mod        = module_create();
-  mod->name  = strdup( top_module );
+
+  if( top_module != NULL ) {
+    mod->name  = strdup( top_module );
+  } else {
+    print_output( "No top_module was specified with the -t option.  Please see \"covered -h\" for usage.", FATAL );
+    exit( 1 );
+  }
 
   if( top_instance == NULL ) {
     mod->scope = strdup( top_module );
@@ -206,6 +212,10 @@ void search_free_lists() {
 }
 
 /* $Log$
+/* Revision 1.5  2002/07/11 19:12:38  phase1geo
+/* Fixing version number.  Fixing bug with score command if -t option was not
+/* specified to avoid a segmentation fault.
+/*
 /* Revision 1.4  2002/07/08 19:02:12  phase1geo
 /* Adding -i option to properly handle modules specified for coverage that
 /* are instantiated within a design without needing to parse parent modules.
