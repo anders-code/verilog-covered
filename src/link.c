@@ -243,7 +243,7 @@ void exp_link_display( exp_link* head ) {
 
   curr = head;
   while( curr != NULL ) {
-    printf( "  id: %d, op: %d\n", curr->exp->id, SUPPL_OP( curr->exp->suppl ) );
+    printf( "  id: %d, op: %d, line: %d\n", curr->exp->id, SUPPL_OP( curr->exp->suppl ), curr->exp->line );
     curr = curr->next;
   }
 
@@ -617,6 +617,10 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.18  2003/02/05 22:50:56  phase1geo
+ Some minor tweaks to debug output and some minor bug "fixes".  At this point
+ regression isn't stable yet.
+
  Revision 1.17  2003/01/04 09:33:28  phase1geo
  Updating documentation to match recent code fixes/changes.
 

@@ -394,8 +394,10 @@ void vector_display( vector* vec ) {
 
   printf( "Vector => width: %d, lsb: %d, ", vec->width, vec->lsb );
 
-  if( (vec->lsb >= 0) && (vec->width > 0) ) {
+  if( (vec->lsb >= 0) && (vec->width > 0) && (vec->value != NULL) ) {
     vector_display_nibble( vec->value, vec->width, vec->lsb );
+  } else {
+    printf( "NO DATA" );
   }
 
   printf( "\n" );
@@ -1465,6 +1467,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.30  2003/02/05 22:50:56  phase1geo
+ Some minor tweaks to debug output and some minor bug "fixes".  At this point
+ regression isn't stable yet.
+
  Revision 1.29  2003/01/04 03:56:28  phase1geo
  Fixing bug with parameterized modules.  Updated regression suite for changes.
 
