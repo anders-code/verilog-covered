@@ -36,6 +36,7 @@ assign a = b[2:1];
 
 endmodule
 
+
 module barfoo( b );
 
 input [2:0]  b;
@@ -43,4 +44,3 @@ input [2:0]  b;
 foobar dude( b );
 
 endmodule
-
