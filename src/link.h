@@ -79,7 +79,7 @@ void stmt_link_delete_list( stmt_link* head );
 void exp_link_delete_list( exp_link* head, bool del_exp );
 
 /*! \brief Deletes entire list specified by head pointer. */
-void sig_link_delete_list( sig_link* head );
+void sig_link_delete_list( sig_link* head, bool del_sig );
 
 /*! \brief Deletes entire list specified by head pointer. */
 void mod_link_delete_list( mod_link* head );
@@ -87,6 +87,13 @@ void mod_link_delete_list( mod_link* head );
 
 /*
  $Log$
+ Revision 1.10  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.9  2003/02/07 02:28:23  phase1geo
  Fixing bug with statement removal.  Expressions were being deallocated but not properly
  removed from module parameter expression lists and module expression lists.  Regression

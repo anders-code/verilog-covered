@@ -585,11 +585,12 @@ void exp_link_delete_list( exp_link* head, bool del_exp ) {
 }
 
 /*!
- \param head  Pointer to head sig_link element of list.
+ \param head     Pointer to head sig_link element of list.
+ \param del_sig  If set to TRUE, deallocates the signal; otherwise, leaves signal alone.
 
  Deletes each element of the specified list.
 */
-void sig_link_delete_list( sig_link* head ) {
+void sig_link_delete_list( sig_link* head, bool del_sig ) {
 
   sig_link* tmp;   /* Temporary pointer to current link in list */
 
@@ -599,8 +600,10 @@ void sig_link_delete_list( sig_link* head ) {
     head = tmp->next;
 
     /* Deallocate signal */
-    signal_dealloc( tmp->sig );
-    tmp->sig = NULL;
+    if( del_sig ) {
+      signal_dealloc( tmp->sig );
+      tmp->sig = NULL;
+    }
 
     /* Deallocate sig_link element itself */
     free_safe( tmp );
@@ -637,6 +640,13 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.21  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.20  2003/02/08 21:54:06  phase1geo
  Fixing memory problems with db_remove_statement function.  Updating comments
  in statement.c to explain some of the changes necessary to properly remove
