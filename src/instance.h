@@ -12,8 +12,14 @@
 #include "module.h"
 
 
+//! Builds full hierarchy from leaf node to root.
+void instance_gen_scope( char* scope, mod_inst* leaf );
+
 //! Finds specified scope in module instance tree.
 mod_inst* instance_find_scope( mod_inst* root, char* scope );
+
+//! Returns instance that points to specified module for each instance.
+mod_inst* instance_find_by_module( mod_inst* root, module* mod, int* ignore );
 
 //! Adds new instance to specified instance tree during parse.
 void instance_parse_add( mod_inst** root, module* parent, module* child, char* inst_name );
@@ -28,6 +34,12 @@ void instance_db_write( mod_inst* root, FILE* file, char* scope, bool parse_mode
 void instance_dealloc( mod_inst* root, char* scope );
 
 /* $Log$
+/* Revision 1.6  2002/09/21 07:03:28  phase1geo
+/* Attached all parameter functions into db.c.  Just need to finish getting
+/* parser to correctly add override parameters.  Once this is complete, phase 3
+/* can start and will include regenerating expressions and signals before
+/* getting output to CDD file.
+/*
 /* Revision 1.5  2002/09/19 05:25:19  phase1geo
 /* Fixing incorrect simulation of static values and fixing reports generated
 /* from these static expressions.  Also includes some modifications for parameters
