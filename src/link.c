@@ -409,6 +409,29 @@ sig_link* sig_link_find( signal* sig, sig_link* head ) {
 }
 
 /*!
+ \param table  Pointer to FSM structure to find.
+ \param head   Pointer to head of fsm_link list to search.
+
+ \return Returns the pointer to the found fsm_link, or NULL if the search was unsuccessful.
+
+ Iteratively searches the fsm_link list specified by the head fsm_link element.  If
+ a matching FSM is found, the pointer to this element is returned.  If the specified
+ FSM structure could not be matched, the value of NULL is returned.
+*/
+fsm_link* fsm_link_find( fsm* table, fsm_link* head ) {
+
+  fsm_link* curr;  /* Pointer to current fsm_link element */
+
+  curr = head;
+  while( (curr != NULL) && (strcmp( curr->table->name, table->name ) != 0) ) {
+    curr = curr->next;
+  }
+
+  return( curr );
+
+}
+
+/*!
  \param mod    Pointer to module to find.
  \param head  Pointer to head of mod_link list to search.
  
@@ -694,6 +717,10 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.24  2003/10/28 00:18:06  phase1geo
+ Adding initial support for inline attributes to specify FSMs.  Still more
+ work to go but full regression still passes at this point.
+
  Revision 1.23  2003/10/13 03:56:29  phase1geo
  Fixing some problems with new FSM code.  Not quite there yet.
 
