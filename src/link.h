@@ -66,7 +66,7 @@ mod_link* mod_link_find( module* mod, mod_link* head );
 void str_link_remove( char* str, str_link** head, str_link** tail );
 
 /*! \brief Searches for and removes specified expression link from list. */
-void exp_link_remove( expression* exp, exp_link** head, exp_link** tail );
+void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool recursive );
 
 
 /*! \brief Deletes entire list specified by head pointer. */
@@ -87,6 +87,11 @@ void mod_link_delete_list( mod_link* head );
 
 /*
  $Log$
+ Revision 1.9  2003/02/07 02:28:23  phase1geo
+ Fixing bug with statement removal.  Expressions were being deallocated but not properly
+ removed from module parameter expression lists and module expression lists.  Regression
+ now passes again.
+
  Revision 1.8  2003/01/03 02:07:43  phase1geo
  Fixing segmentation fault in lexer caused by not closing the temporary
  input file before unlinking it.  Fixed case where module was parsed but not
