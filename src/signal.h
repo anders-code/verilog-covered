@@ -20,7 +20,7 @@ void signal_init( signal* sig, char* name, vector* value, int lsb );
 signal* signal_create( char* name, int width, int lsb );
 
 /*! \brief Outputs this signal information to specified file. */
-void signal_db_write( signal* sig, FILE* file, char* modname );
+void signal_db_write( signal* sig, FILE* file );
 
 /*! \brief Reads signal information from specified file. */
 bool signal_db_read( char** line, module* curr_mod );
@@ -52,6 +52,11 @@ void signal_dealloc( signal* sig );
 
 /*
  $Log$
+ Revision 1.16  2004/01/08 23:24:41  phase1geo
+ Removing unnecessary scope information from signals, expressions and
+ statements to reduce file sizes of CDDs and slightly speeds up fscanf
+ function calls.  Updated regression for this fix.
+
  Revision 1.15  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 
