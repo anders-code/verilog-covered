@@ -81,10 +81,10 @@ void print_output( char* msg, int type ) {
       if( !output_suppressed || debug_mode ) { printf( "%s\n", msg ); }
       break;
     case WARNING:
-      if( !output_suppressed || debug_mode ) { fprintf( stderr, "Warning!  %s\n", msg ); }
+      if( !output_suppressed || debug_mode ) { fprintf( stderr, "    WARNING!  %s\n", msg ); }
       break;
     case FATAL:
-      fprintf( stderr, "Error!  %s\n", msg );
+      fprintf( stderr, "ERROR!  %s\n", msg );
       break;
     default:  break;
   }
@@ -492,6 +492,11 @@ void gen_space( char* spaces, int num_spaces ) {
 }
 
 /* $Log$
+/* Revision 1.10  2002/07/20 22:22:52  phase1geo
+/* Added ability to create implicit signals for local signals.  Added implicit1.v
+/* diagnostic to test for correctness.  Full regression passes.  Other tweaks to
+/* output information.
+/*
 /* Revision 1.9  2002/07/20 20:48:09  phase1geo
 /* Fixing a bug that caused the same file to be added to the use_files list
 /* more than once.  A filename will only appear once in this list now.  Updates
