@@ -21,7 +21,7 @@
 void usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered (-h | -v | (-D) (-Q) <command> <command_options>)\n" );
+  printf( "Usage:  covered (-h | -v | (-D) (-Q) <command> <command_options>))\n" );
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -D                      Debug.  Display information helpful for debugging tool problems\n" );
@@ -129,6 +129,9 @@ int main( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.6  2002/07/09 05:02:42  phase1geo
+/* Updating user documentation to reflect new command-line options.
+/*
 /* Revision 1.5  2002/07/09 04:46:26  phase1geo
 /* Adding -D and -Q options to covered for outputting debug information or
 /* suppressing normal output entirely.  Updated generated documentation and
