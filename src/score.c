@@ -13,6 +13,7 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+#include <sys/times.h>
 
 #include "defines.h"
 #include "score.h"
@@ -390,6 +391,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.35  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.34  2003/08/07 15:41:43  phase1geo
  Adding -ts option to score command to allow the current timestep to be
  output during the simulation phase.
