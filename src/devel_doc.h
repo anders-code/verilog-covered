@@ -180,6 +180,10 @@
     these headers look like, please see the file signal.c
  -# All files should contain the RCS file revision history information at the bottom
     of the file.  This is accomplished by placing the string \c $Log$
+    of the file.  This is accomplished by placing the string \c Revision 1.3  2002/10/29 19:57:50  phase1geo
+    of the file.  This is accomplished by placing the string \c Fixing problems with beginning block comments within comments which are
+    of the file.  This is accomplished by placing the string \c produced automatically by CVS.  Should fix warning messages from compiler.
+    of the file.  This is accomplished by placing the string \c
     of the file.  This is accomplished by placing the string \c Revision 1.2  2002/06/22 21:08:23  phase1geo
     of the file.  This is accomplished by placing the string \c Added simulation engine and tied it to the db.c file.  Simulation engine is
     of the file.  This is accomplished by placing the string \c currently untested and will remain so until the parser is updated correctly
@@ -667,15 +671,20 @@
  - \ref page_testing
 */
 
-/* $Log$
-/* Revision 1.2  2002/06/22 21:08:23  phase1geo
-/* Added simulation engine and tied it to the db.c file.  Simulation engine is
-/* currently untested and will remain so until the parser is updated correctly
-/* for statements.  This will be the next step.
 /*
-/* Revision 1.1  2002/06/21 05:55:05  phase1geo
-/* Getting some codes ready for writing simulation engine.  We should be set
-/* now.
-/* */
+ $Log$
+ Revision 1.3  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
+ Revision 1.2  2002/06/22 21:08:23  phase1geo
+ Added simulation engine and tied it to the db.c file.  Simulation engine is
+ currently untested and will remain so until the parser is updated correctly
+ for statements.  This will be the next step.
+
+ Revision 1.1  2002/06/21 05:55:05  phase1geo
+ Getting some codes ready for writing simulation engine.  We should be set
+ now.
+*/
 
 #endif

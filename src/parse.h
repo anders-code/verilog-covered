@@ -18,16 +18,21 @@ bool parse_design( char* top, char* output_db );
 //! Parses VCD dumpfile and scores design.
 bool parse_and_score_dumpfile( char* db, char* vcd );
 
-/* $Log$
-/* Revision 1.3  2002/07/20 21:34:58  phase1geo
-/* Separating ability to parse design and score dumpfile.  Now both or either
-/* can be done (allowing one to parse once and score multiple times).
 /*
-/* Revision 1.2  2002/07/03 03:31:11  phase1geo
-/* Adding RCS Log strings in files that were missing them so that file version
-/* information is contained in every source and header file.  Reordering src
-/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
-/* */
+ $Log$
+ Revision 1.4  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
+ Revision 1.3  2002/07/20 21:34:58  phase1geo
+ Separating ability to parse design and score dumpfile.  Now both or either
+ can be done (allowing one to parse once and score multiple times).
+
+ Revision 1.2  2002/07/03 03:31:11  phase1geo
+ Adding RCS Log strings in files that were missing them so that file version
+ information is contained in every source and header file.  Reordering src
+ Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+*/
 
 #endif
 

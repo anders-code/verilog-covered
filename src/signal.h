@@ -37,21 +37,26 @@ void signal_display( signal* sig );
 //! Deallocates the memory used for this signal.
 void signal_dealloc( signal* sig );
 
-/* $Log$
-/* Revision 1.5  2002/09/25 02:51:44  phase1geo
-/* Removing need of vector nibble array allocation and deallocation during
-/* expression resizing for efficiency and bug reduction.  Other enhancements
-/* for parameter support.  Parameter stuff still not quite complete.
 /*
-/* Revision 1.4  2002/08/19 04:34:07  phase1geo
-/* Fixing bug in database reading code that dealt with merging modules.  Module
-/* merging is now performed in a more optimal way.  Full regression passes and
-/* own examples pass as well.
-/*
-/* Revision 1.3  2002/07/17 06:27:18  phase1geo
-/* Added start for fixes to bit select code starting with single bit selection.
-/* Full regression passes with addition of sbit_sel1 diagnostic.
-/* */
+ $Log$
+ Revision 1.6  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
+ Revision 1.5  2002/09/25 02:51:44  phase1geo
+ Removing need of vector nibble array allocation and deallocation during
+ expression resizing for efficiency and bug reduction.  Other enhancements
+ for parameter support.  Parameter stuff still not quite complete.
+
+ Revision 1.4  2002/08/19 04:34:07  phase1geo
+ Fixing bug in database reading code that dealt with merging modules.  Module
+ merging is now performed in a more optimal way.  Full regression passes and
+ own examples pass as well.
+
+ Revision 1.3  2002/07/17 06:27:18  phase1geo
+ Added start for fixes to bit select code starting with single bit selection.
+ Full regression passes with addition of sbit_sel1 diagnostic.
+*/
 
 #endif
 
