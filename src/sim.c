@@ -239,7 +239,9 @@ bool sim_expression( expression* expr ) {
      its operation is performed so don't traverse the tree now.
     */
     if( (expr->op != EXP_OP_EOR) && (expr->left != NULL) ) {
-      left_changed = sim_expression( expr->left );
+      if( expr->left->suppl.part.lhs == 0 ) {
+        left_changed = sim_expression( expr->left );
+      }
     } else {
       left_changed = TRUE;
     }
@@ -254,7 +256,9 @@ bool sim_expression( expression* expr ) {
 
     /* See explanation above */
     if( (expr->op != EXP_OP_EOR) && (expr->right != NULL) ) {
-      right_changed = sim_expression( expr->right );
+      if( expr->right->suppl.part.lhs == 0 ) {
+        right_changed = sim_expression( expr->right );
+      }
     } else {
       right_changed = TRUE;
     } 
@@ -396,6 +400,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.39  2005/02/08 23:18:23  phase1geo
+ Starting to add code to handle expression assignment for blocking assignments.
+ At this point, regressions will probably still pass but new code isn't doing exactly
+ what I want.
+
  Revision 1.38  2005/01/07 17:59:52  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.

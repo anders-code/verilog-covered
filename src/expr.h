@@ -61,12 +61,23 @@ int expression_bit_value( expression* expr );
 /*! \brief Returns TRUE if specified expression is found to contain all static leaf expressions. */
 bool expression_is_static_only( expression* expr );
 
+/*! \brief Returns TRUE if specified expression is on the LHS of a blocking assignment operator. */
+bool expression_is_assigned( expression* expr );
+
+/*! \brief Performs blocking assignment assignment to variables. */
+void expression_assign( expression* lhs, expression* rhs, int* lsb );
+
 /*! \brief Deallocates memory used for expression. */
 void expression_dealloc( expression* expr, bool exp_only );
 
 
 /*
  $Log$
+ Revision 1.29  2005/02/08 23:18:23  phase1geo
+ Starting to add code to handle expression assignment for blocking assignments.
+ At this point, regressions will probably still pass but new code isn't doing exactly
+ what I want.
+
  Revision 1.28  2004/10/22 21:40:30  phase1geo
  More incremental updates to improve efficiency in score command (though this
  change should not, in and of itself, improve efficiency).

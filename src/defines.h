@@ -954,16 +954,17 @@ struct str_link_s {
  manipulate this information.
 */
 struct vector_s {
-  int        width;     /*!< Bit width of this vector                          */
+  int        width;       /*!< Bit width of this vector                                                                 */
   union {
-    nibble   all;       /*!< Allows us to set all bits in the suppl field      */
+    nibble   all;         /*!< Allows us to set all bits in the suppl field                                             */
     struct {
-      nibble base  :3;  /*!< Base-type of this data when originally parsed     */
-      nibble wait  :1;  /*!< Specifies that this signal should be waited for   */
-      nibble inport:1;  /*!< Specifies if this vector is part of an input port */
+      nibble base    :3;  /*!< Base-type of this data when originally parsed                                            */
+      nibble wait    :1;  /*!< Specifies that this signal should be waited for                                          */
+      nibble inport  :1;  /*!< Specifies if this vector is part of an input port                                        */
+      nibble assigned:1;  /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
     } part;
-  } suppl;              /*!< Supplemental field                                */
-  vec_data*  value;     /*!< 4-state current value and toggle history          */
+  } suppl;                /*!< Supplemental field                                                                       */
+  vec_data*  value;       /*!< 4-state current value and toggle history                                                 */
 };
 
 /*!
@@ -1567,6 +1568,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.122  2005/02/08 23:18:23  phase1geo
+ Starting to add code to handle expression assignment for blocking assignments.
+ At this point, regressions will probably still pass but new code isn't doing exactly
+ what I want.
+
  Revision 1.121  2005/02/05 04:13:29  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned
