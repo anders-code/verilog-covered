@@ -67,7 +67,7 @@ module* module_create() {
   module* mod;   /* Pointer to newly created module element */
 
   /* Create and initialize module */
-  mod = (module*)malloc_safe( sizeof( module ) );
+  mod = (module*)malloc_safe( sizeof( module ), __FILE__, __LINE__ );
 
   module_init( mod );
 
@@ -169,7 +169,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   fsm_link*  curr_fsm;        /* Pointer to current module fsm_link element */
 
   snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", mod->name );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   fprintf( file, "%d %s %s %s %d %d\n",
     DB_TYPE_MODULE,
@@ -476,6 +476,15 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.33  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.32  2004/01/08 23:24:41  phase1geo
  Removing unnecessary scope information from signals, expressions and
  statements to reduce file sizes of CDDs and slightly speeds up fscanf
