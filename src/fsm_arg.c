@@ -37,7 +37,7 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
 
     /* Get first state */
     while( (**arg != '}') && !error ) {
-      if( expl != NULL && (**arg == ',') ) {
+      if( ((expl != NULL) && (**arg == ',')) || (**arg == '{') ) {
         (*arg)++;
       }
       if( (sig = signal_from_string( arg )) != NULL ) {
@@ -230,6 +230,11 @@ bool fsm_arg_parse( char* arg ) {
 
 /*
  $Log$
+ Revision 1.6  2003/10/19 05:13:26  phase1geo
+ Updating user documentation for changes to FSM specification syntax.  Added
+ new fsm5.3 diagnostic to verify concatenation syntax.  Fixing bug in concatenation
+ syntax handling.
+
  Revision 1.5  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 
