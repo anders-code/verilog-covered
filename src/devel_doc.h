@@ -180,6 +180,11 @@
     these headers look like, please see the file signal.c
  -# All files should contain the RCS file revision history information at the bottom
     of the file.  This is accomplished by placing the string \c $Log$
+    of the file.  This is accomplished by placing the string \c Revision 1.2  2002/06/22 21:08:23  phase1geo
+    of the file.  This is accomplished by placing the string \c Added simulation engine and tied it to the db.c file.  Simulation engine is
+    of the file.  This is accomplished by placing the string \c currently untested and will remain so until the parser is updated correctly
+    of the file.  This is accomplished by placing the string \c for statements.  This will be the next step.
+    of the file.  This is accomplished by placing the string \c
     of the file.  This is accomplished by placing the string \c Revision 1.1  2002/06/21 05:55:05  phase1geo
     of the file.  This is accomplished by placing the string \c Getting some codes ready for writing simulation engine.  We should be set
     of the file.  This is accomplished by placing the string \c now.
@@ -549,7 +554,17 @@
 
 /*!
  \page page_code_details Section 6.  Coverage Development Reference
+ \par Section 6.1.  Extracted Documentation
+ The following links will take you to the generated documentation for the project.  This
+ documentation is always in sync with the current CVS snapshot.
+
  \par
+ - <A HREF="modules.html">Modules</A> - A list of related defines, structures, unions, etc.
+ - <A HREF="annotated.html">Structures and Unions</A> - A list of structures/union descriptions.
+ - <A HREF="files.html">File List</A> - A list of all source/header file descriptions.
+ - <A HREF="functions.html">Function List</A> - A list of all function descriptions.
+ - <A HREF="globals.html">File Members</A> - Descriptions of all file members for a given file.
+ - <A HREF="bug.html">Bug List</A> - List of known bugs within the code for future fixes.
 
 <HR>
 
@@ -653,6 +668,11 @@
 */
 
 /* $Log$
+/* Revision 1.2  2002/06/22 21:08:23  phase1geo
+/* Added simulation engine and tied it to the db.c file.  Simulation engine is
+/* currently untested and will remain so until the parser is updated correctly
+/* for statements.  This will be the next step.
+/*
 /* Revision 1.1  2002/06/21 05:55:05  phase1geo
 /* Getting some codes ready for writing simulation engine.  We should be set
 /* now.
