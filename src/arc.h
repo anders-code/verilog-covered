@@ -19,11 +19,8 @@ char* arc_create( int width );
 /*! \brief Adds new state transition arc entry to specified table. */
 void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit );
 
-/*! \brief Totals all states hit during simulation. */
-int arc_state_hits( char* arcs );
-
-/*! \brief Totals all state transitions hit during simulation. */
-int arc_transition_hits( char* arcs );
+/*! \brief Calculates all state and state transition values for reporting purposes. */
+void arc_get_stats( char* arcs, float* state_total, int* state_hits, float* arc_total, int* arc_hits );
 
 /*! \brief Writes specified arc array to specified CDD file. */
 bool arc_db_write( char* arcs, FILE* file );
@@ -39,6 +36,11 @@ void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.5  2003/09/13 19:53:59  phase1geo
+ Adding correct way of calculating state and state transition totals.  Modifying
+ FSM summary reporting to reflect these changes.  Also added function documentation
+ that was missing from last submission.
+
  Revision 1.4  2003/09/13 02:59:34  phase1geo
  Fixing bugs in arc.c created by extending entry supplemental field to 5 bits
  from 3 bits.  Additional two bits added for calculating unique states.
