@@ -24,15 +24,17 @@
 */  
 void module_init( module* mod ) {
     
-  mod->name      = NULL;
-  mod->filename  = NULL;
-  mod->stat      = NULL;
-  mod->sig_head  = NULL;
-  mod->sig_tail  = NULL;
-  mod->exp_head  = NULL;
-  mod->exp_tail  = NULL;
-  mod->stmt_head = NULL;
-  mod->stmt_tail = NULL;
+  mod->name       = NULL;
+  mod->filename   = NULL;
+  mod->stat       = NULL;
+  mod->sig_head   = NULL;
+  mod->sig_tail   = NULL;
+  mod->exp_head   = NULL;
+  mod->exp_tail   = NULL;
+  mod->stmt_head  = NULL;
+  mod->stmt_tail  = NULL;
+  mod->param_head = NULL;
+  mod->param_tail = NULL;
 
 }
 
@@ -341,6 +343,10 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.13  2002/08/26 12:57:04  phase1geo
+/* In the middle of adding parameter support.  Intermediate checkin but does
+/* not break regressions at this point.
+/*
 /* Revision 1.12  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and
