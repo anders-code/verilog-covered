@@ -28,6 +28,9 @@ bool is_variable( char* token );
 /*! \brief Returns TRUE if the specified string is a legal directory string. */
 bool is_directory( char* token );
 
+/*! \brief Extracts filename from file pathname. */
+char* get_basename( char* str );
+
 /*! \brief Returns TRUE if the specified directory exists. */
 bool directory_exists( char* dir );
 
@@ -81,6 +84,10 @@ void timer_stop( timer** tm );
 
 /*
  $Log$
+ Revision 1.15  2003/10/03 03:08:44  phase1geo
+ Modifying filename in summary output to only specify basename of file instead
+ of entire path.  The verbose report contains the full pathname still, however.
+
  Revision 1.14  2003/08/15 20:02:08  phase1geo
  Added check for sys/times.h file for new code additions.
 

@@ -613,13 +613,13 @@ bool fsm_module_summary( FILE* ofile, mod_link* head ) {
     if( (head->mod->stat->state_total == -1) || (head->mod->stat->arc_total == -1) ) {
       fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
            head->mod->name,
-           head->mod->filename,
+           get_basename( head->mod->filename ),
            head->mod->stat->state_hit,
            head->mod->stat->arc_hit );
     } else {
       fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
              head->mod->name,
-             head->mod->filename,
+             get_basename( head->mod->filename ),
              head->mod->stat->state_hit,
              state_miss,
              head->mod->stat->state_total,
@@ -902,6 +902,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.19  2003/10/03 03:08:44  phase1geo
+ Modifying filename in summary output to only specify basename of file instead
+ of entire path.  The verbose report contains the full pathname still, however.
+
  Revision 1.18  2003/09/23 12:28:08  phase1geo
  Fixes for development documentation.
 
