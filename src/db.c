@@ -29,6 +29,7 @@
 #include "binding.h"
 #include "param.h"
 #include "static.h"
+#include "info.h"
 
 
 extern char*     top_module;
@@ -1191,6 +1192,12 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.97  2003/08/20 22:08:39  phase1geo
+ Fixing problem with not closing VCD file after VCD parsing is completed.
+ Also fixed memory problem with symtable.c to cause timestep_tab entries
+ to only be loaded if they have not already been loaded during this timestep.
+ Also added info.h to include list of db.c.
+
  Revision 1.96  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 
