@@ -279,7 +279,8 @@ void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_sto
 */
 
   /* Set STOP bit if necessary */
-  if( (curr_stmt->next_true == NULL) && (curr_stmt->next_false == NULL) && set_stop ) {
+  if( ((curr_stmt->next_true == NULL) && (curr_stmt->next_false == NULL) && set_stop) ||
+      (curr_stmt == next_stmt) ) {
 
     curr_stmt->exp->suppl = curr_stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
 
@@ -294,7 +295,10 @@ void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_sto
 
     if( curr_stmt->next_true != next_stmt ) {
       allow_stop = ((curr_stmt->next_true != curr_stmt->next_false) &&
-                    (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY));
+                    (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY) &&
+                    (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_NEDGE) &&
+                    (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_PEDGE) &&
+                    (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_AEDGE));
       statement_connect( curr_stmt->next_true, next_stmt, allow_stop );
     }
 
@@ -359,6 +363,9 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.19  2002/06/29 04:51:31  phase1geo
+/* Various fixes for bugs found in regression testing.
+/*
 /* Revision 1.18  2002/06/28 03:04:59  phase1geo
 /* Fixing more errors found by diagnostics.  Things are running pretty well at
 /* this point with current diagnostics.  Still some report output problems.
