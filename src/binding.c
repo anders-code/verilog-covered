@@ -4,7 +4,13 @@
  \date     3/4/2002
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <stdlib.h>
 #include <assert.h>
 
@@ -262,6 +268,10 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.19  2002/11/05 00:20:06  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.18  2002/10/31 23:13:18  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
