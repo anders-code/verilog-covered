@@ -171,13 +171,18 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
   int   retval = TCL_OK;
   char* ifile;
 
-  ifile = strdup_safe( argv[1], __FILE__, __LINE__ );
+  /* If no filename was specified, the user hit cancel so just exit gracefully */
+  if( argv[1][0] != '\0' ) {
 
-  if( !report_read_cdd_and_ready( ifile ) ) {
-    retval = TCL_ERROR;
+    ifile = strdup_safe( argv[1], __FILE__, __LINE__ );
+
+    if( !report_read_cdd_and_ready( ifile ) ) {
+      retval = TCL_ERROR;
+    }
+
+    free_safe( ifile );
+
   }
-
-  free_safe( ifile );
 
   return( retval );
 
@@ -226,6 +231,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
 /*
  $Log$
+ Revision 1.3  2004/03/26 13:20:33  phase1geo
+ Fixing case where user hits cancel button in open window so that we don't
+ exit the GUI when this occurs.
+
  Revision 1.2  2004/03/25 14:37:07  phase1geo
  Fixing installation of TCL scripts and usage of the scripts in their installed
  location.  We are almost ready to create the new development release.
