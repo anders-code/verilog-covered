@@ -590,6 +590,7 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
       signal_init( sig, strdup( name ), (vector*)malloc_safe( sizeof( vector ) ) );
       sig->value->lsb   = -1;
       sig->value->width = -1;      
+      sig->value->value = NULL;
       if( lsb != -1 ) {
         sig->value->lsb = lsb;
       }
@@ -1177,6 +1178,11 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.63  2002/10/12 22:21:35  phase1geo
+/* Making code fix for parameters when parameter is used in calculation of
+/* signal size.  Also adding parse ability for real numbers in a VCD file
+/* (though real number support is still avoided).
+/*
 /* Revision 1.62  2002/10/11 05:23:21  phase1geo
 /* Removing local user message allocation and replacing with global to help
 /* with memory efficiency.
