@@ -56,6 +56,9 @@ statement* db_create_statement( expression* exp );
 /*! \brief Adds specified statement to current module's statement list.  Called by parser. */
 void db_add_statement( statement* stmt, statement* start );
 
+/*! \brief Removes specified statement from current module. */
+void db_remove_statement_from_current_module( statement* stmt );
+
 /*! \brief Removes specified statement and associated expression from list and memory. */
 void db_remove_statement( statement* stmt );
 
@@ -95,9 +98,20 @@ void db_set_symbol_string( char* sym, char* value );
 /*! \brief Performs a timestep for all signal changes during this timestep. */
 void db_do_timestep( int time ); 
 
+/*! \brief Deallocates all memory associated with a particular design. */
+void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.34  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.33  2004/01/04 04:52:03  phase1geo
  Updating ChangeLog and TODO files.  Adding merge information to INFO line
  of CDD files and outputting this information to the merged reports.  Adding

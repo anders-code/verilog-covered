@@ -32,7 +32,7 @@ void VLerror( char* msg ) {
   error_count += 1;
   
   snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", msg, yylloc.text, yylloc.first_line );
-  print_output( user_msg, FATAL );
+  print_output( user_msg, FATAL, __FILE__, __LINE__ );
 
 }
 
@@ -47,7 +47,7 @@ void VLwarn( char* msg ) {
   warn_count += 1;
   
   snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", msg, yylloc.text, yylloc.first_line );
-  print_output( user_msg, WARNING );
+  print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
 }
 
@@ -62,6 +62,15 @@ int VLwrap() {
 
 /*
  $Log$
+ Revision 1.4  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.3  2003/08/10 03:50:10  phase1geo
  More development documentation updates.  All global variables are now
  documented correctly.  Also fixed some generated documentation warnings.

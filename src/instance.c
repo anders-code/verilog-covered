@@ -35,9 +35,9 @@ mod_inst* instance_create( module* mod, char* inst_name ) {
 
   mod_inst* new_inst;   /* Pointer to new module instance */
 
-  new_inst             = (mod_inst*)malloc_safe( sizeof( mod_inst ) );
+  new_inst             = (mod_inst*)malloc_safe( sizeof( mod_inst ), __FILE__, __LINE__ );
   new_inst->mod        = mod;
-  new_inst->name       = strdup( inst_name );
+  new_inst->name       = strdup_safe( inst_name, __FILE__, __LINE__ );
   new_inst->stat       = NULL;
   new_inst->param_head = NULL;
   new_inst->param_tail = NULL;
@@ -403,6 +403,9 @@ void instance_read_add( mod_inst** root, char* parent, module* child, char* inst
         inst->child_tail       = new_inst;
       }
 
+      /* Set parent pointer of new instance */
+      new_inst->parent = inst;
+
     } else {
 
       /* Unable to find parent of this child, something went in wrong in writing/reading CDD file. */
@@ -552,6 +555,15 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.30  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.29  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

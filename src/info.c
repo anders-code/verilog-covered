@@ -118,7 +118,7 @@ bool info_db_read( char** line ) {
     *line = *line + chars_read;
 
     if( version != CDD_VERSION ) {
-      print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
+      print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
       retval = FALSE;
     }
 
@@ -132,17 +132,17 @@ bool info_db_read( char** line ) {
     if( mcode != INFO_NOT_MERGED ) {
       if( sscanf( *line, "%s%n", tmp, &chars_read ) == 1 ) {
         if( merge_in0 == NULL ) {
-          merge_in0 = strdup( tmp );
+          merge_in0 = strdup_safe( tmp, __FILE__, __LINE__ );
         }
         *line = *line + chars_read;
         if( mcode == INFO_TWO_MERGED ) {
           if( sscanf( *line, "%s%n", tmp, &chars_read ) == 1 ) {
             if( merge_in1 == NULL ) {
-              merge_in1 = strdup( tmp );
+              merge_in1 = strdup_safe( tmp, __FILE__, __LINE__ );
             }
             *line = *line + chars_read;
           } else {
-            print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
+            print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
             retval = FALSE;
           }
         }
@@ -152,11 +152,11 @@ bool info_db_read( char** line ) {
           }
           *line = *line + chars_read;
         } else {
-          print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
+          print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
           retval = FALSE;
         }
       } else {
-        print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
+        print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
     }
@@ -166,7 +166,7 @@ bool info_db_read( char** line ) {
 
   } else {
 
-    print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
+    print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
   }
@@ -178,6 +178,15 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.7  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.6  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.
