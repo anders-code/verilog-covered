@@ -54,9 +54,17 @@ void statistic_merge( statistic* stat_to, statistic* stat_from ) {
   stat_to->tog10_hit   += stat_from->tog10_hit;
   stat_to->comb_total  += stat_from->comb_total;
   stat_to->comb_hit    += stat_from->comb_hit;
-  stat_to->state_total += stat_from->state_total;
+  if( (stat_to->state_total != -1) && (stat_from->state_total != -1) ) {
+    stat_to->state_total += stat_from->state_total;
+  } else {
+    stat_to->state_total = -1;
+  }
   stat_to->state_hit   += stat_from->state_hit;
-  stat_to->arc_total   += stat_from->arc_total;
+  if( (stat_to->arc_total != -1) && (stat_from->arc_total != -1) ) {
+    stat_to->arc_total += stat_from->arc_total;
+  } else {
+    stat_to->arc_total = -1;
+  }
   stat_to->arc_hit     += stat_from->arc_hit;
 
 }
@@ -79,6 +87,11 @@ void statistic_dealloc( statistic* stat ) {
 
 /*
  $Log$
+ Revision 1.5  2003/11/10 04:25:50  phase1geo
+ Adding more FSM diagnostics to regression suite.  All major testing for
+ current FSM code should be complete at this time.  A few bug fixes to files
+ that were found during this regression testing.
+
  Revision 1.4  2003/08/25 13:02:04  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these
