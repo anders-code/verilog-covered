@@ -41,6 +41,8 @@ extern char      user_msg[USER_MSG_LENGTH];
 extern bool      one_instance_found;
 extern char      leading_hierarchy[4096];
 extern bool      flag_scored;
+extern int       timestep_update;
+extern bool      debug_mode;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -73,7 +75,8 @@ int       curr_expr_id  = 1;
  This static value contains the current simulation time which is specified by the db_do_timestep
  function.  It is used for calculating delay expressions in the simulation engine.
 */
-int       curr_sim_time = 0;
+int       curr_sim_time   = 0;
+int       last_sim_update = 0;
 
 /*!
  \param file        Name of database file to output contents to.
@@ -1186,6 +1189,12 @@ void db_do_timestep( int time ) {
 
   curr_sim_time = time;
 
+  if( (timestep_update > 0) && ((curr_sim_time - last_sim_update) >= timestep_update) && !debug_mode ) {
+    last_sim_update = curr_sim_time;
+    printf( "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bPerforming timestep %10d", curr_sim_time );
+    fflush( stdout );
+  }
+
   /* Assign all stored values in current pre-timestep to stored signals */
   print_output( "Assigning presimulation signals...", DEBUG );
   symtable_assign( presim_timestep_tab );
@@ -1208,6 +1217,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.93  2003/08/07 15:41:43  phase1geo
+ Adding -ts option to score command to allow the current timestep to be
+ output during the simulation phase.
+
  Revision 1.92  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making
