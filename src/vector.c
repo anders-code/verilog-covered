@@ -704,6 +704,9 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) {
   bool prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
   int  i;                      /* Loop iterator                               */
 
+  assert( vec != NULL );
+  assert( (msb - lsb) < vec->width );
+
   for( i=lsb; i<=msb; i++ ) {
     if( vec->value[i].part.misc == 1 ) {
       prev_assigned = TRUE;
@@ -1773,6 +1776,11 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.59  2005/01/25 13:42:28  phase1geo
+ Fixing segmentation fault problem with race condition checking.  Added race1.1
+ to regression.  Removed unnecessary output statements from previous debugging
+ checkins.
+
  Revision 1.58  2005/01/11 14:24:16  phase1geo
  Intermediate checkin.
 

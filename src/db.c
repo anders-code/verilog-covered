@@ -931,6 +931,7 @@ void db_remove_statement_from_current_module( statement* stmt ) {
     /* Remove expression from current module expression list and delete expressions */
     exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail), TRUE );
 
+    /* Remove this statement link from the current module's stmt_link list */
     stmt_link_unlink( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
 
   }
@@ -1325,6 +1326,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.122  2005/01/25 13:42:27  phase1geo
+ Fixing segmentation fault problem with race condition checking.  Added race1.1
+ to regression.  Removed unnecessary output statements from previous debugging
+ checkins.
+
  Revision 1.121  2005/01/10 23:03:37  phase1geo
  Added code to properly report race conditions.  Added code to remove statement blocks
  from module when race conditions are found.
