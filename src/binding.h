@@ -12,7 +12,7 @@
 
 
 /*! \brief Adds signal and expression to binding list. */
-void bind_add( char* sig_name, expression* exp, module* mod );
+void bind_add( const char* sig_name, expression* exp, module* mod );
 
 /*! \brief Removes the expression with ID of id from binding list. */
 void bind_remove( int id );
@@ -26,6 +26,15 @@ void bind();
 
 /* 
  $Log$
+ Revision 1.11  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.10  2003/10/16 04:26:01  phase1geo
  Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
  for FSM variables that are not able to be bound correctly.  Fixing bug in
