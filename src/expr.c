@@ -1114,6 +1114,10 @@ void expression_operate( expression* expr ) {
       case EXP_OP_CASE :
         assert( expr->left != NULL );
         assert( expr->right != NULL );
+        printf( "Left value\n" );
+        vector_display( expr->left->value );
+        printf( "Right value\n" );
+        vector_display( expr->right->value );
         vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
         break;
 
@@ -1332,6 +1336,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.82  2003/10/16 12:27:19  phase1geo
+ Fixing bug in arc.c related to non-zero LSBs.
+
  Revision 1.81  2003/10/14 04:02:44  phase1geo
  Final fixes for new FSM support.  Full regression now passes.  Need to
  add new diagnostics to verify new functionality, but at least all existing

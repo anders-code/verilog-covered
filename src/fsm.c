@@ -335,10 +335,6 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
 */
 void fsm_table_set( fsm* table ) {
 
-  printf( "In fsm_table_set\n" );
-  vector_display( table->from_state->value );
-  vector_display( table->to_state->value );
-
   arc_add( &(table->table), table->to_state->value->width, table->from_state->value, table->to_state->value, 1 );
 
 }
@@ -773,6 +769,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.26  2003/10/16 12:27:19  phase1geo
+ Fixing bug in arc.c related to non-zero LSBs.
+
  Revision 1.25  2003/10/16 04:26:01  phase1geo
  Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
  for FSM variables that are not able to be bound correctly.  Fixing bug in
