@@ -41,7 +41,6 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
         (*arg)++;
       }
       if( (sig = signal_from_string( arg )) != NULL ) {
-        printf( "arg: %s\n", *arg );
 
         if( sig->value->width == 0 ) {
 
@@ -105,7 +104,6 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
   } else {
 
     if( (sig = signal_from_string( arg )) != NULL ) {
-      printf( "arg: %s\n", *arg );
 
       if( sig->value->width == 0 ) {
 
@@ -201,8 +199,6 @@ bool fsm_arg_parse( char* arg ) {
 
     if( (in_state = fsm_arg_parse_state( &ptr, arg )) != NULL ) {
 
-      printf( "ptr: %c\n", *ptr );
-
       if( *ptr == ',' ) {
 
         ptr++;
@@ -234,6 +230,9 @@ bool fsm_arg_parse( char* arg ) {
 
 /*
  $Log$
+ Revision 1.4  2003/10/13 12:27:25  phase1geo
+ More fixes to FSM stuff.
+
  Revision 1.3  2003/10/10 20:52:07  phase1geo
  Initial submission of FSM expression allowance code.  We are still not quite
  there yet, but we are getting close.
