@@ -230,7 +230,8 @@ void expression_set_value( expression* exp, vector* vec ) {
   assert( exp->value != NULL );
   assert( vec != NULL );
   
-  /* printf( "In expression_set_value, exp_id: %d\n", exp->id ); */
+  printf( "In expression_set_value, exp_id: %d, op: %d\n", exp->id, SUPPL_OP( exp->suppl ) );
+  printf( "\n" );
   
   switch( SUPPL_OP( exp->suppl ) ) {
     case EXP_OP_SIG   :
@@ -295,7 +296,7 @@ void expression_resize( expression* expr, bool recursive ) {
       expression_resize( expr->right, recursive );
     }
     
-    /* printf( "Resizing expression %d, op: %d, presize: %d\n", expr->id, SUPPL_OP( expr->suppl ), expr->value->width ); */
+    printf( "Resizing expression %d, op: %d, presize: %d\n", expr->id, SUPPL_OP( expr->suppl ), expr->value->width );
 
     switch( SUPPL_OP( expr->suppl ) ) {
 
@@ -335,8 +336,10 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_CASEZ   :
       case EXP_OP_DEFAULT :
       case EXP_OP_LAST    :
-        assert( expr->value->value == NULL );
-        expression_create_value( expr, 1, 0, FALSE );
+        if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
+          assert( expr->value->value == NULL );
+          expression_create_value( expr, 1, 0, FALSE );
+        }
         break;
 
       /*
@@ -344,10 +347,14 @@ void expression_resize( expression* expr, bool recursive ) {
        to be the width of its right child.
       */
       case EXP_OP_AEDGE :
-        assert( expr->left->value->value == NULL );
-        assert( expr->value->value == NULL );
-        expression_create_value( expr->left, expr->right->value->width, expr->right->value->lsb, FALSE );
-        expression_create_value( expr, 1, 0, FALSE );
+        if( (expr->left->value->width != expr->right->value->width) || (expr->left->value->value == NULL) ) {
+          assert( expr->left->value->value == NULL );
+          expression_create_value( expr->left, expr->right->value->width, expr->right->value->lsb, FALSE );
+        }
+        if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
+          assert( expr->value->value == NULL );
+          expression_create_value( expr, 1, 0, FALSE );
+        }
         break;
 
       /*
@@ -355,9 +362,12 @@ void expression_resize( expression* expr, bool recursive ) {
        the left child and the bit-width of the right child.
       */
       case EXP_OP_EXPAND :
-        assert( expr->value->value == NULL );
         expression_operate_recursively( expr->left );
-        expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), 0, FALSE );
+        if( (expr->value->width != (vector_to_int( expr->left->value ) * expr->right->value->width)) ||
+            (expr->value->value == NULL) ) {
+          assert( expr->value->value == NULL );
+          expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), 0, FALSE );
+        }
         break;
 
       /* 
@@ -367,12 +377,14 @@ void expression_resize( expression* expr, bool recursive ) {
       */
       case EXP_OP_MULTIPLY :
       case EXP_OP_LIST :
-        assert( expr->value->value == NULL );
-        expression_create_value( expr, (expr->left->value->width + expr->right->value->width), 0, FALSE );
+        if( (expr->value->width != (expr->left->value->width + expr->right->value->width)) ||
+            (expr->value->value == NULL) ) {
+          assert( expr->value->value == NULL );
+          expression_create_value( expr, (expr->left->value->width + expr->right->value->width), 0, FALSE );
+        }
         break;
 
       default :
-        assert( expr->value->value == NULL );
         if( (expr->left != NULL) && ((expr->right == NULL) || (expr->left->value->width > expr->right->value->width)) ) {
           largest_width = expr->left->value->width;
         } else if( expr->right != NULL ) {
@@ -380,7 +392,10 @@ void expression_resize( expression* expr, bool recursive ) {
         } else {
           largest_width = 1;
         }
-        expression_create_value( expr, largest_width, 0, FALSE );
+        if( (expr->value->width != largest_width) || (expr->value->value == NULL) ) {
+          assert( expr->value->value == NULL );
+          expression_create_value( expr, largest_width, 0, FALSE );
+        }
         break;
 
     }
@@ -432,7 +447,10 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
   if( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG) && 
       (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) && 
       (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) ) {
-    vector_db_write( expr->value, file, (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) );
+    vector_db_write( expr->value, file, ((SUPPL_OP( expr->suppl ) == EXP_OP_STATIC)     ||
+                                         (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM)      ||
+                                         (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_SBIT) ||
+                                         (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_MBIT)) );
   }
 
   fprintf( file, "\n" );
@@ -1164,6 +1182,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.64  2002/11/08 00:58:04  phase1geo
+ Attempting to fix problem with parameter handling.  Updated some diagnostics
+ in test suite.  Other diagnostics to follow.
+
  Revision 1.63  2002/11/05 22:27:02  phase1geo
  Adding diagnostic to verify usage of parameters in signal sizing expressions.
  Added diagnostic to regression suite.  Fixed bug with sizing of EXPAND
