@@ -130,6 +130,9 @@ expression* expression_create( expression* right, expression* left, int op, int 
              (op == EXP_OP_UNOR ) ||
              (op == EXP_OP_UNXOR) ||
              (op == EXP_OP_EOR)   ||
+             (op == EXP_OP_NEDGE) ||
+             (op == EXP_OP_PEDGE) ||
+             (op == EXP_OP_AEDGE) ||
              (op == EXP_OP_CASE)  ||
              (op == EXP_OP_CASEX) ||
              (op == EXP_OP_CASEZ) ||
@@ -843,8 +846,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
-/* Revision 1.44  2002/07/19 13:10:06  phase1geo
-/* Various fixes to binding scheme.
+/* Revision 1.45  2002/07/20 13:58:01  phase1geo
+/* Fixing bug in EXP_OP_LAST for changes in binding.  Adding correct line numbering
+/* to lexer (tested).  Added '+' to report outputting for signals larger than 1 bit.
+/* Added mbit_sel1.v diagnostic to verify some multi-bit functionality.  Full
+/* regression passes.
 /*
 /* Revision 1.43  2002/07/18 22:02:35  phase1geo
 /* In the middle of making improvements/fixes to the expression/signal
