@@ -75,10 +75,30 @@
 
 extern nibble or_optab[16];
 
+/*!
+ Pointer to head of expression list that contains all expressions that contain static (non-changing)
+ values.  These expressions will be forced to be simulated, making sure that correct coverage numbers
+ for expressions containing static values is maintained.
+*/
 exp_link*  static_expr_head = NULL;
+
+/*!
+ Pointer to tail of expression list that contains all expressions that contain static (non-changing)
+ values.  These expressions will be forced to be simulated, making sure that correct coverage numbers
+ for expressions containing static values is maintained.
+*/
 exp_link*  static_expr_tail = NULL;
 
+/*!
+ Pointer to head of statement list that contains all statements that will initially be simulated
+ for the current timestep.
+*/
 stmt_link* presim_stmt_head = NULL;
+
+/*!
+ Pointer to tail of statement list that contains all statements that will initially be simulated
+ for the current timestep.
+*/
 stmt_link* presim_stmt_tail = NULL;
 
 
@@ -351,6 +371,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.30  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.29  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making
