@@ -7,8 +7,14 @@
  A vector comprised of three components
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <stdlib.h>
 #include <assert.h>
 
@@ -1427,6 +1433,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.26  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.25  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 
