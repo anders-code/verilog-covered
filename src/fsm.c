@@ -464,8 +464,8 @@ void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* 
     *arc_total   += *state_total * *state_total;
 
     /* Calculate state and arc hits */
-    (*state_hit) = arc_state_hit_total( curr->table->table );
-    (*arc_hit)   = arc_transition_hit_total( curr->table->table );
+    (*state_hit) = arc_state_hits( curr->table->table );
+    (*arc_hit)   = arc_transition_hits( curr->table->table );
 
     curr = curr->next;
 
@@ -690,6 +690,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.9  2003/09/13 02:59:34  phase1geo
+ Fixing bugs in arc.c created by extending entry supplemental field to 5 bits
+ from 3 bits.  Additional two bits added for calculating unique states.
+
  Revision 1.8  2003/09/12 04:47:00  phase1geo
  More fixes for new FSM arc transition protocol.  Everything seems to work now
  except that state hits are not being counted correctly.
