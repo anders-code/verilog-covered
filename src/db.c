@@ -480,14 +480,15 @@ expression* db_create_expression( expression* right, expression* left, int op, i
   curr_expr_id++;
 
   /* Set right and left side expression's (if they exist) parent pointer to this expression */
-  if( (right != NULL) &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_CASE) &&      (SUPPL_OP( expr->suppl ) != EXP_OP_CASEX) &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_CASEZ) ) {
+  if( right != NULL ) {
     assert( right->parent->expr == NULL );
     right->parent->expr = expr;
   }
 
-  if( left != NULL ) {
+  if( (left != NULL) &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_CASE) &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_CASEX) &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_CASEZ) ) {
     assert( left->parent->expr == NULL );
     left->parent->expr = expr;
   }
@@ -973,6 +974,12 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.30  2002/07/05 00:10:18  phase1geo
+/* Adding report support for case statements.  Everything outputs fine; however,
+/* I want to remove CASE, CASEX and CASEZ expressions from being reported since
+/* it causes redundant and misleading information to be displayed in the verbose
+/* reports.  New diagnostics to check CASE expressions have been added and pass.
+/*
 /* Revision 1.29  2002/07/04 23:10:12  phase1geo
 /* Added proper support for case, casex, and casez statements in score command.
 /* Report command still incorrect for these statement types.
