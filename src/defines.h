@@ -751,6 +751,7 @@
                                      (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_SBIT) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_MBIT) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_DELAY) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_EOR) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_ASSIGN) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_BASSIGN) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_NASSIGN) && \
@@ -1534,6 +1535,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.96  2004/01/02 22:11:03  phase1geo
+ Updating regression for latest batch of changes.  Full regression now passes.
+ Fixed bug with event or operation in report command.
+
  Revision 1.95  2003/12/30 23:02:28  phase1geo
  Contains rest of fixes for multi-expression combinational logic report output.
  Full regression fails currently.
