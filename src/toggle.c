@@ -15,6 +15,8 @@
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
 
+extern bool      report_covered;
+
 /*!
  \param expl   Pointer to expression list to search.
  \param sigl   Pointer to signal list to search.
@@ -186,8 +188,13 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
   int       hit01;      /* Number of bits that toggled from 0 to 1        */
   int       hit10;      /* Number of bits that toggled from 1 to 0        */
 
-  fprintf( ofile, "Signals not getting 100%% toggle coverage\n\n" );
-  fprintf( ofile, "Signal                    Toggle\n" );
+  if( report_covered ) {
+    fprintf( ofile, "Signals getting 100%% toggle coverage\n\n" );
+  } else {
+    fprintf( ofile, "Signals not getting 100%% toggle coverage\n\n" );
+    fprintf( ofile, "Signal                    Toggle\n" );
+  }
+
   fprintf( ofile, "----------------------------------------------------------------------------------\n" );
 
   curr_sig = sigl;
@@ -199,13 +206,25 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 
     vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
-    if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
+    if( report_covered ) {
 
-      fprintf( ofile, "%-24s  0->1: ", curr_sig->sig->name );
-      vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
-      fprintf( ofile, "\n......................... 1->0: " );
-      vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
-      fprintf( ofile, " ...\n" );
+      if( (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width) ) {
+        
+        fprintf( ofile, "%-24s\n", curr_sig->sig->name );
+
+      }
+
+    } else {
+
+      if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
+
+        fprintf( ofile, "%-24s  0->1: ", curr_sig->sig->name );
+        vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
+        fprintf( ofile, "\n......................... 1->0: " );
+        vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
+        fprintf( ofile, " ...\n" );
+
+      }
 
     }
 
@@ -328,6 +347,12 @@ void toggle_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.11  2002/08/20 04:48:18  phase1geo
+/* Adding option to report command that allows the user to display logic that is
+/* being covered (-c option).  This overrides the default behavior of displaying
+/* uncovered logic.  This is useful for debugging purposes and understanding what
+/* logic the tool is capable of handling.
+/*
 /* Revision 1.10  2002/08/19 04:59:49  phase1geo
 /* Adjusting summary format to allow for larger line, toggle and combination
 /* counts.
