@@ -1161,8 +1161,17 @@ struct mod_link_s {
 };
 
 /*------------------------------------------------------------------------------*/
+/*!
+ For each signal within a symtable entry, an independent MSB and LSB needs to be
+ stored along with the signal pointer that it references to properly assign the
+ VCD signal value to the appropriate signal.  This structure is setup to hold these
+ three key pieces of information in a list-style data structure.
+*/
 struct sym_sig_s;
 
+/*!
+ Renaming symbol signal structure for convenience.
+*/
 typedef struct sym_sig_s sym_sig;
 
 struct sym_sig_s {
@@ -1332,6 +1341,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.74  2003/08/22 00:23:59  phase1geo
+ Adding development documentation comment to defines.h for new sym_sig structure.
+
  Revision 1.73  2003/08/21 21:57:30  phase1geo
  Fixing bug with certain flavors of VCD files that alias signals that have differing
  MSBs and LSBs.  This takes care of the rest of the bugs for the 0.2 stable release.
