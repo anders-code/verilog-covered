@@ -102,7 +102,7 @@ bool parse_design( char* top, char* output_db ) {
 
   snprintf( msg, 4096, "========  Design written to database %s successfully  ========\n\n", output_db );
   print_output( msg, DEBUG );
- 
+
   return( retval );
 
 }
@@ -157,6 +157,11 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 }
 
 /* $Log$
+/* Revision 1.10  2002/08/19 04:34:07  phase1geo
+/* Fixing bug in database reading code that dealt with merging modules.  Module
+/* merging is now performed in a more optimal way.  Full regression passes and
+/* own examples pass as well.
+/*
 /* Revision 1.9  2002/07/22 05:24:46  phase1geo
 /* Creating new VCD parser.  This should have performance benefits as well as
 /* have the ability to handle any problems that come up in parsing.

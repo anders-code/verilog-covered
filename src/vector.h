@@ -19,14 +19,14 @@ void vector_init( vector* vec, nibble* value, int width, int lsb );
 //! Creates and initializes new vector
 vector* vector_create( int width, int lsb );
 
-//! Merges two vectors and places result into base vector.
-void vector_merge( vector* base, vector* in );
-
 //! Displays vector information to specified database file.
 void vector_db_write( vector* vec, FILE* file, bool write_data );
 
 //! Creates and parses current file line for vector information */
 bool vector_db_read( vector** vec, char** line );
+
+//! Reads and merges two vectors, placing the result into base vector.
+bool vector_db_merge( vector* base, char** line );
 
 //! Outputs the toggle01 information from the specified nibble to the specified output stream.
 void vector_display_toggle01( nibble* nib, int width, int lsb, FILE* ofile );
@@ -104,6 +104,11 @@ void vector_unary_not( vector* tgt, vector* src );
 void vector_dealloc( vector* vec );
 
 /* $Log$
+/* Revision 1.7  2002/08/19 04:34:07  phase1geo
+/* Fixing bug in database reading code that dealt with merging modules.  Module
+/* merging is now performed in a more optimal way.  Full regression passes and
+/* own examples pass as well.
+/*
 /* Revision 1.6  2002/07/17 06:27:18  phase1geo
 /* Added start for fixes to bit select code starting with single bit selection.
 /* Full regression passes with addition of sbit_sel1 diagnostic.

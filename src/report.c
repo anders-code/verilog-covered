@@ -388,7 +388,7 @@ int command_report( int argc, int last_arg, char** argv ) {
       } else {
 
         /* Free up memory for holding output_file */
-        free( output_file );
+        free_safe( output_file );
 
       }
     
@@ -427,6 +427,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.11  2002/08/19 04:34:07  phase1geo
+/* Fixing bug in database reading code that dealt with merging modules.  Module
+/* merging is now performed in a more optimal way.  Full regression passes and
+/* own examples pass as well.
+/*
 /* Revision 1.10  2002/07/20 18:46:38  phase1geo
 /* Causing fully covered modules to not be output in reports.  Adding
 /* instance3.v diagnostic to verify this works correctly.
