@@ -660,11 +660,11 @@
 #define EXP_OP_EXPAND     0x25
 /*! Decimal value = 38.  Specifies signal concatenation operator (i.e., {x,y}). */
 #define EXP_OP_CONCAT     0x26
-/*! Decimal value = 39.  Specifies posedge operator (i.e., @posedge x). */
+/*! Decimal value = 39.  Specifies posedge operator (i.e., \@posedge x). */
 #define EXP_OP_PEDGE      0x27
-/*! Decimal value = 40.  Specifies negedge operator (i.e., @negedge x). */
+/*! Decimal value = 40.  Specifies negedge operator (i.e., \@negedge x). */
 #define EXP_OP_NEDGE      0x28
-/*! Decimal value = 41.  Specifies anyedge operator (i.e., @x). */
+/*! Decimal value = 41.  Specifies anyedge operator (i.e., \@x). */
 #define EXP_OP_AEDGE      0x29
 /*! Decimal value = 42.  Specifies 1-bit holder for parent. */
 #define EXP_OP_LAST       0x2a
@@ -1296,6 +1296,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.70  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.69  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making
