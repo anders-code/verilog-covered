@@ -92,10 +92,10 @@ void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
 void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt );
 
 /*! \brief Performs bitwise operation on two source vectors from specified operation table. */
-void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab );
+bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab );
 
 /*! \brief Performs bitwise comparison of two vectors. */
-void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type );
+bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type );
 
 /*! \brief Performs left shift operation on left expression by right expression bits. */
 void vector_op_lshift( vector* tgt, vector* left, vector* right );
@@ -127,6 +127,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.23  2004/10/22 22:03:32  phase1geo
+ More incremental changes to increase score command efficiency.
+
  Revision 1.22  2004/10/22 20:31:07  phase1geo
  Returning assignment status in vector_set_value and speeding up assignment procedure.
  This is an incremental change to help speed up design scoring.
