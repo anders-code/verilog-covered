@@ -418,8 +418,6 @@ int expression_get_id( expression* expr ) {
 */
 void expression_db_write( expression* expr, FILE* file, char* scope ) {
 
-  bool write_data;       /* Specifies if actual vector value should be output */
-
   fprintf( file, "%d %d %s %d %x %d %d ",
     DB_TYPE_EXPRESSION,
     expr->id,
@@ -454,21 +452,20 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
 */
 bool expression_db_read( char** line, module* curr_mod, bool eval ) {
 
-  bool        retval = TRUE;    /* Return value for this function                      */
-  int         id;               /* Holder of expression ID                             */
-  expression* expr;             /* Pointer to newly created expression                 */
-  char        scope[4096];      /* Holder for scope of this expression                 */
-  int         linenum;          /* Holder of current line for this expression          */
-  control     suppl;            /* Holder of supplemental value of this expression     */
-  int         right_id;         /* Holder of expression ID to the right                */
-  int         left_id;          /* Holder of expression ID to the left                 */
-  expression* right;            /* Pointer to current expression's right expression    */
-  expression* left;             /* Pointer to current expression's left expression     */
-  int         chars_read;       /* Number of characters scanned in from line           */
-  vector*     vec;              /* Holders vector value of this expression             */
-  char        modname[4096];    /* Name of this expression's module instance           */
-  expression  texp;             /* Temporary expression link holder for searching      */
-  exp_link*   expl;             /* Pointer to found expression in module               */
+  bool        retval = TRUE;  /* Return value for this function                   */
+  int         id;             /* Holder of expression ID                          */
+  expression* expr;           /* Pointer to newly created expression              */
+  int         linenum;        /* Holder of current line for this expression       */
+  control     suppl;          /* Holder of supplemental value of this expression  */
+  int         right_id;       /* Holder of expression ID to the right             */
+  int         left_id;        /* Holder of expression ID to the left              */
+  expression* right;          /* Pointer to current expression's right expression */
+  expression* left;           /* Pointer to current expression's left expression  */
+  int         chars_read;     /* Number of characters scanned in from line        */
+  vector*     vec;            /* Holders vector value of this expression          */
+  char        modname[4096];  /* Name of this expression's module instance        */
+  expression  texp;           /* Temporary expression link holder for searching   */
+  exp_link*   expl;           /* Pointer to found expression in module            */
 
   if( sscanf( *line, "%d %s %d %hx %d %d%n", &id, modname, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
 
@@ -1149,6 +1146,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.60  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.59  2002/10/31 23:13:43  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

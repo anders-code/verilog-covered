@@ -117,18 +117,15 @@ void signal_db_write( signal* sig, FILE* file, char* modname ) {
 */
 bool signal_db_read( char** line, module* curr_mod ) {
 
-  bool        retval = TRUE;   /* Return value for this function                   */
-  char        name[256];       /* Name of current signal                           */
-  signal*     sig;             /* Pointer to the newly created signal              */
-  vector*     vec;             /* Vector value for this signal                     */
-  int         exp_id;          /* Expression ID                                    */
-  char        tmp[2];          /* Temporary holder for semicolon                   */
-  int         chars_read;      /* Number of characters read from line              */
-  char        modname[4096];   /* Name of signal's module                          */
-  expression  texp;            /* Temporary expression link for searching purposes */
-  exp_link*   expl;            /* Temporary expression link for storage            */
-  char        msg[4096];       /* Error message string                             */
-  expression* curr_parent;     /* Pointer to current parent being traversed        */
+  bool       retval = TRUE;  /* Return value for this function                   */
+  char       name[256];      /* Name of current signal                           */
+  signal*    sig;            /* Pointer to the newly created signal              */
+  vector*    vec;            /* Vector value for this signal                     */
+  int        exp_id;         /* Expression ID                                    */
+  int        chars_read;     /* Number of characters read from line              */
+  char       modname[4096];  /* Name of signal's module                          */
+  expression texp;           /* Temporary expression link for searching purposes */
+  exp_link*  expl;           /* Temporary expression link for storage            */
 
   /* Get name values. */
   if( sscanf( *line, "%s %s %n", name, modname, &chars_read ) == 2 ) {
@@ -353,6 +350,9 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.24  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.23  2002/10/31 23:14:23  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

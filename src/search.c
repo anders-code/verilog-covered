@@ -4,8 +4,14 @@
  \date     11/27/2001
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <sys/types.h>
 #include <dirent.h>
 
@@ -14,6 +20,7 @@
 #include "link.h"
 #include "module.h"
 #include "util.h"
+#include "instance.h"
 
 
 str_link* inc_paths_head = NULL;    /*!< Pointer to head element of include paths list          */
@@ -211,6 +218,9 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.13  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.12  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

@@ -9,7 +9,9 @@
 #endif
 
 #include <stdio.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <stdlib.h>
 #include <stdarg.h>
 
@@ -18,6 +20,8 @@
 #include "score.h"
 #include "merge.h"
 #include "report.h"
+#include "util.h"
+
 
 /*!
  Displays usage information about this utility.
@@ -134,6 +138,9 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.10  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.9  2002/10/29 19:57:50  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

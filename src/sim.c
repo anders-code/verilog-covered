@@ -69,6 +69,8 @@
 #include "expr.h"
 #include "vector.h"
 #include "iter.h"
+#include "link.h"
+
 
 extern nibble or_optab[16];
 
@@ -88,8 +90,6 @@ stmt_link* presim_stmt_tail;
  do not add the statement again.
 */
 void sim_expr_changed( expression* expr ) {
-
-  expression* parent;    /* Pointer to parent expression of the current expression */
 
   /* No need to continue to traverse up tree if both CHANGED bits are set */
   if( (SUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) ||
@@ -296,6 +296,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.26  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.25  2002/10/31 23:14:24  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
