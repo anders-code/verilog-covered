@@ -142,4 +142,9 @@ char* codegen_gen_expr( expression* expr, int line ) {
 }
 
 
-/* $Log */
+/* $Log$
+/* Revision 1.5  2002/05/13 03:02:58  phase1geo
+/* Adding lines back to expressions and removing them from statements (since the line
+/* number range of an expression can be calculated by looking at the expression line
+/* numbers).
+/* */

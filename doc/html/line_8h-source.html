@@ -13,21 +13,19 @@
 00012 
 00013 <font class="preprocessor">#include "<a class="code" href="defines_8h.html">defines.h</a>"</font>
 00014 
-00016 <font class="keywordtype">void</font> <a class="code" href="line_8c.html#a2">line_get_stats</a>( <a class="code" href="structstmt__link__s.html">stmt_link</a>* stmtl, <font class="keywordtype">float</font>* total, <font class="keywordtype">int</font>* hit );
+00016 <font class="keywordtype">void</font> <a class="code" href="line_8c.html#a2">line_get_stats</a>( <a class="code" href="structexp__link__s.html">exp_link</a>* expl, <font class="keywordtype">float</font>* total, <font class="keywordtype">int</font>* hit );
 00017 
 00019 <font class="keywordtype">void</font> <a class="code" href="line_8c.html#a8">line_report</a>( FILE* ofile, <font class="keywordtype">bool</font> verbose, <font class="keywordtype">bool</font> instance );
 00020 
-00021 
-00022 <font class="comment">/* $Log$
-00022 <font class="comment">/* Revision 1.7  2002/05/03 03:39:35  phase1geo
-00022 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement
-00022 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines
-00022 <font class="comment">/* from expressions though we may want to consider putting these back for reporting
-00022 <font class="comment">/* purposes.
-00022 <font class="comment">/* */</font>
-00023 
-00024 <font class="preprocessor">#endif</font>
-</pre></div><hr><address align="right"><small>Generated on Thu May 2 22:36:40 2002 for Covered by
+00021 <font class="comment">/* $Log$
+00021 <font class="comment">/* Revision 1.8  2002/05/13 03:02:57  phase1geo
+00021 <font class="comment">/* Adding lines back to expressions and removing them from statements (since the line
+00021 <font class="comment">/* number range of an expression can be calculated by looking at the expression line
+00021 <font class="comment">/* numbers).
+00021 <font class="comment">/* */</font>
+00022 
+00023 <font class="preprocessor">#endif</font>
+</pre></div><hr><address align="right"><small>Generated on Sun May 12 22:00:13 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

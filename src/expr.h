@@ -17,7 +17,7 @@
 void expression_create_value( expression* exp, int width, int lsb );
 
 //! Creates new expression.
-expression* expression_create( expression* right, expression* left, int op, int id );
+expression* expression_create( expression* right, expression* left, int op, int id, int line );
 
 //! Merges two expressions and stores result in base expression.
 void expression_merge( expression* base, expression* in );
@@ -42,6 +42,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 
 /* $Log$
+/* Revision 1.4  2002/05/13 03:02:58  phase1geo
+/* Adding lines back to expressions and removing them from statements (since the line
+/* number range of an expression can be calculated by looking at the expression line
+/* numbers).
+/*
 /* Revision 1.3  2002/05/03 03:39:36  phase1geo
 /* Removing all syntax errors due to addition of statements.  Added more statement
 /* support code.  Still have a ways to go before we can try anything.  Removed lines
