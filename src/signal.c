@@ -25,7 +25,7 @@
 #include "sim.h"
 
 
-extern nibble or_optab[16];
+extern nibble or_optab[OPTAB_SIZE];
 extern char   user_msg[USER_MSG_LENGTH];
 
 
@@ -443,6 +443,9 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.44  2003/11/05 05:22:56  phase1geo
+ Final fix for bug 835366.  Full regression passes once again.
+
  Revision 1.43  2003/10/20 16:05:06  phase1geo
  Fixing bug for older versions of Icarus that does not output the correct
  bit select in the VCD dumpfile.  Covered will automatically adjust the bit-select
