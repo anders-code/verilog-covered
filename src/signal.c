@@ -175,8 +175,10 @@ bool signal_db_read( char** line, module* curr_mod ) {
               (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL ) ) {
 
             if( SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG ) {
-              expl->exp->value = sig->value;
-              expl->exp->sig   = sig;
+              expl->exp->value->value = sig->value->value;
+              expl->exp->value->width = sig->value->width;
+              expl->exp->value->lsb   = 0;
+              expl->exp->sig          = sig;
             } else if( SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL ) {
               expl->exp->value->value = sig->value->value;
               expl->exp->value->width = 1;
@@ -363,6 +365,11 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.17  2002/09/29 02:16:51  phase1geo
+/* Updates to parameter CDD files for changes affecting these.  Added support
+/* for bit-selecting parameters.  param4.v diagnostic added to verify proper
+/* support for this bit-selecting.  Full regression still passes.
+/*
 /* Revision 1.16  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements

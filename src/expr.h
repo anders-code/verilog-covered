@@ -22,9 +22,6 @@ expression* expression_create( expression* right, expression* left, int op, int 
 //! Recursively resizes specified expression tree leaf node.
 void expression_resize( expression* expr );
 
-//! Sets specified value to new value and resizes the expression tree accordingly.
-void expression_set_value_and_resize( expression* expr, vector* value );
-
 //! Returns expression ID of this expression.
 int expression_get_id( expression* expr );
 
@@ -51,6 +48,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 
 /* $Log$
+/* Revision 1.12  2002/09/29 02:16:51  phase1geo
+/* Updates to parameter CDD files for changes affecting these.  Added support
+/* for bit-selecting parameters.  param4.v diagnostic added to verify proper
+/* support for this bit-selecting.  Full regression still passes.
+/*
 /* Revision 1.11  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements
