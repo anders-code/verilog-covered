@@ -478,6 +478,38 @@
 /*! @} */
 
 /*!
+ \addtogroup delay_expr_types  Delay expression types.
+ 
+ The following defines are used select a delay expression type in the form min:typ:max
+ when encountered during parsing.
+ 
+ @{
+*/
+
+/*!
+ Default value of delay expression selector to indicate that the user has not
+ specified a value to use.
+*/
+#define DELAY_EXPR_DEFAULT      0
+
+/*!
+ Causes parser to always use min value in min:typ:max delay expressions.
+*/
+#define DELAY_EXPR_MIN          1
+
+/*!
+ Causes parser to always use typ value in min:typ:max delay expressions.
+*/
+#define DELAY_EXPR_TYP          2
+
+/*!
+ Causes parser to always use max value in min:typ:max delay expressions.
+*/
+#define DELAY_EXPR_MAX          3
+
+/*! @} */
+
+/*!
  \addtogroup expr_ops Expression operations
 
  The following defines are used for identifying expression operations.
@@ -1013,6 +1045,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.50  2002/10/13 19:20:42  phase1geo
+/* Added -T option to score command for properly handling min:typ:max delay expressions.
+/* Updated documentation for -i and -T options to score command and added additional
+/* diagnostic to test instance handling.
+/*
 /* Revision 1.49  2002/10/11 05:23:21  phase1geo
 /* Removing local user message allocation and replacing with global to help
 /* with memory efficiency.
