@@ -257,12 +257,12 @@ bool vector_db_merge( vector* base, char** line, bool same ) {
 
       sscanf( *line, "%x%n", &data, &chars_read );
       *line = *line + chars_read;
-      base->value[0] = (base->value[0] & VECTOR_MERGE_MASK) | (data & VECTOR_MERGE_MASK);
+      base->value[0] = (base->value[0] & (VECTOR_MERGE_MASK | 0xff)) | (data & VECTOR_MERGE_MASK);
 
       i = 1;
       while( sscanf( *line, ",%x%n", &data, &chars_read ) == 1 ) {
         *line = *line + chars_read;
-        base->value[i] = (base->value[i] & VECTOR_MERGE_MASK) | (data & VECTOR_MERGE_MASK);
+        base->value[i] = (base->value[i] & (VECTOR_MERGE_MASK | 0xff)) | (data & VECTOR_MERGE_MASK);
         i++;
       }
 
@@ -1470,6 +1470,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.32  2003/02/11 05:20:52  phase1geo
+ Fixing problems with merging constant/parameter vector values.  Also fixing
+ bad output from merge command when the CDD files cannot be opened for reading.
+
  Revision 1.31  2003/02/10 06:08:56  phase1geo
  Lots of parser updates to properly handle UDPs, escaped identifiers, specify blocks,
  and other various Verilog structures that Covered was not handling correctly.  Fixes
