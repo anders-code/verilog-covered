@@ -429,6 +429,7 @@
 #define EXP_OP_CASE     0x2d    /*!< 45 case equality expression      */
 #define EXP_OP_CASEX    0x2e    /*!< 46 casex equality expression     */
 #define EXP_OP_CASEZ    0x2f    /*!< 47 casez equality expression     */
+#define EXP_OP_DEFAULT  0x30    /*!< 48 case default expression       */
 
 /*! @} */
 
@@ -832,6 +833,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.29  2002/07/09 17:27:25  phase1geo
+/* Fixing default case item handling and in the middle of making fixes for
+/* report outputting.
+/*
 /* Revision 1.28  2002/07/09 04:46:26  phase1geo
 /* Adding -D and -Q options to covered for outputting debug information or
 /* suppressing normal output entirely.  Updated generated documentation and
