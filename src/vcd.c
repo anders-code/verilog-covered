@@ -73,6 +73,7 @@ void vcd_parse_def_var( FILE* vcd ) {
   int  size;             /* Bit width of specified variable */
   char id_code[256];     /* Unique variable identifier_code */
   char ref[256];         /* Name of variable in design      */
+  char reftmp[256];      /* Temporary variable name         */
   char tmp[15];          /* Temporary string holder         */
   int  msb = -1;         /* Most significant bit            */
   int  lsb = -1;         /* Least significant bit           */
@@ -105,7 +106,9 @@ void vcd_parse_def_var( FILE* vcd ) {
         exit( 1 );
       }
 
-    } else if( sscanf( ref, "%[a-zA-Z0-9_]\[%s]", ref, tmp ) == 2 ) {
+    } else if( sscanf( ref, "%[a-zA-Z0-9_]\[%s]", reftmp, tmp ) == 2 ) {
+
+      strcpy( ref, reftmp );
 
       if( sscanf( tmp, "%d:%d", &msb, &lsb ) != 2 ) {
         if( sscanf( tmp, "%d", &lsb ) != 1 ) {
@@ -379,6 +382,12 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.15  2003/10/19 04:23:49  phase1geo
+ Fixing bug in VCD parser for new Icarus Verilog VCD dumpfile formatting.
+ Fixing bug in signal.c for signal merging.  Updates all CDD files to match
+ new format.  Added new diagnostics to test advanced FSM state variable
+ features.
+
  Revision 1.14  2003/10/07 03:10:04  phase1geo
  Fixing VCD reader to allow vector selects that are attached (no spaces) to
  reference names to be read properly.  New version of Icarus seems to output

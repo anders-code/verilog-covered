@@ -240,7 +240,7 @@ bool signal_db_merge( signal* base, char** line, bool same ) {
   assert( base != NULL );
   assert( base->name != NULL );
 
-  if( sscanf( *line, "%s %s %d %n", name, modname, &lsb, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%s %s %d %n", name, modname, &lsb, &chars_read ) == 3 ) {
 
     *line = *line + chars_read;
 
@@ -315,7 +315,7 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
 
   assert( sig->value != NULL );
 
-  snprintf( user_msg, USER_MSG_LENGTH, "Assigning signal %s to value %s", sig->name, value );
+  snprintf( user_msg, USER_MSG_LENGTH, "Assigning signal %s[%d:%d] (lsb=%d) to value %s", sig->name, msb, lsb, sig->lsb, value );
   print_output( user_msg, DEBUG );
 
   /* Set signal value to specified value */
@@ -439,6 +439,12 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.42  2003/10/19 04:23:49  phase1geo
+ Fixing bug in VCD parser for new Icarus Verilog VCD dumpfile formatting.
+ Fixing bug in signal.c for signal merging.  Updates all CDD files to match
+ new format.  Added new diagnostics to test advanced FSM state variable
+ features.
+
  Revision 1.41  2003/10/17 21:59:07  phase1geo
  Fixing signal_vcd_assign function to properly adjust msb and lsb based on
  the lsb of the signal that is being assigned to.
