@@ -373,9 +373,6 @@ int command_score( int argc, int last_arg, char** argv ) {
       print_output( "", NORMAL );
     }
 
-    /* If there are any unused FSM variables, let the user know now. */
-    fsm_var_check_for_unused();
-
     /* Read dumpfile and score design */
     if( vcd_file != NULL ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Scoring dumpfile %s...", vcd_file );
@@ -405,6 +402,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.40  2003/10/10 20:52:07  phase1geo
+ Initial submission of FSM expression allowance code.  We are still not quite
+ there yet, but we are getting close.
+
  Revision 1.39  2003/10/03 21:28:43  phase1geo
  Restructuring FSM handling to be better suited to handle new FSM input/output
  state variable allowances.  Regression should still pass but new FSM support
