@@ -25,6 +25,7 @@ extern str_link* modlist_head;
 extern str_link* modlist_tail;
 
 extern char user_msg[USER_MSG_LENGTH];
+extern int  error_count;
 
 /*!
  \param file  Pointer to file to read
@@ -79,7 +80,7 @@ bool parse_design( char* top, char* output_db ) {
     reset_lexer( stdout, use_files_head );
 
     /* Starting parser */
-    if( VLparse() != 0 ) {
+    if( (VLparse() != 0) || (error_count > 0) ) {
       print_output( "Error in parsing design", FATAL );
       exit( 1 );
     }
@@ -160,6 +161,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.16  2002/12/01 06:37:52  phase1geo
+ Adding appropriate error output and causing score command to proper exit
+ if parser errors are found.
+
  Revision 1.15  2002/11/27 03:49:20  phase1geo
  Fixing bugs in score and report commands for regression.  Finally fixed
  static expression calculation to yield proper coverage results for constant
