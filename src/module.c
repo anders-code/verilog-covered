@@ -162,8 +162,6 @@ bool module_db_write( module* mod, FILE* file ) {
   snprintf( msg, 4096, "Writing module %s", mod->name );
   print_output( msg, DEBUG );
 
-  // module_display_signals( mod );
-
   fprintf( file, "%d %s %s %s\n",
     DB_TYPE_MODULE,
     mod->name,
@@ -360,6 +358,10 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.8  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
+/*
 /* Revision 1.7  2002/07/09 04:46:26  phase1geo
 /* Adding -D and -Q options to covered for outputting debug information or
 /* suppressing normal output entirely.  Updated generated documentation and

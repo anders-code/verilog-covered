@@ -133,6 +133,8 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
     vec->lsb
   );
 
+  assert( vec->width < MAX_BIT_WIDTH );
+
   for( i=0; i<VECTOR_SIZE( vec->width ); i++ ) {
     if( i == 0 ) {
       fprintf( file, " %x", (vec->value[i] & mask) );
@@ -1362,13 +1364,17 @@ void vector_dealloc( vector* vec ) {
     free_safe( vec );
 
   } else {
-    print_output( "Almost deallocated NULL vector value", WARNING );
-    // exit( 1 );
+    /* Internal error, we should never be trying to deallocate a NULL vector */
+    assert( vec != NULL );
   }
 
 }
 
 /* $Log$
+/* Revision 1.12  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
+/*
 /* Revision 1.11  2002/07/10 04:57:07  phase1geo
 /* Adding bits to vector nibble to allow us to specify what type of input
 /* static value was read in so that the output value may be displayed in

@@ -431,6 +431,7 @@
 #define EXP_OP_CASEX    0x2e    /*!< 46 casex equality expression     */
 #define EXP_OP_CASEZ    0x2f    /*!< 47 casez equality expression     */
 #define EXP_OP_DEFAULT  0x30    /*!< 48 case default expression       */
+#define EXP_OP_LIST     0x31    /*!< 49 comma separated expression list */
 
 /*! @} */
 
@@ -439,6 +440,7 @@
 */
 #define EXPR_IS_MEASURABLE(x)      (((SUPPL_OP( x->suppl ) != EXP_OP_STATIC) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_LAST) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_LIST) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASE) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASEX) && \
@@ -835,6 +837,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.33  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
+/*
 /* Revision 1.32  2002/07/11 16:59:10  phase1geo
 /* Added release information to NEWS for upcoming release.
 /*

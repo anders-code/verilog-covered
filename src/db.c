@@ -960,9 +960,9 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
-/* Revision 1.40  2002/07/13 06:05:49  phase1geo
-/* Providing bug fixes for handling empty always statements and handling
-/* various cases where a statement is optional and doesn't exist.
+/* Revision 1.41  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
 /*
 /* Revision 1.39  2002/07/13 05:35:52  phase1geo
 /* Cause warning message to be displayed for a signal found in the VCD dumpfile
