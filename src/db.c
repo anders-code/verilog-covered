@@ -71,8 +71,6 @@ bool db_write( char* file ) {
   sig_link*    scur;           /* Pointer to current signal link         */
   char         msg[256];       /* Error message to display               */
 
-  printf( "In db_write, module instance name: %s, instance name: %s\n", instance_root->mod->name, instance_root->name );
-
   if( (db_handle = fopen( file, "w" )) != NULL ) {
 
     /* Iterate through instance tree */
@@ -731,16 +729,22 @@ void db_set_vcd_scope( char* scope ) {
 
   assert( scope != NULL );
 
-  if( curr_vcd_scope != NULL ) {
-    tmpscope       = curr_vcd_scope;
-    scope_len      = strlen( curr_vcd_scope ) + strlen( scope ) + 2; 
-    curr_vcd_scope = (char*)malloc_safe( scope_len );
-    snprintf( curr_vcd_scope, scope_len, "%s.%s", tmpscope, scope );
-    free_safe( tmpscope );
-  } else {
-    if( instance_find_scope( instance_root, scope ) != NULL ) {
+  if( instance_find_scope( instance_root, scope ) != NULL ) {
+
+    if( curr_vcd_scope != NULL ) {
+
+      tmpscope       = curr_vcd_scope;
+      scope_len      = strlen( curr_vcd_scope ) + strlen( scope ) + 2; 
+      curr_vcd_scope = (char*)malloc_safe( scope_len );
+      snprintf( curr_vcd_scope, scope_len, "%s.%s", tmpscope, scope );
+      free_safe( tmpscope );
+
+    } else {
+
       curr_vcd_scope = strdup( scope );
+ 
     }
+
   }
 
 }
@@ -960,6 +964,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.33  2002/07/08 19:02:10  phase1geo
+/* Adding -i option to properly handle modules specified for coverage that
+/* are instantiated within a design without needing to parse parent modules.
+/*
 /* Revision 1.32  2002/07/08 12:35:31  phase1geo
 /* Added initial support for library searching.  Code seems to be broken at the
 /* moment.
