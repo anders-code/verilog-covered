@@ -539,7 +539,7 @@ expression* db_create_statement( int line, expression* exp ) {
 }
 
 /*!
- \param stmtm     Pointer to statement to add to module expression list.
+ \param stmt      Pointer to statement to add to module expression list.
  \param exp_true  Pointer to statement to run if statement evaluates to TRUE.
 
  Connects the specified statement's true statement.
@@ -560,7 +560,7 @@ void db_connect_statement_true( expression* stmt, expression* exp_true ) {
 }
 
 /*!
- \param stmtm      Pointer to statement to add to module expression list.
+ \param stmt       Pointer to statement to add to module expression list.
  \param exp_false  Pointer to statement to run if statement evaluates to TRUE.
 
  Connects the specified statement's false statement.
@@ -947,6 +947,10 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.8  2002/05/02 03:27:42  phase1geo
+/* Initial creation of statement structure and manipulation files.  Internals are
+/* still in a chaotic state.
+/*
 /* Revision 1.7  2002/04/30 05:04:25  phase1geo
 /* Added initial go-round of adding statement handling to parser.  Added simple
 /* Verilog test to check correct statement handling.  At this point there is a
