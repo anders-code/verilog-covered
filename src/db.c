@@ -400,18 +400,16 @@ void db_end_module() {
 */
 void db_add_signal( char* name, int width, int lsb, int is_static ) {
 
-  signal* sig;        /* Temporary pointer to newly created signal */
-  char    msg[4096];  /* Display message string                    */
+  signal  tmpsig;     /* Temporary signal for signal searching */
+  char    msg[4096];  /* Display message string                */
 
   snprintf( msg, 4096, "In db_add_signal, signal: %s, width: %d, lsb: %d", name, width, lsb );
   print_output( msg, DEBUG );
 
-  sig = signal_create( name, width, lsb, is_static );
+  tmpsig.name = name;
 
-  if( sig_link_find( sig, curr_module->sig_head ) == NULL ) {
-    sig_link_add( sig, &(curr_module->sig_head), &(curr_module->sig_tail) );
-  } else {
-    signal_dealloc( sig );
+  if( sig_link_find( &tmpsig, curr_module->sig_head ) == NULL ) {
+    sig_link_add( signal_create( name, width, lsb, is_static ), &(curr_module->sig_head), &(curr_module->sig_tail) );
   }
   
 }
@@ -960,6 +958,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.50  2002/08/14 04:52:48  phase1geo
+/* Removing unnecessary calls to signal_dealloc function and fixing bug
+/* with signal_dealloc function.
+/*
 /* Revision 1.49  2002/07/23 12:56:22  phase1geo
 /* Fixing some memory overflow issues.  Still getting core dumps in some areas.
 /*
