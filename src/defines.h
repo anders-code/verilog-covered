@@ -1073,6 +1073,7 @@ struct expression_s {
   vector*     value;       /*!< Current value and toggle information of this expression        */
   control     suppl;       /*!< Vector containing supplemental information for this expression */
   int         id;          /*!< Specifies unique ID for this expression in the parent          */
+  int         ulid;        /*!< Specifies underline ID for reporting purposes                  */
   int         line;        /*!< Specified line in file that this expression is found on        */
   signal*     sig;         /*!< Pointer to signal.  If NULL then no signal is attached         */
   expr_stmt*  parent;      /*!< Parent expression/statement                                    */
@@ -1578,6 +1579,14 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.101  2004/01/25 03:41:48  phase1geo
+ Fixes bugs in summary information not matching verbose information.  Also fixes
+ bugs where instances were output when no logic was missing, where instance
+ children were missing but not output.  Changed code to output summary
+ information on a per instance basis (where children instances are not merged
+ into parent instance summary information).  Updated regressions as a result.
+ Updates to user documentation (though this is not complete at this time).
+
  Revision 1.100  2004/01/21 22:26:56  phase1geo
  Changed default CDD file name from "cov.db" to "cov.cdd".  Changed instance
  statistic gathering from a child merging algorithm to just calculating

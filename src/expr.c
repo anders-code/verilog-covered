@@ -122,6 +122,7 @@ expression* expression_create( expression* right, expression* left, int op, bool
 
   new_expr->suppl        = (((int)lhs & 0x1) << SUPPL_LSB_LHS) | ((op & 0x7f) << SUPPL_LSB_OP);
   new_expr->id           = id;
+  new_expr->ulid         = -1;
   new_expr->line         = line;
   new_expr->sig          = NULL;
   new_expr->parent       = (expr_stmt*)malloc_safe( sizeof( expr_stmt ) );
@@ -1400,6 +1401,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.93  2004/01/25 03:41:48  phase1geo
+ Fixes bugs in summary information not matching verbose information.  Also fixes
+ bugs where instances were output when no logic was missing, where instance
+ children were missing but not output.  Changed code to output summary
+ information on a per instance basis (where children instances are not merged
+ into parent instance summary information).  Updated regressions as a result.
+ Updates to user documentation (though this is not complete at this time).
+
  Revision 1.92  2004/01/08 23:24:41  phase1geo
  Removing unnecessary scope information from signals, expressions and
  statements to reduce file sizes of CDDs and slightly speeds up fscanf
