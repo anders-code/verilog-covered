@@ -733,29 +733,43 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_DIVIDE :
-        vector_init( &vec1, value32, 32, 0 );
-        intval1 = vector_to_int( expr->left->value );
-        intval2 = vector_to_int( expr->right->value );
-        if( intval2 == 0 ) {
-          print_output( "Division by 0 error", FATAL );
-          exit( 1 );
+        if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
+          bit = 0x2;
+          for( i=0; i<expr->value->width; i++ ) {
+            vector_set_value( expr->value, &bit, 1, 0, i );
+          }
+        } else {
+          vector_init( &vec1, value32, 32, 0 );
+          intval1 = vector_to_int( expr->left->value );
+          intval2 = vector_to_int( expr->right->value );
+          if( intval2 == 0 ) {
+            print_output( "Division by 0 error", FATAL );
+            exit( 1 );
+          }
+          intval1 = intval1 / intval2;
+          vector_from_int( &vec1, intval1 );
+          vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
         }
-        intval1 = intval1 / intval2;
-        vector_from_int( &vec1, intval1 );
-        vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
         break;
 
       case EXP_OP_MOD :
-        vector_init( &vec1, value32, 32, 0 );
-        intval1 = vector_to_int( expr->left->value );
-        intval2 = vector_to_int( expr->right->value );
-        if( intval2 == 0 ) {
-          print_output( "Division by 0 error", FATAL );
-          exit( 1 );
+        if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
+          bit = 0x2;
+          for( i=0; i<expr->value->width; i++ ) {
+            vector_set_value( expr->value, &bit, 1, 0, i );
+          }
+        } else {
+          vector_init( &vec1, value32, 32, 0 );
+          intval1 = vector_to_int( expr->left->value );
+          intval2 = vector_to_int( expr->right->value );
+          if( intval2 == 0 ) {
+            print_output( "Division by 0 error", FATAL );
+            exit( 1 );
+          }
+          intval1 = intval1 % intval2;
+          vector_from_int( &vec1, intval1 );
+          vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
         }
-        intval1 = intval1 % intval2;
-        vector_from_int( &vec1, intval1 );
-        vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
         break;
  
       case EXP_OP_ADD :
@@ -923,10 +937,17 @@ void expression_operate( expression* expr ) {
           break;
 
       case EXP_OP_EXPAND :
-        for( j=0; j<expr->right->value->width; j++ ) {
-          bit = vector_bit_val( expr->right->value->value, j );
-          for( i=0; i<vector_to_int( expr->left->value ); i++ ) {
-            vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
+        if( vector_is_unknown( expr->left->value ) ) {
+          bit = 0x2;
+          for( i=0; i<expr->value->width; i++ ) {
+            vector_set_value( expr->value, &bit, 1, 0, i );
+          }
+        } else {
+          for( j=0; j<expr->right->value->width; j++ ) {
+            bit = vector_bit_val( expr->right->value->value, j );
+            for( i=0; i<vector_to_int( expr->left->value ); i++ ) {
+              vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
+            }
           }
         }
         break;
@@ -1220,6 +1241,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.75  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.74  2003/02/26 23:00:46  phase1geo
  Fixing bug with single-bit parameter handling (param4.v diagnostic miscompare
  between Linux and Irix OS's).  Updates to testsuite and new diagnostic added
