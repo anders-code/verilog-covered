@@ -79,7 +79,8 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
       }
 
-    } else if( (SUPPL_OP( expr->suppl ) == EXP_OP_SIG) ||               (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM) ) {
+    } else if( (SUPPL_OP( expr->suppl ) == EXP_OP_SIG) ||
+               (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM) ) {
 
       assert( expr->sig != NULL );
 
@@ -132,7 +133,11 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
       code_size = strlen( tmpname ) + strlen( left_code ) + strlen( right_code ) + 4;
       my_code   = (char*)malloc_safe( code_size );
-      snprintf( my_code, code_size, "%s[%s:%s]", tmpname, left_code, right_code );
+      if( SUPPL_WAS_SWAPPED( expr->suppl ) ) {
+        snprintf( my_code, code_size, "%s[%s:%s]", tmpname, right_code, left_code );
+      } else {
+        snprintf( my_code, code_size, "%s[%s:%s]", tmpname, left_code, right_code );
+      }
 
     } else if( SUPPL_OP( expr->suppl ) == EXP_OP_DEFAULT ) {
 
@@ -241,6 +246,11 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 
 /* $Log$
+/* Revision 1.19  2002/10/23 03:39:06  phase1geo
+/* Fixing bug in MBIT_SEL expressions to calculate the expression widths
+/* correctly.  Updated diagnostic testsuite and added diagnostic that
+/* found the original bug.  A few documentation updates.
+/*
 /* Revision 1.18  2002/10/01 13:21:24  phase1geo
 /* Fixing bug in report output for single and multi-bit selects.  Also modifying
 /* the way that parameters are dealt with to allow proper handling of run-time

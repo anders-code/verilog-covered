@@ -113,10 +113,9 @@ void module_size_elements( module* mod, mod_inst* inst ) {
     if( SUPPL_IS_ROOT( curr_exp->exp->suppl ) ) {
       /* Perform an entire expression resize */
       expression_resize( curr_exp->exp, TRUE );
-    } else {
-      if( curr_exp->exp->sig != NULL ) {
-        expression_set_value( curr_exp->exp, curr_exp->exp->sig->value );
-      }
+    }
+    if( curr_exp->exp->sig != NULL ) {
+      expression_set_value( curr_exp->exp, curr_exp->exp->sig->value );
     }
     curr_exp = curr_exp->next;
   }
@@ -434,6 +433,11 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.22  2002/10/23 03:39:07  phase1geo
+/* Fixing bug in MBIT_SEL expressions to calculate the expression widths
+/* correctly.  Updated diagnostic testsuite and added diagnostic that
+/* found the original bug.  A few documentation updates.
+/*
 /* Revision 1.21  2002/10/11 05:23:21  phase1geo
 /* Removing local user message allocation and replacing with global to help
 /* with memory efficiency.

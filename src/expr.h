@@ -43,6 +43,9 @@ void expression_display( expression* expr );
 //! Performs operation specified by parameter expression.
 void expression_operate( expression* expr );
 
+//! Performs recursive expression operation (parse mode only).
+void expression_operate_recursively( expression* expr );
+
 //! Returns a compressed, 1-bit representation of the value after a unary OR.
 int expression_bit_value( expression* expr );
 
@@ -51,6 +54,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 
 /* $Log$
+/* Revision 1.14  2002/10/23 03:39:07  phase1geo
+/* Fixing bug in MBIT_SEL expressions to calculate the expression widths
+/* correctly.  Updated diagnostic testsuite and added diagnostic that
+/* found the original bug.  A few documentation updates.
+/*
 /* Revision 1.13  2002/10/11 04:24:02  phase1geo
 /* This checkin represents some major code renovation in the score command to
 /* fully accommodate parameter support.  All parameter support is in at this
