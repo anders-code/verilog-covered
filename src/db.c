@@ -825,6 +825,11 @@ void db_assign_symbol( char* name, char* symbol ) {
       /* Add this signal */
       symtable_add( symbol, slink->sig, &vcd_symtab );
 
+    } else {
+
+      snprintf( msg, 4096, "VCD signal \"%s.%s\" found that is not part of design", curr_vcd_scope, name );
+      print_output( msg, WARNING );
+
     }
 
     signal_dealloc( tmpsig );
@@ -965,12 +970,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
-/* Revision 1.38  2002/07/13 05:23:18  phase1geo
-/* Major improvements to VCD scoping.  With these changes, Covered can read in
-/* a VCD file that contains scopes that are not used in the design, ignore
-/* unused scopes and use scopes that are found in its database.  Additionally,
-/* there was a major performance improvement for larger designs for VCD file
-/* reading (simulation time has improved).
+/* Revision 1.39  2002/07/13 05:35:52  phase1geo
+/* Cause warning message to be displayed for a signal found in the VCD dumpfile
+/* that is in a covered scope but is not part of the design.  It could be that
+/* the design and VCD file do not match.
 /*
 /* Revision 1.37  2002/07/12 04:53:29  phase1geo
 /* Removing counter code that was used for debugging infinite loops in code
