@@ -173,7 +173,7 @@ bool toggle_module_summary( FILE* ofile, mod_link* head ) {
 
     miss_found = ((miss01 > 0) || (miss10 > 0)) ? TRUE : miss_found;
 
-    fprintf( ofile, "  %-20.20s    %-20.20s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n", 
+    fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n", 
              head->mod->name,
              head->mod->filename,
              head->mod->stat->tog01_hit,
@@ -377,6 +377,11 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.18  2003/08/25 13:02:04  phase1geo
+ Initial stab at adding FSM support.  Contains summary reporting capability
+ at this point and roughly works.  Updated regress suite as a result of these
+ changes.
+
  Revision 1.17  2003/02/23 23:32:36  phase1geo
  Updates to provide better cross-platform compiler support.
 

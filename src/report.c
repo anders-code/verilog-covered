@@ -25,6 +25,7 @@
 #include "instance.h"
 #include "stat.h"
 #include "db.h"
+#include "fsm.h"
 
 
 extern char      user_msg[USER_MSG_LENGTH];
@@ -54,7 +55,7 @@ bool report_combination = TRUE;
  specified database file; otherwise, omits finite state machine coverage from the
  report output.
 */
-bool report_fsm         = FALSE;
+bool report_fsm         = TRUE;
 
 /*!
  If set to a boolean value of TRUE, provides a coverage information for individual
@@ -297,7 +298,11 @@ void report_gather_instance_stats( mod_inst* root ) {
   }
 
   if( report_fsm ) {
-    /* TBD */
+    fsm_get_stats( root->mod->fsm_head,
+                   &(root->stat->state_total),
+                   &(root->stat->state_hit),
+                   &(root->stat->arc_total),
+                   &(root->stat->arc_hit) );
   }
 
 }
@@ -334,7 +339,11 @@ void report_gather_module_stats( mod_link* head ) {
     }
 
     if( report_fsm ) {
-      /* TBD */
+      fsm_get_stats( head->mod->fsm_head,
+                     &(head->mod->stat->state_total),
+                     &(head->mod->stat->state_hit),
+                     &(head->mod->stat->arc_total),
+                     &(head->mod->stat->arc_hit) );
     }
 
     head = head->next;
@@ -481,6 +490,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.22  2003/08/25 13:02:04  phase1geo
+ Initial stab at adding FSM support.  Contains summary reporting capability
+ at this point and roughly works.  Updated regress suite as a result of these
+ changes.
+
  Revision 1.21  2003/08/10 03:50:10  phase1geo
  More development documentation updates.  All global variables are now
  documented correctly.  Also fixed some generated documentation warnings.

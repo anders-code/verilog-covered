@@ -45,6 +45,7 @@ void signal_init( signal* sig, char* name, vector* value ) {
   sig->value    = value;
   sig->exp_head = NULL;
   sig->exp_tail = NULL;
+  sig->table    = NULL;
 
 }
 
@@ -312,7 +313,8 @@ int signal_get_wait_bit( signal* sig ) {
 */
 void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
 
-  exp_link* curr_expr;   /* Pointer to current expression link under evaluation */
+  exp_link* curr_expr;  /* Pointer to current expression link under evaluation      */
+  vector*   tmp_vec;    /* Pointer to temporary vector to use for FSM table setting */
 
   assert( sig->value != NULL );
 
@@ -320,6 +322,14 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
   print_output( user_msg, DEBUG );
 
   /* Assign value to signal's vector value */
+  if( sig->table != NULL ) {
+    tmp_vec = vector_create( sig->value->width, sig->value->lsb, TRUE );
+    vector_vcd_assign( tmp_vec, value, msb, lsb );
+    fsm_table_set( sig->table, sig->value, tmp_vec );
+    vector_dealloc( tmp_vec );
+  }
+
+  /* Set signal value to specified value */
   vector_vcd_assign( sig->value, value, msb, lsb );
 
   /* Iterate through signal's expression list */
@@ -403,6 +413,11 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.32  2003/08/25 13:02:04  phase1geo
+ Initial stab at adding FSM support.  Contains summary reporting capability
+ at this point and roughly works.  Updated regress suite as a result of these
+ changes.
+
  Revision 1.31  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 
