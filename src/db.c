@@ -564,6 +564,7 @@ statement* db_create_statement( expression* exp ) {
 void db_add_statement( statement* stmt ) {
 
   char msg[4096];    /* Message to display to user */
+/*
   static int count = 0;
 
   if( count > 70 ) {
@@ -571,6 +572,7 @@ void db_add_statement( statement* stmt ) {
   } else {
     count++;
   }
+*/
  
   if( stmt != NULL ) {
 
@@ -965,6 +967,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.37  2002/07/12 04:53:29  phase1geo
+/* Removing counter code that was used for debugging infinite loops in code
+/* previously.
+/*
 /* Revision 1.36  2002/07/09 04:46:26  phase1geo
 /* Adding -D and -Q options to covered for outputting debug information or
 /* suppressing normal output entirely.  Updated generated documentation and

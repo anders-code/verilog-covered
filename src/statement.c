@@ -420,18 +420,20 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 */
 void statement_set_stop( statement* stmt, statement* post, bool true_path, bool both ) {
 
-  static int count = 0;
+  // static int count = 0;
   int        true_id;
   int        false_id;
   int        post_id;
 
   assert( stmt != NULL );
 
+/*
   if( count > 70 ) {
     assert( count == 0 );
   } else {
     count++;
   }
+*/
 
   if( post == NULL ) {
     post_id = 0;
@@ -518,6 +520,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.27  2002/07/12 04:53:29  phase1geo
+/* Removing counter code that was used for debugging infinite loops in code
+/* previously.
+/*
 /* Revision 1.26  2002/07/08 12:35:31  phase1geo
 /* Added initial support for library searching.  Code seems to be broken at the
 /* moment.
