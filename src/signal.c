@@ -329,8 +329,10 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
   curr_expr = sig->exp_head;
   while( curr_expr != NULL ) {
 
-    /* Add to simulation queue */
-    sim_expr_changed( curr_expr->exp );
+    /* Add to simulation queue if expression is a RHS */
+    if( SUPPL_IS_LHS( curr_expr->exp->suppl ) == 0 ) {
+      sim_expr_changed( curr_expr->exp );
+    }
 
     curr_expr = curr_expr->next;
 
@@ -443,6 +445,13 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.46  2003/11/29 06:55:49  phase1geo
+ Fixing leftover bugs in better report output changes.  Fixed bug in param.c
+ where parameters found in RHS expressions that were part of statements that
+ were being removed were not being properly removed.  Fixed bug in sim.c where
+ expressions in tree above conditional operator were not being evaluated if
+ conditional expression was not at the top of tree.
+
  Revision 1.45  2003/11/12 17:34:03  phase1geo
  Fixing bug where signals are longer than allowable bit width.
 

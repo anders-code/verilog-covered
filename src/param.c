@@ -121,9 +121,17 @@ mod_parm* mod_parm_find_sig_dependent( char* name, mod_parm* parm ) {
 */
 void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm ) {
 
-  while( parm != NULL ) {
-    exp_link_remove( exp, &(parm->exp_head), &(parm->exp_tail), FALSE );
-    parm = parm->next;
+  if( exp != NULL ) {
+
+    /* Remove left and right expressions as well */
+    mod_parm_find_expr_and_remove( exp->left, parm );
+    mod_parm_find_expr_and_remove( exp->right, parm );
+
+    while( parm != NULL ) {
+      exp_link_remove( exp, &(parm->exp_head), &(parm->exp_tail), FALSE );
+      parm = parm->next;
+    }
+
   }
 
 }
@@ -716,6 +724,13 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.31  2003/11/29 06:55:48  phase1geo
+ Fixing leftover bugs in better report output changes.  Fixed bug in param.c
+ where parameters found in RHS expressions that were part of statements that
+ were being removed were not being properly removed.  Fixed bug in sim.c where
+ expressions in tree above conditional operator were not being evaluated if
+ conditional expression was not at the top of tree.
+
  Revision 1.30  2003/10/17 21:55:25  phase1geo
  Fixing parameter db_write function to output signal in new format.
 

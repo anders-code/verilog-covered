@@ -4,6 +4,14 @@
  \date     11/24/2003
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_STRING_H
+#include "string.h"
+#endif
+
 #include "gui.h"
 #include "util.h"
 #include "link.h"
@@ -82,6 +90,13 @@ char* module_get_filename( char* mod_name ) {
 
 /*
  $Log$
+ Revision 1.2  2003/11/29 06:55:48  phase1geo
+ Fixing leftover bugs in better report output changes.  Fixed bug in param.c
+ where parameters found in RHS expressions that were part of statements that
+ were being removed were not being properly removed.  Fixed bug in sim.c where
+ expressions in tree above conditional operator were not being evaluated if
+ conditional expression was not at the top of tree.
+
  Revision 1.1  2003/11/24 17:48:56  phase1geo
  Adding gui.c/.h files for functions related to the GUI interface.  Updated
  Makefile.am for the inclusion of these files.
