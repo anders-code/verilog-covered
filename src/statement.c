@@ -108,6 +108,7 @@
 #include "util.h"
 #include "link.h"
 #include "sim.h"
+#include "db.h"
 
 
 extern char user_msg[USER_MSG_LENGTH];
@@ -131,7 +132,7 @@ statement* statement_create( expression* exp ) {
 
   statement* stmt;  /* Pointer to newly created statement */
 
-  stmt                    = (statement*)malloc_safe( sizeof( statement ) );
+  stmt                    = (statement*)malloc_safe( sizeof( statement ), __FILE__, __LINE__ );
   stmt->exp               = exp;
   stmt->exp->parent->stmt = stmt;
   stmt->exp->suppl        = stmt->exp->suppl | (0x1 << SUPPL_LSB_ROOT);
@@ -158,7 +159,7 @@ void statement_stack_push( statement* stmt, int id ) {
   stmt_loop_link* sll;     /* Pointer to newly created statement loop link */
 
   /* Create statement loop link element */
-  sll = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ) );
+  sll = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ), __FILE__, __LINE__ );
 
   /* Populate statement loop link with specified parameters */
   sll->stmt = stmt;
@@ -286,7 +287,7 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
     if( curr_mod == NULL ) {
 
-      print_output( "Internal error:  statement in database written before its module", FATAL );
+      print_output( "Internal error:  statement in database written before its module", FATAL, __FILE__, __LINE__ );
       retval = FALSE;
 
     } else {
@@ -339,7 +340,7 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
   } else {
 
-    print_output( "Unable to read statement value", FATAL );
+    print_output( "Unable to read statement value", FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
   }
@@ -466,19 +467,29 @@ void statement_dealloc_recursive_helper( statement* curr, statement* start ) {
   
   if( (curr != NULL) && (curr != start) ) {
     
-    /* Deallocate entire expression tree */
-    expression_dealloc( curr->exp, FALSE );
-    curr->exp = NULL;
-    
+    printf( "curr: 0x%p, start: 0x%p\n", curr, start );
+
     /* Remove TRUE path */
-    statement_dealloc_recursive_helper( curr->next_true, start );
+    statement_dealloc_recursive_helper( curr->next_true,  start );
+    printf( "Setting 0x%p to NULL\n", curr->next_true );
     curr->next_true = NULL;
     
     /* Remove FALSE path */
     statement_dealloc_recursive_helper( curr->next_false, start );
+    printf( "Setting 0x%p to NULL\n", curr->next_false );
     curr->next_false = NULL;
+
+    if( (curr != NULL) && (curr->exp != NULL) ) {
+
+      /* Disconnect statement from current module */
+      db_remove_statement_from_current_module( curr );
+
+      /* Indicate that this statement no longer exists */
+      curr->exp = NULL;
     
-    free_safe( curr );
+      printf( "Removing 0x%p\n", curr );
+      free_safe( curr );
+    }
     
   }
   
@@ -492,20 +503,22 @@ void statement_dealloc_recursive_helper( statement* curr, statement* start ) {
 void statement_dealloc_recursive( statement* stmt ) {
     
   if( stmt != NULL ) {
-    
-    /* Deallocate entire expression tree */
-    expression_dealloc( stmt->exp, FALSE );
   
-    /* Remove wait event signal list */
-    sig_link_delete_list( stmt->wait_sig_head, FALSE );
-
     /* Remove TRUE path */
-    statement_dealloc_recursive_helper( stmt->next_true, stmt );
+    statement_dealloc_recursive_helper( stmt->next_true,  stmt );
     stmt->next_true = NULL;
   
     /* Remove FALSE path */
     statement_dealloc_recursive_helper( stmt->next_false, stmt );
     stmt->next_false = NULL;
+
+    assert( stmt != NULL );
+
+    /* Disconnect statement from current module */
+    db_remove_statement_from_current_module( stmt );
+
+    /* Remove wait event signal list */
+    sig_link_delete_list( stmt->wait_sig_head, FALSE );
   
     free_safe( stmt );
     
@@ -537,6 +550,15 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.46  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.45  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.
