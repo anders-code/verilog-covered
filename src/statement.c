@@ -222,7 +222,7 @@ bool statement_db_read( char** line, module* curr_mod ) {
         stmt->next_false = stmtl->stmt;
       }
 
-      stmt_link_add( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
+      stmt_link_add_tail( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
 
     }
 
@@ -332,6 +332,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.10  2002/06/25 03:39:03  phase1geo
+/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+/* Fixed some report bugs though there are still some remaining.
+/*
 /* Revision 1.9  2002/06/25 02:02:04  phase1geo
 /* Fixing bugs with writing/reading statements and with parsing design with
 /* statements.  We now get to the scoring section.  Some problems here at

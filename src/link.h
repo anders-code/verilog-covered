@@ -14,8 +14,11 @@
 //! Adds specified string to str_link element at the end of the list.
 void str_link_add( char* str, str_link** head, str_link** tail );
 
+//! Adds specified statement to stmt_link element at the beginning of the list.
+void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail );
+
 //! Adds specified statement to stmt_link element at the end of the list.
-void stmt_link_add( statement* stmt, stmt_link** head, stmt_link** tail );
+void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail );
 
 //! Adds specified expression to exp_link element at the end of the list.
 void exp_link_add( expression* expr, exp_link** head, exp_link** tail );
@@ -76,6 +79,10 @@ void mod_link_delete_list( mod_link* head );
 
 
 /* $Log$
+/* Revision 1.3  2002/06/25 03:39:03  phase1geo
+/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+/* Fixed some report bugs though there are still some remaining.
+/*
 /* Revision 1.2  2002/05/03 03:39:36  phase1geo
 /* Removing all syntax errors due to addition of statements.  Added more statement
 /* support code.  Still have a ways to go before we can try anything.  Removed lines

@@ -664,6 +664,28 @@ void expression_operate( expression* expr ) {
 }
 
 /*!
+ \param expr  Pointer to expression to evaluate.
+
+ \return Returns 1 if the specified expression evaluates to a unary 0.
+
+ Returns a value of 1 if the specified expression contains all zero values in
+ its bits.  It accomplishes this by performing a unary OR operation on the
+ specified expression value and testing bit 0 of the result.
+*/
+bool expression_is_zero( expression* expr ) {
+
+  vector result;        /* Vector containing result of expression tree */
+  nibble data;          /* Data for result vector                      */
+
+  /* Evaluate the value of the root expression and return this value */
+  vector_init( &result, &data, 1, 0 );
+  vector_unary_op( &result, expr->value, or_optab );
+
+  return( (data & 0x3) == 0 );
+
+}
+
+/*!
  \param expr      Pointer to root expression to deallocate.
  \param exp_only  Removes only the specified expression and not its children.
 
@@ -708,6 +730,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.13  2002/06/25 03:39:03  phase1geo
+/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+/* Fixed some report bugs though there are still some remaining.
+/*
 /* Revision 1.12  2002/06/24 04:54:48  phase1geo
 /* More fixes and code additions to make statements work properly.  Still not
 /* there at this point.
