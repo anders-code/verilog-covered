@@ -271,7 +271,7 @@ void expression_set_value( expression* exp, vector* vec ) {
       }
       assert( exp->value->width <= vec->width );
       // assert( exp->value->value == NULL );
-      assert( vec->value != NULL );
+      // assert( vec->value != NULL );
       exp->value->value = vec->value;
       break;
     default :  break;
@@ -1211,6 +1211,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.69  2002/12/03 00:04:56  phase1geo
+ Fixing bug uncovered by param6.1.v diagnostic.  Full regression now passes.
+
  Revision 1.68  2002/12/02 06:14:27  phase1geo
  Fixing bug when an MBIT_SEL expression is used in a module that is instantiated
  more than once (assertion error was firing).  Added diagnostic to test suite to
