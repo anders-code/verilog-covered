@@ -36,7 +36,8 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
     if( (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_DELAY) &&
         (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_CASE)  &&
         (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_CASEX) &&
-        (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_CASEZ) ) {
+        (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_CASEZ) &&
+        (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) ) {
       *total = *total + 1;
       if( SUPPL_WAS_EXECUTED( curr->stmt->exp->suppl ) == 1 ) {
         (*hit)++;
@@ -159,7 +160,8 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
         (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_DELAY) &&
         (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASE)  &&
         (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASEX) &&
-        (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASEZ) ) {
+        (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASEZ) &&
+        (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_DEFAULT) ) {
 
       unexec_exp = stmtl->stmt->exp;
 /*
@@ -289,6 +291,11 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.14  2002/07/10 13:15:57  phase1geo
+/* Adding case1.1.v Verilog diagnostic to check default case statement.  There
+/* were reporting problems related to this.  Report problems have been fixed and
+/* full regression passes.
+/*
 /* Revision 1.13  2002/07/09 03:24:48  phase1geo
 /* Various fixes for module instantiantion handling.  This now works.  Also
 /* modified report output for toggle, line and combinational information.

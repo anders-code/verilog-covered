@@ -443,6 +443,7 @@
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASE) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASEX) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASEZ) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_DEFAULT) && \
                                      !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
 				        (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
@@ -834,6 +835,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.31  2002/07/10 13:15:57  phase1geo
+/* Adding case1.1.v Verilog diagnostic to check default case statement.  There
+/* were reporting problems related to this.  Report problems have been fixed and
+/* full regression passes.
+/*
 /* Revision 1.30  2002/07/10 04:57:07  phase1geo
 /* Adding bits to vector nibble to allow us to specify what type of input
 /* static value was read in so that the output value may be displayed in
