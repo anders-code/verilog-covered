@@ -417,12 +417,23 @@ void scope_extract_back( char* scope, char* back, char* rest ) {
 */
 bool scope_local( char* scope ) {
 
-  char* ptr;    /* Pointer to current character */
+  char* ptr;             /* Pointer to current character                */
+  bool  esc;             /* Set to TRUE if current is escaped           */
+  bool  wspace = FALSE;  /* Set if last character seen was a whitespace */
 
   assert( scope != NULL );
 
   ptr = scope;
-  while( (*ptr != '\0') && (*ptr != '.') ) {
+  esc = (*ptr == '\\');
+  while( (*ptr != '\0') && ((*ptr != '.') || esc) ) {
+    if( (*ptr == ' ') || (*ptr == '\n') || (*ptr == '\t') || (*ptr == '\b') || (*ptr == '\r') ) {
+      esc    = FALSE;
+      wspace = TRUE;
+    } else {
+      if( wspace && (*ptr == '\\') ) {
+        esc = TRUE;
+      }
+    }
     ptr++;
   }
 
@@ -592,6 +603,12 @@ void gen_space( char* spaces, int num_spaces ) {
 
 /*
  $Log$
+ Revision 1.20  2003/02/10 06:08:56  phase1geo
+ Lots of parser updates to properly handle UDPs, escaped identifiers, specify blocks,
+ and other various Verilog structures that Covered was not handling correctly.  Fixes
+ for proper event type handling.  Covered can now handle most of the IV test suite from
+ a parsing perspective.
+
  Revision 1.19  2003/01/04 09:25:15  phase1geo
  Fixing file search algorithm to fix bug where unexpected module that was
  ignored cannot be found.  Added instance7.v diagnostic to verify appropriate

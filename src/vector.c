@@ -147,7 +147,7 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
     vec->lsb
   );
 
-  assert( vec->width < MAX_BIT_WIDTH );
+  assert( vec->width <= MAX_BIT_WIDTH );
 
   if( vec->value == NULL ) {
 
@@ -945,6 +945,9 @@ vector* vector_from_string( char* str ) {
     return( NULL );
   }
 
+  /* Verify that we have not exceeded the maximum number of bits */
+  assert( size <= MAX_BIT_WIDTH );
+
   /* Create vector */
   vec = vector_create( size, 0, TRUE );
 
@@ -1467,6 +1470,12 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.31  2003/02/10 06:08:56  phase1geo
+ Lots of parser updates to properly handle UDPs, escaped identifiers, specify blocks,
+ and other various Verilog structures that Covered was not handling correctly.  Fixes
+ for proper event type handling.  Covered can now handle most of the IV test suite from
+ a parsing perspective.
+
  Revision 1.30  2003/02/05 22:50:56  phase1geo
  Some minor tweaks to debug output and some minor bug "fixes".  At this point
  regression isn't stable yet.
