@@ -580,10 +580,10 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
       sig->value->width = width;      
       sig->value->value = NULL;
       if( (left != NULL) && (left->exp != NULL) ) {
-        db_add_vector_param( sig, NULL, left->exp, PARAM_TYPE_SIG_MSB );
+        db_add_vector_param( sig, left->exp, PARAM_TYPE_SIG_MSB );
       }
       if( (right != NULL) && (right->exp != NULL) ) {
-        db_add_vector_param( sig, NULL, right->exp, PARAM_TYPE_SIG_LSB );
+        db_add_vector_param( sig, right->exp, PARAM_TYPE_SIG_LSB );
       }
     }
 
@@ -1139,6 +1139,9 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.74  2002/12/11 14:51:57  phase1geo
+ Fixes compiler errors from last checkin.
+
  Revision 1.73  2002/12/11 14:49:24  phase1geo
  Minor tweaks to parameter handling; however, problem with instance6.2.v not
  fixed at this time.
