@@ -29,6 +29,7 @@ void merge_usage() {
   printf( "      -o <filename>           File to output new database to.  If this argument is not\n" );
   printf( "                              specified, the <existing_database> is used as the output\n" );
   printf( "                              database name.\n" );
+  printf( "      -h                      Displays this help information.\n" );
   printf( "\n" );
 
 }
@@ -145,6 +146,9 @@ int command_merge( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.5  2002/07/08 16:06:33  phase1geo
+/* Updating help information.
+/*
 /* Revision 1.4  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src

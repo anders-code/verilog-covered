@@ -40,6 +40,7 @@ void score_usage() {
   printf( "      -v <filename>           Name of specific Verilog file to score\n" );
   printf( "      -e <module_name>        Name of module to not score\n" );
   printf( "      -q                      Suppresses output to standard output\n" );
+  printf( "      -h                      Displays this help information\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
   printf( "                              Extensions of Verilog files to allow in scoring\n" );
@@ -274,6 +275,9 @@ int command_score( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.8  2002/07/08 16:06:33  phase1geo
+/* Updating help information.
+/*
 /* Revision 1.7  2002/07/08 12:35:31  phase1geo
 /* Added initial support for library searching.  Code seems to be broken at the
 /* moment.
