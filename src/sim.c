@@ -288,7 +288,7 @@ void sim_simulate() {
 
     } else {
 
-      curr_stmt       = curr_stmt->next;
+      curr_stmt = curr_stmt->next;
 
     }
 
@@ -297,6 +297,11 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.21  2002/09/19 05:25:20  phase1geo
+/* Fixing incorrect simulation of static values and fixing reports generated
+/* from these static expressions.  Also includes some modifications for parameters
+/* though these changes are not useful at this point.
+/*
 /* Revision 1.20  2002/07/14 05:10:42  phase1geo
 /* Added support for signal concatenation in score and report commands.  Fixed
 /* bugs in this code (and multiplication).

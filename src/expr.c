@@ -221,6 +221,7 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
 /*!
  \param line      String containing database line to read information from.
  \param curr_mod  Pointer to current module that instantiates this expression.
+ \param eval      If TRUE, evaluate expression if children are static.
 
  \return Returns TRUE if parsing successful; otherwise, returns FALSE.
 
@@ -229,7 +230,7 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
  returns that value in the specified expression pointer.  If all is 
  successful, returns TRUE; otherwise, returns FALSE.
 */
-bool expression_db_read( char** line, module* curr_mod ) {
+bool expression_db_read( char** line, module* curr_mod, bool eval ) {
 
   bool        retval = TRUE;    /* Return value for this function                      */
   int         id;               /* Holder of expression ID                             */
@@ -321,6 +322,16 @@ bool expression_db_read( char** line, module* curr_mod ) {
       }
 
       exp_link_add( expr, &(curr_mod->exp_head), &(curr_mod->exp_tail) );
+
+      /*
+       If this expression has any combination of EXP_OP_STATIC or WAS_EXECUTED,
+       perform the expression operation now and set WAS_EXECUTED bit of expression's
+       supplemental field.
+      */
+      if( eval && EXPR_EVAL_STATIC( expr ) ) {
+        expression_operate( expr );
+        expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_EXECUTED);
+      }
 
     }
 
@@ -870,6 +881,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.47  2002/09/19 05:25:19  phase1geo
+/* Fixing incorrect simulation of static values and fixing reports generated
+/* from these static expressions.  Also includes some modifications for parameters
+/* though these changes are not useful at this point.
+/*
 /* Revision 1.46  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and

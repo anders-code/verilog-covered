@@ -26,7 +26,7 @@ int expression_get_id( expression* expr );
 void expression_db_write( expression* expr, FILE* file, char* scope );
 
 //! Reads current line of specified file and parses for expression information.
-bool expression_db_read( char** line, module* curr_mod );
+bool expression_db_read( char** line, module* curr_mod, bool eval );
 
 //! Reads and merges two expressions and stores result in base expression.
 bool expression_db_merge( expression* base, char** line );
@@ -45,6 +45,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 
 /* $Log$
+/* Revision 1.10  2002/09/19 05:25:19  phase1geo
+/* Fixing incorrect simulation of static values and fixing reports generated
+/* from these static expressions.  Also includes some modifications for parameters
+/* though these changes are not useful at this point.
+/*
 /* Revision 1.9  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and

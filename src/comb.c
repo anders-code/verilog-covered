@@ -85,7 +85,11 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
       /* Calculate current expression combination coverage */
       if( EXPR_IS_MEASURABLE( exp ) == 1 ) {
         *total = *total + 2;
-        *hit   = *hit + SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
+        if( EXPR_EVAL_STATIC( exp ) == 1 ) {
+          *hit = *hit + 2;
+        } else {
+          *hit   = *hit + SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
+        }
       }
 
     }
@@ -895,6 +899,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 
 /* $Log$
+/* Revision 1.43  2002/09/19 05:25:19  phase1geo
+/* Fixing incorrect simulation of static values and fixing reports generated
+/* from these static expressions.  Also includes some modifications for parameters
+/* though these changes are not useful at this point.
+/*
 /* Revision 1.42  2002/09/13 05:12:25  phase1geo
 /* Adding final touches to -d option to report.  Adding documentation and
 /* updating development documentation to stay in sync.

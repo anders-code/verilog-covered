@@ -95,7 +95,7 @@ bool parse_design( char* top, char* output_db ) {
   }
 
   /* Write contents to baseline database file. */
-  if( !db_write( output_db ) ) {
+  if( !db_write( output_db, TRUE ) ) {
     print_output( "Unable to write database file", FATAL );
     exit( 1 );
   }
@@ -147,7 +147,7 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   print_output( msg, DEBUG );
 
   /* Write contents to database file */
-  if( !db_write( db ) ) {
+  if( !db_write( db, FALSE ) ) {
     print_output( "Unable to write database file", FATAL );
     exit( 1 );
   }
@@ -157,6 +157,11 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 }
 
 /* $Log$
+/* Revision 1.11  2002/09/19 05:25:19  phase1geo
+/* Fixing incorrect simulation of static values and fixing reports generated
+/* from these static expressions.  Also includes some modifications for parameters
+/* though these changes are not useful at this point.
+/*
 /* Revision 1.10  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and
