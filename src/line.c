@@ -115,7 +115,6 @@ bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt ) {
         if( !SUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) ) {
 
           last_line = expression_get_last_line( stmti.curr->stmt->exp );
-          printf( "Last line: %d\n", last_line );
           for( i=stmti.curr->stmt->exp->line; i<=last_line; i++ ) {
             if( *line_cnt == line_size ) {
               line_size += 20;
@@ -132,6 +131,31 @@ bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt ) {
       stmt_iter_get_next_in_order( &stmti );
 
     }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+bool line_get_module_summary( char* mod_name, int* total, int* hit ) {
+
+  bool      retval = TRUE;  /* Return value for this function */
+  module    mod;            /* Module used for searching      */
+  mod_link* modl;           /* Pointer to found module link   */
+  char      tmp[4];         /* Temporary string for total     */
+
+  mod.name = mod_name;
+
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    snprintf( tmp, 4, "%3.0f", modl->mod->stat->line_total );
+    assert( sscanf( tmp, "%d", total ) == 1 );
+    *hit = modl->mod->stat->line_hit;
 
   } else {
 
@@ -411,6 +435,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.35  2003/12/01 23:27:16  phase1geo
+ Adding code for retrieving line summary module coverage information for
+ GUI.
+
  Revision 1.34  2003/11/30 21:50:45  phase1geo
  Modifying line_collect_uncovered function to create array containing all physical
  lines (rather than just uncovered statement starting line values) for more
