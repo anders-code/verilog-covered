@@ -17,7 +17,7 @@
 void expression_create_value( expression* exp, int width, bool data );
 
 /*! \brief Creates new expression. */
-expression* expression_create( expression* right, expression* left, int op, bool lhs, int id, int line, bool data );
+expression* expression_create( expression* right, expression* left, int op, bool lhs, int id, int line, int first, int last, bool data );
 
 /*! \brief Sets the specified expression value to the specified vector value. */
 void expression_set_value( expression* exp, vector* vec );
@@ -67,6 +67,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.26  2004/04/19 04:54:56  phase1geo
+ Adding first and last column information to expression and related code.  This is
+ not working correctly yet.
+
  Revision 1.25  2004/04/05 12:30:52  phase1geo
  Adding *db_replace functions to allow a design to be opened with new CDD
  results (for GUI purposes only).

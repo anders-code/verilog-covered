@@ -12,10 +12,10 @@
 
 
 /*! \brief Calculates new values for unary static expressions and returns the new static expression. */
-static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line );
+static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int first, int last );
 
 /*! \brief Calculates new values for static expression and returns the new static expression. */
-static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line );
+static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line, int first, int last );
 
 /*! \brief Calculates LSB and width for specified left/right pair for vector. */
 void static_expr_calc_lsb_and_width( static_expr* left, static_expr* right, int* width, int* lsb );
@@ -26,6 +26,10 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp );
 
 /*
  $Log$
+ Revision 1.7  2004/04/19 04:54:56  phase1geo
+ Adding first and last column information to expression and related code.  This is
+ not working correctly yet.
+
  Revision 1.6  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
