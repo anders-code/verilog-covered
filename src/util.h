@@ -46,6 +46,9 @@ void scope_extract_front( char* scope, char* front, char* rest );
 /*! \brief Extracts lowest level of hierarchy from specified scope. */
 void scope_extract_back( char* scope, char* back, char* rest );
 
+/*! \brief Extracts rest of scope not included in front. */
+void scope_extract_scope( char* scope, char* front, char* back );
+
 /*! \brief Returns TRUE if specified scope is local (contains no periods). */
 bool scope_local( char* scope );
 
@@ -64,6 +67,12 @@ void gen_space( char* spaces, int num_spaces );
 
 /*
  $Log$
+ Revision 1.12  2003/02/17 22:47:21  phase1geo
+ Fixing bug with merging same DUTs from different testbenches.  Updated reports
+ to display full path instead of instance name and parent instance name.  Added
+ merge tests and added merge testing into regression test suite.  Fixing bug with
+ -D/-Q option specified with merge command.  Full regression passing.
+
  Revision 1.11  2002/12/06 02:18:59  phase1geo
  Fixing bug with calculating list and concatenation lengths when MBIT_SEL
  expressions were included.  Also modified file parsing algorithm to be
