@@ -163,7 +163,7 @@ void symtable_add_sym_sig( symtable* symtab, signal* sig, int msb, int lsb ) {
   sym_sig* new_ss;  /* Pointer to newly created sym_sig structure */
 
   /* Create new sym_sig structure */
-  new_ss       = (sym_sig*)malloc_safe( sizeof( sym_sig ) );
+  new_ss       = (sym_sig*)malloc_safe( sizeof( sym_sig ), __FILE__, __LINE__ );
   new_ss->sig  = sig;
   new_ss->msb  = msb;
   new_ss->lsb  = lsb;
@@ -188,7 +188,7 @@ void symtable_add_sym_sig( symtable* symtab, signal* sig, int msb, int lsb ) {
 */
 void symtable_init( symtable* symtab, int msb, int lsb ) {
 
-  symtab->value    = (char*)malloc_safe( (msb - lsb) + 2 );
+  symtab->value    = (char*)malloc_safe( ((msb - lsb) + 2), __FILE__, __LINE__ );
   symtab->value[0] = '\0';
   symtab->size     = (msb - lsb) + 2;
 
@@ -205,7 +205,7 @@ symtable* symtable_create() {
   symtable* symtab;  /* Pointer to new symtable entry */
   int       i;       /* Loop iterator                 */
 
-  symtab           = (symtable*)malloc_safe( sizeof( symtable ) ); 
+  symtab           = (symtable*)malloc_safe( sizeof( symtable ), __FILE__, __LINE__ ); 
   symtab->sig_head = NULL;
   symtab->sig_tail = NULL;
   symtab->value    = NULL;
@@ -396,6 +396,15 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.17  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.16  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.
