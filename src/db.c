@@ -495,10 +495,13 @@ signal* db_find_signal( char* name ) {
 */
 expression* db_create_expression( expression* right, expression* left, int op, int line, char* sig_name ) {
 
-  expression* expr;             /* Temporary pointer to newly created expression */
-  char        msg[4096];        /* Display message string                        */
-  int         right_id;         /* ID of right expression                        */
-  int         left_id;          /* ID of left expression                         */
+  expression* expr;             /* Temporary pointer to newly created expression        */
+  char        msg[4096];        /* Display message string                               */
+  int         right_id;         /* ID of right expression                               */
+  int         left_id;          /* ID of left expression                                */
+  int         i;                /* Loop iterator                                        */
+  int         ignore;           /* Number of matching modules to ignore before choosing */
+  mod_inst*   found_inst;       /* Found instance containing current module             */
 
   if( right == NULL ) {
     right_id = 0;
@@ -543,7 +546,10 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 
     /* If signal is located in this current module, bind now; else, bind later. */
     if( scope_local( sig_name ) ) {
-      bind_perform( sig_name, expr, curr_module, TRUE );
+      if( param_find( sig_name, curr_module->param_head ) == NULL ) {
+        /* Name is not a parameter so set it up to bind */
+        bind_perform( sig_name, expr, curr_module, TRUE );
+      }
     } else {
       bind_add( sig_name, expr, curr_module->name );
     }
@@ -994,6 +1000,11 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.54  2002/09/06 03:05:27  phase1geo
+/* Some ideas about handling parameters have been added to these files.  Added
+/* "Special Thanks" section in User's Guide for acknowledgements to people
+/* helping in project.
+/*
 /* Revision 1.53  2002/08/26 12:57:03  phase1geo
 /* In the middle of adding parameter support.  Intermediate checkin but does
 /* not break regressions at this point.

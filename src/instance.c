@@ -31,6 +31,8 @@ mod_inst* instance_create( module* mod, char* inst_name ) {
   new_inst->mod        = mod;
   new_inst->name       = strdup( inst_name );
   new_inst->stat       = NULL;
+  new_inst->param_head = NULL;
+  new_inst->param_tail = NULL;
   new_inst->child_head = NULL;
   new_inst->child_tail = NULL;
   new_inst->next       = NULL;
@@ -367,6 +369,11 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 }
 
 /* $Log$
+/* Revision 1.11  2002/09/06 03:05:28  phase1geo
+/* Some ideas about handling parameters have been added to these files.  Added
+/* "Special Thanks" section in User's Guide for acknowledgements to people
+/* helping in project.
+/*
 /* Revision 1.10  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and
