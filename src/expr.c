@@ -356,6 +356,7 @@ void expression_resize( expression* expr, bool recursive ) {
       */
       case EXP_OP_EXPAND :
         assert( expr->value->value == NULL );
+        expression_operate_recursively( expr->left );
         expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), 0, FALSE );
         break;
 
@@ -1072,7 +1073,7 @@ void expression_operate_recursively( expression* expr ) {
     expression_resize( expr, FALSE );
     
     /* Create vector value to store operation information */
-    if( expr->value == NULL ) {
+    if( expr->value->value == NULL ) {
       expression_create_value( expr, expr->value->width, expr->value->lsb, TRUE );
     }
     
@@ -1163,6 +1164,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.62  2002/11/05 16:43:55  phase1geo
+ Bug fix for expansion expressions where multiplier wasn't being calculated
+ before the expand expression was being sized (leads to a segmentation fault).
+ Updated CDD file for expand3.v.  Cleaned up missing CDD file for full
+ VCS regression run.
+
  Revision 1.61  2002/11/05 00:20:06  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
