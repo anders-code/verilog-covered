@@ -471,10 +471,34 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_EXPAND   :  *size = l_size + r_size + 4;  strcpy( code_fmt, " %s %s  "         );  break;
             case EXP_OP_CONCAT   :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
             case EXP_OP_LIST     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s  %s"           );  break;
-            case EXP_OP_PEDGE    :  *size = l_size + r_size + 8;  strcpy( code_fmt, "        %s"       );  break;
-            case EXP_OP_NEDGE    :  *size = l_size + r_size + 8;  strcpy( code_fmt, "        %s"       );  break;
-            case EXP_OP_AEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;
-            case EXP_OP_EOR      :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"         );  break;
+            case EXP_OP_PEDGE    :
+              if( SUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+                *size = l_size + r_size + 11;  strcpy( code_fmt, "          %s " );
+              } else {
+                *size = l_size + r_size + 8;   strcpy( code_fmt, "        %s" );
+              }
+              break;
+            case EXP_OP_NEDGE    :
+              if( SUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+                *size = l_size + r_size + 11;  strcpy( code_fmt, "          %s " );
+              } else {
+                *size = l_size + r_size + 8;   strcpy( code_fmt, "        %s" );
+              }
+              break;
+            case EXP_OP_AEDGE    :
+              if( SUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+                *size = l_size + r_size + 3;  strcpy( code_fmt, "  %s " );
+              } else {
+                *size = l_size + r_size + 0;  strcpy( code_fmt, "%s" );
+              }
+              break;
+            case EXP_OP_EOR      :
+              if( SUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+                *size = l_size + r_size + 7;  strcpy( code_fmt, "  %s    %s " );
+              } else {
+                *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );
+              }
+              break;
             case EXP_OP_CASE     :  *size = l_size + r_size + 11; strcpy( code_fmt, "      %s   %s  "  );  break;
             case EXP_OP_CASEX    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
             case EXP_OP_CASEZ    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
@@ -1008,6 +1032,13 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.60  2002/12/05 14:45:17  phase1geo
+ Removing assertion error from instance6.1 failure; however, this case does not
+ work correctly according to instance6.2.v diagnostic.  Added @(...) output in
+ report command for edge-triggered events.  Also fixed bug where a module could be
+ parsed more than once.  Full regression does not pass at this point due to
+ new instance6.2.v diagnostic.
+
  Revision 1.59  2002/11/30 05:06:21  phase1geo
  Fixing bug in report output for covered results.  Allowing any nettype to
  be parsable and usable by Covered (even though some of these are unsupported

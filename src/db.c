@@ -336,10 +336,10 @@ void db_add_instance( char* scope, char* modname ) {
       /* Add instance. */
       instance_parse_add( &instance_root, curr_module, mod, scope );
 
-    }
-
-    if( (mod_in_list = str_link_find( modname, modlist_head )) == NULL ) {
-      str_link_add( modname, &modlist_head, &modlist_tail );
+      if( (mod_in_list = str_link_find( modname, modlist_head )) == NULL ) {
+        str_link_add( modname, &modlist_head, &modlist_tail );
+      }
+      
     }
 
   }
@@ -1154,6 +1154,13 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.72  2002/12/05 14:45:17  phase1geo
+ Removing assertion error from instance6.1 failure; however, this case does not
+ work correctly according to instance6.2.v diagnostic.  Added @(...) output in
+ report command for edge-triggered events.  Also fixed bug where a module could be
+ parsed more than once.  Full regression does not pass at this point due to
+ new instance6.2.v diagnostic.
+
  Revision 1.71  2002/12/03 14:25:24  phase1geo
  Fixing bug in db_add_statement function.  Not parsing FALSE path if the next_false
  is the starting statement.
