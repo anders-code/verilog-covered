@@ -62,6 +62,8 @@ inst_parm* defparam_head = NULL;   /*!< Pointer to head of parameter list for gl
 inst_parm* defparam_tail = NULL;   /*!< Pointer to tail of parameter list for global defparams */
 
 extern char user_msg[USER_MSG_LENGTH];
+extern char leading_hierarchy[4096];
+
 
 /*!
  \param name  Name of parameter value to find.
@@ -510,7 +512,11 @@ inst_parm* param_has_defparam( char* scope, mod_parm* mparm, inst_parm** ihead, 
   assert( scope != NULL );
   assert( mparm != NULL );
 
-  snprintf( parm_scope, 4096, "%s.%s", scope, mparm->name );
+  if( strcmp( leading_hierarchy, "*" ) == 0 ) {
+    snprintf( parm_scope, 4096, "%s.%s", scope, mparm->name );
+  } else {
+    snprintf( parm_scope, 4096, "%s.%s.%s", leading_hierarchy, scope, mparm->name );
+  }
 
   icurr = defparam_head;
   while( (icurr != NULL) && (strcmp( icurr->name, parm_scope ) != 0) ) {
@@ -710,6 +716,12 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.28  2003/02/17 22:47:20  phase1geo
+ Fixing bug with merging same DUTs from different testbenches.  Updated reports
+ to display full path instead of instance name and parent instance name.  Added
+ merge tests and added merge testing into regression test suite.  Fixing bug with
+ -D/-Q option specified with merge command.  Full regression passing.
+
  Revision 1.27  2003/02/07 02:28:23  phase1geo
  Fixing bug with statement removal.  Expressions were being deallocated but not properly
  removed from module parameter expression lists and module expression lists.  Regression
