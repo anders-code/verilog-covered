@@ -221,7 +221,7 @@ bool fsm_db_read( char** line, module* mod ) {
        If the input state variable is the same as the output state variable, create the new expression now.
       */
       if( iexp.id == oexp.id ) {
-        table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, 0, 0, FALSE );
+        table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, iexp.id, 0, FALSE );
         vector_dealloc( table->from_state->value );
         table->from_state->value = vector_create( iexpl->exp->value->width, iexpl->exp->value->lsb, TRUE );
       } else {
@@ -229,7 +229,7 @@ bool fsm_db_read( char** line, module* mod ) {
       }
 
       /* Set output expression tables to point to this FSM */
-      table->to_state->table   = table;
+      table->to_state->table = table;
 
       // oexpl->exp->table = table;
       fsm_create_tables( table );
@@ -769,6 +769,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.24  2003/10/14 04:02:44  phase1geo
+ Final fixes for new FSM support.  Full regression now passes.  Need to
+ add new diagnostics to verify new functionality, but at least all existing
+ cases are supported again.
+
  Revision 1.23  2003/10/13 22:10:07  phase1geo
  More changes for FSM support.  Still not quite there.
 
