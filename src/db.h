@@ -9,6 +9,7 @@
            covered database file.
 */
 
+#include "defines.h"
 
 //! Writes contents of expressions, modules and signals to database file.
 bool db_write( char* file );
@@ -68,6 +69,10 @@ void db_set_symbol_string( char* sym, char* value );
 void db_do_timestep( int time ); 
 
 /* $Log$
+/* Revision 1.11  2002/07/22 05:24:46  phase1geo
+/* Creating new VCD parser.  This should have performance benefits as well as
+/* have the ability to handle any problems that come up in parsing.
+/*
 /* Revision 1.10  2002/07/05 16:49:47  phase1geo
 /* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
 /* the reverse order (last changes are stored instead of first for timestamp).

@@ -432,6 +432,7 @@
 #define EXP_OP_CASEZ    0x2f    /*!< 47 casez equality expression     */
 #define EXP_OP_DEFAULT  0x30    /*!< 48 case default expression       */
 #define EXP_OP_LIST     0x31    /*!< 49 comma separated expression list */
+#define EXP_OP_PARAM    0x32    /*!< 50 */
 
 /*! @} */
 
@@ -837,6 +838,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.36  2002/07/22 05:24:46  phase1geo
+/* Creating new VCD parser.  This should have performance benefits as well as
+/* have the ability to handle any problems that come up in parsing.
+/*
 /* Revision 1.35  2002/07/20 18:46:38  phase1geo
 /* Causing fully covered modules to not be output in reports.  Adding
 /* instance3.v diagnostic to verify this works correctly.

@@ -799,8 +799,7 @@ void db_vcd_upscope() {
 void db_assign_symbol( char* name, char* symbol ) {
 
   sig_link*     slink;      /* Pointer to signal containing this symbol  */
-  signal*       tmpsig;     /* Temporary pointer to signal to search for */
-  char*         signame;    /* Name of signal to find in module          */
+  signal        tmpsig;     /* Temporary signal to search for            */
   char          msg[4096];  /* Display message string                    */
   mod_inst*     inst;       /* Found instance                            */
 
@@ -811,14 +810,13 @@ void db_assign_symbol( char* name, char* symbol ) {
 
   if( curr_instance != NULL ) {
     
-    signame = strdup( name );
-    tmpsig  = signal_create( signame, 1, 0, FALSE );
+    tmpsig.name = name;
 
     /* Find the signal that matches the specified signal name */
-    if( (slink = sig_link_find( tmpsig, curr_instance->mod->sig_head )) != NULL ) {
+    if( (slink = sig_link_find( &tmpsig, curr_instance->mod->sig_head )) != NULL ) {
 
       /* Add this signal */
-      symtable_add( symbol, slink->sig, &vcd_symtab );
+      symtable_add( strdup( symbol ), slink->sig, &vcd_symtab );
 
     } else {
 
@@ -826,9 +824,6 @@ void db_assign_symbol( char* name, char* symbol ) {
       print_output( msg, WARNING );
 
     }
-
-    signal_dealloc( tmpsig );
-    free_safe( signame );
 
   }
 
@@ -965,6 +960,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.48  2002/07/22 05:24:46  phase1geo
+/* Creating new VCD parser.  This should have performance benefits as well as
+/* have the ability to handle any problems that come up in parsing.
+/*
 /* Revision 1.47  2002/07/20 22:22:52  phase1geo
 /* Added ability to create implicit signals for local signals.  Added implicit1.v
 /* diagnostic to test for correctness.  Full regression passes.  Other tweaks to
