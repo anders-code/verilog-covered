@@ -50,7 +50,7 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head, 
 void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** itail );
 
 /*! \brief Outputs specified instance parameter to specified output stream. */
-void param_db_write( inst_parm* iparm, FILE* file, char* scope );
+void param_db_write( inst_parm* iparm, FILE* file );
 
 /*! \brief Deallocates specified module parameter and possibly entire module parameter list. */
 void mod_parm_dealloc( mod_parm* parm, bool recursive );
@@ -61,6 +61,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.14  2004/01/08 23:24:41  phase1geo
+ Removing unnecessary scope information from signals, expressions and
+ statements to reduce file sizes of CDDs and slightly speeds up fscanf
+ function calls.  Updated regression for this fix.
+
  Revision 1.13  2003/02/07 02:28:24  phase1geo
  Fixing bug with statement removal.  Expressions were being deallocated but not properly
  removed from module parameter expression lists and module expression lists.  Regression
