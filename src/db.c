@@ -92,6 +92,7 @@ bool db_write( char* file, bool parse_mode ) {
 
     /* Iterate through instance tree */
     assert( instance_root != NULL );
+    info_db_write( db_handle );
     instance_db_write( instance_root, db_handle, instance_root->name, parse_mode );
     fclose( db_handle );
 
@@ -164,7 +165,12 @@ bool db_read( char* file, int read_mode ) {
 
         rest_line = curr_line + chars_read;
 
-        if( type == DB_TYPE_SIGNAL ) {
+        if( type == DB_TYPE_INFO ) {
+          
+          /* Parse rest of line for general info */
+          retval = info_db_read( &rest_line );
+          
+        } else if( type == DB_TYPE_SIGNAL ) {
 
           assert( !merge_mode );
 
@@ -1144,6 +1150,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.87  2003/02/12 14:56:22  phase1geo
+ Adding info.c and info.h files to handle new general information line in
+ CDD file.  Support for this new feature is not complete at this time.
+
  Revision 1.86  2003/02/10 06:08:55  phase1geo
  Lots of parser updates to properly handle UDPs, escaped identifiers, specify blocks,
  and other various Verilog structures that Covered was not handling correctly.  Fixes

@@ -102,6 +102,11 @@
 */
 #define DB_TYPE_STATEMENT    4
 
+/*!
+ Specifies that the current coverage database line describes general information.
+*/
+#define DB_TYPE_INFO         5
+
 /*! @} */
 
 
@@ -1156,6 +1161,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.66  2003/02/12 14:56:22  phase1geo
+ Adding info.c and info.h files to handle new general information line in
+ CDD file.  Support for this new feature is not complete at this time.
+
  Revision 1.65  2003/02/07 23:12:30  phase1geo
  Optimizing db_add_statement function to avoid memory errors.  Adding check
  for -i option to avoid user error.
