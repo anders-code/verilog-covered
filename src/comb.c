@@ -80,7 +80,8 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
   if( exp != NULL ) {
 
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
-         (report_comb_depth == REPORT_VERBOSE) ) {
+         (report_comb_depth == REPORT_VERBOSE) ||
+         (report_comb_depth == REPORT_SUMMARY) ) {
 
       /* Calculate current expression combination coverage */
       if( EXPR_IS_MEASURABLE( exp ) == 1 ) {
@@ -899,6 +900,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 
 /* $Log$
+/* Revision 1.44  2002/09/25 22:41:29  phase1geo
+/* Adding diagnostics to check missing concatenation cases that uncovered bugs
+/* in testing other codes.  Also fixed case in report command for summary information.
+/* The combinational logic information was not being reported correctly for summary
+/* reports.
+/*
 /* Revision 1.43  2002/09/19 05:25:19  phase1geo
 /* Fixing incorrect simulation of static values and fixing reports generated
 /* from these static expressions.  Also includes some modifications for parameters
