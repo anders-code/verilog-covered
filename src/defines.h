@@ -18,7 +18,7 @@
 /*!
  This contains the header information specified when executing this tool.
 */
-#define COVERED_HEADER     "\nCovered %s -- Verilog Code Coverage Utility\nWritten by Trevor Williams  (trevorw@charter.net)\nFreely distributable under the GPL license\n\n", COVERED_VERSION
+#define COVERED_HEADER     "\nCovered %s -- Verilog Code Coverage Utility\nWritten by Trevor Williams  (trevorw@charter.net)\nFreely distributable under the GPL license\n", COVERED_VERSION
 
 /*!
  Default database filename if not specified on command-line.
@@ -59,6 +59,12 @@
  util.c is set to TRUE.
 */
 #define NORMAL       3
+
+/*!
+ Indicates that the specified message is debug information that should
+ only be displayed to the screen when the -D flag is specified.
+*/
+#define DEBUG        4
 
 /*! @} */
 
@@ -826,6 +832,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.28  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.27  2002/07/05 16:49:47  phase1geo
 /* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
 /* the reverse order (last changes are stored instead of first for timestamp).

@@ -25,6 +25,11 @@
 bool output_suppressed;
 
 /*!
+ If set to TRUE, causes debug information to be spewed to screen.
+*/
+bool debug_mode;
+
+/*!
  Contains the total number of bytes malloc'ed during the simulation run.  This
  information is output to the user after simulation as a performance indicator.
 */
@@ -48,6 +53,17 @@ void set_output_suppression( bool value ) {
 }
 
 /*!
+ \param value  Boolean value of debug mode.
+
+ Sets the global debug mode to the specified value.
+*/
+void set_debug( bool value ) {
+
+  debug_mode = value;
+
+}
+
+/*!
  \param msg   Message to display.
  \param type  Type of message to output
 
@@ -57,11 +73,14 @@ void set_output_suppression( bool value ) {
 void print_output( char* msg, int type ) {
 
   switch( type ) {
+    case DEBUG:
+      if( debug_mode ) { printf( "%s\n", msg ); }
+      break;
     case NORMAL:
-      if( !output_suppressed ) { printf( "%s\n", msg ); }
+      if( !output_suppressed || debug_mode ) { printf( "%s\n", msg ); }
       break;
     case WARNING:
-      if( !output_suppressed ) { fprintf( stderr, "Warning!  %s\n", msg ); }
+      if( !output_suppressed || debug_mode ) { fprintf( stderr, "Warning!  %s\n", msg ); }
       break;
     case FATAL:
       fprintf( stderr, "Error!  %s\n", msg );
@@ -446,6 +465,11 @@ void gen_space( char* spaces, int num_spaces ) {
 }
 
 /* $Log$
+/* Revision 1.7  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.6  2002/07/08 12:35:31  phase1geo
 /* Added initial support for library searching.  Code seems to be broken at the
 /* moment.

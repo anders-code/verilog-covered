@@ -402,7 +402,7 @@ void expression_operate( expression* expr ) {
   if( expr != NULL ) {
 
     snprintf( msg, 4096, "In expression_operate, id: %d, op: %d, line: %d", expr->id, SUPPL_OP( expr->suppl ), expr->line );
-    print_output( msg, NORMAL );
+    print_output( msg, DEBUG );
 
     assert( expr->value != NULL );
 
@@ -799,6 +799,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.35  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.34  2002/07/09 03:24:48  phase1geo
 /* Various fixes for module instantiantion handling.  This now works.  Also
 /* modified report output for toggle, line and combinational information.

@@ -21,11 +21,13 @@
 void usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered (-h | -v | <command> <command_options>)\n" );
+  printf( "Usage:  covered (-h | -v | (-D) (-Q) <command> <command_options>)\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-  printf( "      -v                      Display current Covered version\n" );
-  printf( "      -h                      Display this usage information\n" );
+  printf( "      -D                      Debug.  Display information helpful for debugging tool problems\n" );
+  printf( "      -Q                      Quiet mode.  Causes all output to be suppressed\n" );
+  printf( "      -v                      Version.  Display current Covered version\n" );
+  printf( "      -h                      Help.  Display this usage information\n" );
   printf( "\n" );
   printf( "   Commands:\n" );
   printf( "      score                   Parses Verilog files and VCD dumpfiles to create database file used\n" );
@@ -49,10 +51,13 @@ void usage() {
 */
 int main( int argc, char** argv ) {
 
-  int retval     = 0;    /* Return value of this utility */
+  int  retval    = 0;      /* Return value of this utility               */
+  int  curr_arg  = 1;      /* Current position in argument list          */
+  bool cmd_found = FALSE;  /* Set to TRUE when command found in arg list */
 
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
+  set_debug( FALSE );
 
   if( argc == 1 ) {
 
@@ -70,22 +75,50 @@ int main( int argc, char** argv ) {
 
       usage();
 
-    } else if( strncmp( "score", argv[1], 5 ) == 0 ) {
-
-      retval = command_score( argc, argv );
-
-    } else if( strncmp( "merge", argv[1], 5 ) == 0 ) {
-
-      retval = command_merge( argc, argv );
-
-    } else if( strncmp( "report", argv[1], 6 ) == 0 ) {
-
-      retval = command_report( argc, argv );
-
     } else {
 
-      print_output( "Unknown command.  Please see \"covered -h\" for more usage.", FATAL );
-      retval = -1;
+      do {
+
+        if( strncmp( "-D", argv[curr_arg], 2 ) == 0 ) {
+
+          set_debug( TRUE );
+
+        } else if( strncmp( "-Q", argv[curr_arg], 2 ) == 0 ) {
+
+          set_output_suppression( TRUE );
+
+        } else if( strncmp( "score", argv[curr_arg], 5 ) == 0 ) {
+
+          retval    = command_score( argc, curr_arg, argv );
+          cmd_found = TRUE;
+
+        } else if( strncmp( "merge", argv[curr_arg], 5 ) == 0 ) {
+
+          retval    = command_merge( argc, curr_arg, argv );
+          cmd_found = TRUE;
+
+        } else if( strncmp( "report", argv[curr_arg], 6 ) == 0 ) {
+
+          retval    = command_report( argc, curr_arg, argv );
+          cmd_found = TRUE;
+
+        } else {
+
+          print_output( "Unknown command.  Please see \"covered -h\" for more usage.", FATAL );
+          retval = -1;
+
+        }
+
+        curr_arg++;
+
+      } while( (curr_arg < argc) && !cmd_found );
+
+      if( !cmd_found ) {
+ 
+        print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL );
+        retval = -1;
+
+      }
 
     }
 
@@ -96,6 +129,11 @@ int main( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.5  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.4  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src
