@@ -74,8 +74,11 @@
 
 extern nibble or_optab[16];
 
-stmt_link* presim_stmt_head;
-stmt_link* presim_stmt_tail;
+exp_link*  static_expr_head = NULL;
+exp_link*  static_expr_tail = NULL;
+
+stmt_link* presim_stmt_head = NULL;
+stmt_link* presim_stmt_tail = NULL;
 
 
 /*!
@@ -143,6 +146,24 @@ void sim_add_stmt_to_queue( statement* stmt ) {
 
   }
 
+}
+
+/*!
+ Iterates through static expression list and causes the simulator to
+ evaluate these expressions at simulation time.
+*/
+void sim_add_statics() {
+  
+  exp_link* curr;   /* Pointer to current expression link */
+  
+  curr = static_expr_head;
+  while( curr != NULL ) {
+    sim_expr_changed( curr->exp );
+    curr = curr->next;
+  }
+  
+  exp_link_delete_list( static_expr_head, FALSE );
+  
 }
 
 /*!
@@ -296,6 +317,12 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.27  2002/11/27 03:49:20  phase1geo
+ Fixing bugs in score and report commands for regression.  Finally fixed
+ static expression calculation to yield proper coverage results for constant
+ expressions.  Updated regression suite and development documentation for
+ changes.
+
  Revision 1.26  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

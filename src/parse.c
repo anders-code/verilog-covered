@@ -127,6 +127,8 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
     print_output( "Unable to read database file", FATAL );
     exit( 1 );
   }
+  
+  sim_add_statics();
 
   /* Read in contents of VCD file */
   if( vcd == NULL ) {
@@ -158,6 +160,12 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.15  2002/11/27 03:49:20  phase1geo
+ Fixing bugs in score and report commands for regression.  Finally fixed
+ static expression calculation to yield proper coverage results for constant
+ expressions.  Updated regression suite and development documentation for
+ changes.
+
  Revision 1.14  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 
