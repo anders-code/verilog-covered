@@ -47,7 +47,13 @@
 /*!
  Length of user_msg global string (used for inputs to snprintf calls).
 */
-#define USER_MSG_LENGTH  4096
+#define USER_MSG_LENGTH    4096
+
+/*!
+ If -w option is specified to report command, specifies number of characters of width
+ we will output.
+*/
+#define DEFAULT_LINE_WIDTH 80
 
 /*!
  \addtogroup output_type Output type
@@ -1528,6 +1534,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.93  2003/12/16 23:22:07  phase1geo
+ Adding initial code for line width specification for report output.
+
  Revision 1.92  2003/12/01 23:27:15  phase1geo
  Adding code for retrieving line summary module coverage information for
  GUI.
