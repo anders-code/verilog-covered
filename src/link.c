@@ -403,6 +403,44 @@ mod_link* mod_link_find( module* mod, mod_link* head ) {
 }
 
 /*!
+ \param exp   Pointer to string to find and remove.
+ \param head  Pointer to head of string list.
+ \param tail  Pointer to tail of string list.
+
+ Searches specified list for string that matches the specified string.  If
+ a match is found, remove it from the list and deallocate the link memory.
+*/
+void str_link_remove( char* str, str_link** head, str_link** tail ) {
+
+  str_link* curr;  /* Pointer to current string link */
+  str_link* last;  /* Pointer to last string link    */
+
+  curr = *head;
+  last = NULL;
+  while( (curr != NULL) && (strcmp( str, curr->str ) != 0) ) {
+    last = curr;
+    curr = curr->next;
+    assert( curr->str != NULL );
+  }
+
+  if( curr != NULL ) {
+
+    if( curr == *head ) {
+      *head = curr->next;
+    } else if( curr == *tail ) {
+      last->next = NULL;
+      *tail      = last;
+    } else {
+      last->next = curr->next;
+    }
+
+    free_safe( curr );
+
+  }
+
+}
+
+/*!
  \param exp   Pointer to expression to find and remove.
  \param head  Pointer to head of expression list.
  \param tail  Pointer to tail of expression list.
@@ -579,6 +617,11 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.15  2003/01/03 02:07:43  phase1geo
+ Fixing segmentation fault in lexer caused by not closing the temporary
+ input file before unlinking it.  Fixed case where module was parsed but not
+ at the head of the module list.
+
  Revision 1.14  2002/12/06 02:18:59  phase1geo
  Fixing bug with calculating list and concatenation lengths when MBIT_SEL
  expressions were included.  Also modified file parsing algorithm to be
