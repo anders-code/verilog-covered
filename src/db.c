@@ -920,6 +920,7 @@ void db_do_timestep( int time ) {
 
   snprintf( msg, 4096, "Performing timestep #%d", time );
   print_output( msg, NORMAL );
+  printf( "%s\n", msg );
 
   curr_sim_time = time;
 
@@ -963,6 +964,11 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.27  2002/07/03 19:54:36  phase1geo
+/* Adding/fixing code to properly handle always blocks with the event control
+/* structures attached.  Added several new diagnostics to test this ability.
+/* always1.v is still failing but the rest are passing.
+/*
 /* Revision 1.26  2002/07/02 19:52:50  phase1geo
 /* Removing unecessary diagnostics.  Cleaning up extraneous output and
 /* generating new documentation from source.  Regression passes at the

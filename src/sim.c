@@ -179,7 +179,7 @@ void sim_expression( expression* expr ) {
   }
 
   /* Now perform expression operation for this expression */
-  // printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( expr->suppl ), expr->id );
+  printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( expr->suppl ), expr->id );
   expression_operate( expr );
 
 }
@@ -286,6 +286,11 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.16  2002/07/03 19:54:36  phase1geo
+/* Adding/fixing code to properly handle always blocks with the event control
+/* structures attached.  Added several new diagnostics to test this ability.
+/* always1.v is still failing but the rest are passing.
+/*
 /* Revision 1.15  2002/07/03 00:59:14  phase1geo
 /* Fixing bug with conditional statements and other "deep" expression trees.
 /*

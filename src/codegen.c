@@ -39,7 +39,11 @@ char* codegen_gen_expr( expression* expr, int line ) {
     left_code  = codegen_gen_expr( expr->left,  line );
     right_code = codegen_gen_expr( expr->right, line );
 
-    if( SUPPL_OP( expr->suppl ) == EXP_OP_NONE ) {
+    if( SUPPL_OP( expr->suppl ) == EXP_OP_LAST ) {
+
+      my_code = NULL;
+
+    } else if( SUPPL_OP( expr->suppl ) == EXP_OP_NONE ) {
 
       my_code = vector_to_string( expr->value, HEXIDECIMAL );
 
@@ -142,6 +146,11 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 
 /* $Log$
+/* Revision 1.9  2002/07/03 19:54:35  phase1geo
+/* Adding/fixing code to properly handle always blocks with the event control
+/* structures attached.  Added several new diagnostics to test this ability.
+/* always1.v is still failing but the rest are passing.
+/*
 /* Revision 1.8  2002/07/02 19:52:50  phase1geo
 /* Removing unecessary diagnostics.  Cleaning up extraneous output and
 /* generating new documentation from source.  Regression passes at the

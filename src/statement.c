@@ -366,7 +366,10 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 
     /* Traverse FALSE path */
     if( curr_stmt->next_false == NULL ) {
-      if( SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY ) {
+      if( (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY) &&
+          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_NEDGE) &&
+          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_PEDGE) &&
+          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_AEDGE) ) {
         curr_stmt->next_false = next_stmt;
       }
     } else if( curr_stmt->next_false != next_stmt ) {
@@ -388,7 +391,24 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 */
 void statement_set_stop( statement* stmt, statement* post, bool true_path ) {
 
+  int        true_id;
+  int        false_id;
+
   assert( stmt != NULL );
+
+  if( stmt->next_true == NULL ) {
+    true_id = 0;
+  } else {
+    true_id = stmt->next_true->exp->id;
+  }
+
+  if( stmt->next_false == NULL ) {
+    false_id = 0;
+  } else {
+    false_id = stmt->next_false->exp->id;
+  }
+
+  // printf( "In statement_set_stop, stmt: %d, next_true: %d, next_false: %d\n", stmt->exp->id, true_id, false_id );
 
   if( ((stmt->next_true == post) && (stmt->next_false == post)) && true_path ) {
     // printf( "Setting STOP bit for statement %d\n", stmt->exp->id );
@@ -452,6 +472,11 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.22  2002/07/03 19:54:36  phase1geo
+/* Adding/fixing code to properly handle always blocks with the event control
+/* structures attached.  Added several new diagnostics to test this ability.
+/* always1.v is still failing but the rest are passing.
+/*
 /* Revision 1.21  2002/07/01 15:10:42  phase1geo
 /* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
 /* seem to be passing with these fixes.
