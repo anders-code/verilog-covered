@@ -38,9 +38,15 @@
  structure.
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <assert.h>
 
 #include "defines.h"
@@ -681,6 +687,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.22  2002/11/05 00:20:07  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.21  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 
