@@ -33,7 +33,7 @@ void db_add_override_param( char* inst_name, expression* expr );
 void db_add_defparam( char* name, expression* expr );
 
 //! Adds specified signal to signal list.  Called by parser.
-void db_add_signal( char* name, int width, int lsb );
+void db_add_signal( char* name, static_expr* left, static_expr* right );
 
 //! Finds specified signal in module and returns pointer to the signal structure.  Called by parser.
 signal* db_find_signal( char* name );
@@ -78,6 +78,15 @@ void db_set_symbol_string( char* sym, char* value );
 void db_do_timestep( int time ); 
 
 /* $Log$
+/* Revision 1.18  2002/10/11 04:24:01  phase1geo
+/* This checkin represents some major code renovation in the score command to
+/* fully accommodate parameter support.  All parameter support is in at this
+/* point and the most commonly used parameter usages have been verified.  Some
+/* bugs were fixed in handling default values of constants and expression tree
+/* resizing has been optimized to its fullest.  Full regression has been
+/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+/* problems in report outputting.
+/*
 /* Revision 1.17  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements

@@ -431,10 +431,10 @@ void* malloc_safe( int size ) {
   if( size > 10000 ) {
     print_output( "Allocating memory chunk larger than 10000 bytes.  Possible error.", WARNING );
     // printf( "  Memory block size request: %d bytes\n", size );
-    assert( size > 10000 );
+    assert( size <= 10000 );
   } else if( size <= 0 ) {
     print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL );
-    assert( size <= 0 );
+    assert( size > 0 );
   }
 
   curr_malloc_size += size;
@@ -494,6 +494,15 @@ void gen_space( char* spaces, int num_spaces ) {
 }
 
 /* $Log$
+/* Revision 1.12  2002/10/11 04:24:02  phase1geo
+/* This checkin represents some major code renovation in the score command to
+/* fully accommodate parameter support.  All parameter support is in at this
+/* point and the most commonly used parameter usages have been verified.  Some
+/* bugs were fixed in handling default values of constants and expression tree
+/* resizing has been optimized to its fullest.  Full regression has been
+/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+/* problems in report outputting.
+/*
 /* Revision 1.11  2002/09/25 05:36:08  phase1geo
 /* Initial version of parameter support is now in place.  Parameters work on a
 /* basic level.  param1.v tests this basic functionality and param1.cdd contains

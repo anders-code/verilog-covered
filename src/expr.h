@@ -19,8 +19,11 @@ void expression_create_value( expression* exp, int width, int lsb, bool data );
 //! Creates new expression.
 expression* expression_create( expression* right, expression* left, int op, int id, int line, bool data );
 
+//! Sets the specified expression value to the specified vector value.
+void expression_set_value( expression* exp, vector* vec );
+
 //! Recursively resizes specified expression tree leaf node.
-void expression_resize( expression* expr );
+void expression_resize( expression* expr, bool recursive );
 
 //! Returns expression ID of this expression.
 int expression_get_id( expression* expr );
@@ -48,6 +51,15 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 
 /* $Log$
+/* Revision 1.13  2002/10/11 04:24:02  phase1geo
+/* This checkin represents some major code renovation in the score command to
+/* fully accommodate parameter support.  All parameter support is in at this
+/* point and the most commonly used parameter usages have been verified.  Some
+/* bugs were fixed in handling default values of constants and expression tree
+/* resizing has been optimized to its fullest.  Full regression has been
+/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+/* problems in report outputting.
+/*
 /* Revision 1.12  2002/09/29 02:16:51  phase1geo
 /* Updates to parameter CDD files for changes affecting these.  Added support
 /* for bit-selecting parameters.  param4.v diagnostic added to verify proper

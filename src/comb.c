@@ -82,7 +82,7 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ||
          (report_comb_depth == REPORT_SUMMARY) ) {
-
+      
       /* Calculate current expression combination coverage */
       if( EXPR_IS_MEASURABLE( exp ) == 1 ) {
         *total = *total + 2;
@@ -115,7 +115,7 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
 void combination_get_stats( exp_link* expl, float* total, int* hit ) {
 
   exp_link* curr_exp;    /* Pointer to the current expression link in the list */
-
+  
   curr_exp = expl;
 
   while( curr_exp != NULL ) {
@@ -928,6 +928,15 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 
 /* $Log$
+/* Revision 1.46  2002/10/11 04:24:01  phase1geo
+/* This checkin represents some major code renovation in the score command to
+/* fully accommodate parameter support.  All parameter support is in at this
+/* point and the most commonly used parameter usages have been verified.  Some
+/* bugs were fixed in handling default values of constants and expression tree
+/* resizing has been optimized to its fullest.  Full regression has been
+/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+/* problems in report outputting.
+/*
 /* Revision 1.45  2002/10/01 13:21:24  phase1geo
 /* Fixing bug in report output for single and multi-bit selects.  Also modifying
 /* the way that parameters are dealt with to allow proper handling of run-time
