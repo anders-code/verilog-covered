@@ -459,7 +459,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   expression* expr;             /* Pointer to newly created expression                 */
   char        scope[4096];      /* Holder for scope of this expression                 */
   int         linenum;          /* Holder of current line for this expression          */
-  nibble      suppl;            /* Holder of supplemental value of this expression     */
+  control     suppl;            /* Holder of supplemental value of this expression     */
   int         right_id;         /* Holder of expression ID to the right                */
   int         left_id;          /* Holder of expression ID to the left                 */
   expression* right;            /* Pointer to current expression's right expression    */
@@ -1149,6 +1149,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.57  2002/10/30 06:07:10  phase1geo
+ First attempt to handle expression trees/statement trees that contain
+ unsupported code.  These are removed completely and not evaluated (because
+ we can't guarantee that our results will match the simulator).  Added real1.1.v
+ diagnostic that verifies one case of this scenario.  Full regression passes.
+
  Revision 1.56  2002/10/29 17:25:56  phase1geo
  Fixing segmentation fault in expression resizer for expressions with NULL
  values in right side child expressions.  Also trying fix for log comments.
