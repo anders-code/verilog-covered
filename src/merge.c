@@ -135,9 +135,6 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
   int retval = 0;  /* Return value of this function */
 
-  /* Initialize error suppression value */
-  set_output_suppression( FALSE );
-
   /* Parse score command-line */
   if( merge_parse_args( argc, last_arg, argv ) ) {
 
@@ -165,6 +162,12 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.13  2003/02/17 22:47:20  phase1geo
+ Fixing bug with merging same DUTs from different testbenches.  Updated reports
+ to display full path instead of instance name and parent instance name.  Added
+ merge tests and added merge testing into regression test suite.  Fixing bug with
+ -D/-Q option specified with merge command.  Full regression passing.
+
  Revision 1.12  2003/02/11 05:20:52  phase1geo
  Fixing problems with merging constant/parameter vector values.  Also fixing
  bad output from merge command when the CDD files cannot be opened for reading.
