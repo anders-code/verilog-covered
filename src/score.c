@@ -38,6 +38,9 @@ void score_usage() {
   printf( "Usage:  covered score -t <top-level_module_name> -vcd <dumpfile> [<options>]\n" );
   printf( "\n" );
   printf( "   Options:\n" );
+  printf( "      -vcd <dumpfile>             Name of dumpfile to score design with.  If this option\n" );
+  printf( "                                  is not used, Covered will only create an initial CDD file\n" );
+  printf( "                                  from the design and will not attempt to score the design.\n" );
   printf( "      -i <instance_name>          Instance name of top-level module.  Necessary if module\n" );
   printf( "                                  to verify coverage is not the top-level module in the design.\n" );
   printf( "                                  If not specified, -t value is used.\n" );
@@ -328,6 +331,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.17  2002/07/21 00:08:58  phase1geo
+/* Updating score usage information.  Updated manstyle user documentation though
+/* there seems to be some problem getting the HTML generated from this.  Getting
+/* ready for the next release.
+/*
 /* Revision 1.16  2002/07/20 22:22:52  phase1geo
 /* Added ability to create implicit signals for local signals.  Added implicit1.v
 /* diagnostic to test for correctness.  Full regression passes.  Other tweaks to
