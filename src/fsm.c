@@ -228,8 +228,7 @@ void fsm_var_remove( fsm_var* fv ) {
 /**************************************************************************************/
 
 /*!
- \param isig  Pointer to signal that is input state variable for this FSM.
- \param osig  Pointer to signal that is output state variable for this FSM.
+ \param sig  Pointer to signal that is output state variable for this FSM.
 
  \return Returns a pointer to the newly allocated FSM structure.
 
@@ -795,7 +794,7 @@ void fsm_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
 /*! 
  \param ofile  Pointer to output file to display report contents to.
- \param root   Pointer to head of module list to traverse.
+ \param head   Pointer to head of module list to traverse.
 
  Generates a module verbose report of the current FSM states and arcs hit during simulation.
 */
@@ -903,6 +902,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.18  2003/09/23 12:28:08  phase1geo
+ Fixes for development documentation.
+
  Revision 1.17  2003/09/22 19:42:31  phase1geo
  Adding print_output WARNING_WRAP and FATAL_WRAP lines to allow multi-line
  error output to be properly formatted to the output stream.
