@@ -365,10 +365,12 @@ void report_gather_instance_stats( mod_inst* root ) {
                    &(root->stat->arc_hit) );
   }
 
-  if( report_race ) {
+  /* Only get race condition statistics for this instance module if the module hasn't been gathered yet */
+  if( report_race && (root->mod->stat == NULL) ) {
+    root->mod->stat = statistic_create();
     race_get_stats( root->mod->race_head,
-                    &(root->stat->race_total),
-		    &(root->stat->rtype_total) );
+                    &(root->mod->stat->race_total),
+                    &(root->mod->stat->rtype_total) );
   }
 
 }
@@ -712,6 +714,14 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.43  2005/02/05 06:47:20  phase1geo
+ Fixing bug with race condition output in instance reporting.  Changing default
+ report output of race conditions to false and updating in-line documentation.
+ Added rules in regression runs for specifically testing race condition output.
+ Updated regression files for these changes.  Regression runs clean at this point.
+ We just need to add user documentation for the race condition feature add and
+ we should be done.
+
  Revision 1.42  2005/02/05 06:21:02  phase1geo
  Added ascii report output for race conditions.  There is a segmentation fault
  bug associated with instance reporting.  Need to look into further.
