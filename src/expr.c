@@ -109,7 +109,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
 
     assert( rwidth < 1024 );
     assert( lwidth < 1024 );
-    expression_create_value( new_expr, (rwidth * lwidth), 0 );
+    expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), 0 );
 
   } else if( (op == EXP_OP_LT   ) ||
              (op == EXP_OP_GT   ) ||
@@ -843,6 +843,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.44  2002/07/19 13:10:06  phase1geo
+/* Various fixes to binding scheme.
+/*
 /* Revision 1.43  2002/07/18 22:02:35  phase1geo
 /* In the middle of making improvements/fixes to the expression/signal
 /* binding phase.

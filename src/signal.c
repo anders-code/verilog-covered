@@ -118,7 +118,7 @@ void signal_db_write( signal* sig, FILE* file, char* modname ) {
     modname
   );
 
-  printf( "Writing signal:  %d %s %s ", DB_TYPE_SIGNAL, sig->name, modname );
+  // printf( "Writing signal:  %d %s %s ", DB_TYPE_SIGNAL, sig->name, modname );
 
   vector_db_write( sig->value, file, FALSE );
 
@@ -350,6 +350,9 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.12  2002/07/19 13:10:07  phase1geo
+/* Various fixes to binding scheme.
+/*
 /* Revision 1.11  2002/07/18 22:02:35  phase1geo
 /* In the middle of making improvements/fixes to the expression/signal
 /* binding phase.
