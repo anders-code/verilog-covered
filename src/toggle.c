@@ -202,9 +202,9 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
     if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
 
       fprintf( ofile, "%-24s  0->1: ", curr_sig->sig->name );
-      vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
+      vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
       fprintf( ofile, "\n......................... 1->0: " );
-      vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
+      vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
       fprintf( ofile, " ...\n" );
 
     }
@@ -323,6 +323,10 @@ void toggle_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.8  2002/07/17 06:27:18  phase1geo
+/* Added start for fixes to bit select code starting with single bit selection.
+/* Full regression passes with addition of sbit_sel1 diagnostic.
+/*
 /* Revision 1.7  2002/07/14 05:27:34  phase1geo
 /* Fixing report outputting to allow multiple modules/instances to be
 /* output.
