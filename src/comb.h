@@ -13,6 +13,9 @@
 #include "defines.h"
 
 
+/*! \brief Resets combination counted bits in expression list */
+void combination_reset_counted_exprs( exp_link* expl );
+
 /*! \brief Calculates combination logic statistics for summary output */
 void combination_get_stats( exp_link* expl, float* total, int* hit );
 
@@ -34,6 +37,10 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.12  2004/09/07 03:17:13  phase1geo
+ Fixing bug that did not allow combinational logic to be revisited in GUI properly.
+ Also removing comments from bgerror function in Tcl code.
+
  Revision 1.11  2004/08/17 15:23:37  phase1geo
  Added combinational logic coverage output to GUI.  Modified comb.c code to get this
  to work that impacts ASCII coverage output; however, regression is fully passing with
