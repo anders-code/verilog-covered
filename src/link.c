@@ -253,7 +253,7 @@ void stmt_link_display( stmt_link* head ) {
   while( curr.curr != NULL ) {
     assert( curr.curr->stmt != NULL );
     assert( curr.curr->stmt->exp != NULL );
-    printf( "  id: %d\n", curr.curr->stmt->exp->id );
+    printf( "  id: %d, line: %d\n", curr.curr->stmt->exp->id, curr.curr->stmt->exp->line );
     stmt_iter_next( &curr );
   }
 
@@ -718,6 +718,10 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.28  2004/07/22 04:43:06  phase1geo
+ Finishing code to calculate start and end columns of expressions.  Regression
+ has been updated for these changes.  Other various minor changes as well.
+
  Revision 1.27  2004/03/30 15:42:14  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.
