@@ -335,7 +335,7 @@ void vcd_parse( char* vcd_file ) {
   if( (vcd_handle = fopen( vcd_file, "r" )) != NULL ) {
 
     /* Create initial symbol table */
-    vcd_symtab = symtable_create( NULL, 0, 0, FALSE );
+    vcd_symtab = symtable_create();
 
     vcd_parse_def( vcd_handle );
 
@@ -366,6 +366,10 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.13  2003/08/21 21:57:30  phase1geo
+ Fixing bug with certain flavors of VCD files that alias signals that have differing
+ MSBs and LSBs.  This takes care of the rest of the bugs for the 0.2 stable release.
+
  Revision 1.12  2003/08/20 22:08:39  phase1geo
  Fixing problem with not closing VCD file after VCD parsing is completed.
  Also fixed memory problem with symtable.c to cause timestep_tab entries
