@@ -835,9 +835,7 @@ void fsm_dealloc( fsm* table ) {
   if( table != NULL ) {
 
     /* Deallocate tables */
-    if( table->table != NULL ) {
-      free_safe( table->table );
-    }
+    arc_dealloc( table->table );
 
     /* Deallocate FSM arc structure */
     while( table->arc_head != NULL ) {
@@ -855,6 +853,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.15  2003/09/19 18:04:28  phase1geo
+ Adding fsm3 diagnostic to check proper handling of wide state variables.
+ Code fixes to support new diagnostic.
+
  Revision 1.14  2003/09/19 13:25:28  phase1geo
  Adding new FSM diagnostics including diagnostics to verify FSM merging function.
  FSM merging code was modified to work correctly.  Full regression passes.
