@@ -21,12 +21,21 @@ void race_find_and_add_stmt_sigs( statement* stmt, statement* root );
 /*! \brief Displays contents of stmt_sig array to standard output */
 void race_stmt_sig_display();
 
+/*! \brief Checks the current module for race conditions */
+void race_check_module();
+
+/*! \brief Checks the number of race conditions that were detected in the design */
+bool race_check_race_count();
+
 /*! \brief Deallocates specified stmt_sig structure from memory */
 void race_stmt_sig_dealloc();
 
 
 /*
  $Log$
+ Revision 1.5  2004/12/20 04:12:00  phase1geo
+ A bit more race condition checking code added.  Still not there yet.
+
  Revision 1.4  2004/12/18 16:23:18  phase1geo
  More race condition checking updates.
 

@@ -465,6 +465,9 @@ void db_end_module( int end_line ) {
 
   str_link_remove( curr_module->name, &modlist_head, &modlist_tail );
 
+  /* Check the current module for race conditions */
+  race_check_module();
+
   /* mod_parm_display( curr_module->param_head ); */
   
 }
@@ -1310,6 +1313,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.118  2004/12/20 04:12:00  phase1geo
+ A bit more race condition checking code added.  Still not there yet.
+
  Revision 1.117  2004/12/18 16:23:16  phase1geo
  More race condition checking updates.
 
