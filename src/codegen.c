@@ -274,34 +274,17 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( expr->op == EXP_OP_STATIC ) {
 
-      switch( expr->value->suppl.part.base ) {
+      *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+      *code_depth = 1;
 
-        case DECIMAL :
-          snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
-          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
-          (*code)[0]  = strdup_safe( code_format, __FILE__, __LINE__ );
-          *code_depth = 1;
-          break;
+      if( expr->value->suppl.part.base == DECIMAL ) {
 
-        case BINARY :
-          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
-          (*code)[0]  = vector_to_string( expr->value, BINARY );
-          *code_depth = 1;
-          break;
+        snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
+        (*code)[0] = strdup_safe( code_format, __FILE__, __LINE__ );
 
-        case OCTAL :
-          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
-          (*code)[0]  = vector_to_string( expr->value, OCTAL );
-          *code_depth = 1;
-          break;
+      } else { 
 
-        case HEXIDECIMAL :
-          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
-          (*code)[0]  = vector_to_string( expr->value, HEXIDECIMAL );
-          *code_depth = 1;
-          break;
-
-        default :  break;
+        (*code)[0] = vector_to_string( expr->value );
 
       }
 
@@ -626,6 +609,11 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.39  2005/01/07 23:00:05  phase1geo
+ Regression now passes for previous changes.  Also added ability to properly
+ convert quoted strings to vectors and vectors to quoted strings.  This will
+ allow us to support strings in expressions.  This is a known good.
+
  Revision 1.38  2005/01/06 23:51:16  phase1geo
  Intermediate checkin.  Files don't fully compile yet.
 

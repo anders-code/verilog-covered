@@ -77,7 +77,7 @@ int vector_to_int( vector* vec );
 void vector_from_int( vector* vec, int value );
 
 /*! \brief Converts vector into a string value in specified format. */
-char* vector_to_string( vector* vec, int type );
+char* vector_to_string( vector* vec );
 
 /*! \brief Converts character string value into vector. */
 vector* vector_from_string( char** str, bool quoted );
@@ -127,6 +127,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.27  2005/01/07 23:00:10  phase1geo
+ Regression now passes for previous changes.  Also added ability to properly
+ convert quoted strings to vectors and vectors to quoted strings.  This will
+ allow us to support strings in expressions.  This is a known good.
+
  Revision 1.26  2005/01/07 17:59:52  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.
