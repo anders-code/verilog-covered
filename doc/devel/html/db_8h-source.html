@@ -30,7 +30,7 @@
 00042 
 00044 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a26">db_statement_connect</a>( <a class="code" href="structstatement__s.html">statement</a>* curr_stmt, <a class="code" href="structstatement__s.html">statement</a>* next_stmt );
 00045 
-00047 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a27">db_statement_set_stop</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* post );
+00047 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a27">db_statement_set_stop</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* post, <font class="keywordtype">bool</font> both );
 00048 
 00050 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a24">db_connect_statement_true</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_true );
 00051 
@@ -50,8 +50,10 @@
 00072 
 00073 
 00074 <font class="comment">/* $Log$
-00074 <font class="comment">/* Revision 1.9  2002/07/02 22:37:32  phase1geo
-00074 <font class="comment">/* Changing on-line help command calling.  Regenerated documentation.
+00074 <font class="comment">/* Revision 1.10  2002/07/03 21:29:48  phase1geo
+00074 <font class="comment">/* Fixed remaining issues with always statements.  Full regression is running
+00074 <font class="comment">/* error free at this point.  Regenerated documentation.  Added EOR expression
+00074 <font class="comment">/* operation to handle the or expression in event lists.
 00074 <font class="comment">/*</font>
 00075 <font class="comment"></font>
 00076 <font class="comment">/* Revision 1.8  2002/07/01 15:10:42  phase1geo</font>
@@ -106,7 +108,7 @@
 00125 
 00126 <font class="preprocessor">#endif</font>
 00127 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Tue Jul 2 17:36:55 2002 for Covered by
+</pre></div><hr><address align="right"><small>Generated on Wed Jul 3 16:28:34 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>
