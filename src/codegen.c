@@ -279,6 +279,7 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
           case EXP_OP_ASSIGN   :  code_size = 12; strcpy( code_format, "assign %s = %s" );    both = TRUE;   break;
           case EXP_OP_BASSIGN  :  code_size = 4;  strcpy( code_format, "%s = %s" );           both = TRUE;   break;
           case EXP_OP_NASSIGN  :  code_size = 5;  strcpy( code_format, "%s <= %s" );          both = TRUE;   break;
+          case EXP_OP_IF       :  code_size = 7;  strcpy( code_format, "if( %s )" );          both = FALSE;  break;
           default:  break;
         }
 
@@ -331,6 +332,10 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
 
 /*
  $Log$
+ Revision 1.29  2003/11/30 05:46:44  phase1geo
+ Adding IF report outputting capability.  Updated always9 diagnostic for these
+ changes and updated rest of regression CDD files accordingly.
+
  Revision 1.28  2003/11/26 23:14:41  phase1geo
  Adding code to include left-hand-side expressions of statements for report
  outputting purposes.  Full regression does not yet pass.

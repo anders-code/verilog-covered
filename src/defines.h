@@ -722,6 +722,7 @@
 #define EXP_OP_ASSIGN     0x35
 #define EXP_OP_BASSIGN    0x36
 #define EXP_OP_NASSIGN    0x37
+#define EXP_OP_IF         0x38
 
 /*! @} */
 
@@ -743,6 +744,7 @@
                                      (SUPPL_OP( x->suppl ) != EXP_OP_ASSIGN) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_BASSIGN) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_NASSIGN) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_IF) && \
                                      (SUPPL_IS_LHS( x->suppl ) == 0) && \
                                      !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
@@ -751,6 +753,7 @@
                                        (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_ASSIGN) && \
                                        (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_BASSIGN) && \
                                        (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_NASSIGN) && \
+                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_IF) && \
                                        (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND)) && \
                                      (x->line != 0)) ? 1 : 0)
 
@@ -1521,6 +1524,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.91  2003/11/30 05:46:45  phase1geo
+ Adding IF report outputting capability.  Updated always9 diagnostic for these
+ changes and updated rest of regression CDD files accordingly.
+
  Revision 1.90  2003/11/29 06:55:48  phase1geo
  Fixing leftover bugs in better report output changes.  Fixed bug in param.c
  where parameters found in RHS expressions that were part of statements that
