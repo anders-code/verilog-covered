@@ -214,6 +214,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         }
         free_safe( arg_list );
       } else {
+        snprintf( err_msg, 4096, "Cannot find argument file %s specified with -f option", argv[i] );
+        print_output( err_msg, FATAL );
         retval = FALSE;
       }
 
@@ -349,6 +351,12 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.24  2002/09/27 01:19:38  phase1geo
+/* Fixed problems with parameter overriding from command-line.  This now works
+/* and param1.2.v has been added to test this functionality.  Totally reworked
+/* regression running to allow each diagnostic to specify unique command-line
+/* arguments to Covered.  Full regression passes.
+/*
 /* Revision 1.23  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements
