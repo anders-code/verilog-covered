@@ -444,7 +444,7 @@ void str_link_remove( char* str, str_link** head, str_link** tail ) {
  \param exp        Pointer to expression to find and remove.
  \param head       Pointer to head of expression list.
  \param tail       Pointer to tail of expression list.
- \param recursive  If TRUE, recursively removes expression tree.
+ \param recursive  If TRUE, recursively removes expression tree and expressions.
 
  Searches specified list for expression that matches the specified expression.  If
  a match is found, remove it from the list and deallocate the link memory.
@@ -485,6 +485,11 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
       *tail      = last;
     } else {
       last->next = curr->next;
+    }
+
+    /* If recursive flag set, remove expression as well */
+    if( recursive ) {
+      expression_dealloc( curr->exp, TRUE );
     }
 
     free_safe( curr );
@@ -632,6 +637,11 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.20  2003/02/08 21:54:06  phase1geo
+ Fixing memory problems with db_remove_statement function.  Updating comments
+ in statement.c to explain some of the changes necessary to properly remove
+ a statement tree.
+
  Revision 1.19  2003/02/07 02:28:23  phase1geo
  Fixing bug with statement removal.  Expressions were being deallocated but not properly
  removed from module parameter expression lists and module expression lists.  Regression
