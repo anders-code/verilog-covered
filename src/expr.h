@@ -13,7 +13,7 @@
 #include "defines.h"
 
 
-//! Creates an expression value and sets MEASURABLE bit if necessary.
+//! Creates an expression value and initializes it.
 void expression_create_value( expression* exp, int width, int lsb );
 
 //! Creates new expression.
@@ -42,6 +42,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 
 /* $Log$
+/* Revision 1.5  2002/06/21 05:55:05  phase1geo
+/* Getting some codes ready for writing simulation engine.  We should be set
+/* now.
+/*
 /* Revision 1.4  2002/05/13 03:02:58  phase1geo
 /* Adding lines back to expressions and removing them from statements (since the line
 /* number range of an expression can be calculated by looking at the expression line
