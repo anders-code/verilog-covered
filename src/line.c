@@ -167,6 +167,8 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
   /* Display current instance missed lines */
   stmt_iter_reset( &stmti, stmtl );
+  stmt_iter_find_head( &stmti, FALSE );
+  
   while( stmti.curr != NULL ) {
 
     if( (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DELAY) &&
@@ -187,7 +189,7 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
     }
 
-    stmt_iter_next( &stmti );
+    stmt_iter_get_next_in_order( &stmti );
 
   }
 
@@ -307,6 +309,14 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.26  2002/12/07 17:46:53  phase1geo
+ Fixing bug with handling memory declarations.  Added diagnostic to verify
+ that memory declarations are handled properly.  Fixed bug with infinite
+ looping in statement_connect function and optimized this part of the score
+ command.  Added diagnostic to verify this fix (always9.v).  Fixed bug in
+ report command with ordering of lines and combinational logic verbose output.
+ This is now fixed correctly.
+
  Revision 1.25  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

@@ -440,7 +440,7 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
     expr->id,
     scope,
     expr->line,
-    expr->suppl,
+    (expr->suppl & SUPPL_MERGE_MASK),
     (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right ),
     (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left )
   );
@@ -1213,6 +1213,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.71  2002/12/07 17:46:53  phase1geo
+ Fixing bug with handling memory declarations.  Added diagnostic to verify
+ that memory declarations are handled properly.  Fixed bug with infinite
+ looping in statement_connect function and optimized this part of the score
+ command.  Added diagnostic to verify this fix (always9.v).  Fixed bug in
+ report command with ordering of lines and combinational logic verbose output.
+ This is now fixed correctly.
+
  Revision 1.70  2002/12/06 02:18:59  phase1geo
  Fixing bug with calculating list and concatenation lengths when MBIT_SEL
  expressions were included.  Also modified file parsing algorithm to be
