@@ -58,15 +58,30 @@ str_link* get_next_vfile( str_link* curr, char* mod );
 /*! \brief Performs safe malloc call. */
 void* malloc_safe(size_t size );
 
+/*! \brief Performs safe malloc call without upper bound on byte allocation. */
+void* malloc_safe_nolimit(size_t size );
+
 /*! \brief Performs safe deallocation of heap memory. */
 void free_safe( void* ptr );
 
 /*! \brief Creates a string containing space characters. */
 void gen_space( char* spaces, int num_spaces );
 
+/*! \brief Clears the specified timer structure. */
+void timer_clear( timer** tm );
+
+/*! \brief Starts timing the specified timer structure. */
+void timer_start( timer** tm );
+
+/*! \brief Stops timing the specified timer structure. */
+void timer_stop( timer** tm );
+
 
 /*
  $Log$
+ Revision 1.13  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.12  2003/02/17 22:47:21  phase1geo
  Fixing bug with merging same DUTs from different testbenches.  Updated reports
  to display full path instead of instance name and parent instance name.  Added
