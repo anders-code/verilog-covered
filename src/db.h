@@ -54,7 +54,7 @@ void db_add_expression( expression* root );
 statement* db_create_statement( expression* exp );
 
 /*! \brief Adds specified statement to current module's statement list.  Called by parser. */
-void db_add_statement( statement* stmt );
+void db_add_statement( statement* stmt, statement* start );
 
 /*! \brief Connects one statement block to another. */
 void db_statement_connect( statement* curr_stmt, statement* next_stmt );
@@ -89,6 +89,10 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.25  2002/12/03 06:01:16  phase1geo
+ Fixing bug where delay statement is the last statement in a statement list.
+ Adding diagnostics to verify this functionality.
+
  Revision 1.24  2002/11/05 00:20:06  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
