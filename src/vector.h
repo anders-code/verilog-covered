@@ -58,6 +58,9 @@ void vector_set_type( vector* vec, int type );
 /*! \brief Returns value of vector output type. */
 int vector_get_type( vector* vec );
 
+/*! \brief Specifies if vector contains unknown values (X or Z) */
+bool vector_is_unknown( vector* vec );
+
 /*! \brief Converts vector into integer value. */
 int vector_to_int( vector* vec );
 
@@ -115,6 +118,13 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.17  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.16  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.
