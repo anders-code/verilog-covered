@@ -190,7 +190,9 @@ expression* expression_create( expression* right, expression* left, int op, int 
   } else {
 
     /* If both right and left values have their width values set. */
-    if( (rwidth > 0) && (lwidth > 0) ) {
+    if( (rwidth > 0) && (lwidth > 0) && 
+        (op != EXP_OP_MBIT_SEL) &&
+        (op != EXP_OP_PARAM_MBIT) ) {
 
       if( rwidth >= lwidth ) {
         /* Check to make sure that nothing has gone drastically wrong */
@@ -1211,6 +1213,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.70  2002/12/06 02:18:59  phase1geo
+ Fixing bug with calculating list and concatenation lengths when MBIT_SEL
+ expressions were included.  Also modified file parsing algorithm to be
+ smarter when searching files for modules.  This change makes the parsing
+ algorithm much more optimized and fixes the bug specified in our bug list.
+ Added diagnostic to verify fix for first bug.
+
  Revision 1.69  2002/12/03 00:04:56  phase1geo
  Fixing bug uncovered by param6.1.v diagnostic.  Full regression now passes.
 

@@ -779,7 +779,7 @@ typedef struct str_link_s str_link;
 
 struct str_link_s {
   char*     str;     /*!< String to store                  */
-  char*     suppl;   /*!< Pointer to additional string     */
+  char      suppl;   /*!< 8-bit additional information     */
   str_link* next;    /*!< Pointer to next str_link element */
 };
 
@@ -1123,6 +1123,13 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.61  2002/12/06 02:18:59  phase1geo
+ Fixing bug with calculating list and concatenation lengths when MBIT_SEL
+ expressions were included.  Also modified file parsing algorithm to be
+ smarter when searching files for modules.  This change makes the parsing
+ algorithm much more optimized and fixes the bug specified in our bug list.
+ Added diagnostic to verify fix for first bug.
+
  Revision 1.60  2002/11/27 03:49:20  phase1geo
  Fixing bugs in score and report commands for regression.  Finally fixed
  static expression calculation to yield proper coverage results for constant

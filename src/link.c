@@ -40,8 +40,9 @@ void str_link_add( char* str, str_link** head, str_link** tail ) {
 
   tmp = (str_link*)malloc_safe( sizeof( str_link ) );
 
-  tmp->str  = str;
-  tmp->next = NULL;
+  tmp->str   = str;
+  tmp->suppl = '_';
+  tmp->next  = NULL;
 
   if( *head == NULL ) {
     *head = *tail = tmp;
@@ -578,6 +579,13 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.14  2002/12/06 02:18:59  phase1geo
+ Fixing bug with calculating list and concatenation lengths when MBIT_SEL
+ expressions were included.  Also modified file parsing algorithm to be
+ smarter when searching files for modules.  This change makes the parsing
+ algorithm much more optimized and fixes the bug specified in our bug list.
+ Added diagnostic to verify fix for first bug.
+
  Revision 1.13  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

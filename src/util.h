@@ -49,6 +49,9 @@ void scope_extract_back( char* scope, char* back, char* rest );
 /*! \brief Returns TRUE if specified scope is local (contains no periods). */
 bool scope_local( char* scope );
 
+/*! \brief Returns next Verilog file to parse. */
+str_link* get_next_vfile( str_link* curr, char* mod );
+
 /*! \brief Performs safe malloc call. */
 void* malloc_safe(size_t size );
 
@@ -61,6 +64,13 @@ void gen_space( char* spaces, int num_spaces );
 
 /*
  $Log$
+ Revision 1.11  2002/12/06 02:18:59  phase1geo
+ Fixing bug with calculating list and concatenation lengths when MBIT_SEL
+ expressions were included.  Also modified file parsing algorithm to be
+ smarter when searching files for modules.  This change makes the parsing
+ algorithm much more optimized and fixes the bug specified in our bug list.
+ Added diagnostic to verify fix for first bug.
+
  Revision 1.10  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
