@@ -599,13 +599,15 @@ struct sig_link_s {
  module.
 */
 struct module_s {
-  char*     name;      /*!< Module name                                        */
-  char*     filename;  /*!< File name where module exists                      */
-  char*     scope;     /*!< Verilog hierarchical scope of this module          */
-  sig_link* sig_head;  /*!< Head pointer to list of signals in this module     */
-  sig_link* sig_tail;  /*!< Tail pointer to list of signals in this module     */
-  exp_link* exp_head;  /*!< Head pointer to list of expressions in this module */
-  exp_link* exp_tail;  /*!< Tail pointer to list of expressions in this module */
+  char*      name;       /*!< Module name                                        */
+  char*      filename;   /*!< File name where module exists                      */
+  char*      scope;      /*!< Verilog hierarchical scope of this module          */
+  sig_link*  sig_head;   /*!< Head pointer to list of signals in this module     */
+  sig_link*  sig_tail;   /*!< Tail pointer to list of signals in this module     */
+  exp_link*  exp_head;   /*!< Head pointer to list of expressions in this module */
+  exp_link*  exp_tail;   /*!< Tail pointer to list of expressions in this module */
+  stmt_link* stmt_head;  /*!< Head pointer to list of statements in this module  */
+  stmt_link* stmt_tail;  /*!< Tail pointer to list of statements in this module  */
 };
 
 typedef struct module_s module;
@@ -702,6 +704,12 @@ struct mod_inst_s {
 
 
 /* $Log$
+/* Revision 1.10  2002/05/03 03:39:36  phase1geo
+/* Removing all syntax errors due to addition of statements.  Added more statement
+/* support code.  Still have a ways to go before we can try anything.  Removed lines
+/* from expressions though we may want to consider putting these back for reporting
+/* purposes.
+/*
 /* Revision 1.9  2002/05/02 03:27:42  phase1geo
 /* Initial creation of statement structure and manipulation files.  Internals are
 /* still in a chaotic state.

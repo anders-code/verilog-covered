@@ -14,4 +14,13 @@
 //! Creates Verilog code string from specified expression tree.
 char* codegen_gen_expr( expression* expr, int line );
 
+
+/* $Log$
+/* Revision 1.2  2002/05/03 03:39:36  phase1geo
+/* Removing all syntax errors due to addition of statements.  Added more statement
+/* support code.  Still have a ways to go before we can try anything.  Removed lines
+/* from expressions though we may want to consider putting these back for reporting
+/* purposes.
+/* */
+
 #endif

@@ -10,8 +10,9 @@
 
 #include "defines.h"
 #include "statement.h"
-#include "expression.h"
+#include "expr.h"
 #include "util.h"
+#include "link.h"
 
 
 /*!
@@ -56,9 +57,9 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
   if( stmt->next_true != stmt->next_false ) {
 
     if( stmt->next_true != NULL ) {
-      statement_db_write( stmt->next_true );
+      statement_db_write( stmt->next_true, ofile, scope );
     } else {
-      statement_db_write( stmt->next_false );
+      statement_db_write( stmt->next_false, ofile, scope );
     }
 
   }
@@ -132,7 +133,7 @@ bool statement_db_read( char** line, module* curr_mod ) {
 
       /* Find associated root expression */
       tmpexp.id = id;
-      expl = exp_link_find( tmpexp, curr_mod->exp_head );
+      expl = exp_link_find( &tmpexp, curr_mod->exp_head );
 
       stmt = statement_create( expl->exp, line_begin, line_end );
 
@@ -221,7 +222,7 @@ void statement_dealloc( statement* stmt ) {
     assert( stmt->exp != NULL );
 
     /* Deallocate entire expression tree */
-    expression_dealloc( stmt->exp );
+    expression_dealloc( stmt->exp, FALSE );
     stmt->exp = NULL;
 
     if( stmt->next_true != NULL ) {
@@ -243,6 +244,12 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.2  2002/05/03 03:39:36  phase1geo
+/* Removing all syntax errors due to addition of statements.  Added more statement
+/* support code.  Still have a ways to go before we can try anything.  Removed lines
+/* from expressions though we may want to consider putting these back for reporting
+/* purposes.
+/*
 /* Revision 1.1  2002/05/02 03:27:42  phase1geo
 /* Initial creation of statement structure and manipulation files.  Internals are
 /* still in a chaotic state.
