@@ -314,8 +314,8 @@ void report_gather_instance_stats( mod_inst* root ) {
   curr = root->child_head;
   while( curr != NULL ) {
     report_gather_instance_stats( curr );
-    assert( curr->stat != NULL );
-    statistic_merge( root->stat, curr->stat );
+    // assert( curr->stat != NULL );
+    // statistic_merge( root->stat, curr->stat );
     curr = curr->next;
   }
 
@@ -583,6 +583,12 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.27  2004/01/21 22:26:56  phase1geo
+ Changed default CDD file name from "cov.db" to "cov.cdd".  Changed instance
+ statistic gathering from a child merging algorithm to just calculating
+ instance coverage for the individual instances.  Updated full regression for
+ this change and updated VCS regression for all past changes of this release.
+
  Revision 1.26  2004/01/04 04:52:03  phase1geo
  Updating ChangeLog and TODO files.  Adding merge information to INFO line
  of CDD files and outputting this information to the merged reports.  Adding

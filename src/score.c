@@ -362,7 +362,7 @@ int command_score( int argc, int last_arg, char** argv ) {
     print_output( user_msg, NORMAL );
 
     if( output_db == NULL ) {
-      output_db = strdup( DFLT_OUTPUT_DB );
+      output_db = strdup( DFLT_OUTPUT_CDD );
     }
 
     /* Parse design */
@@ -402,6 +402,12 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.42  2004/01/21 22:26:56  phase1geo
+ Changed default CDD file name from "cov.db" to "cov.cdd".  Changed instance
+ statistic gathering from a child merging algorithm to just calculating
+ instance coverage for the individual instances.  Updated full regression for
+ this change and updated VCS regression for all past changes of this release.
+
  Revision 1.41  2003/10/28 13:28:00  phase1geo
  Updates for more FSM attribute handling.  Not quite there yet but full regression
  still passes.

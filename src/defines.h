@@ -37,7 +37,7 @@
 /*!
  Default database filename if not specified on command-line.
 */
-#define DFLT_OUTPUT_DB     "cov.db"
+#define DFLT_OUTPUT_CDD    "cov.cdd"
 
 /*!
  Determine size of integer in bits.
@@ -1578,6 +1578,12 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.100  2004/01/21 22:26:56  phase1geo
+ Changed default CDD file name from "cov.db" to "cov.cdd".  Changed instance
+ statistic gathering from a child merging algorithm to just calculating
+ instance coverage for the individual instances.  Updated full regression for
+ this change and updated VCS regression for all past changes of this release.
+
  Revision 1.99  2004/01/16 23:05:00  phase1geo
  Removing SET bit from being written to CDD files.  This value is meaningless
  after scoring has completed and sometimes causes miscompares when simulators
