@@ -73,7 +73,7 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 
 /*!
  \param mod_name  Name of module to get missed line number array from.
- \param cov       If set to 1, gets covered lines; otherwise, retrieves uncovered lines
+ \param cov       If set to 1, gets covered lines, if 0 retrieves uncovered lines; otherwise, gets all lines
  \param lines     Pointer to array of integers that will contain the missed lines.
  \param line_cnt  Pointer to size of lines array.
 
@@ -477,6 +477,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.45  2004/08/08 12:50:27  phase1geo
+ Snapshot of addition of toggle coverage in GUI.  This is not working exactly as
+ it will be, but it is getting close.
+
  Revision 1.44  2004/04/01 22:54:38  phase1geo
  Making text field read-only.  Adding message when reading in new CDD files
  (as status information -- this is not working correctly yet).  Fixing bug
