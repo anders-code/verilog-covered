@@ -51,7 +51,7 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 void db_add_expression( expression* root );
 
 /*! \brief Creates new statement expression from specified information.  Called by parser. */
-statement* db_create_statement( expression* exp, sig_link** head, sig_link** tail );
+statement* db_create_statement( expression* exp );
 
 /*! \brief Adds specified statement to current module's statement list.  Called by parser. */
 void db_add_statement( statement* stmt, statement* start );
@@ -92,6 +92,11 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.30  2003/08/09 22:10:41  phase1geo
+ Removing wait event signals from CDD file generation in support of another method
+ that fixes a bug when multiple wait event statements exist within the same
+ statement tree.
+
  Revision 1.29  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making
