@@ -257,7 +257,9 @@ inst_parm* inst_parm_add( char* scope, vector* value, mod_parm* mparm, inst_parm
   } else {
     parm->name = NULL;
   }
-  parm->value = value;
+  
+  /* Create new value vector, copying the contents of the specified vector value */
+  vector_copy( value, &(parm->value) );
   parm->mparm = mparm;
   parm->next  = NULL;
 
@@ -683,6 +685,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
     }
 
     free_safe( parm->name );
+    
+    vector_dealloc( parm->value );
+    
     free_safe( parm );
 
   }
@@ -692,6 +697,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.25  2003/01/04 03:56:28  phase1geo
+ Fixing bug with parameterized modules.  Updated regression suite for changes.
+
  Revision 1.24  2002/12/13 16:49:48  phase1geo
  Fixing infinite loop bug with statement set_stop function.  Removing
  hierarchical references from scoring (same problem as defparam statement).

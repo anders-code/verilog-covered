@@ -99,6 +99,35 @@ vector* vector_create( int width, int lsb, bool data ) {
 }
 
 /*!
+ \param from_vec  Vector to copy.
+ \param to_vec    Newly created vector copy.
+ 
+ Copies the contents of the from_vec to the to_vec, allocating new memory.
+*/
+void vector_copy( vector* from_vec, vector** to_vec ) {
+
+  int i;  /* Loop iterator */
+
+  if( from_vec == NULL ) {
+
+    /* If from_vec is NULL, just assign to_vec to NULL */
+    *to_vec = NULL;
+
+  } else {
+
+    /* Create vector */
+    *to_vec = vector_create( from_vec->width, from_vec->lsb, TRUE );
+
+    /* Copy contents of value array */
+    for( i=0; i<VECTOR_SIZE( from_vec->width ); i++ ) {
+      (*to_vec)->value[i] = from_vec->value[i];
+    }
+
+  }
+
+}
+
+/*!
  \param vec         Pointer to vector to display to database file.
  \param file        Pointer to coverage database file to display to.
  \param write_data  If set to TRUE, causes 4-state data bytes to be included.
@@ -1436,6 +1465,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.29  2003/01/04 03:56:28  phase1geo
+ Fixing bug with parameterized modules.  Updated regression suite for changes.
+
  Revision 1.28  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules
