@@ -407,7 +407,7 @@
  - STMT_CONTINUOUS
  - EVAL 00, 01, 10, 11
 */
-#define SUPPL_MERGE_MASK            0xfe7fffff
+#define SUPPL_MERGE_MASK            0xfe4fffff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -1586,6 +1586,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.108  2004/11/06 13:22:48  phase1geo
+ Updating CDD files for change where EVAL_T and EVAL_F bits are now being masked out
+ of the CDD files.
+
  Revision 1.107  2004/04/19 04:54:55  phase1geo
  Adding first and last column information to expression and related code.  This is
  not working correctly yet.
