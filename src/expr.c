@@ -693,13 +693,11 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_CASE :
-        expression_operate( expr->left );
         vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ );
         break;
 
       case EXP_OP_CASEX :
       case EXP_OP_CASEZ :
-        expression_operate( expr->left );
         vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
         break;
 
@@ -790,6 +788,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.29  2002/07/05 00:37:37  phase1geo
+/* Small update to CASE handling in scope to avoid future errors.
+/*
 /* Revision 1.28  2002/07/05 00:10:18  phase1geo
 /* Adding report support for case statements.  Everything outputs fine; however,
 /* I want to remove CASE, CASEX and CASEZ expressions from being reported since

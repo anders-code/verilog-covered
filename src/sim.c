@@ -159,7 +159,10 @@ void sim_expression( expression* expr ) {
   assert( expr != NULL );
 
   /* Traverse left child expression if it has changed */
-  if( (SUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1) ) {
+  if( (SUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1) ||
+      (SUPPL_OP( expr->suppl ) == EXP_OP_CASE)    ||
+      (SUPPL_OP( expr->suppl ) == EXP_OP_CASEX)   ||
+      (SUPPL_OP( expr->suppl ) == EXP_OP_CASEZ) ) {
 
     /*
      An EOR expression is special in that it will automatically traverse down its tree when
@@ -295,6 +298,9 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.18  2002/07/05 00:37:37  phase1geo
+/* Small update to CASE handling in scope to avoid future errors.
+/*
 /* Revision 1.17  2002/07/03 21:30:53  phase1geo
 /* Fixed remaining issues with always statements.  Full regression is running
 /* error free at this point.  Regenerated documentation.  Added EOR expression
