@@ -71,7 +71,7 @@ void vector_from_int( vector* vec, int value );
 char* vector_to_string( vector* vec, int type );
 
 /*! \brief Converts character string value into vector. */
-vector* vector_from_string( char* str );
+vector* vector_from_string( char** str );
 
 /*! \brief Assigns specified VCD value to specified vector. */
 void vector_vcd_assign( vector* vec, char* value, int msb, int lsb );
@@ -118,6 +118,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.19  2003/10/28 13:28:00  phase1geo
+ Updates for more FSM attribute handling.  Not quite there yet but full regression
+ still passes.
+
  Revision 1.18  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 
