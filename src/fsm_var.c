@@ -251,7 +251,7 @@ bool fsm_var_bind_stmt( statement* stmt, char* mod_name ) {
     fsm_var_add_expr( stmt->exp, modl->mod );
 
     /* Set ADDED bit of this statement */
-    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_ADDED);
+    stmt->exp->suppl.part.stmt_added = 1;
 
     /* Second, add our statement to this module's statement list */
     stmt_link_add_head( stmt, &(modl->mod->stmt_head), &(modl->mod->stmt_tail) );
@@ -465,6 +465,10 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.16  2005/01/07 17:59:51  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.15  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

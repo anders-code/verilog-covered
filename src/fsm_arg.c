@@ -166,9 +166,9 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
   /* Create statement for top-level expression, this statement will work like a continuous assignment */
   if( !error ) {
     stmt = statement_create( expl );
-    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
-    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
-    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
+    stmt->exp->suppl.part.stmt_head = 1;
+    stmt->exp->suppl.part.stmt_stop = 1;
+    stmt->exp->suppl.part.stmt_cont = 1;
     stmt->next_true  = stmt;
     stmt->next_false = stmt;
     fsm_var_stmt_add( stmt, mod_name );
@@ -506,6 +506,10 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.18  2005/01/07 17:59:51  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.17  2005/01/06 23:51:17  phase1geo
  Intermediate checkin.  Files don't fully compile yet.
 

@@ -19,7 +19,7 @@ void race_add_inport_sig( vsignal* sig );
 void race_find_and_add_stmt_sigs( statement* stmt, statement* root );
 
 /*! \brief Displays contents of stmt_sig array to standard output */
-void race_stmt_sig_display();
+void race_stmt_blk_display();
 
 /*! \brief Checks the current module for race conditions */
 void race_check_module();
@@ -28,11 +28,15 @@ void race_check_module();
 bool race_check_race_count();
 
 /*! \brief Deallocates specified stmt_sig structure from memory */
-void race_stmt_sig_dealloc();
+void race_stmt_blk_dealloc();
 
 
 /*
  $Log$
+ Revision 1.6  2005/01/07 17:59:52  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.5  2004/12/20 04:12:00  phase1geo
  A bit more race condition checking code added.  Still not there yet.
 

@@ -52,14 +52,14 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
   
   while( curr.curr != NULL ) {
 
-    if( (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_DELAY)   &&
-        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_CASE)    &&
-        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_CASEX)   &&
-        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_CASEZ)   &&
-        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) &&
+    if( (curr.curr->stmt->exp->op != EXP_OP_DELAY)   &&
+        (curr.curr->stmt->exp->op != EXP_OP_CASE)    &&
+        (curr.curr->stmt->exp->op != EXP_OP_CASEX)   &&
+        (curr.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
+        (curr.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
         (curr.curr->stmt->exp->line != 0) ) {
       *total = *total + 1;
-      if( SUPPL_WAS_EXECUTED( curr.curr->stmt->exp->suppl ) == 1 ) {
+      if( ESUPPL_WAS_EXECUTED( curr.curr->stmt->exp->suppl ) == 1 ) {
         (*hit)++;
         last_hit = curr.curr->stmt->exp->line;
       }
@@ -108,14 +108,14 @@ bool line_collect( const char* mod_name, int cov, int** lines, int* line_cnt ) {
 
     while( stmti.curr != NULL ) {
 
-      if( (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DELAY)   &&
-          (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASE)    &&
-          (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASEX)   &&
-          (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASEZ)   &&
-          (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) &&
+      if( (stmti.curr->stmt->exp->op != EXP_OP_DELAY)   &&
+          (stmti.curr->stmt->exp->op != EXP_OP_CASE)    &&
+          (stmti.curr->stmt->exp->op != EXP_OP_CASEX)   &&
+          (stmti.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
+          (stmti.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
           (stmti.curr->stmt->exp->line != 0) ) {
 
-        if( SUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) == cov ) {
+        if( ESUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) == cov ) {
 
           last_line = expression_get_last_line_expr( stmti.curr->stmt->exp )->line;
           for( i=stmti.curr->stmt->exp->line; i<=last_line; i++ ) {
@@ -310,18 +310,18 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   
   while( stmti.curr != NULL ) {
 
-    if( (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DELAY)   &&
-        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASE)    &&
-        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASEX)   &&
-        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASEZ)   &&
-        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) &&
+    if( (stmti.curr->stmt->exp->op != EXP_OP_DELAY)   &&
+        (stmti.curr->stmt->exp->op != EXP_OP_CASE)    &&
+        (stmti.curr->stmt->exp->op != EXP_OP_CASEX)   &&
+        (stmti.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
+        (stmti.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
         (stmti.curr->stmt->exp->line != 0) ) {
 
-      if( SUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) == report_covered ) {
+      if( ESUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) == report_covered ) {
 
         unexec_exp = stmti.curr->stmt->exp;
 
-        codegen_gen_expr( unexec_exp, SUPPL_OP( unexec_exp->suppl ), &code, &code_depth );
+        codegen_gen_expr( unexec_exp, unexec_exp->op, &code, &code_depth );
         if( code_depth == 1 ) {
           fprintf( ofile, "      %7d:    %s\n", unexec_exp->line, code[0] );
         } else {
@@ -477,6 +477,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.47  2005/01/07 17:59:51  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.46  2004/08/11 22:11:39  phase1geo
  Initial beginnings of combinational logic verbose reporting to GUI.
 

@@ -123,7 +123,7 @@ void module_size_elements( module* mod, mod_inst* inst ) {
   */
   curr_exp = mod->exp_head;
   while( curr_exp != NULL ) {
-    if( SUPPL_IS_ROOT( curr_exp->exp->suppl ) ) {
+    if( ESUPPL_IS_ROOT( curr_exp->exp->suppl ) ) {
       /* Perform an entire expression resize */
       expression_resize( curr_exp->exp, TRUE );
     }
@@ -583,6 +583,10 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.36  2005/01/07 17:59:52  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.35  2004/04/05 12:30:52  phase1geo
  Adding *db_replace functions to allow a design to be opened with new CDD
  results (for GUI purposes only).

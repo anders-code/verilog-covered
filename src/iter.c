@@ -68,8 +68,8 @@ void stmt_iter_reverse( stmt_iter* si ) {
 */
 void stmt_iter_find_head( stmt_iter* si, bool skip ) {
   
-  while( (si->curr != NULL) && ((SUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 0) || skip) ) {
-    if( SUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 1 ) {
+  while( (si->curr != NULL) && ((ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 0) || skip) ) {
+    if( ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 1 ) {
       skip = FALSE;
     }
     stmt_iter_next( si );
@@ -105,6 +105,10 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) {
 
 /*
  $Log$
+ Revision 1.7  2005/01/07 17:59:51  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.6  2003/10/13 03:56:29  phase1geo
  Fixing some problems with new FSM code.  Not quite there yet.
 

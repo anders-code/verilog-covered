@@ -310,7 +310,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       } else {
         *ptr = '\0';
         ptr++;
-        defparam_add( argv[i], vector_from_string( &ptr ) );
+        defparam_add( argv[i], vector_from_string( &ptr, FALSE ) );
       }
       
     } else if( strncmp( "-T", argv[i], 2 ) == 0 ) {
@@ -410,6 +410,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.48  2005/01/07 17:59:52  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.47  2005/01/03 23:00:35  phase1geo
  Fixing library extension parser.
 
