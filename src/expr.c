@@ -148,7 +148,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
     assert( rwidth < 1024 );
     expression_create_value( new_expr, rwidth, 0, data );
 
-  } else if( (op == EXP_OP_EXPAND) && (rwidth > 0) && (lwidth > 0) ) {
+  } else if( (op == EXP_OP_EXPAND) && (rwidth > 0) && (lwidth > 0) && (left->value->value != NULL) ) {
 
     assert( rwidth < 1024 );
     assert( lwidth < 1024 );
@@ -1164,6 +1164,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.63  2002/11/05 22:27:02  phase1geo
+ Adding diagnostic to verify usage of parameters in signal sizing expressions.
+ Added diagnostic to regression suite.  Fixed bug with sizing of EXPAND
+ expressions in expression creation function.
+
  Revision 1.62  2002/11/05 16:43:55  phase1geo
  Bug fix for expansion expressions where multiplier wasn't being calculated
  before the expand expression was being sized (leads to a segmentation fault).
