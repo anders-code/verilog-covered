@@ -1150,8 +1150,7 @@ struct fsm_s {
   signal*  sig;       /*!< Pointer to state signal                                                      */
   fsm_arc* arc_head;  /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
   fsm_arc* arc_tail;  /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
-  nibble*  table;     /*!< FSM arc traversal table                                                      */
-  nibble*  valid;     /*!< Table of valid states                                                        */
+  char*    table;     /*!< FSM arc traversal table                                                      */
 };
 
 /*-------------------------------------------------------------------------------*/
@@ -1404,6 +1403,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.76  2003/08/26 21:53:23  phase1geo
+ Added database read/write functions and fixed problems with other arc functions.
+
  Revision 1.75  2003/08/25 13:02:03  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these
