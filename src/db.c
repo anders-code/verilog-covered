@@ -465,17 +465,13 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 
   /* Set right and left side expression's (if they exist) parent pointer to this expression */
   if( right != NULL ) {
-    if( (op != EXP_OP_COND_T) && (op != EXP_OP_COND_F) ) {
-      assert( right->parent->expr == NULL );
-      right->parent->expr = expr;
-    }
+    assert( right->parent->expr == NULL );
+    right->parent->expr = expr;
   }
 
   if( left != NULL ) {
-    if( (op != EXP_OP_COND_T) && (op != EXP_OP_COND_F) ) {
-      assert( left->parent->expr == NULL );
-      left->parent->expr = expr;
-    }
+    assert( left->parent->expr == NULL );
+    left->parent->expr = expr;
   }
 
   /* Add expression and signal to binding list */
@@ -816,7 +812,7 @@ bool db_symbol_found( char* symbol ) {
 
   signal* sig;    /* Pointer to found signal */
 
-  return( symtable_find( symbol, timestep_tab, &sig ) );
+  return( symtable_find( symbol, timestep_tab, &sig, 0 ) );
 
 }
 
@@ -835,19 +831,14 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
   char        msg[4096];                 /* Display message string                                       */
   expression* curr_parent;               /* Pointer to current parent expression to set.                 */
   bool        changed_finished = FALSE;  /* Indicates that we should stop setting changed bits           */
+  int         skip             = 0;      /* Number of symbols to skip before returning if found          */
 
   snprintf( msg, 4096, "In db_find_set_add_signal, addr: 0x%lx, symbol: %s", symbol, symbol );
   print_output( msg, NORMAL );
 
-  if( !symtable_find( symbol, timestep_tab, &sig ) ) {
+  if( !symtable_find( symbol, timestep_tab, &sig, 0 ) ) {
 
-    if( !symtable_find( symbol, vcd_symtab, &sig ) ) {
-
-      snprintf( msg, 4096, "VCD dumpfile symbol not found, symbol: %s", symbol );
-      print_output( msg, FATAL );
-      exit( 1 );
-
-    } else {
+    while( symtable_find( symbol, vcd_symtab, &sig, skip ) ) {
 
       if( sig != NULL ) {
 
@@ -876,6 +867,16 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
         symtable_add( symbol, sig, &timestep_tab );
 
       }
+
+      skip++;
+
+    }
+
+    if( skip == 0 ) {
+
+      snprintf( msg, 4096, "VCD dumpfile symbol not found, symbol: %s", symbol );
+      print_output( msg, FATAL );
+      assert( skip == 0 );
 
     }
 
@@ -926,7 +927,7 @@ int db_get_signal_size( char* symbol ) {
   snprintf( msg, 4096, "In db_get_signal_size, symbol:%s.", symbol );
   print_output( msg, NORMAL );
 
-  if( symtable_find( symbol, vcd_symtab, &sig ) ) {
+  if( symtable_find( symbol, vcd_symtab, &sig, 0 ) ) {
     if( sig != NULL ) {
       assert( sig->value != NULL );
       return( sig->value->width );
@@ -941,6 +942,11 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.25  2002/07/02 18:42:18  phase1geo
+/* Various bug fixes.  Added support for multiple signals sharing the same VCD
+/* symbol.  Changed conditional support to allow proper simulation results.
+/* Updated VCD parser to allow for symbols containing only alphanumeric characters.
+/*
 /* Revision 1.24  2002/07/01 15:10:42  phase1geo
 /* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
 /* seem to be passing with these fixes.

@@ -400,8 +400,8 @@
 #define EXP_OP_CNE	0x16	/*!< 22 '!==' operator */
 #define EXP_OP_LOR	0x17	/*!< 23 '||'  operator */
 #define EXP_OP_LAND	0x18	/*!< 24 '&&'  operator */
-#define EXP_OP_COND_T	0x19	/*!< 25 '?:' true condition operator  */
-#define EXP_OP_COND_F   0x1a    /*!< 26 '?:' false condition operator */
+#define EXP_OP_COND  	0x19	/*!< 25 '?:' conditional operator     */
+#define EXP_OP_COND_SEL 0x1a    /*!< 26 '?:' conditional select       */
 #define EXP_OP_UINV	0x1b	/*!< 27 unary '~'  operator           */
 #define EXP_OP_UAND	0x1c	/*!< 28 unary '&'  operator           */
 #define EXP_OP_UNOT	0x1d	/*!< 29 unary '!'  operator           */
@@ -811,6 +811,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.20  2002/07/02 18:42:18  phase1geo
+/* Various bug fixes.  Added support for multiple signals sharing the same VCD
+/* symbol.  Changed conditional support to allow proper simulation results.
+/* Updated VCD parser to allow for symbols containing only alphanumeric characters.
+/*
 /* Revision 1.19  2002/06/30 22:23:20  phase1geo
 /* Working on fixing looping in parser.  Statement connector needs to be revamped.
 /*

@@ -203,11 +203,13 @@ statement* sim_statement( statement* head_stmt ) {
     /* Indicate that this statement's expression has been executed */
     stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_EXECUTED);
 
+/*
     if( count == 50 ) {
       assert( count == 0 );
     } else {
       count++;
     }
+*/
 
     // printf( "Executed statement %d\n", stmt->exp->id );
       
@@ -285,6 +287,11 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.13  2002/07/02 18:42:18  phase1geo
+/* Various bug fixes.  Added support for multiple signals sharing the same VCD
+/* symbol.  Changed conditional support to allow proper simulation results.
+/* Updated VCD parser to allow for symbols containing only alphanumeric characters.
+/*
 /* Revision 1.12  2002/07/01 15:10:42  phase1geo
 /* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
 /* seem to be passing with these fixes.
