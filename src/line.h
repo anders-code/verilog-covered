@@ -13,12 +13,15 @@
 #include "defines.h"
 
 //! Calculates line coverage numbers for the specified expression list.
-void line_get_stats( exp_link* expl, float* total, int* hit );
+void line_get_stats( stmt_link* stmtl, float* total, int* hit );
 
 //! Generates report output for line coverage.
 void line_report( FILE* ofile, bool verbose, bool instance );
 
 /* $Log$
+/* Revision 1.4  2002/06/25 21:46:10  phase1geo
+/* Fixes to simulator and reporting.  Still some bugs here.
+/*
 /* Revision 1.3  2002/05/13 03:02:58  phase1geo
 /* Adding lines back to expressions and removing them from statements (since the line
 /* number range of an expression can be calculated by looking at the expression line

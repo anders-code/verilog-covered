@@ -204,7 +204,7 @@ void report_gather_stats( mod_inst* root ) {
 
   /* Get coverage results for this instance */
   if( report_line ) {
-    line_get_stats( root->mod->exp_head, &(root->stat->line_total), &(root->stat->line_hit) );
+    line_get_stats( root->mod->stmt_head, &(root->stat->line_total), &(root->stat->line_hit) );
   }
 
   if( report_toggle ) {
@@ -348,6 +348,9 @@ int command_report( int argc, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.5  2002/06/25 21:46:10  phase1geo
+/* Fixes to simulator and reporting.  Still some bugs here.
+/*
 /* Revision 1.4  2002/05/13 03:02:58  phase1geo
 /* Adding lines back to expressions and removing them from statements (since the line
 /* number range of an expression can be calculated by looking at the expression line

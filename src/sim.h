@@ -12,12 +12,18 @@
 #include "defines.h"
 
 //! Adds specified expression's statement to pre-simulation statement queue.
-void sim_add_to_queue( expression* expr );
+void sim_expr_changed( expression* expr );
+
+//! Adds specified statement to pre-simulation statement queue.
+void sim_add_stmt_to_queue( statement* stmt );
 
 //! Simulates current timestep.
 void sim_simulate();
 
 /* $Log$
+/* Revision 1.3  2002/06/25 21:46:10  phase1geo
+/* Fixes to simulator and reporting.  Still some bugs here.
+/*
 /* Revision 1.2  2002/06/22 21:08:23  phase1geo
 /* Added simulation engine and tied it to the db.c file.  Simulation engine is
 /* currently untested and will remain so until the parser is updated correctly
