@@ -650,6 +650,7 @@ void gen_space( char* spaces, int num_spaces ) {
   
 }
 
+#ifdef HAVE_SYS_TIMES_H
 /*!
  \param tm  Pointer to timer structure to clear.
 
@@ -697,9 +698,13 @@ void timer_stop( timer** tm ) {
   (*tm)->total += tmp.tms_utime - (*tm)->start.tms_utime;
 
 }
+#endif
 
 /*
  $Log$
+ Revision 1.23  2003/08/15 20:02:08  phase1geo
+ Added check for sys/times.h file for new code additions.
+
  Revision 1.22  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 
