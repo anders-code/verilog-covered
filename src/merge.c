@@ -20,8 +20,22 @@
 #include "util.h"
 
 
+/*!
+ Specifies the output filename of the CDD file that contains the merged data.
+*/
 char* merged_file = NULL;
+
+/*!
+ Specifies the name of the input CDD file that will be read in first.  If the user
+ does not specify an output CDD filename (i.e., no -o option is specified), the name
+ of merge_in0 will be used for merged_file.
+*/
 char* merge_in0   = NULL;
+
+/*!
+ Specifies the name of the input CDD file that will be read in second (this data
+ is merged into the first CDD input.
+*/
 char* merge_in1   = NULL;
 
 extern char user_msg[USER_MSG_LENGTH];
@@ -162,6 +176,11 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.14  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.13  2003/02/17 22:47:20  phase1geo
  Fixing bug with merging same DUTs from different testbenches.  Updated reports
  to display full path instead of instance name and parent instance name.  Added

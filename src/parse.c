@@ -17,7 +17,6 @@
 
 extern void reset_lexer( str_link* file_list_head );
 extern int VLparse();
-extern int VLdebug;
 
 extern str_link* use_files_head;
 
@@ -168,6 +167,11 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.20  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.19  2003/08/10 00:05:16  phase1geo
  Fixing bug with posedge, negedge and anyedge expressions such that these expressions
  must be armed before they are able to be evaluated.  Fixing bug in vector compare function
