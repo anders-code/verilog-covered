@@ -16,6 +16,7 @@
 #include "vcd.h"
 #include "fsm_var.h"
 #include "info.h"
+#include "sim.h"
 
 
 extern void reset_lexer( str_link* file_list_head );
@@ -174,6 +175,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.24  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.23  2004/01/31 18:58:43  phase1geo
  Finished reformatting of reports.  Fixed bug where merged reports with
  different leading hierarchies were outputting the leading hierarchy of one

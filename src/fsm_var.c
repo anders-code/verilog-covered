@@ -22,6 +22,7 @@
 #include "link.h"
 #include "binding.h"
 #include "fsm.h"
+#include "db.h"
 
 
 extern char      user_msg[USER_MSG_LENGTH];
@@ -462,6 +463,10 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.14  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.13  2003/11/15 04:21:57  phase1geo
  Fixing syntax errors found in Doxygen and GCC compiler.
 

@@ -188,8 +188,6 @@ void symtable_add_sym_sig( symtable* symtab, signal* sig, int msb, int lsb ) {
 */
 void symtable_init( symtable* symtab, int msb, int lsb ) {
 
-  sym_sig* new_ss;  /* Pointer to newly create sym_sig */
-
   symtab->value    = (char*)malloc_safe( (msb - lsb) + 2 );
   symtab->value[0] = '\0';
   symtab->size     = (msb - lsb) + 2;
@@ -293,7 +291,7 @@ void symtable_set_value( char* sym, char* value ) {
     }
 
     /* printf( "strlen( value ): %d, curr->size: %d\n", strlen( value ), curr->size ); */
-    assert( strlen( value ) < curr->size );     // Useful for debugging but not necessary
+    assert( strlen( value ) < curr->size );     /* Useful for debugging but not necessary */
     strcpy( curr->value, value );
 
     if( !set ) {
@@ -398,6 +396,10 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.16  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.15  2003/08/21 21:57:30  phase1geo
  Fixing bug with certain flavors of VCD files that alias signals that have differing
  MSBs and LSBs.  This takes care of the rest of the bugs for the 0.2 stable release.

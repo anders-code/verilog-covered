@@ -256,7 +256,7 @@ void expression_set_value( expression* exp, vector* vec ) {
   
   if( SUPPL_IS_LHS( exp->suppl ) == 0 ) {
 
-    // printf( "In expression_set_value, expr: %d, op: %d, line: %d\n", exp->id, SUPPL_OP( exp->suppl ), exp->line );
+    /* printf( "In expression_set_value, expr: %d, op: %d, line: %d\n", exp->id, SUPPL_OP( exp->suppl ), exp->line ); */
   
     switch( SUPPL_OP( exp->suppl ) ) {
       case EXP_OP_SIG   :
@@ -1401,6 +1401,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.94  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.93  2004/01/25 03:41:48  phase1geo
  Fixes bugs in summary information not matching verbose information.  Also fixes
  bugs where instances were output when no logic was missing, where instance

@@ -17,6 +17,7 @@
 
 #include "defines.h"
 #include "info.h"
+#include "util.h"
 
 
 extern char* merge_in0;
@@ -177,6 +178,10 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.6  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.5  2004/01/31 18:58:43  phase1geo
  Finished reformatting of reports.  Fixed bug where merged reports with
  different leading hierarchies were outputting the leading hierarchy of one

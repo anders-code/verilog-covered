@@ -171,7 +171,6 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
   int    arg_num;                 /* Number of arguments in arg_list               */
   int    j;                       /* Loop iterator 2                               */
   char*  ptr;                     /* Pointer to current character in defined value */
-  char*  ptr2;                    /* Another pointer to current character          */
 
   while( (i < argc) && retval ) {
 
@@ -404,6 +403,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.44  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.43  2004/01/31 18:58:43  phase1geo
  Finished reformatting of reports.  Fixed bug where merged reports with
  different leading hierarchies were outputting the leading hierarchy of one

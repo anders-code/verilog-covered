@@ -315,7 +315,6 @@ void instance_copy( mod_inst* from_inst, mod_inst* to_inst, char* name ) {
 void instance_parse_add( mod_inst** root, module* parent, module* child, char* inst_name ) {
   
   mod_inst* inst;      /* Temporary pointer to module instance to add to */
-  mod_inst* new_inst;  /* Pointer to new module instance to add          */
   mod_inst* cinst;     /* Pointer to instance of child module            */
   int       i;         /* Loop iterator                                  */
   int       ignore;    /* Number of matched instances to ignore          */
@@ -553,6 +552,10 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.29  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.28  2003/01/14 05:52:16  phase1geo
  Fixing bug related to copying instance trees in modules that were previously
  parsed.  Added diagnostic param7.v to testsuite and regression.  Full
