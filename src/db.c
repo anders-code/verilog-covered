@@ -826,7 +826,7 @@ void db_do_timestep( int time ) {
   print_output( msg, NORMAL );
 
   /* Simulate the current timestep */
-  sim_simulate();
+  sim_simulate( time );
 
   /* Finally, clear timestep_tab */
   symtable_dealloc( timestep_tab );
@@ -865,6 +865,10 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.17  2002/06/26 03:45:48  phase1geo
+/* Fixing more bugs in simulator and report functions.  About to add support
+/* for delay statements.
+/*
 /* Revision 1.16  2002/06/25 21:46:10  phase1geo
 /* Fixes to simulator and reporting.  Still some bugs here.
 /*
