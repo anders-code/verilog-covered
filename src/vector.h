@@ -62,7 +62,7 @@ void vector_from_int( vector* vec, int value );
 char* vector_to_string( vector* vec, int type );
 
 //! Converts character string value into vector.
-vector* vector_from_string( char* str, bool sized, int type );
+vector* vector_from_string( char* str );
 
 //! Counts toggle01 and toggle10 information from specifed vector.
 void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
@@ -104,6 +104,11 @@ void vector_unary_not( vector* tgt, vector* src );
 void vector_dealloc( vector* vec );
 
 /* $Log$
+/* Revision 1.8  2002/08/23 12:55:34  phase1geo
+/* Starting to make modifications for parameter support.  Added parameter source
+/* and header files, changed vector_from_string function to be more verbose
+/* and updated Makefiles for new param.h/.c files.
+/*
 /* Revision 1.7  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and
