@@ -432,6 +432,9 @@
 #define EXPR_IS_MEASURABLE(x)      (((SUPPL_OP( x->suppl ) != EXP_OP_NONE) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_LAST) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_CASE) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_CASEX) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_CASEZ) && \
                                      !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
 				        (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
@@ -822,6 +825,9 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.26  2002/07/05 05:00:13  phase1geo
+/* Removing CASE, CASEX, and CASEZ from line and combinational logic results.
+/*
 /* Revision 1.25  2002/07/05 04:12:46  phase1geo
 /* Correcting case, casex and casez equality calculation to conform to correct
 /* equality check for each case type.  Verified that case statements work correctly

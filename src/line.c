@@ -33,7 +33,10 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 
   while( curr != NULL ) {
 
-    if( SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_DELAY ) {
+    if( (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_DELAY) &&
+        (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_CASE)  &&
+        (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_CASEX) &&
+        (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_CASEZ) ) {
       *total = *total + 1;
       if( SUPPL_WAS_EXECUTED( curr->stmt->exp->suppl ) == 1 ) {
         (*hit)++;
@@ -143,7 +146,11 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   /* Display current instance missed lines */
   while( stmtl != NULL ) {
 
-    if( SUPPL_WAS_EXECUTED( stmtl->stmt->exp->suppl ) == 0 ) {
+    if( (SUPPL_WAS_EXECUTED( stmtl->stmt->exp->suppl ) == 0)  &&
+        (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_DELAY) &&
+        (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASE)  &&
+        (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASEX) &&
+        (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASEZ) ) {
 
       unexec_exp = stmtl->stmt->exp;
 /*
@@ -271,6 +278,9 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.12  2002/07/05 05:00:14  phase1geo
+/* Removing CASE, CASEX, and CASEZ from line and combinational logic results.
+/*
 /* Revision 1.11  2002/07/02 19:52:50  phase1geo
 /* Removing unecessary diagnostics.  Cleaning up extraneous output and
 /* generating new documentation from source.  Regression passes at the
