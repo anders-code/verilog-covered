@@ -209,7 +209,6 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       i++;
       retval = search_add_no_score_module( argv[i] );
-      print_output( "-e <module> option is not supported at this time and will have no effect", WARNING );
 
     } else if( strncmp( "-vcd", argv[i], 4 ) == 0 ) {
 
@@ -303,6 +302,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.13  2002/07/17 00:13:57  phase1geo
+/* Added support for -e option and informally tested.
+/*
 /* Revision 1.12  2002/07/16 03:29:18  phase1geo
 /* Updates to NEWS, INSTALL, ChangeLog for release.  Modifications to Verilog
 /* diagnostic Makefile to make it easier to read.  Added user warning if -e
