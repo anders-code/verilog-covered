@@ -23,6 +23,8 @@ extern nibble nand_optab[16];
 extern nibble nor_optab[16];
 extern nibble nxor_optab[16];
 
+extern int curr_sim_time;
+
 
 /*!
  \param exp    Pointer to expression to add value to.
@@ -642,7 +644,16 @@ void expression_operate( expression* expr ) {
         vector_set_value( expr->value, &bit, 1, 0, 0 );
         break;
 
-      case EXP_OP_STMT :
+      case EXP_OP_DELAY :
+        intval1 = vector_to_int( expr->left->value );           // Start time of delay
+        intval2 = vector_to_int( expr->right->value );          // Number of clocks to delay
+        if( (intval1 + intval2) >= curr_sim_time ) {
+          bit = 1;
+          vector_set_value( expr->value, &bit, 1, 0, 0 );
+        } else {
+          bit = 0;
+          vector_set_value( expr->value, &bit, 1, 0, 0 );
+        }
         break;
 
       default :
@@ -730,6 +741,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.14  2002/06/26 04:59:50  phase1geo
+/* Adding initial support for delays.  Support is not yet complete and is
+/* currently untested.
+/*
 /* Revision 1.13  2002/06/25 03:39:03  phase1geo
 /* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
 /* Fixed some report bugs though there are still some remaining.

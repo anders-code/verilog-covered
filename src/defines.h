@@ -387,7 +387,7 @@
 #define EXP_OP_PEDGE	0x27	/*!< 39 posedge operator              */
 #define EXP_OP_NEDGE	0x28	/*!< 40 negedge operator              */
 #define EXP_OP_AEDGE	0x29	/*!< 41 anyedge operator              */
-#define EXP_OP_STMT     0x2a    /*!< 42 statement operator            */
+#define EXP_OP_DELAY    0x2a    /*!< 42 delay operator                */
 
 /*! @} */
 
@@ -758,6 +758,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.15  2002/06/26 04:59:50  phase1geo
+/* Adding initial support for delays.  Support is not yet complete and is
+/* currently untested.
+/*
 /* Revision 1.14  2002/06/23 21:18:21  phase1geo
 /* Added appropriate statement support in parser.  All parts should be in place
 /* and ready to start testing.
