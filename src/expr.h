@@ -50,7 +50,7 @@ bool expression_db_replace( expression* base, char** line );
 void expression_display( expression* expr );
 
 /*! \brief Performs operation specified by parameter expression. */
-void expression_operate( expression* expr );
+bool expression_operate( expression* expr );
 
 /*! \brief Performs recursive expression operation (parse mode only). */
 void expression_operate_recursively( expression* expr );
@@ -67,6 +67,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.28  2004/10/22 21:40:30  phase1geo
+ More incremental updates to improve efficiency in score command (though this
+ change should not, in and of itself, improve efficiency).
+
  Revision 1.27  2004/08/11 22:11:39  phase1geo
  Initial beginnings of combinational logic verbose reporting to GUI.
 
