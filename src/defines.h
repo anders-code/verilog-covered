@@ -1485,8 +1485,7 @@ typedef struct stmt_blk_s stmt_blk;
 
 struct stmt_blk_s {
   statement* stmt;      /*!< Pointer to top-level statement in statement tree that this signal is first found in */
-  vsignal*   sig;       /*!< If not NULL, indicates the signal that is an input to this module                   */
-  stmt_blk*  next;      /*!< Pointer to next statement signal structure in the linked list                       */
+  bool       remove;    /*!< Specifies if this statement block should be removed after checking is complete      */
 };
 
 /*-------------------------------------------------------------------------------*/
@@ -1499,6 +1498,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.117  2005/01/10 23:03:39  phase1geo
+ Added code to properly report race conditions.  Added code to remove statement blocks
+ from module when race conditions are found.
+
  Revision 1.116  2005/01/10 02:59:29  phase1geo
  Code added for race condition checking that checks for signals being assigned
  in multiple statements.  Working on handling bit selects -- this is in progress.

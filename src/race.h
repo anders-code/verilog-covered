@@ -15,12 +15,13 @@
 /*! \brief Checks the current module for race conditions */
 void race_check_modules();
 
-/*! \brief Checks the number of race conditions that were detected in the design */
-bool race_check_race_count();
-
 
 /*
  $Log$
+ Revision 1.8  2005/01/10 23:03:39  phase1geo
+ Added code to properly report race conditions.  Added code to remove statement blocks
+ from module when race conditions are found.
+
  Revision 1.7  2005/01/10 02:59:30  phase1geo
  Code added for race condition checking that checks for signals being assigned
  in multiple statements.  Working on handling bit selects -- this is in progress.

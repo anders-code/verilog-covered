@@ -578,6 +578,40 @@ void str_link_delete_list( str_link* head ) {
 
 }
 
+void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) {
+
+  stmt_iter  curr;  /* Statement list iterator             */
+  stmt_link* tmp;   /* Temporary pointer to statement link */
+
+  stmt_iter_reset( &curr, *head );
+
+  while( (curr.curr != NULL) && (curr.curr->stmt != stmt) ) {
+    stmt_iter_next( &curr );
+  }
+
+  if( curr.curr != NULL ) {
+
+    tmp = curr.curr;
+
+    /* Adjust head and tail pointers if necessary */
+    if( curr.curr == *tail ) {
+      *tail = curr.last;
+    }
+
+    if( curr.curr == *head ) {
+      *head = (stmt_link*)((long int)curr.curr->ptr ^ (long int)curr.last);
+    }
+
+    /* Perform the unlink */
+    stmt_iter_unlink( &curr );
+
+    /* Deallocate the stmt_link */
+    free_safe( tmp );
+
+  }
+
+}
+
 /*!
  \param head  Pointer to head stmt_link element of list.
 
@@ -718,6 +752,10 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.30  2005/01/10 23:03:39  phase1geo
+ Added code to properly report race conditions.  Added code to remove statement blocks
+ from module when race conditions are found.
+
  Revision 1.29  2005/01/07 17:59:52  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.
