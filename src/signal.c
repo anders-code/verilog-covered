@@ -381,10 +381,10 @@ signal* signal_from_string( char** str ) {
   int     lsb;         /* LSB of signal                         */
   int     chars_read;  /* Number of characters read from string */
 
-  if( sscanf( *str, "%s[%d:%d]%n", name, &msb, &lsb, &chars_read ) == 3 ) {
+  if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]%n", name, &msb, &lsb, &chars_read ) == 3 ) {
     sig = signal_create( name, ((msb - lsb) + 1), lsb );
     *str += chars_read;
-  } else if( sscanf( *str, "%s[%d]%n", name, &lsb, &chars_read ) == 2 ) {
+  } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]%n", name, &lsb, &chars_read ) == 2 ) {
     sig = signal_create( name, 1, lsb );
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]%n", name, &chars_read ) == 1 ) {
@@ -440,6 +440,11 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.39  2003/10/16 04:26:01  phase1geo
+ Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
+ for FSM variables that are not able to be bound correctly.  Fixing bug in
+ signal_from_string function.
+
  Revision 1.38  2003/10/13 22:10:07  phase1geo
  More changes for FSM support.  Still not quite there.
 

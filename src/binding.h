@@ -18,7 +18,7 @@ void bind_add( char* sig_name, expression* exp, module* mod );
 void bind_remove( int id );
 
 /*! \brief Finds signal in module and bind the expression to this signal. */
-bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed );
+bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed, bool fsm_bind );
 
 /*! \brief Performs signal/expression bind (performed after parse completed). */
 void bind();
@@ -26,6 +26,11 @@ void bind();
 
 /* 
  $Log$
+ Revision 1.10  2003/10/16 04:26:01  phase1geo
+ Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
+ for FSM variables that are not able to be bound correctly.  Fixing bug in
+ signal_from_string function.
+
  Revision 1.9  2003/01/05 22:25:23  phase1geo
  Fixing bug with declared integers, time, real, realtime and memory types where
  they are confused with implicitly declared signals and given 1-bit value types.
