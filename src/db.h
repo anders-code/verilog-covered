@@ -34,6 +34,15 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 //! Adds specified expression to expression list.  Called by parser.
 void db_add_expression( expression* root );
 
+//! Creates new statement expression from specified information.  Called by parser.
+expression* db_create_statement( int line, expression* exp );
+
+//! Connects true statement to specified statement.
+void db_connect_statement_true( expression* stmt, expression* exp_true );
+
+//! Connects false statement to specified statement.
+void db_connect_statement_false( expression* stmt, expression* exp_false );
+
 //! Sets current VCD scope to specified scope.
 void db_set_vcd_scope( char* scope );
 
@@ -51,6 +60,14 @@ int db_get_signal_size( char* symbol );
 
 //! Performs a timestep for all signal changes during this timestep.
 void db_do_timestep( int time ); 
+
+/* $Log$
+/* Revision 1.2  2002/04/30 05:04:25  phase1geo
+/* Added initial go-round of adding statement handling to parser.  Added simple
+/* Verilog test to check correct statement handling.  At this point there is a
+/* bug in the expression write function (we need to display statement trees in
+/* the proper order since they are unlike normal expression trees.)
+/* */
 
 #endif
 

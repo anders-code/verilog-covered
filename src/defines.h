@@ -671,5 +671,13 @@ struct mod_inst_s {
 };
 
 
+/* $Log$
+/* Revision 1.8  2002/04/30 05:04:25  phase1geo
+/* Added initial go-round of adding statement handling to parser.  Added simple
+/* Verilog test to check correct statement handling.  At this point there is a
+/* bug in the expression write function (we need to display statement trees in
+/* the proper order since they are unlike normal expression trees.)
+/* */
+
 #endif
 

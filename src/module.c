@@ -337,3 +337,12 @@ void module_dealloc( module* mod ) {
 
 }
 
+
+/* $Log$
+/* Revision 1.2  2002/04/30 05:04:25  phase1geo
+/* Added initial go-round of adding statement handling to parser.  Added simple
+/* Verilog test to check correct statement handling.  At this point there is a
+/* bug in the expression write function (we need to display statement trees in
+/* the proper order since they are unlike normal expression trees.)
+/* */
+
