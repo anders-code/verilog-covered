@@ -250,6 +250,8 @@ void stmt_link_display( stmt_link* head ) {
 
   stmt_iter_reset( &curr, head );
   while( curr.curr != NULL ) {
+    assert( curr.curr->stmt != NULL );
+    assert( curr.curr->stmt->exp != NULL );
     printf( "  id: %d\n", curr.curr->stmt->exp->id );
     stmt_iter_next( &curr );
   }
@@ -692,6 +694,9 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.23  2003/10/13 03:56:29  phase1geo
+ Fixing some problems with new FSM code.  Not quite there yet.
+
  Revision 1.22  2003/08/25 13:02:03  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these

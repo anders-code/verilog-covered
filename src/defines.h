@@ -733,7 +733,8 @@
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_MBIT_SEL)) && \
-                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND))) ? 1 : 0)
+                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND)) && \
+                                     (x->line != 0)) ? 1 : 0)
 
 /*!
  Returns a value of TRUE if the specified expression is a STATIC, PARAM, PARAM_SBIT or PARAM_MBIT
@@ -1468,6 +1469,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.84  2003/10/13 03:56:29  phase1geo
+ Fixing some problems with new FSM code.  Not quite there yet.
+
  Revision 1.83  2003/10/11 05:15:07  phase1geo
  Updates for code optimizations for vector value data type (integers to chars).
  Updated regression for changes.

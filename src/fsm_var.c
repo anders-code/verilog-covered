@@ -188,12 +188,12 @@ void fsm_var_stmt_add( statement* stmt, char* mod_name ) {
   fvb->stmt     = stmt;
   fvb->mod_name = strdup( mod_name );
 
-  /* Add new structure to the global list */
+  /* Add new structure to the head of the global list */
   if( fsm_var_stmt_head == NULL ) {
     fsm_var_stmt_head = fsm_var_stmt_tail = fvb;
   } else {
-    fsm_var_stmt_tail->next = fvb;
-    fsm_var_stmt_tail       = fvb;
+    fvb->next         = fsm_var_stmt_head;
+    fsm_var_stmt_head = fvb;
   }
 
 }
@@ -263,7 +263,7 @@ void fsm_var_bind( mod_link* mod_head ) {
       curr->stmt->exp->suppl = curr->stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_ADDED);
 
       /* Second, add our statement to this module's statement list */
-      stmt_link_add_tail( curr->stmt, &(modl->mod->stmt_head), &(modl->mod->stmt_tail) );
+      stmt_link_add_head( curr->stmt, &(modl->mod->stmt_head), &(modl->mod->stmt_tail) );
 
       /* Finally, create the new FSM if we are the output state */
       if( (fv = fsm_var_is_output_state( curr->stmt->exp )) != NULL ) {
@@ -358,6 +358,9 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.3  2003/10/13 03:56:29  phase1geo
+ Fixing some problems with new FSM code.  Not quite there yet.
+
  Revision 1.2  2003/10/10 20:52:07  phase1geo
  Initial submission of FSM expression allowance code.  We are still not quite
  there yet, but we are getting close.
