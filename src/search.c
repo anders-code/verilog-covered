@@ -142,9 +142,11 @@ bool search_add_file( char* file ) {
   bool  retval = TRUE;  /* Return value for this function */
   char* tmp;            /* Temporary filename             */
 
-  if( file_exists( file ) && (str_link_find( file, use_files_head ) == NULL) ) {
-    tmp = strdup_safe( file, __FILE__, __LINE__ );
-    str_link_add( tmp, &use_files_head, &use_files_tail );
+  if( file_exists( file ) ) {
+    if( str_link_find( file, use_files_head ) == NULL ) {
+      tmp = strdup_safe( file, __FILE__, __LINE__ );
+      str_link_add( tmp, &use_files_head, &use_files_tail );
+    }
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "File %s does not exist", file );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -227,6 +229,11 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.17  2005/01/03 22:02:27  phase1geo
+ Fixing case where file is specified with -v after it has already been included to
+ just ignore the file instead of printing out an incorrect error message that the
+ file was unable to be opened.
+
  Revision 1.16  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,
