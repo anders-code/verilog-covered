@@ -892,7 +892,7 @@ vector* vector_from_string( char** str ) {
   int     size;                  /* Specifies bit width of vector to create                                  */
   char    value[MAX_BIT_WIDTH];  /* String to store string value in                                          */
   char    stype[2];              /* Temporary holder for type of string being parsed                         */
-  int     type;                  /* Type of string being parsed                                              */
+  nibble  type;                  /* Type of string being parsed                                              */
   int     chars_read;            /* Number of characters read by a sscanf() function call                    */
 
   if( sscanf( *str, "%d'%[sSdD]%[0-9]%n", &size, stype, value, &chars_read ) == 3 ) {
@@ -1499,6 +1499,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.47  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.46  2004/01/28 17:05:17  phase1geo
  Changing toggle report information from binary output format to hexidecimal
  output format for ease in readability for large signal widths.  Updated regression

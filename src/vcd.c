@@ -48,10 +48,9 @@ void vcd_parse_def_ignore( FILE* vcd ) {
 
   bool end_seen = FALSE;  /* If set to true, $end keyword was seen */
   char token[256];        /* String value of current token         */
-  int  tokval;            /* Set to number of tokens found         */
   int  chars_read;        /* Number of characters scanned in       */
 
-  while( !end_seen && ((tokval = fscanf( vcd, "%s%n", token, &chars_read )) == 1) ) {
+  while( !end_seen && (fscanf( vcd, "%s%n", token, &chars_read ) == 1) ) {
     assert( chars_read <= 256 );
     if( strncmp( "$end", token, 4 ) == 0 ) {
       end_seen = TRUE;
@@ -77,7 +76,6 @@ void vcd_parse_def_var( FILE* vcd ) {
   char tmp[15];          /* Temporary string holder         */
   int  msb = -1;         /* Most significant bit            */
   int  lsb = -1;         /* Least significant bit           */
-  char t1, t2;
 
   if( fscanf( vcd, "%s %d %s %s %s", type, &size, id_code, ref, tmp ) == 5 ) {
 
@@ -390,6 +388,10 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.17  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.16  2003/11/11 22:41:54  phase1geo
  Fixing bug with reading VCD signals that are too long for Covered to support.
  We were getting an assertion error when we should have simply read in and ignored
