@@ -117,7 +117,7 @@ bool line_collect( const char* mod_name, int cov, int** lines, int* line_cnt ) {
 
         if( SUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) == cov ) {
 
-          last_line = expression_get_last_line( stmti.curr->stmt->exp );
+          last_line = expression_get_last_line_expr( stmti.curr->stmt->exp )->line;
           for( i=stmti.curr->stmt->exp->line; i<=last_line; i++ ) {
             if( *line_cnt == line_size ) {
               line_size += 20;
@@ -477,6 +477,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.46  2004/08/11 22:11:39  phase1geo
+ Initial beginnings of combinational logic verbose reporting to GUI.
+
  Revision 1.45  2004/08/08 12:50:27  phase1geo
  Snapshot of addition of toggle coverage in GUI.  This is not working exactly as
  it will be, but it is getting close.

@@ -220,7 +220,8 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-view", argv[i], 5 ) == 0 ) {
 
-      report_gui = TRUE;
+      report_gui        = TRUE;
+      report_comb_depth = REPORT_VERBOSE;
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
@@ -673,6 +674,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.37  2004/08/11 22:11:39  phase1geo
+ Initial beginnings of combinational logic verbose reporting to GUI.
+
  Revision 1.36  2004/04/21 05:14:03  phase1geo
  Adding report_gui checking to print_output and adding error handler to TCL
  scripts.  Any errors occurring within the code will be propagated to the user.
