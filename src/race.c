@@ -149,7 +149,7 @@ void race_check_one_block_assignment( module* mod ) {
   	    race_found = TRUE; 
           }
 
-        } else if( (sig_stmt != curr_stmt) || curr_race ) {
+        } else if( (sig_stmt != curr_stmt) && curr_race ) {
 
           race_handle_race_condition( curr_stmt, sig_stmt );
 	  race_found = TRUE;
@@ -260,6 +260,10 @@ bool race_check_race_count() {
 
 /*
  $Log$
+ Revision 1.11  2005/01/10 13:44:58  phase1geo
+ Fixing case where signal selects are being assigned by different statements that
+ do not overlap.  We do not have race conditions in this case.
+
  Revision 1.10  2005/01/10 02:59:30  phase1geo
  Code added for race condition checking that checks for signals being assigned
  in multiple statements.  Working on handling bit selects -- this is in progress.
