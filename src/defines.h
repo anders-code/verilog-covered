@@ -53,7 +53,7 @@
  If -w option is specified to report command, specifies number of characters of width
  we will output.
 */
-#define DEFAULT_LINE_WIDTH 115
+#define DEFAULT_LINE_WIDTH 105
 
 /*!
  \addtogroup output_type Output type
@@ -1579,6 +1579,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.102  2004/01/30 06:04:43  phase1geo
+ More report output format tweaks.  Adjusted lines and spaces to make things
+ look more organized.  Still some more to go.  Regression will fail at this
+ point.
+
  Revision 1.101  2004/01/25 03:41:48  phase1geo
  Fixes bugs in summary information not matching verbose information.  Also fixes
  bugs where instances were output when no logic was missing, where instance
