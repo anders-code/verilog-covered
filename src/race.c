@@ -144,11 +144,13 @@ void race_calc_expr_assignment( expression* exp, int sb_index ) {
 
 void race_calc_assignments_helper( statement* stmt, statement* head, int sb_index ) {
 
-  if( (stmt != NULL) && (stmt != head) && (ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) ) {
-
+  if( stmt != NULL ) {
+	
     /* Calculate children statements */
-    race_calc_assignments_helper( stmt->next_true, head, sb_index );
-    race_calc_assignments_helper( stmt->next_false, head, sb_index );
+    if( (stmt != head) && (ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) ) {
+      race_calc_assignments_helper( stmt->next_true, head, sb_index );
+      race_calc_assignments_helper( stmt->next_false, head, sb_index );
+    }
 
     /* Calculate assignment operator type */
     race_calc_expr_assignment( stmt->exp, sb_index );
@@ -487,6 +489,10 @@ void race_check_modules() {
 
 /*
  $Log$
+ Revision 1.18  2005/02/03 05:48:33  phase1geo
+ Fixing bugs in race condition checker.  Adding race2.1 diagnostic.  Regression
+ currently has some failures due to these changes.
+
  Revision 1.17  2005/02/03 04:59:13  phase1geo
  Fixing bugs in race condition checker.  Updated regression.
 
