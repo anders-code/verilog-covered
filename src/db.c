@@ -803,7 +803,7 @@ void db_add_statement( statement* stmt, statement* start ) {
     print_output( user_msg, DEBUG );
 
     /* Add TRUE and FALSE statement paths to list */
-    if( SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
+    if( (SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) && (stmt->next_false != start) ) {
       db_add_statement( stmt->next_false, start );
     }
 
@@ -1154,6 +1154,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.71  2002/12/03 14:25:24  phase1geo
+ Fixing bug in db_add_statement function.  Not parsing FALSE path if the next_false
+ is the starting statement.
+
  Revision 1.70  2002/12/03 06:01:15  phase1geo
  Fixing bug where delay statement is the last statement in a statement list.
  Adding diagnostics to verify this functionality.
