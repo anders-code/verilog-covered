@@ -1410,14 +1410,14 @@ void combination_instance_verbose( FILE* ofile, mod_inst* root, char* parent ) {
 
   assert( root != NULL );
 
+  if( strcmp( parent, "*" ) == 0 ) {
+    strcpy( tmpname, root->name );
+  } else {
+    snprintf( tmpname, 4096, "%s.%s", parent, root->name );
+  }
+
   if( ((root->stat->comb_hit < root->stat->comb_total) && !report_covered) ||
       ((root->stat->comb_hit > 0) && report_covered) ) {
-
-    if( strcmp( parent, "*" ) == 0 ) {
-      strcpy( tmpname, root->name );
-    } else {
-      snprintf( tmpname, 4096, "%s.%s", parent, root->name );
-    }
 
     fprintf( ofile, "\n" );
     fprintf( ofile, "Module: %s, File: %s, Instance: %s\n", 
@@ -1428,12 +1428,12 @@ void combination_instance_verbose( FILE* ofile, mod_inst* root, char* parent ) {
 
     combination_display_verbose( ofile, root->mod->stmt_tail );
 
-    curr_inst = root->child_head;
-    while( curr_inst != NULL ) {
-      combination_instance_verbose( ofile, curr_inst, tmpname );
-      curr_inst = curr_inst->next;
-    }
+  }
 
+  curr_inst = root->child_head;
+  while( curr_inst != NULL ) {
+    combination_instance_verbose( ofile, curr_inst, tmpname );
+    curr_inst = curr_inst->next;
   }
 
 }
@@ -1519,6 +1519,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.81  2004/01/23 14:36:26  phase1geo
+ Fixing output of instance line, toggle, comb and fsm to only output module
+ name if logic is detected missing in that instance.  Full regression fails
+ with this fix.
+
  Revision 1.80  2004/01/10 05:19:56  phase1geo
  Changing missed cases to use asterisk instead of capital M for signifier.
  Updated regression for last batch of changes.  Full regression now passes.
