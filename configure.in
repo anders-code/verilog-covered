@@ -1,12 +1,12 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/main.c)
-dnl AC_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(covered,0.0.66)
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(covered,0.2.3)
 
 dnl Checks for programs.
 AC_PROG_MAKE_SET
 AC_PROG_CC
-AC_ARG_PROGRAM
+dnl AC_ARG_PROGRAM
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
@@ -19,9 +19,11 @@ then
 fi
 
 dnl AC_CHECK_HEADERS(getopt.h)
+AC_CHECK_HEADERS(string.h)
+AC_CHECK_HEADERS(sys/times.h)
 
 dnl Checks for libraries.
-AM_WITH_MPATROL(yes)
+dnl AM_WITH_MPATROL(yes)
 
 dnl Checks for header files.
 AC_HEADER_STDC
@@ -34,5 +36,6 @@ AC_CHECK_SIZEOF(long,4)
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
+AC_TYPE_SIZE_T
 
-AC_OUTPUT(Makefile src/Makefile)
+AC_OUTPUT(Makefile src/Makefile doc/user/Makefile)
