@@ -43,6 +43,9 @@ void scope_extract_front( char* scope, char* front, char* rest );
 //! Extracts lowest level of hierarchy from specified scope.
 void scope_extract_back( char* scope, char* back, char* rest );
 
+//! Returns TRUE if specified scope is local (contains no periods).
+bool scope_local( char* scope );
+
 //! Performs safe malloc call.
 void* malloc_safe( int size );
 
@@ -53,6 +56,10 @@ void free_safe( void* ptr );
 void gen_space( char* spaces, int num_spaces );
 
 /* $Log$
+/* Revision 1.5  2002/07/18 22:02:35  phase1geo
+/* In the middle of making improvements/fixes to the expression/signal
+/* binding phase.
+/*
 /* Revision 1.4  2002/07/08 12:35:31  phase1geo
 /* Added initial support for library searching.  Code seems to be broken at the
 /* moment.

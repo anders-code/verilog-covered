@@ -84,7 +84,7 @@ bool parse_design( char* top, char* output_db ) {
 
     print_output( "========  Completed design parsing  ========\n", DEBUG );
 
-    bind( 0 );
+    bind();
   
   } else {
 
@@ -163,6 +163,10 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
 }
 
 /* $Log$
+/* Revision 1.7  2002/07/18 22:02:35  phase1geo
+/* In the middle of making improvements/fixes to the expression/signal
+/* binding phase.
+/*
 /* Revision 1.6  2002/07/13 04:09:18  phase1geo
 /* Adding support for correct implementation of `ifdef, `else, `endif
 /* directives.  Full regression passes.

@@ -18,10 +18,17 @@ void bind_add( char* sig_name, expression* exp, char* mod_name );
 //! Removes the expression with ID of id from binding list.
 void bind_remove( int id );
 
-//! Performs signal/expression bind (performed after parse completed).
-void bind( int mode );
+//! Finds signal in module and bind the expression to this signal.
+void bind_perform( char* sig_name, expression* exp, module* mod );
 
-/* $Log */
+//! Performs signal/expression bind (performed after parse completed).
+void bind();
+
+/* $Log$
+/* Revision 1.3  2002/07/18 22:02:35  phase1geo
+/* In the middle of making improvements/fixes to the expression/signal
+/* binding phase.
+/* */
 
 #endif
 
