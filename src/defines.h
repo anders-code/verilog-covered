@@ -805,7 +805,10 @@ struct statement_s {
   statement*  next_true;   /*!< Pointer to next statement to run if expression tree non-zero */
   statement*  next_false;  /*!< Pointer to next statement to run if next_true not picked     */
 };
- 
+
+
+typedef struct stmt_iter_s stmt_iter;
+
 //------------------------------------------------------------------------------
 /*!
  Expression link element.  Stores pointer to an expression.
@@ -829,7 +832,16 @@ typedef struct stmt_link_s stmt_link;
 
 struct stmt_link_s {
   statement* stmt;   /*!< Pointer to statement                       */
-  stmt_link* next;   /*!< Pointer to next statement element in list  */
+  stmt_link* ptr;   /*!< Pointer to next statement element in list  */
+};
+
+//------------------------------------------------------------------------------
+/*!
+ Statement link iterator.
+*/
+struct stmt_iter_s {
+  stmt_link* curr;   /*!< Pointer to current statement link               */
+  stmt_link* last;   /*!< Two-way pointer to next/previous statement link */
 };
 
 //------------------------------------------------------------------------------
@@ -1063,6 +1075,12 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.53  2002/10/25 13:43:49  phase1geo
+/* Adding statement iterators for moving in both directions in a list with a single
+/* pointer (two-way).  This allows us to reverse statement lists without additional
+/* memory and time (very efficient).  Full regression passes and TODO list items
+/* 2 and 3 are completed.
+/*
 /* Revision 1.52  2002/10/24 05:48:58  phase1geo
 /* Additional fixes for MBIT_SEL.  Changed some philosophical stuff around for
 /* cleaner code and for correctness.  Added some development documentation for
