@@ -310,7 +310,6 @@ void db_add_instance( char* scope, char* modname ) {
 
   if( (found_mod_link = mod_link_find( mod, mod_head )) != NULL ) {
 
-    printf( "In db_add_instance 1, curr_module->name: %s\n", curr_module->name );
     instance_add( &instance_root, curr_module->name, found_mod_link->mod, scope );
 
     module_dealloc( mod );
@@ -574,15 +573,6 @@ statement* db_create_statement( expression* exp ) {
 void db_add_statement( statement* stmt ) {
 
   char msg[4096];    /* Message to display to user */
-/*
-  static int count = 0;
-
-  if( count > 70 ) {
-    assert( count == 0 );
-  } else {
-    count++;
-  }
-*/
  
   if( stmt != NULL ) {
 
@@ -594,7 +584,7 @@ void db_add_statement( statement* stmt ) {
       db_add_statement( stmt->next_false );
     }
 
-    if( stmt->next_true != stmt->next_false ) {
+    if( (stmt->next_true != stmt->next_false) && (stmt->next_true != stmt) ) {
       db_add_statement( stmt->next_true );
     }
 
@@ -970,6 +960,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.40  2002/07/13 06:05:49  phase1geo
+/* Providing bug fixes for handling empty always statements and handling
+/* various cases where a statement is optional and doesn't exist.
+/*
 /* Revision 1.39  2002/07/13 05:35:52  phase1geo
 /* Cause warning message to be displayed for a signal found in the VCD dumpfile
 /* that is in a covered scope but is not part of the design.  It could be that
