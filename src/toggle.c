@@ -15,7 +15,8 @@
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
 
-extern bool      report_covered;
+extern bool report_covered;
+extern bool report_instance;
 
 /*!
  \param expl   Pointer to expression list to search.
@@ -300,18 +301,17 @@ void toggle_module_verbose( FILE* ofile, mod_link* head ) {
 /*!
  \param ofile     Pointer to file to output results to.
  \param verbose   Specifies whether or not to provide verbose information
- \param instance  Specifies to report by instance or module.
 
  After the design is read into the module hierarchy, parses the hierarchy by module,
  reporting the toggle coverage for each module encountered.  The parent module will
  specify its own toggle coverage along with a total toggle coverage including its 
  children.
 */
-void toggle_report( FILE* ofile, bool verbose, bool instance ) {
+void toggle_report( FILE* ofile, bool verbose ) {
 
   bool missed_found;      /* If set to TRUE, indicates that untoggled bits were found */
 
-  if( instance ) {
+  if( report_instance ) {
 
     fprintf( ofile, "TOGGLE COVERAGE RESULTS BY INSTANCE\n" );
     fprintf( ofile, "-----------------------------------\n" );
@@ -347,6 +347,10 @@ void toggle_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.12  2002/09/13 05:12:25  phase1geo
+/* Adding final touches to -d option to report.  Adding documentation and
+/* updating development documentation to stay in sync.
+/*
 /* Revision 1.11  2002/08/20 04:48:18  phase1geo
 /* Adding option to report command that allows the user to display logic that is
 /* being covered (-c option).  This overrides the default behavior of displaying
