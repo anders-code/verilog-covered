@@ -14,22 +14,32 @@
 #include "vector.h"
 
 
+//! Adds parameter override to defparam list.
+void defparam_add( char* scope, vector* expr );
+
+
+#ifdef DEPRECATED
 //! Searches specified parameter list for the specified parameter name.
 parameter* param_find( char* name, parameter* parm );
 
 //! Adds parameter to specified module's parameter list.
 void param_add( char* name, expression* expr, module* mod );
 
-//! Adds parameter override to defparam list.
-void param_add_defparam( char* scope, vector* expr );
-
 //! Generates all instance parameters for specified instance/module.
 void param_generate( parameter* parm );
 
 //! Undos the steps performed in the param_generate routine to restore module.
 void param_destroy( parameter* parm );
+#endif
 
 /* $Log$
+/* Revision 1.4  2002/09/21 04:11:32  phase1geo
+/* Completed phase 1 for adding in parameter support.  Main code is written
+/* that will create an instance parameter from a given module parameter in
+/* its entirety.  The next step will be to complete the module parameter
+/* creation code all the way to the parser.  Regression still passes and
+/* everything compiles at this point.
+/*
 /* Revision 1.3  2002/09/19 05:25:19  phase1geo
 /* Fixing incorrect simulation of static values and fixing reports generated
 /* from these static expressions.  Also includes some modifications for parameters

@@ -249,6 +249,7 @@ void instance_calc_params( mod_inst* inst ) {
 
 }
 
+#ifdef DEPRECATED
 /*!
  \param inst  Pointer to instance to generate parameters for.
 
@@ -290,6 +291,7 @@ void instance_param_destroy( mod_inst* inst ) {
   }
 
 }
+#endif
 
 /*!
  \param root        Root of module instance tree to write.
@@ -309,18 +311,22 @@ void instance_db_write( mod_inst* root, FILE* file, char* scope, bool parse_mode
 
   assert( scope != NULL );
 
+#ifdef DEPRECATED
   /* Handle parameters at this time */
   if( parse_mode ) {
     instance_calc_params( root );
     instance_param_generate( root );
   }
+#endif
 
   /* Display root module */
   module_db_write( root->mod, scope, file );
 
+#ifdef DEPRECATED
   if( parse_mode ) {
     instance_param_destroy( root );
   }
+#endif
 
   /* Display children */
   curr = root->child_head;
@@ -433,6 +439,13 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 }
 
 /* $Log$
+/* Revision 1.13  2002/09/21 04:11:32  phase1geo
+/* Completed phase 1 for adding in parameter support.  Main code is written
+/* that will create an instance parameter from a given module parameter in
+/* its entirety.  The next step will be to complete the module parameter
+/* creation code all the way to the parser.  Regression still passes and
+/* everything compiles at this point.
+/*
 /* Revision 1.12  2002/09/19 05:25:19  phase1geo
 /* Fixing incorrect simulation of static values and fixing reports generated
 /* from these static expressions.  Also includes some modifications for parameters
