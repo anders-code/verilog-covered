@@ -910,16 +910,15 @@ void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
     }
 
     if( comp_type == COMP_CXEQ ) {
-      if( ((lbit < 2) && (rbit < 2)) && (lbit != rbit) ) {
+      if( (lbit < 2) && (rbit < 2) && (lbit != rbit) ) {
         done = TRUE;
       }
     } else if( comp_type == COMP_CZEQ ) {
-      if( ((lbit < 3) && (rbit < 3)) && (lbit != rbit) ) {
+      if( (lbit < 3) && (rbit < 3) && (lbit != rbit) ) {
         done = TRUE;
       }
     } else {
-      if( ((lbit != rbit) && (comp_type != COMP_CXEQ) && (comp_type != COMP_CZEQ)) || 
-          (((lbit >= 2) || (rbit >= 2)) && (comp_type != COMP_CEQ) && (comp_type != COMP_CNE)) ) {
+      if( (lbit != rbit) || (((lbit >= 2) || (rbit >= 2)) && (comp_type != COMP_CEQ) && (comp_type != COMP_CNE)) ) {
         done = TRUE;
       }
     }
@@ -939,16 +938,16 @@ void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
   } else {
 
     switch( comp_type ) {
-      case COMP_LT   :  value = ((lbit == 0) && (rbit == 1)) ? 1 : 0;  break;
-      case COMP_GT   :  value = ((lbit == 1) && (rbit == 0)) ? 1 : 0;  break;
-      case COMP_LE   :  value = ((lbit == 1) && (rbit == 0)) ? 0 : 1;  break;
-      case COMP_GE   :  value = ((lbit == 0) && (rbit == 1)) ? 0 : 1;  break;
+      case COMP_LT   :  value = ((lbit == 0) && (rbit == 1))                   ? 1 : 0;  break;
+      case COMP_GT   :  value = ((lbit == 1) && (rbit == 0))                   ? 1 : 0;  break;
+      case COMP_LE   :  value = ((lbit == 1) && (rbit == 0))                   ? 0 : 1;  break;
+      case COMP_GE   :  value = ((lbit == 0) && (rbit == 1))                   ? 0 : 1;  break;
       case COMP_EQ   :
-      case COMP_CEQ  :
-      case COMP_CXEQ :
-      case COMP_CZEQ :  value = (lbit == rbit)               ? 1 : 0;  break;
+      case COMP_CEQ  :  value = (lbit == rbit)                                 ? 1 : 0;  break;
+      case COMP_CXEQ :  value = ((lbit == rbit) || (lbit >= 2) || (rbit >= 2)) ? 1 : 0;  break;
+      case COMP_CZEQ :  value = ((lbit == rbit) || (lbit >= 3) || (rbit >= 3)) ? 1 : 0;  break;
       case COMP_NE   :
-      case COMP_CNE  :  value = (lbit == rbit)               ? 0 : 1;  break;
+      case COMP_CNE  :  value = (lbit == rbit)                                 ? 0 : 1;  break;
       default        :
         snprintf( msg, 4096, "Internal error:  Unidentified comparison type %d", comp_type );
         print_output( msg, FATAL );
@@ -1284,10 +1283,9 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
-/* Revision 1.7  2002/07/05 04:12:46  phase1geo
-/* Correcting case, casex and casez equality calculation to conform to correct
-/* equality check for each case type.  Verified that case statements work correctly
-/* at this point.  Added diagnostics to verify case statements.
+/* Revision 1.8  2002/07/05 04:35:53  phase1geo
+/* Adding fixes for casex and casez for proper equality calculations.  casex has
+/* now been tested and added to regression suite.  Full regression passes.
 /*
 /* Revision 1.6  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
