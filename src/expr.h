@@ -28,6 +28,9 @@ void expression_resize( expression* expr, bool recursive );
 /*! \brief Returns expression ID of this expression. */
 int expression_get_id( expression* expr );
 
+/*! \brief Finds all wait event signals in specified expression */
+void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link** tail );
+
 /*! \brief Writes this expression to the specified database file. */
 void expression_db_write( expression* expr, FILE* file, char* scope );
 
@@ -58,6 +61,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.20  2003/08/09 22:10:41  phase1geo
+ Removing wait event signals from CDD file generation in support of another method
+ that fixes a bug when multiple wait event statements exist within the same
+ statement tree.
+
  Revision 1.19  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules
