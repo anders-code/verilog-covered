@@ -19,6 +19,7 @@ void combination_get_stats( exp_link* expl, float* total, int* hit );
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
 bool combination_collect( const char* mod_name, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt );
 
+/*! \brief Gets combinational logic summary statistics for specified module. */
 bool combination_get_module_summary( char* mod_name, int* total, int* hit );
 
 bool combination_get_coverage( char* mod_name, int expr_id, char*** code, int** uline_groups, int* code_size, char*** ulines, int* uline_size );
@@ -29,6 +30,11 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.10  2004/08/17 04:43:57  phase1geo
+ Updating unary and binary combinational expression output functions to create
+ string arrays instead of immediately sending the information to standard output
+ to support GUI interface as well as ASCII interface.
+
  Revision 1.9  2004/08/13 20:45:05  phase1geo
  More added for combinational logic verbose reporting.  At this point, the
  code is being output with underlines that can move up and down the expression
