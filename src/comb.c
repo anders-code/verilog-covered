@@ -18,7 +18,8 @@
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
 
-extern bool      report_covered;
+extern bool         report_covered;
+extern unsigned int report_comb_depth;
 
 /*!
  \param expl   Pointer to current expression link to evaluate.
@@ -788,6 +789,10 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.39  2002/08/20 05:55:25  phase1geo
+/* Starting to add combination depth option to report command.  Currently, the
+/* option is not implemented.
+/*
 /* Revision 1.38  2002/08/20 04:48:18  phase1geo
 /* Adding option to report command that allows the user to display logic that is
 /* being covered (-c option).  This overrides the default behavior of displaying
