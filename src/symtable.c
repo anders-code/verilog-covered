@@ -191,7 +191,7 @@ symtable* symtable_create( signal* sig, int msb, int lsb, bool init ) {
   symtab->sig_head = NULL;
   symtab->sig_tail = NULL;
   symtab->value    = NULL;
-  for( i=0; i<255; i++ ) {
+  for( i=0; i<256; i++ ) {
     symtab->table[i] = NULL;
   }
 
@@ -363,6 +363,10 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.13  2003/08/18 23:52:54  phase1geo
+ Fixing bug in initialization function for a symtable to initialize all 256
+ elements of the table array (instead of 255).
+
  Revision 1.12  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 
