@@ -405,12 +405,20 @@ bool vector_db_merge( vector* base, char** line, bool same ) {
 */
 void vector_display_toggle01( nibble* nib, int width, FILE* ofile ) {
 
-  int i;    /* Loop iterator */
+  int value = 0;  /* Current 4-bit hexidecimal value of toggle */
+  int i;          /* Loop iterator                             */
 
-  fprintf( ofile, "%d'b", width );
+  fprintf( ofile, "%d'h", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    fprintf( ofile, "%d", VECTOR_TOG01( nib[i] ) );
+    value = value | (VECTOR_TOG01( nib[i] ) << (i % 4));
+    if( (i % 4) == 0 ) {
+      fprintf( ofile, "%1x", value );
+      value = 0;
+    }
+    if( ((i % 16) == 0) && (i != 0) ) {
+      fprintf( ofile, "_" );
+    }
   }
 
 }
@@ -425,12 +433,20 @@ void vector_display_toggle01( nibble* nib, int width, FILE* ofile ) {
 */
 void vector_display_toggle10( nibble* nib, int width, FILE* ofile ) {
 
-  int i;    /* Loop iterator */
+  int value = 0;  /* Current 4-bit hexidecimal value of toggle */
+  int i;          /* Loop iterator                             */
 
-  fprintf( ofile, "%d'b", width );
+  fprintf( ofile, "%d'h", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    fprintf( ofile, "%d", VECTOR_TOG10( nib[i] ) );
+    value = value | (VECTOR_TOG10( nib[i] ) << (i % 4));
+    if( (i % 4) == 0 ) {
+      fprintf( ofile, "%1x", value );
+      value = 0;
+    }
+    if( ((i % 16) == 0) && (i != 0) ) {
+      fprintf( ofile, "_" );
+    }
   }
 
 }
@@ -1483,6 +1499,11 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.46  2004/01/28 17:05:17  phase1geo
+ Changing toggle report information from binary output format to hexidecimal
+ output format for ease in readability for large signal widths.  Updated regression
+ for this change and added new toggle.v diagnostic to verify these changes.
+
  Revision 1.45  2004/01/16 23:05:01  phase1geo
  Removing SET bit from being written to CDD files.  This value is meaningless
  after scoring has completed and sometimes causes miscompares when simulators
