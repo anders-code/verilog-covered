@@ -94,33 +94,15 @@ void vector_unary_op( vector* tgt, vector* src, nibble* optab );
 //! Performs unary logical NOT operation on specified vector value.
 void vector_unary_not( vector* tgt, vector* src );
 
-
-/*
-#define EXP_OP_LT       0x0b
-#define EXP_OP_GT       0x0c 
-#define EXP_OP_LSHIFT   0x0d
-#define EXP_OP_RSHIFT   0x0e
-#define EXP_OP_EQ       0x0f
-#define EXP_OP_CEQ      0x10
-#define EXP_OP_LE       0x11
-#define EXP_OP_GE       0x12
-#define EXP_OP_NE       0x13
-#define EXP_OP_CNE      0x14
-#define EXP_OP_LOR      0x15
-#define EXP_OP_LAND     0x16
-#define EXP_OP_COND     0x17
-#define EXP_OP_SBIT_SEL 0x20
-#define EXP_OP_MBIT_SEL 0x21
-#define EXP_OP_EXPAND   0x22
-#define EXP_OP_CONCAT   0x23
-#define EXP_OP_PEDGE    0x24
-#define EXP_OP_NEDGE    0x25
-#define EXP_OP_AEDGE    0x26
-*/
-
-
 //! Deallocates all memory allocated for vector
 void vector_dealloc( vector* vec );
+
+/* $Log$
+/* Revision 1.4  2002/07/03 03:31:11  phase1geo
+/* Adding RCS Log strings in files that were missing them so that file version
+/* information is contained in every source and header file.  Reordering src
+/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+/* */
 
 #endif
 

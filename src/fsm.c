@@ -26,3 +26,10 @@ void fsm_report( FILE* ofile, bool verbose, bool instance ) {
   fprintf( ofile, "Not available at this time.\n\n" );
 
 }
+
+/* $Log$
+/* Revision 1.2  2002/07/03 03:31:11  phase1geo
+/* Adding RCS Log strings in files that were missing them so that file version
+/* information is contained in every source and header file.  Reordering src
+/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+/* */
