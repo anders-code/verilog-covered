@@ -467,6 +467,8 @@ void free_safe( void* ptr ) {
 
   curr_malloc_size -= sizeof( *ptr );
 
+  // printf( "Freeing memory, addr: 0x%lx\n", ptr );
+
   free( ptr );
 
 }
@@ -492,6 +494,11 @@ void gen_space( char* spaces, int num_spaces ) {
 }
 
 /* $Log$
+/* Revision 1.11  2002/09/25 05:36:08  phase1geo
+/* Initial version of parameter support is now in place.  Parameters work on a
+/* basic level.  param1.v tests this basic functionality and param1.cdd contains
+/* the correct CDD output from handling parameters in this file.  Yeah!
+/*
 /* Revision 1.10  2002/07/20 22:22:52  phase1geo
 /* Added ability to create implicit signals for local signals.  Added implicit1.v
 /* diagnostic to test for correctness.  Full regression passes.  Other tweaks to

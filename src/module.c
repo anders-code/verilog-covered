@@ -109,10 +109,14 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
       }
       /* If parameter value was found (it should be), adjust expression for new value */
       if( icurr != NULL ) {
+        printf( "NEED TO RESIZE EXPRESSION TREE\n" );
         expression_set_value_and_resize( curr_exp->exp, icurr->value );
       } else {
         assert( icurr != NULL );
       }
+      /* Finally, change the expression operation to STATIC */
+      curr_exp->exp->suppl = (curr_exp->exp->suppl & ~(0x7f << SUPPL_LSB_OP)) | 
+                             ((EXP_OP_STATIC & 0x7f) << SUPPL_LSB_OP);
     }
 
     expression_db_write( curr_exp->exp, file, scope );
@@ -328,21 +332,25 @@ void module_clean( module* mod ) {
     }
 
     /* Free expression list */
+    // printf( "In module_dealloc, deleting expression list\n" );
     exp_link_delete_list( mod->exp_head, TRUE );
     mod->exp_head = NULL;
     mod->exp_tail = NULL;
 
     /* Free signal list */
+    // printf( "In module_dealloc, deleting signal list\n" );
     sig_link_delete_list( mod->sig_head );
     mod->sig_head = NULL;
     mod->sig_tail = NULL;
 
     /* Free statement list */
+    // printf( "In module_dealloc, deleting statement list\n" );
     stmt_link_delete_list( mod->stmt_head );
     mod->stmt_head = NULL;
     mod->stmt_tail = NULL;
 
     /* Free parameter list */
+    // printf( "In module_dealloc, deleting mod_parm list\n" );
     mod_parm_dealloc( mod->param_head, TRUE );
     mod->param_head = NULL;
     mod->param_tail = NULL;
@@ -361,6 +369,8 @@ void module_dealloc( module* mod ) {
 
   if( mod != NULL ) {
 
+    // printf( "In module_dealloc, name: %s\n", mod->name );
+
     //module_display_expressions( mod );
 
     module_clean( mod );
@@ -374,10 +384,10 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
-/* Revision 1.14  2002/09/25 02:51:44  phase1geo
-/* Removing need of vector nibble array allocation and deallocation during
-/* expression resizing for efficiency and bug reduction.  Other enhancements
-/* for parameter support.  Parameter stuff still not quite complete.
+/* Revision 1.15  2002/09/25 05:36:08  phase1geo
+/* Initial version of parameter support is now in place.  Parameters work on a
+/* basic level.  param1.v tests this basic functionality and param1.cdd contains
+/* the correct CDD output from handling parameters in this file.  Yeah!
 /*
 /* Revision 1.13  2002/08/26 12:57:04  phase1geo
 /* In the middle of adding parameter support.  Intermediate checkin but does
