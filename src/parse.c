@@ -17,6 +17,7 @@
 #include "fsm_var.h"
 #include "info.h"
 #include "sim.h"
+#include "race.h"
 
 
 extern void reset_lexer( str_link* file_list_head );
@@ -29,6 +30,7 @@ extern str_link* modlist_tail;
 extern char user_msg[USER_MSG_LENGTH];
 extern int  error_count;
 extern bool flag_scored;
+extern bool flag_race_check;
 
 /*!
  \param file  Pointer to file to read
@@ -89,6 +91,11 @@ bool parse_design( char* top, char* output_db ) {
     }
 
     print_output( "========  Completed design parsing  ========\n", DEBUG, __FILE__, __LINE__ );
+
+    /* Perform race condition checking */
+    race_check_modules();
+
+    print_output( "========  Completed race condition checking  ========\n", DEBUG, __FILE__, __LINE__ );
 
     /* Perform all signal/expression binding */
     bind();
@@ -175,6 +182,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.26  2005/01/10 02:59:30  phase1geo
+ Code added for race condition checking that checks for signals being assigned
+ in multiple statements.  Working on handling bit selects -- this is in progress.
+
  Revision 1.25  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

@@ -1189,16 +1189,16 @@ bool expression_operate( expression* expr ) {
         value1a.part.value = expr->right->value->value[0].part.value;
         value1b.all        = expr->left->value->value[0].all;
         /* If the event has been armed previously, evaluate */
-        if( (value1b.part.armed == 1) && (value1a.part.value != expr->left->value->value[0].part.value) && (value1a.part.value == 1) ) {
+        if( (value1b.part.misc == 1) && (value1a.part.value != expr->left->value->value[0].part.value) && (value1a.part.value == 1) ) {
           bit.part.value = 1;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
-          value1a.part.armed = 0;
+          value1a.part.misc = 0;
         } else {
           bit.part.value = 0;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Set armed bit */
-          value1a.part.armed = 1;
+          value1a.part.misc = 1;
         }
         /* Set left LAST value to current value of right */
         expr->left->value->value[0].all = value1a.all;
@@ -1207,16 +1207,16 @@ bool expression_operate( expression* expr ) {
       case EXP_OP_NEDGE :
         value1a.part.value = expr->right->value->value[0].part.value;
         value1b.all        = expr->left->value->value[0].all;
-        if( (value1b.part.armed == 1) && (value1a.part.value != expr->left->value->value[0].part.value) && (value1a.part.value == 0) ) {
+        if( (value1b.part.misc == 1) && (value1a.part.value != expr->left->value->value[0].part.value) && (value1a.part.value == 0) ) {
           bit.part.value = 1;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
-          value1a.part.armed = 0;
+          value1a.part.misc = 0;
         } else {
           bit.part.value = 0;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Set armed bit */
-          value1a.part.armed = 1;
+          value1a.part.misc = 1;
         }
         /* Set left LAST value to current value of right */
         expr->left->value->value[0].all = value1a.all;
@@ -1228,16 +1228,16 @@ bool expression_operate( expression* expr ) {
         value1b.all = expr->left->value->value[0].all;
         /* Set left LAST value to current value of right */
         vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        if( (value1b.part.armed == 1) && (vector_to_int( &vec1 ) == 0) ) {
+        if( (value1b.part.misc == 1) && (vector_to_int( &vec1 ) == 0) ) {
           bit.part.value = 1;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
-          expr->left->value->value[0].part.armed = 0;
+          expr->left->value->value[0].part.misc = 0;
         } else {
           bit.part.value = 0;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Set armed bit */
-          expr->left->value->value[0].part.armed = 1;
+          expr->left->value->value[0].part.misc = 1;
         }
         break;
 
@@ -1506,6 +1506,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.109  2005/01/10 02:59:30  phase1geo
+ Code added for race condition checking that checks for signals being assigned
+ in multiple statements.  Working on handling bit selects -- this is in progress.
+
  Revision 1.108  2005/01/07 23:00:09  phase1geo
  Regression now passes for previous changes.  Also added ability to properly
  convert quoted strings to vectors and vectors to quoted strings.  This will

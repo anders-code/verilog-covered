@@ -12,27 +12,19 @@
 #include "defines.h"
 
 
-/*! \brief Adds specified input port signal to stmt_sig list */
-void race_add_inport_sig( vsignal* sig );
-
-/*! \brief Parses entire statement tree pointed to by stmt, adding all found signals within it to the stmt_sig list */
-void race_find_and_add_stmt_sigs( statement* stmt, statement* root );
-
-/*! \brief Displays contents of stmt_sig array to standard output */
-void race_stmt_blk_display();
-
 /*! \brief Checks the current module for race conditions */
-void race_check_module();
+void race_check_modules();
 
 /*! \brief Checks the number of race conditions that were detected in the design */
 bool race_check_race_count();
 
-/*! \brief Deallocates specified stmt_sig structure from memory */
-void race_stmt_blk_dealloc();
-
 
 /*
  $Log$
+ Revision 1.7  2005/01/10 02:59:30  phase1geo
+ Code added for race condition checking that checks for signals being assigned
+ in multiple statements.  Working on handling bit selects -- this is in progress.
+
  Revision 1.6  2005/01/07 17:59:52  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.
