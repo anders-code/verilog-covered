@@ -81,6 +81,8 @@ void set_debug( bool value ) {
 /*!
  \param msg   Message to display.
  \param type  Type of message to output
+ \param file  Name of file that called this function
+ \param line  Line number that this function was called in
 
  Displays the specified message to standard output based on the type of message
  being output.
@@ -773,6 +775,9 @@ void timer_stop( timer** tm ) {
 
 /*
  $Log$
+ Revision 1.28  2004/03/22 13:26:52  phase1geo
+ Updates for upcoming release.  We are not quite ready to release at this point.
+
  Revision 1.27  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,
