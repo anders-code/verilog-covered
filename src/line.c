@@ -234,7 +234,8 @@ void line_module_verbose( FILE* ofile, mod_link* head ) {
 
   while( head != NULL ) {
 
-    if( head->mod->stat->line_hit < head->mod->stat->line_total ) {
+    if( ((head->mod->stat->line_hit < head->mod->stat->line_total) && !report_covered) ||
+        ((head->mod->stat->line_hit > 0) && report_covered) ) {
 
       fprintf( ofile, "\n" );
       fprintf( ofile, "Module: %s, File: %s\n", 
@@ -275,7 +276,7 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 
     missed_found = line_instance_summary( ofile, instance_root, "<root>" );
     
-    if( verbose && missed_found ) {
+    if( verbose && (missed_found || report_covered) ) {
       line_instance_verbose( ofile, instance_root );
     }
 
@@ -288,7 +289,7 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 
     missed_found = line_module_summary( ofile, mod_head );
 
-    if( verbose && missed_found ) {
+    if( verbose && (missed_found || report_covered) ) {
       line_module_verbose( ofile, mod_head );
     }
 
@@ -300,6 +301,13 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.19  2002/09/10 05:40:09  phase1geo
+/* Adding support for MULTIPLY, DIVIDE and MOD in expression verbose display.
+/* Fixing cases where -c option was not generating covered information in
+/* line and combination report output.  Updates to assign1.v diagnostic for
+/* logic that is now supported by both Covered and IVerilog.  Updated assign1.cdd
+/* to account for correct coverage file for the updated assign1.v diagnostic.
+/*
 /* Revision 1.18  2002/08/20 04:48:18  phase1geo
 /* Adding option to report command that allows the user to display logic that is
 /* being covered (-c option).  This overrides the default behavior of displaying
