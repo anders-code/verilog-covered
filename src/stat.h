@@ -11,17 +11,22 @@
 #include "defines.h"
 
 
-/*! Creates and initializes a new statistic structure. */
+/*! \brief Creates and initializes a new statistic structure. */
 statistic* statistic_create();
 
-/*! Merges the results of the stat_from to the stat_to */
+/*! \brief Merges the results of the stat_from to the stat_to */
 void statistic_merge( statistic* stat_to, statistic* stat_from );
 
-/*! Deallocates memory for a statistic structure. */
+/*! \brief Deallocates memory for a statistic structure. */
 void statistic_dealloc( statistic* stat );
+
 
 /*
  $Log$
+ Revision 1.5  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.4  2002/10/31 23:14:26  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
