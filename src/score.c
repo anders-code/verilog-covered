@@ -162,14 +162,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
       i++;
-  
-      if( is_variable( argv[i] ) ) {
-        top_instance = strdup( argv[i] );
-      } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level instance name specified \"%s\"", argv[i] );
-        print_output( user_msg, FATAL );
-        retval = FALSE;
-      }
+      top_instance = strdup( argv[i] );
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
@@ -350,6 +343,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.26  2002/10/13 13:55:53  phase1geo
+/* Fixing instance depth selection and updating all configuration files for
+/* regression.  Full regression now passes.
+/*
 /* Revision 1.25  2002/10/11 05:23:21  phase1geo
 /* Removing local user message allocation and replacing with global to help
 /* with memory efficiency.

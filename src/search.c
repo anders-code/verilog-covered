@@ -59,10 +59,10 @@ void search_init() {
 
   /* Initialize instance tree */
   if( top_instance == NULL ) {
-    instance_parse_add( &instance_root, NULL, mod, strdup( top_module ) );
-  } else {
-    instance_parse_add( &instance_root, NULL, mod, strdup( top_instance ) );
+    top_instance = strdup( top_module );
   }
+  
+  instance_parse_add( &instance_root, NULL, mod, strdup( top_instance ) );
 
 }
  
@@ -210,6 +210,10 @@ void search_free_lists() {
 }
 
 /* $Log$
+/* Revision 1.11  2002/10/13 13:55:53  phase1geo
+/* Fixing instance depth selection and updating all configuration files for
+/* regression.  Full regression now passes.
+/*
 /* Revision 1.10  2002/10/11 05:23:21  phase1geo
 /* Removing local user message allocation and replacing with global to help
 /* with memory efficiency.
