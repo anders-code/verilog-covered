@@ -440,7 +440,7 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
   /* First, check to see if the parent instance contains an override in its instance list. */
   icurr = ip_head;
   while( (icurr != NULL) && 
-         ((PARAM_TYPE( mparm ) != PARAM_TYPE_OVERRIDE)   || 
+         ((PARAM_TYPE( icurr->mparm ) != PARAM_TYPE_OVERRIDE)   || 
           (PARAM_ORDER( mparm ) != PARAM_ORDER( icurr->mparm )) ||
           (strcmp( mname, icurr->name ) != 0)) ) {
     icurr = icurr->next;
@@ -630,6 +630,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 
 /* $Log$
+/* Revision 1.13  2002/09/26 13:43:45  phase1geo
+/* Making code adjustments to correctly support parameter overriding.  Added
+/* parameter tests to verify supported functionality.  Full regression passes.
+/*
 /* Revision 1.12  2002/09/26 04:17:11  phase1geo
 /* Adding support for expressions in parameter definitions.  param1.1.v added to
 /* test simple functionality of this and it passes regression.
