@@ -322,13 +322,6 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
   /* Set signal value to specified value */
   vector_vcd_assign( sig->value, value, msb, lsb );
 
-#ifdef SKIP
-  /* If this signal is part of an FSM, get FSM coverage now. */
-  if( sig->table != NULL ) {
-    fsm_table_set( sig->table );
-  }
-#endif
-
   /* Iterate through signal's expression list */
   curr_expr = sig->exp_head;
   while( curr_expr != NULL ) {
@@ -447,6 +440,9 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.38  2003/10/13 22:10:07  phase1geo
+ More changes for FSM support.  Still not quite there.
+
  Revision 1.37  2003/10/11 05:15:08  phase1geo
  Updates for code optimizations for vector value data type (integers to chars).
  Updated regression for changes.
