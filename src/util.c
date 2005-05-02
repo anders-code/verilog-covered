@@ -637,9 +637,9 @@ void* malloc_safe( size_t size, char* file, int line ) {
 
   void* obj;      /* Object getting malloc address */
 
-  if( size > 10000 ) {
-    print_output( "Allocating memory chunk larger than 10000 bytes.  Possible error.", WARNING, file, line );
-    assert( size <= 10000 );
+  if( size > 100000 ) {
+    print_output( "Allocating memory chunk larger than 100000 bytes.  Possible error.", WARNING, file, line );
+    assert( size <= 100000 );
   } else if( size <= 0 ) {
     print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL, file, line );
     assert( size > 0 );
@@ -811,6 +811,9 @@ void timer_stop( timer** tm ) {
 
 /*
  $Log$
+ Revision 1.30  2005/05/02 15:33:34  phase1geo
+ Updates.
+
  Revision 1.29  2004/04/21 05:14:03  phase1geo
  Adding report_gui checking to print_output and adding error handler to TCL
  scripts.  Any errors occurring within the code will be propagated to the user.
