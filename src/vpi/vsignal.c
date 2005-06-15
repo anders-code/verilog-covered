@@ -138,6 +138,9 @@ bool vsignal_db_read( char** line, module* curr_mod ) {
 
     *line = *line + chars_read;
 
+    snprintf( user_msg, USER_MSG_LENGTH, "Found signal %s, lsb: %d", name, lsb );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+
     /* Read in vector information */
     if( vector_db_read( &vec, line ) ) {
 
@@ -530,6 +533,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.2  2005/06/15 22:13:35  phase1geo
+ Updates to include signal callbacks and integration with Covered's simulation
+ core.
+
  Revision 1.1  2005/06/10 22:26:32  phase1geo
  Adding symlinks to needed files.
 
