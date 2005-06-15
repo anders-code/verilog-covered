@@ -187,7 +187,7 @@ bool db_read( char* file, int read_mode ) {
 
   if( (db_handle = fopen( file, "r" )) != NULL ) {
 
-    while( readline( db_handle, &curr_line ) && retval ) {
+    while( util_readline( db_handle, &curr_line ) && retval ) {
 
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
 
@@ -1351,6 +1351,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.2  2005/06/15 22:13:35  phase1geo
+ Updates to include signal callbacks and integration with Covered's simulation
+ core.
+
  Revision 1.1  2005/06/10 22:26:31  phase1geo
  Adding symlinks to needed files.
 
