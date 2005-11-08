@@ -41,7 +41,7 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
 bool file_exists( char* file );
 
 /*! \brief Reads line from file and returns it in string form. */
-bool readline( FILE* file, char** line );
+bool util_readline( FILE* file, char** line );
 
 /*! \brief Extracts highest level of hierarchy from specified scope. */
 void scope_extract_front( char* scope, char* front, char* rest );
@@ -87,6 +87,10 @@ void timer_stop( timer** tm );
 
 /*
  $Log$
+ Revision 1.17  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.16  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

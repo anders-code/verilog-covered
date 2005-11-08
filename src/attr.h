@@ -15,7 +15,7 @@
 attr_param* attribute_create( const char* name, expression* expr );
 
 /*! \brief Parses and handles specified attribute parameter list. */
-void attribute_parse( attr_param* ap, module* mod );
+void attribute_parse( attr_param* ap, func_unit* mod );
 
 /*! \brief Deallocates entire attribute parameter list. */
 void attribute_dealloc( attr_param* ap );
@@ -23,6 +23,10 @@ void attribute_dealloc( attr_param* ap );
 
 /*
  $Log$
+ Revision 1.5  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.4  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

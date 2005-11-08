@@ -12,13 +12,13 @@
 
 
 /*! \brief Allocates, initializes and adds FSM variable to global list. */
-fsm_var* fsm_var_add( char* mod_name, expression* in_state, expression* out_state, char* name );
+fsm_var* fsm_var_add( char* funit_name, expression* in_state, expression* out_state, char* name );
 
 /*! \brief Adds specified signal and expression to binding list. */
-void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name );
+void fsm_var_bind_add( char* sig_name, expression* expr, char* funit_name );
 
-/*! \brief Add specified module and statement to binding list. */
-void fsm_var_stmt_add( statement* stmt, char* mod_name );
+/*! \brief Add specified functional unit and statement to binding list. */
+void fsm_var_stmt_add( statement* stmt, char* funit_name );
 
 /*! \brief Performs FSM signal/expression binding process. */
 void fsm_var_bind();
@@ -29,6 +29,10 @@ void fsm_var_remove( fsm_var* fv );
 
 /*
  $Log$
+ Revision 1.5  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.4  2003/11/11 21:48:09  phase1geo
  Fixing bug where next pointers in bind lists were not being initialized to
  NULL (manifested itself in Irix).  Also added missing development documentation

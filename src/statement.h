@@ -17,8 +17,8 @@ statement* statement_create( expression* exp );
 /*! \brief Writes specified statement to the specified output file. */
 void statement_db_write( statement* stmt, FILE* ofile );
 
-/*! \brief Reads in statement line from specified string and stores statement in specified module. */
-bool statement_db_read( char** line, module* curr_mod, int read_mode );
+/*! \brief Reads in statement line from specified string and stores statement in specified functional unit. */
+bool statement_db_read( char** line, func_unit* curr_funit, func_unit* last_funit, int read_mode );
 
 /*! \brief Connects statement sequence to next statement. */
 void statement_connect( statement* curr_stmt, statement* next_stmt );
@@ -38,6 +38,10 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.18  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.17  2005/02/04 23:55:54  phase1geo
  Adding code to support race condition information in CDD files.  All code is
  now in place for writing/reading this data to/from the CDD file (although
