@@ -298,6 +298,7 @@ void bind() {
     /* Now bind the signal to the expression */
     bind_perform( curr_seb->sig_name, curr_seb->exp, modi->mod, curr_seb->mod, FALSE, FALSE );
 
+#ifdef SKIP
     /************************************************************************************
      *  THIS CODE COULD PROBABLY BE PUT SOMEWHERE ELSE BUT WE WILL KEEP IT HERE FOR NOW *
      ************************************************************************************/
@@ -341,6 +342,7 @@ void bind() {
     /*************************
      * End of misplaced code *
      *************************/
+#endif
    
     curr_seb = curr_seb->next;
 
@@ -353,6 +355,10 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.2  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.1  2005/06/10 22:26:31  phase1geo
  Adding symlinks to needed files.
 

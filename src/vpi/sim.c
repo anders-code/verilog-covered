@@ -400,8 +400,9 @@ void sim_simulate() {
 
 /*
  $Log$
- Revision 1.1  2005/06/10 22:26:32  phase1geo
- Adding symlinks to needed files.
+ Revision 1.2  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
 
  Revision 1.39  2005/02/08 23:18:23  phase1geo
  Starting to add code to handle expression assignment for blocking assignments.
