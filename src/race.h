@@ -30,7 +30,7 @@ void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE
 void race_report( FILE* ofile, bool verbose );
 
 /*! \brief Collects all of the lines in the specified module that were not verified due to race condition breach */
-bool race_collect_lines( char* modname, int** lines, int** reasons, int* line_cnt );
+bool race_collect_lines( char* funit_name, int funit_type, int** lines, int** reasons, int* line_cnt );
 
 /*! \brief Deallocates the specified race condition block from memory */
 void race_blk_delete_list( race_blk* rb );
@@ -38,6 +38,11 @@ void race_blk_delete_list( race_blk* rb );
 
 /*
  $Log$
+ Revision 1.14  2005/11/10 19:28:23  phase1geo
+ Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
+ Fixed bug with net_decl_assign statements -- the line, start column and end column
+ information was incorrect, causing problems with the GUI output.
+
  Revision 1.13  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

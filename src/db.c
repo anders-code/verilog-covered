@@ -217,7 +217,7 @@ bool db_read( char* file, int read_mode ) {
           assert( !merge_mode );
 
           /* Parse rest of line for signal info */
-          retval = vsignal_db_read( &rest_line, curr_funit );
+          retval = vsignal_db_read( &rest_line, curr_funit, last_funit );
 	    
         } else if( type == DB_TYPE_EXPRESSION ) {
 
@@ -803,10 +803,13 @@ vsignal* db_find_signal( char* name ) {
 
 }
 
+/*!
+ \return Returns the number of signals in the current function unit.
+*/
 int db_curr_signal_count() {
 
-  int       sig_cnt = 0;  /* Holds number of signals in the current module */
-  sig_link* sigl;         /* Pointer to current signal link                */
+  int       sig_cnt = 0;  /* Holds number of signals in the current functional unit */
+  sig_link* sigl;         /* Pointer to current signal link */
 
   sigl = curr_funit->sig_head;
   while( sigl != NULL ) {
@@ -1438,6 +1441,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.129  2005/11/10 19:28:22  phase1geo
+ Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
+ Fixed bug with net_decl_assign statements -- the line, start column and end column
+ information was incorrect, causing problems with the GUI output.
+
  Revision 1.128  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

@@ -11,22 +11,27 @@
 #include "defines.h"
 
 /*! \brief Collects array of uncovered/covered lines from given functional unit. */
-bool line_collect( const char* funit_name, int cov, int** lines, int* line_cnt );
+bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int* line_cnt );
 
 /*! \brief Returns hit and total information for specified functional unit. */
-bool line_get_funit_summary( char* funit_name, int* total, int* hit );
+bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
 
-/*! \brief Collects array of functional unit names from the design. */
-bool funit_get_list( char*** funit_list, int* funit_size );
+/*! \brief Collects array of functional unit names/types from the design. */
+bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size );
 
 /*! \brief Retrieves filename of given functional unit. */
-char* funit_get_filename( const char* funit_name );
+char* funit_get_filename( const char* funit_name, int funit_type );
 
 /*! \brief Retrieves starting and ending line numbers of the specified functional unit. */
-bool funit_get_start_and_end_lines( const char* funit_name, int* start_line, int* end_line );
+bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int* start_line, int* end_line );
 
 /*
  $Log$
+ Revision 1.6  2005/11/10 19:28:23  phase1geo
+ Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
+ Fixed bug with net_decl_assign statements -- the line, start column and end column
+ information was incorrect, causing problems with the GUI output.
+
  Revision 1.5  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.
