@@ -163,7 +163,7 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int* 
  function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool line_get_funit_summary( char* funit_name, char* funit_type, int* total, int* hit ) {
+bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
 
   bool        retval = TRUE;  /* Return value for this function        */
   func_unit   funit;          /* Functional unit used for searching    */
@@ -479,6 +479,11 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.51  2005/11/10 23:27:37  phase1geo
+ Adding scope files to handle scope searching.  The functions are complete (not
+ debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic
+ which brings out scoping issues for functions.
+
  Revision 1.50  2005/11/10 19:28:23  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column
