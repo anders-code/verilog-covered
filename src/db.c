@@ -908,7 +908,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 
       /* If signal is located in this current module, bind now; else, bind later */
       if( scope_local( sig_name ) && (op != EXP_OP_FUNC_CALL) && (op != EXP_OP_TASK_CALL) ) {
-        if( !bind_signal( sig_name, expr, curr_funit, curr_funit, TRUE, FALSE ) ) {
+        if( !bind_signal( sig_name, expr, curr_funit, TRUE, FALSE ) ) {
           expression_dealloc( expr, FALSE );
           expr = NULL;
         }
@@ -1441,6 +1441,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.130  2005/11/11 22:53:40  phase1geo
+ Updated bind process to allow binding of structures from different hierarchies.
+ Added task port signals to get added.
+
  Revision 1.129  2005/11/10 19:28:22  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column
