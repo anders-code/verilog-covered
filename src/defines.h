@@ -955,13 +955,13 @@ union esuppl_u {
     control stmt_connected:1;  /*!< Bit 17.  Temporary bit value used by the score command but not displayed to the CDD
                                     file.  When this bit is set to a one, it indicates to the statement_connect
                                     function that this statement and all children statements do not need to be
-                                    connected to another statement.                                                */
+                                    connected to another statement. */
     control stmt_added    :1;  /*!< Bit 18.  Temporary bit value used by the score command but not displayed to the CDD
                                     file.  When this bit is set to a one, it indicates to the db_add_statement
                                     function that this statement and all children statements have already been
-                                    added to the functional unit statement list and should not be added again.      */
+                                    added to the functional unit statement list and should not be added again. */
     control lhs           :1;  /*!< Bit 19.  Indicates that this expression exists on the left-hand side of an assignment
-                                    operation.                                                                      */
+                                    operation. */
   } part;
 };
 
@@ -1637,6 +1637,12 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.126  2005/11/11 23:29:12  phase1geo
+ Checkpointing some work in progress.  This will cause compile errors.  In
+ the process of moving db read expression signal binding from vsignal output to
+ expression output so that we can just call the binder in the expression_db_read
+ function.
+
  Revision 1.125  2005/11/10 23:27:37  phase1geo
  Adding scope files to handle scope searching.  The functions are complete (not
  debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic
