@@ -35,6 +35,9 @@ bool funit_db_replace( func_unit* base, FILE* file );
 /*! \brief Finds the task/function block that contains the given statement for the specified module. */
 func_unit* funit_find_tf_by_statement( func_unit* mod, statement* stmt );
 
+/*! \brief Finds the functional unit that contains the given statement/expression ID */
+func_unit* funit_find_by_id( int id );
+
 /*! \brief Displays signals stored in this functional unit. */
 void funit_display_signals( func_unit* funit );
 
@@ -50,6 +53,13 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.2  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.1  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

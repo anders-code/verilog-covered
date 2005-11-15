@@ -31,6 +31,7 @@
 #include "tcl_funcs.h"
 #include "info.h"
 #include "race.h"
+#include "binding.h"
 
 
 extern char        user_msg[USER_MSG_LENGTH];
@@ -635,10 +636,12 @@ int command_report( int argc, int last_arg, char** argv ) {
 
         if( report_instance ) {
           if( db_read( input_db, READ_MODE_REPORT_NO_MERGE ) ) {
+            bind( TRUE );
             report_generate( ofile );
           }
         } else {
           if( db_read( input_db, READ_MODE_REPORT_MOD_MERGE ) ) {
+            bind( TRUE );
             report_generate( ofile );
           }
         }
@@ -714,6 +717,13 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.45  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.44  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

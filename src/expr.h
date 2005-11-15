@@ -34,6 +34,9 @@ expression* expression_get_last_line_expr( expression* expr );
 /*! \brief Finds all wait event signals in specified expression */
 void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link** tail );
 
+/*! \brief Finds the root statement for the given expression */
+statement* expression_get_root_statement( expression* exp );
+
 /*! \brief Writes this expression to the specified database file. */
 void expression_db_write( expression* expr, FILE* file );
 
@@ -73,6 +76,13 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.31  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.30  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

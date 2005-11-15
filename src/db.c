@@ -906,18 +906,10 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 
     } else {
 
-      /* If signal is located in this current module, bind now; else, bind later */
-      if( scope_local( sig_name ) && (op != EXP_OP_FUNC_CALL) && (op != EXP_OP_TASK_CALL) ) {
-        if( !bind_signal( sig_name, expr, curr_funit, TRUE, FALSE ) ) {
-          expression_dealloc( expr, FALSE );
-          expr = NULL;
-        }
-      } else {
-        switch( op ) {
-          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION, sig_name, expr, curr_funit );  break;
-          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,     sig_name, expr, curr_funit );  break;
-          default               :  bind_add( 0,              sig_name, expr, curr_funit );  break;
-        }
+      switch( op ) {
+        case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION, sig_name, expr, curr_funit );  break;
+        case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,     sig_name, expr, curr_funit );  break;
+        default               :  bind_add( 0,              sig_name, expr, curr_funit );  break;
       }
 
     }
@@ -1441,6 +1433,13 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.131  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.130  2005/11/11 22:53:40  phase1geo
  Updated bind process to allow binding of structures from different hierarchies.
  Added task port signals to get added.
