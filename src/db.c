@@ -878,6 +878,20 @@ expression* db_create_expression( expression* right, expression* left, int op, b
     }
   }
 
+  /* Check to make sure that expression is allowed for the current functional unit type */
+  if( (curr_funit->type == FUNIT_FUNCTION) &&
+      ((op == EXP_OP_DELAY) ||
+       (op == EXP_OP_TASK_CALL) ||
+       (op == EXP_OP_NASSIGN)   ||
+       (op == EXP_OP_PEDGE)     ||
+       (op == EXP_OP_NEDGE)     ||
+       (op == EXP_OP_AEDGE)     ||
+       (op == EXP_OP_EOR)) ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Attempting to use a delay, task call, non-blocking assign or event controls in function %s, file %s, line %d", curr_funit->name, curr_funit->filename, line );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    exit( 1 );
+  }
+
   /* Create expression with next expression ID */
   expr = expression_create( right, left, op, lhs, curr_expr_id, line, first, last, FALSE );
   curr_expr_id++;
@@ -1434,6 +1448,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.133  2005/11/16 23:02:23  phase1geo
+ Added new diagnostics to check for functions that contain time-consuming expressions (this
+ is not allowed by Covered -- and not by most commercial simulators either).  Updated check_test
+ to do error checking and added error outputs.  Full regression passes at this point -- 225 diagnostics.
+
  Revision 1.132  2005/11/16 22:01:51  phase1geo
  Fixing more problems related to simulation of function/task calls.  Regression
  runs are now running without errors.
