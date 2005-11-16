@@ -19,6 +19,7 @@
 #include "merge.h"
 #include "util.h"
 #include "info.h"
+#include "binding.h"
 
 
 extern int merged_code;
@@ -168,6 +169,7 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
     /* Read in base database */
     db_read( merge_in0, READ_MODE_MERGE_NO_MERGE );
+    bind( TRUE );
 
     /* Read in database to merge */
     db_read( merge_in1, READ_MODE_MERGE_INST_MERGE );
@@ -185,6 +187,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.18  2005/11/16 05:50:12  phase1geo
+ Fixing binding with merge command.
+
  Revision 1.17  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,
