@@ -231,7 +231,7 @@ bool db_read( char* file, int read_mode ) {
           assert( !merge_mode );
 
           /* Parse rest of line for statement info */
-          retval = statement_db_read( &rest_line, curr_funit, last_funit, read_mode );
+          retval = statement_db_read( &rest_line, curr_funit, read_mode );
 
         } else if( type == DB_TYPE_FSM ) {
 
@@ -319,6 +319,7 @@ bool db_read( char* file, int read_mode ) {
               curr_funit->end_line   = tmpfunit.end_line;
               if( (tmpfunit.type == FUNIT_FUNCTION) || (tmpfunit.type == FUNIT_TASK) ) {
                 funit_link_add( curr_funit, &(last_funit->tf_head), &(last_funit->tf_tail) );
+                funit_link_add( last_funit, &(curr_funit->tf_head), &(curr_funit->tf_tail) );
               }
             }
 
@@ -1433,6 +1434,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.132  2005/11/16 22:01:51  phase1geo
+ Fixing more problems related to simulation of function/task calls.  Regression
+ runs are now running without errors.
+
  Revision 1.131  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

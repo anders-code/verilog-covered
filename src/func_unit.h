@@ -32,9 +32,6 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same );
 /*! \brief Reads and replaces original functional unit with contents of new functional unit. */
 bool funit_db_replace( func_unit* base, FILE* file );
 
-/*! \brief Finds the task/function block that contains the given statement for the specified module. */
-func_unit* funit_find_tf_by_statement( func_unit* mod, statement* stmt );
-
 /*! \brief Finds the functional unit that contains the given statement/expression ID */
 func_unit* funit_find_by_id( int id );
 
@@ -53,6 +50,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.3  2005/11/16 22:01:51  phase1geo
+ Fixing more problems related to simulation of function/task calls.  Regression
+ runs are now running without errors.
+
  Revision 1.2  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

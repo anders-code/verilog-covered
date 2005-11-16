@@ -18,7 +18,7 @@ statement* statement_create( expression* exp );
 void statement_db_write( statement* stmt, FILE* ofile );
 
 /*! \brief Reads in statement line from specified string and stores statement in specified functional unit. */
-bool statement_db_read( char** line, func_unit* curr_funit, func_unit* last_funit, int read_mode );
+bool statement_db_read( char** line, func_unit* curr_funit, int read_mode );
 
 /*! \brief Connects statement sequence to next statement. */
 void statement_connect( statement* curr_stmt, statement* next_stmt );
@@ -41,6 +41,10 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.20  2005/11/16 22:01:51  phase1geo
+ Fixing more problems related to simulation of function/task calls.  Regression
+ runs are now running without errors.
+
  Revision 1.19  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

@@ -1413,8 +1413,6 @@ struct statement_s {
   sig_link*   wait_sig_tail;         /*!< Pointer to tail of wait event signal list                    */
   statement*  next_true;             /*!< Pointer to next statement to run if expression tree non-zero */
   statement*  next_false;            /*!< Pointer to next statement to run if next_true not picked     */
-  exp_link*   tf_exp_head;           /*!< Pointer to head of task/function call expression list        */
-  exp_link*   tf_exp_tail;           /*!< Pointer to tail of task/function call expression list        */
 };
 
 struct sig_link_s {
@@ -1629,6 +1627,10 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.128  2005/11/16 22:01:51  phase1geo
+ Fixing more problems related to simulation of function/task calls.  Regression
+ runs are now running without errors.
+
  Revision 1.127  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

@@ -767,7 +767,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
             case EXP_OP_TASK_CALL :
             case EXP_OP_FUNC_CALL :
-              if( (tfunit = funit_find_tf_by_statement( funit, exp->stmt )) != NULL ) {
+              if( (tfunit = funit_find_by_id( exp->stmt->exp->id )) != NULL ) {
                 tmpname = tfunit->name;
               } else {
                 snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Could not find statement %d in module %s",
@@ -1967,6 +1967,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.111  2005/11/16 22:01:51  phase1geo
+ Fixing more problems related to simulation of function/task calls.  Regression
+ runs are now running without errors.
+
  Revision 1.110  2005/11/10 19:28:22  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column
