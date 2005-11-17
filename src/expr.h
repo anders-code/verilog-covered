@@ -58,9 +58,6 @@ bool expression_operate( expression* expr );
 /*! \brief Performs recursive expression operation (parse mode only). */
 void expression_operate_recursively( expression* expr );
 
-/*! \brief Returns a compressed, 1-bit representation of the value after a unary OR. */
-int expression_bit_value( expression* expr );
-
 /*! \brief Returns TRUE if specified expression is found to contain all static leaf expressions. */
 bool expression_is_static_only( expression* expr );
 
@@ -76,6 +73,12 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.32  2005/11/17 23:35:16  phase1geo
+ Blocking assignment is now working properly along with support for event expressions
+ (currently only the original PEDGE, NEDGE, AEDGE and DELAY are supported but more
+ can now follow).  Added new race4 diagnostic to verify that a register cannot be
+ assigned from more than one location -- this works.  Regression fails at this point.
+
  Revision 1.31  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading
