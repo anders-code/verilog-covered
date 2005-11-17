@@ -76,6 +76,7 @@
 #include "sim.h"
 #include "fsm.h"
 #include "func_unit.h"
+#include "vsignal.h"
 
 
 extern nibble xor_optab[OPTAB_SIZE];
@@ -991,19 +992,20 @@ void expression_display( expression* expr ) {
 */
 bool expression_operate( expression* expr ) {
 
-  bool     retval = TRUE;   /* Return value for this function                   */
-  vector   vec1;            /* Used for logical reduction                       */ 
-  vector   vec2;            /* Used for logical reduction                       */
-  vector*  vec;             /* Pointer to vector of unknown size                */
-  int      i;               /* Loop iterator                                    */
-  int      j;               /* Loop iterator                                    */
-  vec_data bit;             /* Bit holder for some ops                          */
-  int      intval1;         /* Temporary integer value for *, /, %              */
-  int      intval2;         /* Temporary integer value for *, /, %              */
-  vec_data value1a;         /* 1-bit nibble value                               */
-  vec_data value1b;         /* 1-bit nibble value                               */
-  vec_data value32[32];     /* 32-bit nibble value                              */
-  control  lf, lt, rf, rt;  /* Specify left and right WAS_TRUE/WAS_FALSE values */
+  bool       retval = TRUE;   /* Return value for this function */
+  vector     vec1;            /* Used for logical reduction */ 
+  vector     vec2;            /* Used for logical reduction */
+  vector*    vec;             /* Pointer to vector of unknown size */
+  int        i;               /* Loop iterator */
+  int        j;               /* Loop iterator */
+  vec_data   bit;             /* Bit holder for some ops */
+  int        intval1;         /* Temporary integer value for *, /, % */
+  int        intval2;         /* Temporary integer value for *, /, % */
+  vec_data   value1a;         /* 1-bit nibble value */
+  vec_data   value1b;         /* 1-bit nibble value */
+  vec_data   value32[32];     /* 32-bit nibble value */
+  control    lf, lt, rf, rt;  /* Specify left and right WAS_TRUE/WAS_FALSE values */
+  statement* last_stmt;       /* Temporary statement holder */
 
   if( (expr != NULL) && (expr->suppl.part.lhs == 0) ) {
 
@@ -1357,10 +1359,8 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_BASSIGN :
-#ifdef PERFORM_ASSIGNMENT
         intval1 = 0;
         expression_assign( expr->left, expr->right, &intval1 );
-#endif
         break;
 
       case EXP_OP_ASSIGN :
@@ -1369,11 +1369,11 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_FUNC_CALL :
-        sim_statement( expr->stmt );
+        sim_statement( expr->stmt, &last_stmt );
         break;
 
       case EXP_OP_TASK_CALL :
-        sim_statement( expr->stmt );
+        sim_statement( expr->stmt, &last_stmt );
         break;
 
       default :
@@ -1572,7 +1572,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
     switch( lhs->op ) {
       case EXP_OP_SIG      :
         vector_set_value( lhs->value, rhs->value->value, lhs->value->width, *lsb, 0 );
-	vsignal_propagate( lhs );
+	vsignal_propagate( lhs->sig );
         *lsb = *lsb + lhs->value->width;
         break;
       case EXP_OP_SBIT_SEL :
@@ -1583,12 +1583,12 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
           lhs->value->value = lhs->sig->value->value + intval1;
         }
         vector_set_value( lhs->value, rhs->value->value, 1, *lsb, 0 );
-	vsignal_propagate( lhs );
+	vsignal_propagate( lhs->sig );
         *lsb = *lsb + lhs->value->width;
         break;
       case EXP_OP_MBIT_SEL :
         vector_set_value( lhs->value, rhs->value->value, lhs->value->width, *lsb, 0 );
-	vsignal_propagate( lhs );
+	vsignal_propagate( lhs->sig );
         *lsb = *lsb + lhs->value->width;
         break;
       case EXP_OP_CONCAT   :
@@ -1675,6 +1675,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.119  2005/11/17 05:34:44  phase1geo
+ Initial work on supporting blocking assignments.  Added new diagnostic to
+ check that this initial work is working correctly.  Quite a bit more work to
+ do here.
+
  Revision 1.118  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading
