@@ -328,7 +328,6 @@ bool sim_statement( statement* head_stmt, statement** last_stmt ) {
        stmt = NULL;
     } else {
       if( ESUPPL_IS_TRUE( stmt->exp->suppl ) == 1 ) {
-        printf( "Traversing TRUE path\n" );
         stmt = stmt->next_true;
       } else {
         stmt = stmt->next_false;
@@ -411,6 +410,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.43  2005/11/18 23:52:55  phase1geo
+ More regression cleanup -- still quite a few errors to handle here.
+
  Revision 1.42  2005/11/18 05:17:01  phase1geo
  Updating regressions with latest round of changes.  Also added bit-fill capability
  to expression_assign function -- still more changes to come.  We need to fix the

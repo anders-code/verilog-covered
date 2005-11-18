@@ -597,6 +597,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           codegen_create_expr( code, code_depth, expr->line, "assign ", left_code, left_code_depth, expr->left->line, " = ",
                                right_code, right_code_depth, expr->right->line, NULL );
           break;
+        case EXP_OP_DASSIGN  :
         case EXP_OP_BASSIGN  :
           codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left->line, " = ",
                                right_code, right_code_depth, expr->right->line, NULL );
@@ -634,6 +635,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.43  2005/11/18 23:52:55  phase1geo
+ More regression cleanup -- still quite a few errors to handle here.
+
  Revision 1.42  2005/11/16 22:01:51  phase1geo
  Fixing more problems related to simulation of function/task calls.  Regression
  runs are now running without errors.
