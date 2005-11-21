@@ -439,8 +439,10 @@ int command_score( int argc, int last_arg, char** argv ) {
     }
     snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %ld bytes", largest_malloc_size );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+#ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %ld bytes", curr_malloc_size );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
     print_output( "", NORMAL, __FILE__, __LINE__ );
 
   }
@@ -451,6 +453,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.52  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.51  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

@@ -410,8 +410,10 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
 
   assert( sig->value != NULL );
 
+#ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "Assigning vsignal %s[%d:%d] (lsb=%d) to value %s", sig->name, msb, lsb, sig->lsb, value );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
 
   /* Set vsignal value to specified value */
   if( lsb > 0 ) {
@@ -535,6 +537,11 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.11  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.10  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

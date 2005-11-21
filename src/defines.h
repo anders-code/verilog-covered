@@ -634,6 +634,8 @@
 #define EXP_OP_FUNC_CALL  0x3a
 /*! Decimal value = 59.  Specifies a task call (note: this operator MUST be the root of the expression tree) */
 #define EXP_OP_TASK_CALL  0x3b
+/*! The total number of defines for expression values */
+#define EXP_OP_NUM        60
 
 /*! @} */
 
@@ -1641,6 +1643,11 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.131  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.130  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 
