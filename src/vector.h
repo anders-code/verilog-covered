@@ -46,6 +46,9 @@ void vector_display_toggle01( vec_data* nib, int width, FILE* ofile );
 /*! \brief Outputs the toggle10 information from the specified nibble to the specified output stream. */
 void vector_display_toggle10( vec_data* nib, int width, FILE* ofile );
 
+/*! \brief Outputs the binary value of the specified nibble array to standard output */
+void vector_display_value( vec_data* nib, int width );
+
 /*! \brief Outputs nibble to standard output. */
 void vector_display_nibble( vec_data* nib, int width );
 
@@ -133,6 +136,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.31  2005/11/21 22:21:58  phase1geo
+ More regression updates.  Also made some updates to debugging output.
+
  Revision 1.30  2005/11/18 05:17:01  phase1geo
  Updating regressions with latest round of changes.  Also added bit-fill capability
  to expression_assign function -- still more changes to come.  We need to fix the

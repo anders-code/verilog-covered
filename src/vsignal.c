@@ -454,9 +454,9 @@ void vsignal_display( vsignal* sig ) {
 
   assert( sig != NULL );
 
-  printf( "  Signal =>  name: %s, lsb: %d", sig->name, sig->lsb );
-  
-  vector_display( sig->value );
+  printf( "  Signal =>  name: %s, lsb: %d, ", sig->name, sig->lsb );
+  vector_display_value( sig->value->value, sig->value->width );
+  printf( "\n" );
 
 }
 
@@ -537,6 +537,9 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.12  2005/11/21 22:21:58  phase1geo
+ More regression updates.  Also made some updates to debugging output.
+
  Revision 1.11  2005/11/21 04:17:43  phase1geo
  More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
  facility to configuration file which will include or exclude debugging output from being

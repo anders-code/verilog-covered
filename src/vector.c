@@ -567,25 +567,16 @@ void vector_display_toggle10( vec_data* nib, int width, FILE* ofile ) {
 }
 
 /*!
- \param nib    Nibble to display.
- \param width  Number of bits in nibble to display.
+ \param nib    Pointer to vector nibble array
+ \param width  Number of elements in nib array
 
- Outputs the specified nibble array to standard output as described by the
- width parameter.
+ Displays the binary value of the specified vector data array to standard output.
 */
-void vector_display_nibble( vec_data* nib, int width ) {
+void vector_display_value( vec_data* nib, int width ) {
 
-  int i;       /* Loop iterator */
+  int i;  /* Loop iterator */
 
-  printf( "\n" );
-  printf( "      raw value:" );
-  
-  for( i=(width - 1); i>=0; i-- ) {
-    printf( " %08x", nib[i].all );
-  }
-
-  /* Display nibble value */
-  printf( ", value: %d'b", width );
+  printf( "value: %d'b", width );
 
   for( i=(width - 1); i>=0; i-- ) {
     switch( nib[i].part.value ) {
@@ -596,6 +587,30 @@ void vector_display_nibble( vec_data* nib, int width ) {
       default:  break;
     }
   }
+
+}
+
+/*!
+ \param nib    Nibble to display.
+ \param width  Number of bits in nibble to display.
+
+ Outputs the specified nibble array to standard output as described by the
+ width parameter.
+*/
+void vector_display_nibble( vec_data* nib, int width ) {
+
+  int i;  /* Loop iterator */
+
+  printf( "\n" );
+  printf( "      raw value:" );
+  
+  for( i=(width - 1); i>=0; i-- ) {
+    printf( " %08x", nib[i].all );
+  }
+
+  /* Display nibble value */
+  printf( ", " );
+  vector_display_value( nib, width );
 
   /* Display nibble toggle01 history */
   printf( ", 0->1: " );
@@ -1847,6 +1862,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.64  2005/11/21 22:21:58  phase1geo
+ More regression updates.  Also made some updates to debugging output.
+
  Revision 1.63  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 
