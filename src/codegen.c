@@ -380,6 +380,17 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         exit( 1 );
       }
 
+    } else if( expr->op == EXP_OP_TRIGGER ) {
+
+      assert( expr->sig != NULL );
+
+      tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 3), __FILE__, __LINE__ );
+      snprintf( tmpstr, (strlen( expr->sig->name ) + 3), "->%s", expr->sig->name );
+
+      *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+      (*code)[0]  = strdup_safe( tmpstr, __FILE__, __LINE__ );
+      *code_depth = 1;
+
     } else if( expr->op == EXP_OP_DEFAULT ) {
 
       *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
@@ -635,6 +646,11 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.44  2005/11/22 23:03:48  phase1geo
+ Adding support for event trigger mechanism.  Regression is currently broke
+ due to these changes -- we need to remove statement blocks that contain
+ triggers that are not simulated.
+
  Revision 1.43  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 
