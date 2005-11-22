@@ -1717,6 +1717,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
   if( expr != NULL ) {
 
+    printf( "Deallocating expression %d\n", expr->id );
     op = expr->op;
 
     if( (op != EXP_OP_SIG       ) && 
@@ -1740,9 +1741,20 @@ void expression_dealloc( expression* expr, bool exp_only ) {
     } else {
 
       if( expr->sig == NULL ) {
-        bind_remove( expr->id );
+
+        printf( "Removing expression %d from binding with clear_assigned = %d\n", expr->id, ESUPPL_IS_LHS( expr->suppl ) );
+        bind_remove( expr->id, (ESUPPL_IS_LHS( expr->suppl ) == 1) );
+
       } else {
+
+        /* Remove this expression from the attached signal's expression list */
         exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
+
+        /* Clear the blocking assignment bit of the attached signal if it is on the LHS */
+        if( ESUPPL_IS_LHS( expr->suppl ) == 1 ) {
+          expr->sig->value->suppl.part.assigned = 0;
+        }
+        
       }  
  
     }
@@ -1769,6 +1781,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.125  2005/11/22 05:30:33  phase1geo
+ Updates to regression suite for clearing the assigned bit when a statement
+ block is removed from coverage consideration and it is assigning that signal.
+ This is not fully working at this point.
+
  Revision 1.124  2005/11/21 22:21:58  phase1geo
  More regression updates.  Also made some updates to debugging output.
 
