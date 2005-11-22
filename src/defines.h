@@ -1565,7 +1565,7 @@ struct vector_width_s {
 struct exp_bind_s {
   int         type;                  /*!< Specifies if name refers to a signal (0), function (FUNIT_FUNCTION) or task (FUNIT_TASK) */
   char*       name;                  /*!< Name of Verilog scoped signal/functional unit to bind */
-  bool        clear_assigned;        /*!< If TRUE, clears the signal assigned supplemental field without binding */
+  int         clear_assigned;        /*!< If >0, clears the signal assigned supplemental field without binding */
   expression* exp;                   /*!< Expression to bind. */
   expression* fsm;                   /*!< FSM expression to create value for when this expression is bound */
   func_unit*  funit;                 /*!< Pointer to functional unit containing expression */
@@ -1644,6 +1644,10 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.133  2005/11/22 16:46:27  phase1geo
+ Fixed bug with clearing the assigned bit in the binding phase.  Full regression
+ now runs cleanly.
+
  Revision 1.132  2005/11/22 05:30:33  phase1geo
  Updates to regression suite for clearing the assigned bit when a statement
  block is removed from coverage consideration and it is assigning that signal.

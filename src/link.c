@@ -546,7 +546,6 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
 
   /* If recursive flag set, remove expression as well */
   if( recursive ) {
-    printf( "Deallocating expression %d\n", exp->id );
     expression_dealloc( exp, TRUE );
   }
 
@@ -760,6 +759,10 @@ void funit_link_delete_list( funit_link* head ) {
 
 /*
  $Log$
+ Revision 1.37  2005/11/22 16:46:27  phase1geo
+ Fixed bug with clearing the assigned bit in the binding phase.  Full regression
+ now runs cleanly.
+
  Revision 1.36  2005/11/22 05:30:33  phase1geo
  Updates to regression suite for clearing the assigned bit when a statement
  block is removed from coverage consideration and it is assigning that signal.
