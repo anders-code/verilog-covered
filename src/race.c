@@ -29,6 +29,7 @@
 #include "iter.h"
 #include "vector.h"
 #include "link.h"
+#include "stmt_blk.h"
 
 
 stmt_blk* sb = NULL;
@@ -512,7 +513,7 @@ void race_check_modules() {
         curr_funit = modl->funit;
         for( i=0; i<sb_size; i++ ) {
           if( sb[i].remove ) {
-            db_remove_statement( sb[i].stmt );
+            stmt_blk_add_to_remove_list( sb[i].stmt );
           }
         }
 
@@ -801,6 +802,9 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.27  2005/11/23 23:05:24  phase1geo
+ Updating regression files.  Full regression now passes.
+
  Revision 1.26  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 
