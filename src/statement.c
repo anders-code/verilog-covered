@@ -500,6 +500,7 @@ statement* statement_find_head_statement( statement* stmt, stmt_link* head ) {
 
   stmt_iter  si;     /* Statement iterator used to find head statement */
   stmt_link* stmtl;  /* Pointer to current statement in stmt_link list */
+  func_unit* tmp_funit;
 
   assert( stmt != NULL );
 
@@ -658,6 +659,12 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.57  2005/11/25 22:03:20  phase1geo
+ Fixing bugs in race condition checker when racing statement blocks are in
+ different functional units.  Still some work to do here with what to do when
+ conflicting statement block is in a task/function (I suppose we need to remove
+ the calling statement block as well?)
+
  Revision 1.56  2005/11/23 23:05:24  phase1geo
  Updating regression files.  Full regression now passes.
 
