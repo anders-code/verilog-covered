@@ -20,10 +20,15 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit );
 bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line );
 
 /*! \brief  Finds the given task or function in the provided scope. */
-bool scope_find_task_function( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line );
+bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line );
 
 
 /* $Log$
+/* Revision 1.4  2005/11/29 23:14:37  phase1geo
+/* Adding support for named blocks.  Still not working at this point but checkpointing
+/* anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+/* another task.
+/*
 /* Revision 1.3  2005/11/16 05:41:31  phase1geo
 /* Fixing implicit signal creation in binding functions.
 /*

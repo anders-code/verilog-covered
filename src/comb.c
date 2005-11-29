@@ -586,7 +586,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
   if( exp != NULL ) {
     
-    if( exp->op == EXP_OP_LAST ) {
+    if( (exp->op == EXP_OP_LAST) || (exp->op == EXP_OP_NB_CALL) ) {
 
       *size = 0;
 
@@ -2017,6 +2017,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.115  2005/11/29 23:14:37  phase1geo
+ Adding support for named blocks.  Still not working at this point but checkpointing
+ anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+ another task.
+
  Revision 1.114  2005/11/22 23:03:48  phase1geo
  Adding support for event trigger mechanism.  Regression is currently broke
  due to these changes -- we need to remove statement blocks that contain

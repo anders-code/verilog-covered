@@ -130,12 +130,12 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
 
  TBD
 */
-bool scope_find_task_function( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line ) {
+bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line ) {
 
   func_unit   funit;   /* Temporary holder of task */
   funit_link* funitl;  /* Pointer to current functional unit link */
 
-  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) );
+  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
   assert( curr_funit != NULL );
 
   *found_funit = curr_funit;
@@ -143,7 +143,7 @@ bool scope_find_task_function( char* name, int type, func_unit* curr_funit, func
   funit.type   = type;
 
   /*
-   If we are performing a hierarchical reference to a task/function, find the functional unit
+   If we are performing a hierarchical reference to a task/function/named block, find the functional unit
    that refers to this scope.
   */
   if( !scope_local( name ) ) {
@@ -180,6 +180,11 @@ bool scope_find_task_function( char* name, int type, func_unit* curr_funit, func
 
 
 /* $Log$
+/* Revision 1.5  2005/11/29 23:14:37  phase1geo
+/* Adding support for named blocks.  Still not working at this point but checkpointing
+/* anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+/* another task.
+/*
 /* Revision 1.4  2005/11/16 22:01:51  phase1geo
 /* Fixing more problems related to simulation of function/task calls.  Regression
 /* runs are now running without errors.
