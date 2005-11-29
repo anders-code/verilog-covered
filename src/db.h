@@ -86,6 +86,9 @@ attr_param* db_create_attr_param( char* name, expression* expr );
 /*! \brief Parses the specified attribute parameter list for Covered attributes */
 void db_parse_attribute( attr_param* ap );
 
+/*! \brief Searches entire design for expressions that call the specified statement */
+exp_link* db_get_exprs_with_statement( statement* stmt );
+
 /*! \brief Sets current VCD scope to specified scope. */
 void db_set_vcd_scope( char* scope );
 
@@ -109,6 +112,11 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.41  2005/11/29 19:04:47  phase1geo
+ Adding tests to verify task functionality.  Updating failing tests and fixed
+ bugs for context switch expressions at the end of a statement block, statement
+ block removal for missing function/tasks and thread killing.
+
  Revision 1.40  2005/11/23 23:05:24  phase1geo
  Updating regression files.  Full regression now passes.
 

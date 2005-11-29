@@ -1444,11 +1444,9 @@ bool expression_operate( expression* expr, thread* thr ) {
       case EXP_OP_TASK_CALL :
         retval = FALSE;
         if( expr->value->value[0].part.misc == 0 ) {
-          printf( "Adding thread...\n" );
           sim_add_thread( thr, expr->stmt );
           expr->value->value[0].part.misc  = 1;
           expr->value->value[0].part.value = 0;
-          printf( "Setting value to false\n" );
         } else if( thr->child_head == NULL ) {
           expr->value->value[0].part.misc  = 0;
           expr->value->value[0].part.value = 1;
@@ -1844,7 +1842,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
         }
         
       }  
- 
+
     }
 
     free_safe( expr->parent );
@@ -1869,6 +1867,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.132  2005/11/29 19:04:47  phase1geo
+ Adding tests to verify task functionality.  Updating failing tests and fixed
+ bugs for context switch expressions at the end of a statement block, statement
+ block removal for missing function/tasks and thread killing.
+
  Revision 1.131  2005/11/28 23:28:47  phase1geo
  Checkpointing with additions for threads.
 
