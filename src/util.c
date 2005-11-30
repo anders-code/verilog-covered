@@ -827,6 +827,11 @@ void timer_stop( timer** tm ) {
 }
 #endif
 
+/*!
+ \param type  Type of functional unit (see \ref func_unit_types for legal values)
+
+ \return Returns a string giving the user-readable name of the given functional unit type
+*/
 const char* get_funit_type( int type ) {
 
   const char* type_str;
@@ -843,6 +848,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.33  2005/11/30 18:25:56  phase1geo
+ Fixing named block code.  Full regression now passes.  Still more work to do on
+ named blocks, however.
+
  Revision 1.32  2005/11/10 23:27:37  phase1geo
  Adding scope files to handle scope searching.  The functions are complete (not
  debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic

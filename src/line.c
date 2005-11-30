@@ -57,6 +57,7 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
         (curr.curr->stmt->exp->op != EXP_OP_CASEX)   &&
         (curr.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
         (curr.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
+        (curr.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
         (curr.curr->stmt->exp->line != 0) ) {
       *total = *total + 1;
       if( ESUPPL_WAS_EXECUTED( curr.curr->stmt->exp->suppl ) == 1 ) {
@@ -479,6 +480,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.52  2005/11/30 18:25:56  phase1geo
+ Fixing named block code.  Full regression now passes.  Still more work to do on
+ named blocks, however.
+
  Revision 1.51  2005/11/10 23:27:37  phase1geo
  Adding scope files to handle scope searching.  The functions are complete (not
  debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic

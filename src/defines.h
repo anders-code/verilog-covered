@@ -726,12 +726,13 @@
  These expressions will only allow a statement block to advance when they evaluate to a value of true (i.e.,
  their statement's false path is NULL).  They allow context switching to occur if they evaluate to false.
 */
-#define EXPR_IS_CONTEXT_SWITCH(x)	((x->op == EXP_OP_DELAY) || \
-          				 (x->op == EXP_OP_NEDGE) || \
-                                         (x->op == EXP_OP_PEDGE) || \
-                                         (x->op == EXP_OP_AEDGE) || \
-                                         (x->op == EXP_OP_EOR)   || \
-                                         (x->op == EXP_OP_TASK_CALL))
+#define EXPR_IS_CONTEXT_SWITCH(x)	((x->op == EXP_OP_DELAY)     || \
+          				 (x->op == EXP_OP_NEDGE)     || \
+                                         (x->op == EXP_OP_PEDGE)     || \
+                                         (x->op == EXP_OP_AEDGE)     || \
+                                         (x->op == EXP_OP_EOR)       || \
+                                         (x->op == EXP_OP_TASK_CALL) || \
+                                         (x->op == EXP_OP_NB_CALL))
 
 /*!
  Returns a value of true if the specified expression is considered a unary expression by
@@ -1695,6 +1696,10 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.140  2005/11/30 18:25:56  phase1geo
+ Fixing named block code.  Full regression now passes.  Still more work to do on
+ named blocks, however.
+
  Revision 1.139  2005/11/29 23:14:37  phase1geo
  Adding support for named blocks.  Still not working at this point but checkpointing
  anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
