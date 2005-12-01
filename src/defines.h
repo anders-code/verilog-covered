@@ -731,8 +731,7 @@
                                          (x->op == EXP_OP_PEDGE)     || \
                                          (x->op == EXP_OP_AEDGE)     || \
                                          (x->op == EXP_OP_EOR)       || \
-                                         (x->op == EXP_OP_TASK_CALL) || \
-                                         (x->op == EXP_OP_NB_CALL))
+                                         (x->op == EXP_OP_TASK_CALL))
 
 /*!
  Returns a value of true if the specified expression is considered a unary expression by
@@ -1697,6 +1696,13 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.142  2005/12/01 18:35:17  phase1geo
+ Fixing bug where functions in continuous assignments could cause the
+ assignment to constantly be reevaluated (infinite looping).  Added new nested_block2
+ diagnostic to verify nested named blocks in functions.  Also verifies that nested
+ named blocks can call functions in the same module.  Also modified NB_CALL expressions
+ to act like functions (no context switching involved).  Full regression passes.
+
  Revision 1.141  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests

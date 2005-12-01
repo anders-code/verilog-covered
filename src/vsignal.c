@@ -383,8 +383,8 @@ void vsignal_propagate( vsignal* sig ) {
   curr_expr = sig->exp_head;
   while( curr_expr != NULL ) {
 
-    /* Add to simulation queue if expression is a RHS */
-    if( ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0 ) {
+    /* Add to simulation queue if expression is a RHS and not a function call */
+    if( (ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0) && (curr_expr->exp->op != EXP_OP_FUNC_CALL) ) {
       sim_expr_changed( curr_expr->exp );
     }
 
@@ -538,6 +538,13 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.14  2005/12/01 18:35:17  phase1geo
+ Fixing bug where functions in continuous assignments could cause the
+ assignment to constantly be reevaluated (infinite looping).  Added new nested_block2
+ diagnostic to verify nested named blocks in functions.  Also verifies that nested
+ named blocks can call functions in the same module.  Also modified NB_CALL expressions
+ to act like functions (no context switching involved).  Full regression passes.
+
  Revision 1.13  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
