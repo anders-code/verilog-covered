@@ -4,6 +4,7 @@
  \date     2/26/2004
 */
 
+#ifdef HAVE_TCLTK
 #include <tcl.h>
 #include <tk.h>
 #include <stdio.h>
@@ -793,9 +794,13 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
   }
 
 }
+#endif
 
 /*
  $Log$
+ Revision 1.20  2005/12/01 19:46:50  phase1geo
+ Removed Tcl/Tk from source files if HAVE_TCLTK is not defined.
+
  Revision 1.19  2005/11/10 19:28:23  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column
