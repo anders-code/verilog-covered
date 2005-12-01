@@ -1802,6 +1802,9 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
 
     vector_init( &vec, &vec_val, 1 );
 
+    assert( src != NULL );
+    assert( src->value != NULL );
+
     uval = src->value[0].part.value;
 
     for( i=1; i<src->width; i++ ) {
@@ -1862,6 +1865,11 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.65  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
  Revision 1.64  2005/11/21 22:21:58  phase1geo
  More regression updates.  Also made some updates to debugging output.
 

@@ -1569,6 +1569,7 @@ struct func_unit_s {
   race_blk*   race_tail;             /*!< Tail pointer to list of race condition blocks in this functional unit if we are a module */
   mod_parm*   param_head;            /*!< Head pointer to list of parameters in this functional unit if we are a module */
   mod_parm*   param_tail;            /*!< Tail pointer to list of parameters in this functional unit if we are a module */
+  func_unit*  parent;                /*!< Pointer to parent functional unit (only valid for functions, tasks and named blocks */
   funit_link* tf_head;               /*!< Head pointer to list of task/function functional units if we are a module */
   funit_link* tf_tail;               /*!< Tail pointer to list of task/function functional units if we are a module */
  };
@@ -1696,6 +1697,11 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.141  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
  Revision 1.140  2005/11/30 18:25:56  phase1geo
  Fixing named block code.  Full regression now passes.  Still more work to do on
  named blocks, however.
