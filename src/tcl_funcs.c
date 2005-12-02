@@ -4,6 +4,10 @@
  \date     2/26/2004
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef HAVE_TCLTK
 #include <tcl.h>
 #include <tk.h>
@@ -798,6 +802,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
 
 /*
  $Log$
+ Revision 1.21  2005/12/02 05:46:50  phase1geo
+ Fixing compile errors when HAVE_TCLTK is defined in config.h.
+
  Revision 1.20  2005/12/01 19:46:50  phase1geo
  Removed Tcl/Tk from source files if HAVE_TCLTK is not defined.
 
