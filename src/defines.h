@@ -1614,6 +1614,7 @@ struct exp_bind_s {
   int         type;                  /*!< Specifies if name refers to a signal (0), function (FUNIT_FUNCTION) or task (FUNIT_TASK) */
   char*       name;                  /*!< Name of Verilog scoped signal/functional unit to bind */
   int         clear_assigned;        /*!< If >0, clears the signal assigned supplemental field without binding */
+  int         stmt_id;               /*!< Specifies the statement ID to bind to (only value for expressiont-statement binding) */
   expression* exp;                   /*!< Expression to bind. */
   expression* fsm;                   /*!< FSM expression to create value for when this expression is bound */
   func_unit*  funit;                 /*!< Pointer to functional unit containing expression */
@@ -1703,6 +1704,10 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.144  2005/12/02 19:58:36  phase1geo
+ Added initial support for FORK/JOIN expressions.  Code is not working correctly
+ yet as we need to determine if a statement should be done in parallel or not.
+
  Revision 1.143  2005/12/01 20:49:02  phase1geo
  Adding nested_block3 to verify nested named blocks in tasks.  Fixed named block
  usage to be FUNC_CALL or TASK_CALL -like based on its placement.
