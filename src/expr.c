@@ -1493,7 +1493,7 @@ bool expression_operate( expression* expr, thread* thr ) {
         break;
 
       case EXP_OP_DISABLE :
-        // TBD - sim_kill_thread( thr );
+        sim_kill_thread_with_stmt( expr->stmt );
         break;
 
       default :
@@ -1912,6 +1912,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.138  2005/12/05 22:02:24  phase1geo
+ Added initial support for disable expression.  Added test to verify functionality.
+ Full regression passes.
+
  Revision 1.137  2005/12/05 20:26:55  phase1geo
  Fixing bugs in code to remove statement blocks that are pointed to by expressions
  in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the

@@ -649,6 +649,14 @@ void bind( bool cdd_reading ) {
           curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, TRUE );
         }
 
+      /* Otherwise, handle disable binding */
+      } else if( curr_eb->type == 1 ) {
+
+        /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
+        if( !bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading ) ) {
+          bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading );
+        }
+
       /* Otherwise, handle function/task binding */
       } else {
 
@@ -738,6 +746,10 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.51  2005/12/05 22:02:24  phase1geo
+ Added initial support for disable expression.  Added test to verify functionality.
+ Full regression passes.
+
  Revision 1.50  2005/12/05 21:28:07  phase1geo
  Getting fork statements with scope to work.  Added test to regression to verify
  this functionality.  Fixed bug in binding expression to named block.

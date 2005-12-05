@@ -1703,6 +1703,7 @@ struct stmt_blk_s {
 
 struct thread_s {
   thread*    parent;                 /*!< Pointer to parent thread that spawned this thread */
+  statement* head;                   /*!< Pointer to original head statement that created this thread */
   statement* curr;                   /*!< Pointer to current head statement for this thread */
   thread*    child_head;             /*!< Pointer to head element in child thread list for this thread */
   thread*    child_tail;             /*!< Pointer to tail element in child thread list for this thread */
@@ -1715,6 +1716,10 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.146  2005/12/05 22:02:24  phase1geo
+ Added initial support for disable expression.  Added test to verify functionality.
+ Full regression passes.
+
  Revision 1.145  2005/12/05 20:26:55  phase1geo
  Fixing bugs in code to remove statement blocks that are pointed to by expressions
  in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the
