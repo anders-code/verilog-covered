@@ -1029,8 +1029,8 @@ statement* db_parallelize_statement( statement* stmt ) {
   if( (stmt != NULL) && (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_parallelize_statement, id: %d, line: %d, fork_depth: %d, block_depth: %d, fork_block_depth: %d",
-              stmt->exp->id, stmt->exp->line, fork_depth, block_depth, fork_block_depth[fork_depth] );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_parallelize_statement, id: %d, %s, line: %d, fork_depth: %d, block_depth: %d, fork_block_depth: %d",
+              stmt->exp->id, expression_string_op( stmt->exp->op ), stmt->exp->line, fork_depth, block_depth, fork_block_depth[fork_depth] );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1622,6 +1622,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.148  2005/12/05 21:28:07  phase1geo
+ Getting fork statements with scope to work.  Added test to regression to verify
+ this functionality.  Fixed bug in binding expression to named block.
+
  Revision 1.147  2005/12/05 20:26:55  phase1geo
  Fixing bugs in code to remove statement blocks that are pointed to by expressions
  in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the

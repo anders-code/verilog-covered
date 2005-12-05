@@ -540,7 +540,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
       assert( found_funit->stmt_head->stmt != NULL );
 
       /* Set expression to point at task/function's first head statement */
-      stmt_iter_reset( &si, found_funit->stmt_head );
+      stmt_iter_reset( &si, found_funit->stmt_tail );
       stmt_iter_find_head( &si, FALSE );
       assert( si.curr->stmt != NULL );
       exp->stmt = si.curr->stmt;
@@ -738,6 +738,10 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.50  2005/12/05 21:28:07  phase1geo
+ Getting fork statements with scope to work.  Added test to regression to verify
+ this functionality.  Fixed bug in binding expression to named block.
+
  Revision 1.49  2005/12/05 20:26:55  phase1geo
  Fixing bugs in code to remove statement blocks that are pointed to by expressions
  in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the
