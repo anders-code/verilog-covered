@@ -319,7 +319,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
        or function, do not add this to the presimulation queue (this will be added when the expression
        is called.
       */
-      if( curr_funit->type == FUNIT_MODULE ) {
+      if( ESUPPL_STMT_IS_CALLED( stmt->exp->suppl ) == 0 ) {
         sim_add_thread( NULL, stmt );
       }
 
@@ -650,6 +650,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.62  2005/12/05 20:26:55  phase1geo
+ Fixing bugs in code to remove statement blocks that are pointed to by expressions
+ in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the
+ moment.  Updated regressions which now fully pass.
+
  Revision 1.61  2005/11/30 18:25:56  phase1geo
  Fixing named block code.  Full regression now passes.  Still more work to do on
  named blocks, however.

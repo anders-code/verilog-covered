@@ -23,6 +23,9 @@ void bind_append_fsm_expr( expression* fsm_exp, expression* exp, func_unit* curr
 /*! \brief Removes the expression with ID of id from binding list. */
 void bind_remove( int id, bool clear_assigned );
 
+/*! \brief Removes the statement block associated with the expression with ID of id after binding has occurred */
+void bind_remove_stmt( int id );
+
 /*! \brief Binds a signal to an expression */
 bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading, bool clear_assigned );
 
@@ -35,6 +38,11 @@ void bind( bool cdd_reading );
 
 /* 
  $Log$
+ Revision 1.20  2005/12/05 20:26:55  phase1geo
+ Fixing bugs in code to remove statement blocks that are pointed to by expressions
+ in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the
+ moment.  Updated regressions which now fully pass.
+
  Revision 1.19  2005/12/02 19:58:36  phase1geo
  Added initial support for FORK/JOIN expressions.  Code is not working correctly
  yet as we need to determine if a statement should be done in parallel or not.
