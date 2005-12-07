@@ -603,7 +603,10 @@ bool sim_thread( thread* thr ) {
   }
 
   /* If this is the last statement in the tree with no loopback, kill the current thread */
-  if( (expr_changed && (thr->curr->next_true == NULL) && (thr->curr->next_false == NULL)) || thr->kill ) {
+  if( (expr_changed && 
+      (((thr->curr->next_true == NULL) && (thr->curr->next_false == NULL)) ||
+       (!EXPR_IS_CONTEXT_SWITCH( thr->curr->exp ) && !ESUPPL_IS_STMT_CONTINUOUS( thr->curr->exp->suppl )))) ||
+      thr->kill ) {
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Completed thread %x, executed %d, killing...\n", thr, !first );
@@ -673,6 +676,10 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.54  2005/12/07 21:50:51  phase1geo
+ Added support for repeat blocks.  Added repeat1 to regression and fixed errors.
+ Full regression passes.
+
  Revision 1.53  2005/12/05 23:30:35  phase1geo
  Adding support for disabling tasks.  Full regression passes.
 
