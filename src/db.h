@@ -77,9 +77,6 @@ void db_remove_statement( statement* stmt );
 /*! \brief Connects one statement block to another. */
 bool db_statement_connect( statement* curr_stmt, statement* next_stmt );
 
-/*! \brief Sets STMT_STOP bit in the appropriate statements. */
-void db_statement_set_stop( statement* stmt, statement* post, bool both );
-
 /*! \brief Connects true statement to specified statement. */
 void db_connect_statement_true( statement* stmt, statement* exp_true );
 
@@ -118,6 +115,11 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.46  2005/12/08 19:47:00  phase1geo
+ Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
+ need for a separate set_stop function and reshuffled the positions of esuppl bits.
+ Full regression passes.
+
  Revision 1.45  2005/12/07 20:23:38  phase1geo
  Fixing case where statement is unconnectable.  Full regression now passes.
 

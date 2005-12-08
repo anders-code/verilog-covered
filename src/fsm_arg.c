@@ -166,11 +166,12 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
   /* Create statement for top-level expression, this statement will work like a continuous assignment */
   if( !error ) {
     stmt = statement_create( expl );
-    stmt->exp->suppl.part.stmt_head = 1;
-    stmt->exp->suppl.part.stmt_stop = 1;
-    stmt->exp->suppl.part.stmt_cont = 1;
-    stmt->next_true                 = stmt;
-    stmt->next_false                = stmt;
+    stmt->exp->suppl.part.stmt_head       = 1;
+    stmt->exp->suppl.part.stmt_stop_true  = 1;
+    stmt->exp->suppl.part.stmt_stop_false = 1;
+    stmt->exp->suppl.part.stmt_cont       = 1;
+    stmt->next_true                       = stmt;
+    stmt->next_false                      = stmt;
     fsm_var_stmt_add( stmt, funit_name );
   } else {
     expl = NULL;
@@ -516,6 +517,11 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.22  2005/12/08 19:47:00  phase1geo
+ Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
+ need for a separate set_stop function and reshuffled the positions of esuppl bits.
+ Full regression passes.
+
  Revision 1.21  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

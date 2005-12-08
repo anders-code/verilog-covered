@@ -173,9 +173,13 @@ void race_calc_assignments_helper( statement* stmt, statement* head, int sb_inde
   if( stmt != NULL ) {
 	
     /* Calculate children statements */
-    if( (stmt != head) && (ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) ) {
-      race_calc_assignments_helper( stmt->next_true, head, sb_index );
-      race_calc_assignments_helper( stmt->next_false, head, sb_index );
+    if( stmt != head ) {
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        race_calc_assignments_helper( stmt->next_true, head, sb_index );
+      }
+      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+        race_calc_assignments_helper( stmt->next_false, head, sb_index );
+      }
     }
 
     /* Calculate assignment operator type */
@@ -860,6 +864,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.31  2005/12/08 19:47:00  phase1geo
+ Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
+ need for a separate set_stop function and reshuffled the positions of esuppl bits.
+ Full regression passes.
+
  Revision 1.30  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
