@@ -782,6 +782,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_NASSIGN  :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );          break;
             case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
             case EXP_OP_REPEAT   :  *size = r_size + 10;          strcpy( code_fmt, "        %s  " );      break;
+            case EXP_OP_WHILE    :  *size = r_size + 9;           strcpy( code_fmt, "       %s  " );       break;
             case EXP_OP_TASK_CALL :
             case EXP_OP_FUNC_CALL :
               if( (tfunit = funit_find_by_id( exp->stmt->exp->id )) != NULL ) {
@@ -2018,6 +2019,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.117  2005/12/08 22:50:58  phase1geo
+ Adding support for while loops.  Added while1 and while1.1 to regression suite.
+ Ran VCS on regression suite and updated.  Full regression passes.
+
  Revision 1.116  2005/12/07 21:50:50  phase1geo
  Added support for repeat blocks.  Added repeat1 to regression and fixed errors.
  Full regression passes.
