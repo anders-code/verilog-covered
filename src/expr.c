@@ -114,7 +114,7 @@ const char* exp_op_names[EXP_OP_NUM] = {
   "UINV", "UAND", "UNOT", "UOR", "UXOR", "UNAND", "UNOR", "UNXOR", "SBIT_SEL", "MBIT_SEL", "EXPAND", "CONCAT",
   "PEDGE", "NEDGE", "AEDGE", "LAST", "EOR", "DELAY", "CASE", "CASEX", "CASEZ", "DEFAULT", "LIST", "PARAM",
   "PARAM_SBIT", "PARAM_MBIT", "ASSIGN", "DASSIGN", "BASSIGN", "NASSIGN", "IF", "FUNC_CALL", "TASK_CALL", "TRIGGER",
-  "NB_CALL", "FORK", "JOIN", "DISABLE", "REPEAT", "WHILE", "FOR" };
+  "NB_CALL", "FORK", "JOIN", "DISABLE", "REPEAT", "WHILE" };
 
 
 /*!
@@ -1938,6 +1938,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.142  2005/12/10 06:41:18  phase1geo
+ Added support for FOR loops and added diagnostics to regression suite to verify
+ functionality.  Fixed statement deallocation function (removed a bunch of code
+ there now that statement stopping is working as intended).  Full regression passes.
+
  Revision 1.141  2005/12/08 22:50:59  phase1geo
  Adding support for while loops.  Added while1 and while1.1 to regression suite.
  Ran VCS on regression suite and updated.  Full regression passes.

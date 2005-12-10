@@ -657,10 +657,8 @@
 #define EXP_OP_REPEAT     0x41
 /*! Decimal value = 66.  Specifies a while loop test expression */
 #define EXP_OP_WHILE      0x42
-/*! Decimal value = 67.  Specifies a for loop test expression */
-#define EXP_OP_FOR        0x43
 /*! The total number of defines for expression values */
-#define EXP_OP_NUM        68
+#define EXP_OP_NUM        67
 
 /*! @} */
 
@@ -1727,6 +1725,11 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.151  2005/12/10 06:41:18  phase1geo
+ Added support for FOR loops and added diagnostics to regression suite to verify
+ functionality.  Fixed statement deallocation function (removed a bunch of code
+ there now that statement stopping is working as intended).  Full regression passes.
+
  Revision 1.150  2005/12/08 22:50:59  phase1geo
  Adding support for while loops.  Added while1 and while1.1 to regression suite.
  Ran VCS on regression suite and updated.  Full regression passes.
