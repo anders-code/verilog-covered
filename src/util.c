@@ -769,7 +769,7 @@ char* strdup_safe( const char* str, char* file, int line ) {
 
   new_str = strdup( str );
 
-  return( strdup( str ) );
+  return( new_str );
 
 }
 
@@ -864,6 +864,9 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.35  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.34  2005/12/01 19:46:50  phase1geo
  Removed Tcl/Tk from source files if HAVE_TCLTK is not defined.
 

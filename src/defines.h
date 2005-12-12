@@ -1634,6 +1634,7 @@ struct exp_bind_s {
   int         clear_assigned;        /*!< If >0, clears the signal assigned supplemental field without binding */
   int         stmt_id;               /*!< Specifies the statement ID to bind to (only value for expressiont-statement binding) */
   bool        rm_stmt;               /*!< Specifies if statement block attached to this expression should be removed after binding */
+  int         line;                  /*!< Specifies line of expression -- used when expression is deallocated and we are clearing */
   expression* exp;                   /*!< Expression to bind. */
   expression* fsm;                   /*!< FSM expression to create value for when this expression is bound */
   func_unit*  funit;                 /*!< Pointer to functional unit containing expression */
@@ -1725,6 +1726,9 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.152  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.151  2005/12/10 06:41:18  phase1geo
  Added support for FOR loops and added diagnostics to regression suite to verify
  functionality.  Fixed statement deallocation function (removed a bunch of code

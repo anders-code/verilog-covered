@@ -447,6 +447,17 @@ void sim_kill_thread_with_stmt( statement* stmt ) {
 }
 
 /*!
+ Kills all threads in the simulator.  This is used at the end of a simulation run.
+*/
+void sim_kill_all_threads() {
+
+  while( thread_head != NULL ) {
+    sim_kill_thread( thread_head );
+  }
+    
+}
+
+/*!
  Iterates through static expression list and causes the simulator to
  evaluate these expressions at simulation time.
 */
@@ -676,6 +687,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.55  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.54  2005/12/07 21:50:51  phase1geo
  Added support for repeat blocks.  Added repeat1 to regression and fixed errors.
  Full regression passes.

@@ -181,6 +181,9 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   /* Flush any pending statement trees that are waiting for delay */
   db_do_timestep( -1 );
 
+  /* Remove all remaining threads */
+  sim_kill_all_threads();
+
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -201,6 +204,9 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.32  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.31  2005/11/23 23:05:24  phase1geo
  Updating regression files.  Full regression now passes.
 

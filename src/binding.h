@@ -27,10 +27,10 @@ void bind_remove( int id, bool clear_assigned );
 void bind_remove_stmt( int id );
 
 /*! \brief Binds a signal to an expression */
-bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading, bool clear_assigned );
+bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading, bool clear_assigned, int exp_line );
 
 /*! \brief Binds a function or task to an expression */
-bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading );
+bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading, int exp_line );
 
 /*! \brief Performs vsignal/expression bind (performed after parse completed). */
 void bind( bool cdd_reading );
@@ -38,6 +38,9 @@ void bind( bool cdd_reading );
 
 /* 
  $Log$
+ Revision 1.21  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.20  2005/12/05 20:26:55  phase1geo
  Fixing bugs in code to remove statement blocks that are pointed to by expressions
  in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the

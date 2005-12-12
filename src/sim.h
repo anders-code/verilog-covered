@@ -24,6 +24,9 @@ void sim_kill_thread( thread* thr );
 /*! \brief Deallocates thread and removes it from parent and thread queue lists for specified statement */
 void sim_kill_thread_with_stmt( statement* stmt );
 
+/*! \brief Deallocates all thread from thread queue */
+void sim_kill_all_threads();
+
 void sim_set_curr_wait_signals();
 
 void sim_clear_curr_wait_signals();
@@ -43,6 +46,9 @@ void sim_simulate();
 
 /*
  $Log$
+ Revision 1.14  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.13  2005/12/05 22:02:24  phase1geo
  Added initial support for disable expression.  Added test to verify functionality.
  Full regression passes.
