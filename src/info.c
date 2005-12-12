@@ -22,6 +22,9 @@
 
 extern char* merge_in0;
 extern char* merge_in1;
+extern bool  flag_exclude_assign;
+extern bool  flag_exclude_always;
+extern bool  flag_exclude_initial;
 
 /*!
  If this flag is set to a value of 1, it indicates that the current CDD file has
@@ -74,11 +77,14 @@ void info_initialize() {
 */
 void info_db_write( FILE* file ) {
 
-  fprintf( file, "%d %d %s %d %d",
+  fprintf( file, "%d %d %s %d %d %d %d %d",
            DB_TYPE_INFO,
            flag_scored,
            leading_hierarchy,
            CDD_VERSION,
+           flag_exclude_assign,
+           flag_exclude_always,
+           flag_exclude_initial,
            merged_code );
 
   switch( merged_code ) {
@@ -113,7 +119,7 @@ bool info_db_read( char** line ) {
   int  mcode;          /* Temporary merge code                           */
   char tmp[4096];      /* Temporary string                               */
 
-  if( sscanf( *line, "%d %s %d %d%n", &scored, tmp, &version, &mcode, &chars_read ) == 4 ) {
+  if( sscanf( *line, "%d %s %d %d %d %d %d%n", &scored, tmp, &version, &flag_exclude_assign, &flag_exclude_always, &flag_exclude_initial, &mcode, &chars_read ) == 7 ) {
 
     *line = *line + chars_read;
 
@@ -178,6 +184,10 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.9  2005/12/12 03:46:14  phase1geo
+ Adding exclusion to score command to improve performance.  Updated regression
+ which now fully passes.
+
  Revision 1.8  2005/02/05 04:13:29  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned
