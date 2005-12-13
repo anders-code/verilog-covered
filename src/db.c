@@ -457,7 +457,7 @@ func_unit* db_add_instance( char* scope, char* name, int type ) {
       instance_parse_add( &instance_root, curr_funit, funit, scope );
 
       if( (type == FUNIT_MODULE) && (str_link_find( name, modlist_head ) == NULL) ) {
-        str_link_add( name, &modlist_head, &modlist_tail );
+        str_link_add( strdup_safe( name, __FILE__, __LINE__ ), &modlist_head, &modlist_tail );
       }
       
     }
@@ -1624,6 +1624,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.153  2005/12/13 23:15:14  phase1geo
+ More fixes for memory leaks.  Regression fully passes at this point.
+
  Revision 1.152  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

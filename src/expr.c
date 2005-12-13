@@ -305,7 +305,7 @@ void expression_set_value( expression* exp, vector* vec ) {
   
   /* printf( "In expression_set_value, expr: %d, op: %s, line: %d\n",
               exp->id, expression_string_op( exp->op ), exp->line ); */
-  
+
   switch( exp->op ) {
     case EXP_OP_SIG       :
     case EXP_OP_PARAM     :
@@ -1882,6 +1882,16 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     } else {
 
+      /* Deallocate vector memory but not vector itself */
+      if( (op != EXP_OP_ASSIGN)  &&
+          (op != EXP_OP_DASSIGN) &&
+          (op != EXP_OP_BASSIGN) &&
+          (op != EXP_OP_NASSIGN) &&
+          (op != EXP_OP_IF)      &&
+          (op != EXP_OP_WHILE) ) {
+        free_safe( expr->value );
+      }
+
       if( expr->sig == NULL ) {
 
         bind_remove( expr->id, expression_is_assigned( expr ) );
@@ -1938,6 +1948,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.143  2005/12/13 23:15:15  phase1geo
+ More fixes for memory leaks.  Regression fully passes at this point.
+
  Revision 1.142  2005/12/10 06:41:18  phase1geo
  Added support for FOR loops and added diagnostics to regression suite to verify
  functionality.  Fixed statement deallocation function (removed a bunch of code

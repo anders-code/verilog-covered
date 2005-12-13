@@ -179,6 +179,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
     print_output( "\n***  Merging completed successfully!  ***", NORMAL, __FILE__, __LINE__ );
 
+    /* Remove all remaining threads */
+    sim_kill_all_threads();
+
   }
 
   return( retval );
@@ -187,6 +190,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.19  2005/12/13 23:15:15  phase1geo
+ More fixes for memory leaks.  Regression fully passes at this point.
+
  Revision 1.18  2005/11/16 05:50:12  phase1geo
  Fixing binding with merge command.
 
