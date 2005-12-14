@@ -111,6 +111,7 @@ void codegen_create_expr_helper( char** code,
         codegen_create_expr_helper( code, code_index, tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
         free_safe( tmpstr );
       } else {
+        free_safe( code[code_index] );
         code[code_index] = tmpstr;
       }
     } else {
@@ -663,6 +664,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.50  2005/12/14 23:03:24  phase1geo
+ More updates to remove memory faults.  Still a work in progress but full
+ regression passes.
+
  Revision 1.49  2005/12/13 23:15:14  phase1geo
  More fixes for memory leaks.  Regression fully passes at this point.
 

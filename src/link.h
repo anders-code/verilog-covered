@@ -94,11 +94,15 @@ void sig_link_delete_list( sig_link* head, bool del_sig );
 void fsm_link_delete_list( fsm_link* head );
 
 /*! \brief Deletes entire list specified by head pointer. */
-void funit_link_delete_list( funit_link* head );
+void funit_link_delete_list( funit_link* head, bool rm_funit );
 
 
 /*
  $Log$
+ Revision 1.16  2005/12/14 23:03:24  phase1geo
+ More updates to remove memory faults.  Still a work in progress but full
+ regression passes.
+
  Revision 1.15  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

@@ -720,6 +720,9 @@ void funit_clean( func_unit* funit ) {
     /* Free statistic structure */
     statistic_dealloc( funit->stat );
 
+    /* Free tf elements */
+    funit_link_delete_list( funit->tf_head, FALSE );
+
   }
 
 }
@@ -746,6 +749,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.9  2005/12/14 23:03:24  phase1geo
+ More updates to remove memory faults.  Still a work in progress but full
+ regression passes.
+
  Revision 1.8  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

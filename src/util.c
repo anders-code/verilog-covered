@@ -388,6 +388,8 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
       }
     }
 
+    closedir( dir_handle );
+
   }
 
 }
@@ -864,6 +866,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.36  2005/12/14 23:03:24  phase1geo
+ More updates to remove memory faults.  Still a work in progress but full
+ regression passes.
+
  Revision 1.35  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 
