@@ -1512,9 +1512,7 @@ bool vector_op_lshift( vector* tgt, vector* left, vector* right ) {
 
     shift_val = vector_to_int( right );
 
-    if( shift_val >= tgt->width ) {
-      shift_val = tgt->width;
-    } else {
+    if( shift_val < left->width ) {
       retval |= vector_set_value( tgt, left->value, left->width, 0, shift_val );
     }
 
@@ -1560,9 +1558,7 @@ bool vector_op_rshift( vector* tgt, vector* left, vector* right ) {
 
     shift_val = vector_to_int( right );
 
-    if( shift_val >= tgt->width ) {
-      shift_val = tgt->width;
-    } else {
+    if( shift_val < left->width ) {
       retval |= vector_set_value( tgt, left->value, left->width, shift_val, 0 );
     }
 
@@ -1865,6 +1861,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.66  2005/12/16 06:25:15  phase1geo
+ Fixing lshift/rshift operations to avoid reading unallocated memory.  Updated
+ assign1.cdd file.
+
  Revision 1.65  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
