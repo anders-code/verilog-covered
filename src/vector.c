@@ -98,6 +98,7 @@ vector* vector_create( int width, bool data ) {
   assert( width > 0 );
 
   new_vec = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
+  // printf( "Allocated vector %p, width: %d, sizeof( vec_data ): %d\n", new_vec, width, sizeof( vec_data ) );
 
   if( data == TRUE ) {
     value = (vec_data*)malloc_safe( (sizeof( vec_data ) * width), __FILE__, __LINE__ );
@@ -189,6 +190,9 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
 
   int    i;      /* Loop iterator                       */
   nibble mask;   /* Mask value for vector value nibbles */
+
+  assert( vec != NULL );
+  assert( vec->width > 0 );
 
   mask = write_data ? 0xf : 0xc;
 
@@ -1848,6 +1852,7 @@ void vector_dealloc( vector* vec ) {
     }
 
     /* Deallocate vector itself */
+    // printf( "Deallocated vector %p\n", vec );
     free_safe( vec );
 
   } else {
@@ -1861,6 +1866,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.67  2005/12/16 23:09:15  phase1geo
+ More updates to remove memory leaks.  Full regression passes.
+
  Revision 1.66  2005/12/16 06:25:15  phase1geo
  Fixing lshift/rshift operations to avoid reading unallocated memory.  Updated
  assign1.cdd file.
