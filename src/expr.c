@@ -163,7 +163,7 @@ expression* expression_create( expression* right, expression* left, int op, bool
   int         lwidth = 0;  /* Bit width of expression on left */
 
   new_expr = (expression*)malloc_safe( sizeof( expression ), __FILE__, __LINE__ );
-  // printf( "Allocated expression %p\n", new_expr );
+  // printf( "Allocated expression %p   %d, %s, line %d\n", new_expr, id, expression_string_op( op ), line );
 
   new_expr->suppl.all      = 0;
   new_expr->suppl.part.lhs = (nibble)lhs & 0x1;
@@ -1869,6 +1869,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.146  2005/12/17 05:47:36  phase1geo
+ More memory fault fixes.  Regression runs cleanly and we have verified
+ no memory faults up to define3.v.  Still have a ways to go.
+
  Revision 1.145  2005/12/16 23:09:15  phase1geo
  More updates to remove memory leaks.  Full regression passes.
 

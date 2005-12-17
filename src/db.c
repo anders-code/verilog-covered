@@ -52,6 +52,7 @@ extern bool        debug_mode;
 extern int*        fork_block_depth;
 extern int         fork_depth;
 extern int         block_depth;
+extern tnode*      def_table;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -118,9 +119,13 @@ void db_close() {
   instance_dealloc( instance_root, instance_root->name );
   funit_link_delete_list( funit_head, TRUE );
 
+  /* Deallocate preprocessor define tree */
+  tree_dealloc( def_table );
+
   instance_root = NULL;
   funit_head    = NULL;
   funit_tail    = NULL;
+  def_table     = NULL;
 
 }
 
@@ -797,8 +802,7 @@ void db_add_signal( char* name, static_expr* left, static_expr* right, bool inpo
     } else {
       sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
       vsignal_init( sig, strdup_safe( name, __FILE__, __LINE__ ), (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ ), lsb );
-      sig->value->width = width;      
-      sig->value->value = NULL;
+      vector_init( sig->value, NULL, width );
       if( (left != NULL) && (left->exp != NULL) ) {
         db_add_vector_param( sig, left->exp, PARAM_TYPE_SIG_MSB );
       }
@@ -1624,6 +1628,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.155  2005/12/17 05:47:36  phase1geo
+ More memory fault fixes.  Regression runs cleanly and we have verified
+ no memory faults up to define3.v.  Still have a ways to go.
+
  Revision 1.154  2005/12/14 23:03:24  phase1geo
  More updates to remove memory faults.  Still a work in progress but full
  regression passes.
