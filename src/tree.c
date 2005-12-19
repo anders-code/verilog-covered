@@ -58,6 +58,8 @@ tnode* tree_add( const char* key, const char* value, bool override, tnode** root
         if( override ) {
           free_safe( curr->value );
           curr->value = node->value;
+        } else {
+          free_safe( node->value );
         }
 
         free_safe( node->name );
@@ -270,6 +272,10 @@ void tree_dealloc( tnode* root ) {
 
 /*
  $Log$
+ Revision 1.3  2005/12/19 23:11:27  phase1geo
+ More fixes for memory faults.  Full regression passes.  Errors have now been
+ eliminated from regression -- just left-over memory issues remain.
+
  Revision 1.2  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,
