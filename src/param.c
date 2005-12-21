@@ -320,6 +320,7 @@ void defparam_add( char* scope, vector* value ) {
   if( inst_parm_find( scope, defparam_head ) == NULL ) {
 
     inst_parm_add( scope, value, NULL, &defparam_head, &defparam_tail );
+    vector_dealloc( value );
 
   } else {
 
@@ -738,6 +739,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.41  2005/12/21 23:16:53  phase1geo
+ More memory leak fixes.
+
  Revision 1.40  2005/12/21 22:30:54  phase1geo
  More updates to memory leak fix list.  We are getting close!  Added some helper
  scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression
