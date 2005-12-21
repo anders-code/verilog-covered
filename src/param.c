@@ -331,6 +331,15 @@ void defparam_add( char* scope, vector* value ) {
 
 }
 
+/*!
+ Deallocates all memory used for storing defparam information.
+*/
+void defparam_dealloc() {
+
+  inst_parm_dealloc( defparam_head, TRUE );
+
+}
+
 /*************************************************************************************/
 
 /*!
@@ -729,6 +738,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.40  2005/12/21 22:30:54  phase1geo
+ More updates to memory leak fix list.  We are getting close!  Added some helper
+ scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression
+ file for valgrind for a memory leak problem that exists in lex-generated code.
+
  Revision 1.39  2005/12/17 05:47:36  phase1geo
  More memory fault fixes.  Regression runs cleanly and we have verified
  no memory faults up to define3.v.  Still have a ways to go.

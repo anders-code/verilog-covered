@@ -460,6 +460,9 @@ int command_score( int argc, int last_arg, char** argv ) {
     /* Deallocate memory for search engine */
     search_free_lists();
 
+    /* Deallocate memory for defparams */
+    defparam_dealloc();
+
     free_safe( output_db );
     free_safe( vcd_file );
     free_safe( vpi_file );
@@ -478,6 +481,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.55  2005/12/21 22:30:54  phase1geo
+ More updates to memory leak fix list.  We are getting close!  Added some helper
+ scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression
+ file for valgrind for a memory leak problem that exists in lex-generated code.
+
  Revision 1.54  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

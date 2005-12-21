@@ -37,6 +37,9 @@ inst_parm* inst_parm_add( char* scope, vector* value, mod_parm* mparm, inst_parm
 /*! \brief Adds parameter override to defparam list. */
 void defparam_add( char* scope, vector* expr );
 
+/*! \brief Deallocates all memory associated with defparam storage from command-line */
+void defparam_dealloc();
+
 /*! \brief Sets the specified expression value to the instance parameter value. */
 void param_set_expr_size( expression* expr, inst_parm* icurr );
 
@@ -61,6 +64,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.16  2005/12/21 22:30:54  phase1geo
+ More updates to memory leak fix list.  We are getting close!  Added some helper
+ scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression
+ file for valgrind for a memory leak problem that exists in lex-generated code.
+
  Revision 1.15  2004/03/30 15:42:14  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.

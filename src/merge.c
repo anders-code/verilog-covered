@@ -170,6 +170,7 @@ int command_merge( int argc, int last_arg, char** argv ) {
     /* Read in base database */
     db_read( merge_in0, READ_MODE_MERGE_NO_MERGE );
     bind( TRUE );
+    sim_add_statics();
 
     /* Read in database to merge */
     db_read( merge_in1, READ_MODE_MERGE_INST_MERGE );
@@ -182,6 +183,11 @@ int command_merge( int argc, int last_arg, char** argv ) {
     /* Remove all remaining threads */
     sim_kill_all_threads();
 
+    /* Deallocate memory */
+    free_safe( merged_file );
+    free_safe( merge_in0 );
+    free_safe( merge_in1 );
+
   }
 
   return( retval );
@@ -190,6 +196,11 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.20  2005/12/21 22:30:54  phase1geo
+ More updates to memory leak fix list.  We are getting close!  Added some helper
+ scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression
+ file for valgrind for a memory leak problem that exists in lex-generated code.
+
  Revision 1.19  2005/12/13 23:15:15  phase1geo
  More fixes for memory leaks.  Regression fully passes at this point.
 
