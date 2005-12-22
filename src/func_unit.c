@@ -702,6 +702,11 @@ void funit_clean( func_unit* funit ) {
     funit->sig_head = NULL;
     funit->sig_tail = NULL;
 
+    /* Free FSM list */
+    fsm_link_delete_list( funit->fsm_head );
+    funit->fsm_head = NULL;
+    funit->fsm_tail = NULL;
+
     /* Free expression list */
     exp_link_delete_list( funit->exp_head, TRUE );
     funit->exp_head = NULL;
@@ -716,11 +721,6 @@ void funit_clean( func_unit* funit ) {
     mod_parm_dealloc( funit->param_head, TRUE );
     funit->param_head = NULL;
     funit->param_tail = NULL;
-
-    /* Free FSM list */
-    fsm_link_delete_list( funit->fsm_head );
-    funit->fsm_head = NULL;
-    funit->fsm_tail = NULL;
 
     /* Free race condition block list */
     race_blk_delete_list( funit->race_head );
@@ -759,6 +759,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.11  2005/12/22 23:04:42  phase1geo
+ More memory leak fixes.
+
  Revision 1.10  2005/12/19 23:11:27  phase1geo
  More fixes for memory faults.  Full regression passes.  Errors have now been
  eliminated from regression -- just left-over memory issues remain.
