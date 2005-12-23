@@ -104,6 +104,9 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
         /* Add signal name and expression to FSM var binding list */
         fsm_var_bind_add( sig->name, expr, funit_name );
 
+        /* Deallocate signal */
+        vsignal_dealloc( sig );
+
       } else {
         expression_dealloc( expl, FALSE );
         error = TRUE;
@@ -520,6 +523,17 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.24  2005/12/23 05:41:52  phase1geo
+ Fixing several bugs in score command per bug report #1388339.  Fixed problem
+ with race condition checker statement iterator to eliminate infinite looping (this
+ was the problem in the original bug).  Also fixed expression assigment when static
+ expressions are used in the LHS (caused an assertion failure).  Also fixed the race
+ condition checker to properly pay attention to task calls, named blocks and fork
+ statements to make sure that these are being handled correctly for race condition
+ checking.  Fixed bug for signals that are on the LHS side of an assignment expression
+ but is not being assigned (bit selects) so that these are NOT considered for race
+ conditions.  Full regression is a bit broken now but the opened bug can now be closed.
+
  Revision 1.23  2005/12/21 22:30:54  phase1geo
  More updates to memory leak fix list.  We are getting close!  Added some helper
  scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression
