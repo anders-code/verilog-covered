@@ -514,6 +514,9 @@ int statement_get_last_line_helper( statement* stmt, statement* base ) {
 
 }
 
+/*!
+ \param stmt  Pointer to statement to get last line number for.
+*/
 int statement_get_last_line( statement* stmt ) {
 
   return( statement_get_last_line_helper( stmt, stmt ) );
@@ -625,6 +628,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.66  2005/12/23 20:59:34  phase1geo
+ Fixing assertion error in race condition checker.  Full regression runs cleanly.
+
  Revision 1.65  2005/12/10 06:41:18  phase1geo
  Added support for FOR loops and added diagnostics to regression suite to verify
  functionality.  Fixed statement deallocation function (removed a bunch of code
