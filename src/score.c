@@ -64,11 +64,13 @@ void score_usage() {
   printf( "      -vcd <dumpfile>              Name of dumpfile to score design with.  If this option\n" );
   printf( "                                    is not used, Covered will only create an initial CDD file\n" );
   printf( "                                    from the design and will not attempt to score the design.\n" );
+#ifdef TBD
   printf( "      -vpi (<name>)                Generates Verilog module called <name> which contains code to\n" );
   printf( "                                    allow Covered to run as a VPI during simulation.  If <name>\n" );
   printf( "                                    is not specified, the module file is called %s\n", DFLT_VPI_NAME );
   printf( "                                    If the -vcd option is specified along with this option, this\n" );
   printf( "                                    option will not be used.\n" );
+#endif
   printf( "      -i <instance_name>           Verilog hierarchical scope of top-level module to score.\n" );
   printf( "                                    Necessary if module to verify coverage is not the top-level\n" );
   printf( "                                    module in the design.  If not specified, -t value is used.\n" );
@@ -486,6 +488,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.57  2005/12/31 03:30:47  phase1geo
+ Various documentation updates.
+
  Revision 1.56  2005/12/22 23:04:42  phase1geo
  More memory leak fixes.
 
