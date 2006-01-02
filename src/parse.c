@@ -122,6 +122,9 @@ bool parse_design( char* top, char* output_db ) {
     exit( 1 );
   }
 
+  /* Close database */
+  db_close();
+
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "========  Design written to database %s successfully  ========\n\n", output_db );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -204,6 +207,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.34  2006/01/02 21:35:36  phase1geo
+ Added simulation performance statistical information to end of score command
+ when we are in debug mode.
+
  Revision 1.33  2005/12/19 05:18:24  phase1geo
  Fixing memory leak problems with instance1.1.  Full regression has some segfaults
  that need to be looked at now.

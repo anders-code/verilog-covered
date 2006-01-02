@@ -1258,6 +1258,11 @@ struct stmt_blk_s;
 */
 struct thread_s;
 
+/*!
+ Performance statistic container used for simulation-time performance characteristics.
+*/
+struct perf_stat_s;
+
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
 
@@ -1432,6 +1437,11 @@ typedef struct stmt_blk_s stmt_blk;
  Renaming thread structure for convenience.
 */
 typedef struct thread_s thread;
+
+/*!
+ Renaming perf_stat structure for convenience.
+*/
+typedef struct perf_stat_s perf_stat;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
@@ -1734,9 +1744,18 @@ struct thread_s {
   thread*    next;                   /*!< Pointer to next thread in thread simulation list */
 };
 
+struct perf_stat_s {
+  control op_exec_cnt[EXP_OP_NUM];   /*!< Specifies the number of times that the associated operation was executed */
+  float   op_cnt[EXP_OP_NUM];        /*!< Specifies the number of expressions containing the associated operation */
+};
+
 
 /*
  $Log$
+ Revision 1.156  2006/01/02 21:35:36  phase1geo
+ Added simulation performance statistical information to end of score command
+ when we are in debug mode.
+
  Revision 1.155  2005/12/31 05:00:57  phase1geo
  Updating regression due to recent changes in adding exec_num field in expression
  and removing the executed bit in the expression supplemental field.  This will eventually
