@@ -114,18 +114,22 @@ int       stmt_conn_id    = 1;
 */
 void db_close() {
 
-  /* Remove memory allocated for instance_root and mod_head */
-  assert( instance_root->funit != NULL );
-  instance_dealloc( instance_root, instance_root->name );
-  funit_link_delete_list( funit_head, TRUE );
+  if( instance_root != NULL ) {
 
-  /* Deallocate preprocessor define tree */
-  tree_dealloc( def_table );
+    /* Remove memory allocated for instance_root and mod_head */
+    assert( instance_root->funit != NULL );
+    instance_dealloc( instance_root, instance_root->name );
+    funit_link_delete_list( funit_head, TRUE );
 
-  instance_root = NULL;
-  funit_head    = NULL;
-  funit_tail    = NULL;
-  def_table     = NULL;
+    /* Deallocate preprocessor define tree */
+    tree_dealloc( def_table );
+
+    instance_root = NULL;
+    funit_head    = NULL;
+    funit_tail    = NULL;
+    def_table     = NULL;
+
+  }
 
 }
 
@@ -1625,6 +1629,14 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.157  2006/01/03 22:59:16  phase1geo
+ Fixing bug in expression_assign function -- removed recursive assignment when
+ the LHS expression is a signal, single-bit, multi-bit or static value (only
+ recurse when the LHS is a CONCAT or LIST).  Fixing bug in db_close function to
+ check if the instance tree has been populated before deallocating memory for it.
+ Fixing bug in report help information when Tcl/Tk is not available.  Added bassign2
+ diagnostic to regression suite to verify first described bug.
+
  Revision 1.156  2006/01/02 21:35:36  phase1geo
  Added simulation performance statistical information to end of score command
  when we are in debug mode.
