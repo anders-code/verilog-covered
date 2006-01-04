@@ -580,9 +580,6 @@ bool sim_thread( thread* thr ) {
     /* Place expression in expression simulator and run */
     expr_changed = sim_expression( stmt->exp, thr );
 
-    /* Indicate that this statement's expression has been executed */
-    stmt->exp->exec_num++;
-
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "  Executed statement %d, expr changed %d", stmt->exp->id, expr_changed );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -687,6 +684,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.59  2006/01/04 22:07:04  phase1geo
+ Changing expression execution calculation from sim to expression_operate function.
+ Updating all regression files for this change.  Modifications to diagnostic Makefile
+ to accommodate environments that do not have valgrind.
+
  Revision 1.58  2006/01/03 23:00:18  phase1geo
  Removing debugging output from last checkin.
 

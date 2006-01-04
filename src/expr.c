@@ -1523,6 +1523,9 @@ bool expression_operate( expression* expr, thread* thr ) {
 
   }
 
+  /* Specify that we have executed this expression */
+  (expr->exec_num)++;
+
   return( retval );
 
 }
@@ -1911,6 +1914,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.150  2006/01/04 22:07:04  phase1geo
+ Changing expression execution calculation from sim to expression_operate function.
+ Updating all regression files for this change.  Modifications to diagnostic Makefile
+ to accommodate environments that do not have valgrind.
+
  Revision 1.149  2006/01/03 22:59:16  phase1geo
  Fixing bug in expression_assign function -- removed recursive assignment when
  the LHS expression is a signal, single-bit, multi-bit or static value (only
