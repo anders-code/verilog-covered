@@ -463,9 +463,7 @@ int command_score( int argc, int last_arg, char** argv ) {
     print_output( "", NORMAL, __FILE__, __LINE__ );
 
 #ifdef DEBUG_MODE
-    if( debug_mode ) {
-      perf_output_inst_report( stdout );
-    }
+    perf_output_inst_report( stdout );
 #endif
 
     /* Close database */
@@ -499,6 +497,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.59  2006/01/04 03:15:52  phase1geo
+ Adding bassign3 diagnostic to regression suite to verify expression_assign
+ function works correctly for CONCAT/LIST ordering.
+
  Revision 1.58  2006/01/02 21:35:36  phase1geo
  Added simulation performance statistical information to end of score command
  when we are in debug mode.
