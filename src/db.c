@@ -1595,13 +1595,6 @@ void db_do_timestep( int time ) {
     fflush( stdout );
   }
 
-#ifdef DEBUG_MODE
-  print_output( "Assigning presimulation signals...", DEBUG, __FILE__, __LINE__ );
-#endif
-
-  /* Assign all stored values in current pre-timestep to stored signals */
-  symtable_assign( TRUE );
-
   /* Simulate the current timestep */
   sim_simulate();
 
@@ -1610,7 +1603,7 @@ void db_do_timestep( int time ) {
 #endif
 
   /* Assign all stored values in current post-timestep to stored signals */
-  symtable_assign( FALSE );
+  symtable_assign();
 
 }
 
@@ -1629,6 +1622,12 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.158  2006/01/05 05:52:06  phase1geo
+ Removing wait bit in vector supplemental field and modifying algorithm to only
+ assign in the post-sim location (pre-sim now is gone).  This fixes some issues
+ with simulation results and increases performance a bit.  Updated regressions
+ for these changes.  Full regression passes.
+
  Revision 1.157  2006/01/03 22:59:16  phase1geo
  Fixing bug in expression_assign function -- removed recursive assignment when
  the LHS expression is a signal, single-bit, multi-bit or static value (only

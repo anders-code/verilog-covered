@@ -125,11 +125,10 @@ statement* statement_create( expression* exp ) {
   stmt->exp                  = exp;
   stmt->exp->parent->stmt    = stmt;
   stmt->exp->suppl.part.root = 1;
-  stmt->wait_sig_head        = NULL;
-  stmt->wait_sig_tail        = NULL;
   stmt->next_true            = NULL;
   stmt->next_false           = NULL;
   stmt->conn_id              = 0;
+  stmt->thr                  = NULL;
 
   return( stmt );
 
@@ -595,9 +594,6 @@ void statement_dealloc_recursive( statement* stmt ) {
     /* Disconnect statement from current functional unit */
     db_remove_statement_from_current_funit( stmt );
 
-    /* Remove wait event signal list */
-    sig_link_delete_list( stmt->wait_sig_head, FALSE );
-  
     free_safe( stmt );
     
   }
@@ -615,9 +611,6 @@ void statement_dealloc( statement* stmt ) {
 
   if( stmt != NULL ) {
  
-    /* Remove wait event signal list */
-    sig_link_delete_list( stmt->wait_sig_head, FALSE );
-
     /* Finally, deallocate this statement */
     free_safe( stmt );
 
@@ -628,6 +621,12 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.67  2006/01/05 05:52:06  phase1geo
+ Removing wait bit in vector supplemental field and modifying algorithm to only
+ assign in the post-sim location (pre-sim now is gone).  This fixes some issues
+ with simulation results and increases performance a bit.  Updated regressions
+ for these changes.  Full regression passes.
+
  Revision 1.66  2005/12/23 20:59:34  phase1geo
  Fixing assertion error in race condition checker.  Full regression runs cleanly.
 

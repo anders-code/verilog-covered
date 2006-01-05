@@ -21,7 +21,7 @@ void symtable_add( char* sym, vsignal* sig, int msb, int lsb );
 void symtable_set_value( char* sym, char* value );
 
 /*! \brief Assigns stored values to all associated signals stored in specified symbol table. */
-void symtable_assign( bool presim );
+void symtable_assign();
 
 /*! \brief Deallocates all symtable entries for specified symbol table. */
 void symtable_dealloc( symtable* symtab );
@@ -29,6 +29,12 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.14  2006/01/05 05:52:06  phase1geo
+ Removing wait bit in vector supplemental field and modifying algorithm to only
+ assign in the post-sim location (pre-sim now is gone).  This fixes some issues
+ with simulation results and increases performance a bit.  Updated regressions
+ for these changes.  Full regression passes.
+
  Revision 1.13  2004/03/30 15:42:15  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.
