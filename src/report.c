@@ -742,9 +742,6 @@ int command_report( int argc, int last_arg, char** argv ) {
 
   free_safe( input_db );
 
-  /* Remove all remaining threads */
-  sim_kill_all_threads();
-
   /* Close the database */
   db_close();
 
@@ -755,6 +752,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.51  2006/01/06 23:39:10  phase1geo
+ Started working on removing the need to simulate more than is necessary.  Things
+ are pretty broken at this point, but all of the code should be in -- debugging.
+
  Revision 1.50  2006/01/03 22:59:16  phase1geo
  Fixing bug in expression_assign function -- removed recursive assignment when
  the LHS expression is a signal, single-bit, multi-bit or static value (only

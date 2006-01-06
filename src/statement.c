@@ -130,6 +130,7 @@ statement* statement_create( expression* exp ) {
   stmt->next_false           = NULL;
   stmt->conn_id              = 0;
   stmt->thr                  = NULL;
+  stmt->static_thr           = NULL;
 
   return( stmt );
 
@@ -612,6 +613,11 @@ void statement_dealloc( statement* stmt ) {
 
   if( stmt != NULL ) {
  
+    /* Deallocate the thread attached to this statement */
+    if( stmt->thr != NULL ) {
+      free_safe( stmt->thr );
+    }
+
     /* Finally, deallocate this statement */
     free_safe( stmt );
 
@@ -622,6 +628,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.69  2006/01/06 23:39:10  phase1geo
+ Started working on removing the need to simulate more than is necessary.  Things
+ are pretty broken at this point, but all of the code should be in -- debugging.
+
  Revision 1.68  2006/01/06 18:54:03  phase1geo
  Breaking up expression_operate function into individual functions for each
  expression operation.  Also storing additional information in a globally accessible,

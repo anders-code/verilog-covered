@@ -24,21 +24,16 @@ void sim_kill_thread( thread* thr );
 /*! \brief Deallocates thread and removes it from parent and thread queue lists for specified statement */
 void sim_kill_thread_with_stmt( statement* stmt );
 
+#ifdef OBSOLETE
 /*! \brief Deallocates all thread from thread queue */
 void sim_kill_all_threads();
-
-void sim_set_curr_wait_signals();
-
-void sim_clear_curr_wait_signals();
-
-/*! \brief Searches pre-simulation queue for specified signal name. */
-bool sim_is_curr_wait_signal( vsignal* sig );
+#endif
 
 /*! \brief Adds static expression values to initial simulator */
 void sim_add_statics();
 
 /*! \brief Simulates one thread until it has either completed or enters a context switch */
-bool sim_thread( thread* thr );
+void sim_thread( thread* thr );
 
 /*! \brief Simulates current timestep. */
 void sim_simulate();
@@ -46,6 +41,10 @@ void sim_simulate();
 
 /*
  $Log$
+ Revision 1.15  2006/01/06 23:39:10  phase1geo
+ Started working on removing the need to simulate more than is necessary.  Things
+ are pretty broken at this point, but all of the code should be in -- debugging.
+
  Revision 1.14  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 
