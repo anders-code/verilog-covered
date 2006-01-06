@@ -43,17 +43,16 @@
 #include "func_unit.h"
 
 
-extern funit_inst*  instance_root;
-extern funit_link*  funit_head;
-
-extern bool         report_covered;
-extern unsigned int report_comb_depth;
-extern bool         report_instance;
-extern char         leading_hierarchy[4096];
-extern char         second_hierarchy[4096];
-extern int          line_width;
-extern char         user_msg[USER_MSG_LENGTH];
-
+extern funit_inst*    instance_root;
+extern funit_link*    funit_head;
+extern bool           report_covered;
+extern unsigned int   report_comb_depth;
+extern bool           report_instance;
+extern char           leading_hierarchy[4096];
+extern char           second_hierarchy[4096];
+extern int            line_width;
+extern char           user_msg[USER_MSG_LENGTH];
+extern const exp_info exp_op_info[EXP_OP_NUM];
 
 /*!
  \param exp         Pointer to current expression.
@@ -2017,6 +2016,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.119  2006/01/06 18:54:03  phase1geo
+ Breaking up expression_operate function into individual functions for each
+ expression operation.  Also storing additional information in a globally accessible,
+ constant structure array to increase performance.  Updating full regression for these
+ changes.  Full regression passes.
+
  Revision 1.118  2005/12/13 23:15:14  phase1geo
  More fixes for memory leaks.  Regression fully passes at this point.
 

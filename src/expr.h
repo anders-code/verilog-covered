@@ -17,7 +17,7 @@
 void expression_create_value( expression* exp, int width, bool data );
 
 /*! \brief Creates new expression. */
-expression* expression_create( expression* right, expression* left, int op, bool lhs, int id, int line, int first, int last, bool data );
+expression* expression_create( expression* right, expression* left, exp_op_type op, bool lhs, int id, int line, int first, int last, bool data );
 
 /*! \brief Sets the specified expression value to the specified vector value. */
 void expression_set_value( expression* exp, vector* vec );
@@ -82,6 +82,12 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.36  2006/01/06 18:54:03  phase1geo
+ Breaking up expression_operate function into individual functions for each
+ expression operation.  Also storing additional information in a globally accessible,
+ constant structure array to increase performance.  Updating full regression for these
+ changes.  Full regression passes.
+
  Revision 1.35  2005/12/23 05:41:52  phase1geo
  Fixing several bugs in score command per bug report #1388339.  Fixed problem
  with race condition checker statement iterator to eliminate infinite looping (this

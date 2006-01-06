@@ -73,8 +73,9 @@
 #include "vsignal.h"
 
 
-extern nibble or_optab[OPTAB_SIZE];
-extern char   user_msg[USER_MSG_LENGTH];
+extern nibble   or_optab[OPTAB_SIZE];
+extern char     user_msg[USER_MSG_LENGTH];
+extern exp_info exp_op_info[EXP_OP_NUM];
 
 /*!
  Pointer to head of expression list that contains all expressions that contain static (non-changing)
@@ -666,6 +667,12 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.61  2006/01/06 18:54:03  phase1geo
+ Breaking up expression_operate function into individual functions for each
+ expression operation.  Also storing additional information in a globally accessible,
+ constant structure array to increase performance.  Updating full regression for these
+ changes.  Full regression passes.
+
  Revision 1.60  2006/01/05 05:52:06  phase1geo
  Removing wait bit in vector supplemental field and modifying algorithm to only
  assign in the post-sim location (pre-sim now is gone).  This fixes some issues
