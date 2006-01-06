@@ -180,9 +180,6 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
     print_output( "\n***  Merging completed successfully!  ***", NORMAL, __FILE__, __LINE__ );
 
-    /* Remove all remaining threads */
-    sim_kill_all_threads();
-
     /* Close database */
     db_close();
 
@@ -199,6 +196,10 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.22  2006/01/06 23:39:10  phase1geo
+ Started working on removing the need to simulate more than is necessary.  Things
+ are pretty broken at this point, but all of the code should be in -- debugging.
+
  Revision 1.21  2006/01/02 21:35:36  phase1geo
  Added simulation performance statistical information to end of score command
  when we are in debug mode.
