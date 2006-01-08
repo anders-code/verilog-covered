@@ -2004,6 +2004,9 @@ bool expression_op_func__trigger( expression* expr, thread* thr ) {
     expr->value->value[0].part.value = 1;
   }
 
+  /* Propagate event */
+  vsignal_propagate( expr->sig );
+
   return( TRUE );
 
 }
@@ -2710,6 +2713,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.152  2006/01/08 03:05:05  phase1geo
+ Checkpointing work on optimized thread handling.  I believe that this is now
+ working as wanted; however, regressions will not pass until EOR optimization
+ has been completed.  I will be working on this next.
+
  Revision 1.151  2006/01/06 18:54:03  phase1geo
  Breaking up expression_operate function into individual functions for each
  expression operation.  Also storing additional information in a globally accessible,
