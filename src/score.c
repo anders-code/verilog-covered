@@ -488,6 +488,7 @@ int command_score( int argc, int last_arg, char** argv ) {
     free_safe( vpi_file );
     free_safe( top_module );
     free_safe( ppfilename );
+    ppfilename = NULL;
 
     if( directive_filename != NULL ) {
       free_safe( directive_filename );
@@ -505,6 +506,12 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.61  2006/01/09 18:58:15  phase1geo
+ Updating regression for VCS runs.  Added cleanup function at exit to remove the
+ tmp* file (if it exists) regardless of the internal state of Covered at the time
+ of exit (removes the need for the user to remove this file when things go awry).
+ Documentation updates for this feature.
+
  Revision 1.60  2006/01/04 22:07:04  phase1geo
  Changing expression execution calculation from sim to expression_operate function.
  Updating all regression files for this change.  Modifications to diagnostic Makefile
