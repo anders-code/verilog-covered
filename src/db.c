@@ -1040,6 +1040,18 @@ void db_add_expression( expression* root ) {
 }
 
 /*!
+ \param stmt  Pointer to statement block to parse.
+
+ \return Returns expression tree to execute a sensitivity list for the given statement block.
+*/
+expression* db_create_sensitivity_list( statement* stmt ) {
+
+  return( NULL );
+
+}
+
+
+/*!
  \param stmt  Pointer to statement to check for parallelization
 
  \return Returns pointer to parallelized statement block
@@ -1622,6 +1634,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.159  2006/01/10 05:56:36  phase1geo
+ In the middle of adding support for event sensitivity lists to score command.
+ Regressions should pass but this code is not complete at this time.
+
  Revision 1.158  2006/01/05 05:52:06  phase1geo
  Removing wait bit in vector supplemental field and modifying algorithm to only
  assign in the post-sim location (pre-sim now is gone).  This fixes some issues

@@ -63,6 +63,9 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 /*! \brief Adds specified expression to expression list.  Called by parser. */
 void db_add_expression( expression* root );
 
+/*! \brief Creates an expression tree sensitivity list for the given statement block */
+expression* db_create_sensitivity_list( statement* stmt );
+
 /*! \brief Checks specified statement for parallelization and if it must be, creates a parallel statement block */
 statement* db_parallelize_statement( statement* stmt );
 
@@ -119,6 +122,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.48  2006/01/10 05:56:36  phase1geo
+ In the middle of adding support for event sensitivity lists to score command.
+ Regressions should pass but this code is not complete at this time.
+
  Revision 1.47  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 
