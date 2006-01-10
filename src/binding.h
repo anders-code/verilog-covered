@@ -23,6 +23,9 @@ void bind_append_fsm_expr( expression* fsm_exp, expression* exp, func_unit* curr
 /*! \brief Removes the expression with ID of id from binding list. */
 void bind_remove( int id, bool clear_assigned );
 
+/*! \brief Searches current binding list for the signal name associated with the given expression */
+char* bind_find_sig_name( expression* exp );
+
 /*! \brief Removes the statement block associated with the expression with ID of id after binding has occurred */
 void bind_remove_stmt( int id );
 
@@ -38,6 +41,12 @@ void bind( bool cdd_reading );
 
 /* 
  $Log$
+ Revision 1.22  2006/01/10 23:13:50  phase1geo
+ Completed support for implicit event sensitivity list.  Added diagnostics to verify
+ this new capability.  Also started support for parsing inline parameters and port
+ declarations (though this is probably not complete and not passing at this point).
+ Checkpointing.
+
  Revision 1.21  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

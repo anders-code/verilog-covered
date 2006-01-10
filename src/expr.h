@@ -31,8 +31,8 @@ int expression_get_id( expression* expr );
 /*! \brief Returns last line in this expression tree. */
 expression* expression_get_last_line_expr( expression* expr );
 
-/*! \brief Finds all wait event signals in specified expression */
-void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link** tail );
+/*! \brief Finds all RHS signals in given expression tree */
+void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tail );
 
 /*! \brief Finds the root statement for the given expression */
 statement* expression_get_root_statement( expression* exp );
@@ -79,6 +79,12 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.38  2006/01/10 23:13:50  phase1geo
+ Completed support for implicit event sensitivity list.  Added diagnostics to verify
+ this new capability.  Also started support for parsing inline parameters and port
+ declarations (though this is probably not complete and not passing at this point).
+ Checkpointing.
+
  Revision 1.37  2006/01/09 04:15:25  phase1geo
  Attempting to fix one last problem with latest changes.  Regression runs are
  currently running.  Checkpointing.
