@@ -466,6 +466,12 @@
 #define PARAM_TYPE_EXP_MSB              5
 
 /*!
+ Specifies that the current module parameter is a declared type (belongs to current
+ module) and is local (cannot be overridden by defparams and inline parameter overrides).
+*/
+#define PARAM_TYPE_DECLARED_LOCAL       6
+
+/*!
  Returns the order for the specified modparm type.
 */
 #define PARAM_ORDER(x)                  ((x->suppl >> PARAM_LSB_ORDER) & 0xffff)
@@ -1696,6 +1702,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.166  2006/01/12 22:53:01  phase1geo
+ Adding support for localparam construct.  Added tests to regression suite to
+ verify correct functionality.  Full regression passes.
+
  Revision 1.165  2006/01/12 22:14:45  phase1geo
  Completed code for handling parameter value pass by name Verilog-2001 syntax.
  Added diagnostics to regression suite and updated regression files for this
