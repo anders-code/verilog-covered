@@ -793,7 +793,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_TASK_CALL :
             case EXP_OP_FUNC_CALL :
               if( (tfunit = funit_find_by_id( exp->stmt->exp->id )) != NULL ) {
-                tmpname = tfunit->name;
+                tmpname = strdup_safe( tfunit->name, __FILE__, __LINE__ );
+                scope_extract_back( tfunit->name, tmpname, user_msg );
               } else {
                 snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Could not find statement %d in module %s",
                           exp->stmt->exp->id, funit->name );
@@ -806,6 +807,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               }
               code_fmt[i] = '\0';
               strcat( code_fmt, "  %s  " );
+              free_safe( tmpname );
               break;
             default              :
               snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
@@ -2031,6 +2033,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.123  2006/01/13 23:27:02  phase1geo
+ Initial attempt to fix problem with handling functions/tasks/named blocks with
+ the same name in the design.  Still have a few diagnostics failing in regressions
+ to contend with.  Updating regression with these changes.
+
  Revision 1.122  2006/01/13 04:01:04  phase1geo
  Adding support for exponential operation.  Added exponent1 diagnostic to verify
  but Icarus does not support this currently.

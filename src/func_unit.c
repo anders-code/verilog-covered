@@ -121,6 +121,26 @@ func_unit* funit_get_curr_function( func_unit* funit ) {
 }
 
 /*!
+ \param orig_name  Verilog name of task, function or named-block.
+ \param parent     Pointer to parent functional unit of this functional unit.
+
+ \return Returns dynamically allocated string containing internally used task, function or named-block name.
+*/
+char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* parent ) {
+
+  char full_name[4096];  /* Container for new name */
+
+  assert( parent != NULL );
+  assert( orig_name != NULL );
+
+  /* Generate full name to use for the function/task */
+  snprintf( full_name, 4096, "%s.%s", parent->name, orig_name );
+
+  return( strdup_safe( full_name, __FILE__, __LINE__ ) );
+
+}
+
+/*!
  \param funit  Pointer to functional unit containing elements to resize.
  \param inst   Pointer to instance containing this functional unit.
  
@@ -759,6 +779,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.12  2006/01/13 23:27:02  phase1geo
+ Initial attempt to fix problem with handling functions/tasks/named blocks with
+ the same name in the design.  Still have a few diagnostics failing in regressions
+ to contend with.  Updating regression with these changes.
+
  Revision 1.11  2005/12/22 23:04:42  phase1geo
  More memory leak fixes.
 

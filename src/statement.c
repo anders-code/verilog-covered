@@ -262,6 +262,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
   exp_link*  expl;           /* Pointer to found expression link                                       */
   stmt_link* stmtl;          /* Pointer to found statement link                                        */
   int        chars_read;     /* Number of characters read from line                                    */
+  thread*    thr;
 
   if( sscanf( *line, "%d %d %d%n", &id, &true_id, &false_id, &chars_read ) == 3 ) {
 
@@ -321,7 +322,8 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
        is called.
       */
       if( ESUPPL_STMT_IS_CALLED( stmt->exp->suppl ) == 0 ) {
-        sim_add_thread( NULL, stmt );
+        thr = sim_add_thread( NULL, stmt );
+        // printf( "CALLED sim_add_thread for statement %d, funit %s, thread %p\n", stmt->exp->id, curr_funit->name, thr );
       }
 
     }
@@ -628,6 +630,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.71  2006/01/13 23:27:02  phase1geo
+ Initial attempt to fix problem with handling functions/tasks/named blocks with
+ the same name in the design.  Still have a few diagnostics failing in regressions
+ to contend with.  Updating regression with these changes.
+
  Revision 1.70  2006/01/10 23:13:51  phase1geo
  Completed support for implicit event sensitivity list.  Added diagnostics to verify
  this new capability.  Also started support for parsing inline parameters and port
