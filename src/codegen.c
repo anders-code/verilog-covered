@@ -461,6 +461,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " - ",
                                right_code, right_code_depth, expr->right->line, after );
           break;
+        case EXP_OP_EXPONENT :
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " ** ",
+                               right_code, right_code_depth, expr->right->line, after );
+          break;
         case EXP_OP_AND      :
           codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " & ",
                                right_code, right_code_depth, expr->right->line, after );
@@ -691,6 +695,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.56  2006/01/13 04:01:04  phase1geo
+ Adding support for exponential operation.  Added exponent1 diagnostic to verify
+ but Icarus does not support this currently.
+
  Revision 1.55  2006/01/10 23:13:50  phase1geo
  Completed support for implicit event sensitivity list.  Added diagnostics to verify
  this new capability.  Also started support for parsing inline parameters and port
