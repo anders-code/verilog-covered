@@ -170,10 +170,12 @@ bool search_add_no_score_funit( char* funit ) {
   bool  retval = TRUE;   /* Return value for this function */
   char* tmp;             /* Temporary module name          */
 
-  if( is_variable( funit ) ) {
+  if( is_func_unit( funit ) ) {
     tmp = strdup_safe( funit, __FILE__, __LINE__ );
     str_link_add( tmp, &no_score_head, &no_score_tail );
   } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Value of -e option (%s) is not a valid block name", funit );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
   }
 
@@ -249,6 +251,11 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.21  2006/01/14 04:17:23  phase1geo
+ Adding is_func_unit function to check to see if a -e value is a valid module, function,
+ task or named begin/end block.  Updated regression accordingly.  We are getting closer
+ but still have a few diagnostics to figure out yet.
+
  Revision 1.20  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 
