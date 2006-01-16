@@ -38,9 +38,16 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 /*! \brief Performs vsignal/expression bind (performed after parse completed). */
 void bind( bool cdd_reading );
 
+/*! \brief Deallocates memory used for binding */
+void bind_dealloc();
+
 
 /* 
  $Log$
+ Revision 1.23  2006/01/16 17:27:41  phase1geo
+ Fixing binding issues when designs have modules/tasks/functions that are either used
+ more than once in a design or have the same name.  Full regression now passes.
+
  Revision 1.22  2006/01/10 23:13:50  phase1geo
  Completed support for implicit event sensitivity list.  Added diagnostics to verify
  this new capability.  Also started support for parsing inline parameters and port

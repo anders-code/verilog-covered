@@ -35,7 +35,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        5
+#define CDD_VERSION        6
 
 /*!
  This contains the header information specified when executing this tool.
@@ -1703,6 +1703,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.168  2006/01/16 17:27:41  phase1geo
+ Fixing binding issues when designs have modules/tasks/functions that are either used
+ more than once in a design or have the same name.  Full regression now passes.
+
  Revision 1.167  2006/01/13 04:01:04  phase1geo
  Adding support for exponential operation.  Added exponent1 diagnostic to verify
  but Icarus does not support this currently.

@@ -124,6 +124,9 @@ void db_close() {
     /* Deallocate preprocessor define tree */
     tree_dealloc( def_table );
 
+    /* Deallocate the binding list */
+    bind_dealloc();
+
     instance_root = NULL;
     funit_head    = NULL;
     funit_tail    = NULL;
@@ -150,6 +153,9 @@ bool db_write( char* file, bool parse_mode ) {
   FILE* db_handle;      /* Pointer to database file being written */
 
   if( (db_handle = fopen( file, "w" )) != NULL ) {
+
+    /* Reset expression IDs */
+    curr_expr_id = 1;
 
     /* Iterate through instance tree */
     assert( instance_root != NULL );
@@ -1693,6 +1699,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.164  2006/01/16 17:27:41  phase1geo
+ Fixing binding issues when designs have modules/tasks/functions that are either used
+ more than once in a design or have the same name.  Full regression now passes.
+
  Revision 1.163  2006/01/13 23:27:02  phase1geo
  Initial attempt to fix problem with handling functions/tasks/named blocks with
  the same name in the design.  Still have a few diagnostics failing in regressions
