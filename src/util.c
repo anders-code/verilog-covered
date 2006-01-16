@@ -163,7 +163,7 @@ void print_output( char* msg, int type, char* file, int line ) {
 #endif
 #endif
         } else {
-          fprintf( outf, "ERROR!  %s (file: %s, line: %d)\n", msg, file, line );
+          fprintf( stderr, "ERROR!  %s (file: %s, line: %d)\n", msg, file, line );
         }
       } else {
         if( report_gui ) {
@@ -174,7 +174,7 @@ void print_output( char* msg, int type, char* file, int line ) {
 #endif
 #endif
         } else {
-          fprintf( outf, "ERROR!  %s\n", msg );
+          fprintf( stderr, "ERROR!  %s\n", msg );
         }
       }
       break;
@@ -187,7 +187,7 @@ void print_output( char* msg, int type, char* file, int line ) {
 #endif
 #endif
       } else { 
-        fprintf( outf, "        %s\n", msg );
+        fprintf( stderr, "        %s\n", msg );
       }
       break;
     default:  break;
@@ -904,6 +904,11 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.39  2006/01/16 18:10:20  phase1geo
+ Causing all error information to get sent to stderr no matter what mode we
+ are in.  Updating error diagnostics for this change.  Full regression now
+ passes.
+
  Revision 1.38  2006/01/14 04:17:23  phase1geo
  Adding is_func_unit function to check to see if a -e value is a valid module, function,
  task or named begin/end block.  Updated regression accordingly.  We are getting closer
