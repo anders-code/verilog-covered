@@ -41,9 +41,10 @@ void str_link_add( char* str, str_link** head, str_link** tail ) {
 
   tmp = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
 
-  tmp->str   = str;
-  tmp->suppl = 0x0;
-  tmp->next  = NULL;
+  tmp->str    = str;
+  tmp->suppl1 = 0x0;
+  tmp->suppl2 = 0x0;
+  tmp->next   = NULL;
 
   if( *head == NULL ) {
     *head = *tail = tmp;
@@ -763,6 +764,12 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
 /*
  $Log$
+ Revision 1.40  2006/01/19 23:10:38  phase1geo
+ Adding line and starting column information to vsignal structure (and associated CDD
+ files).  Regression has been fully updated for this change which now fully passes.  Final
+ changes to summary GUI.  Fixed signal underlining for toggle coverage to work for both
+ explicit and implicit signals.  Getting things ready for a preferences window.
+
  Revision 1.39  2005/12/19 05:18:24  phase1geo
  Fixing memory leak problems with instance1.1.  Full regression has some segfaults
  that need to be looked at now.

@@ -17,7 +17,7 @@
 void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
-bool toggle_collect( char* funit_name, int funit_type, int cov, char*** sigs, int* sig_cnt );
+bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail );
 
 /*! \brief TBD */
 bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 );
@@ -31,6 +31,12 @@ void toggle_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.12  2006/01/19 23:10:38  phase1geo
+ Adding line and starting column information to vsignal structure (and associated CDD
+ files).  Regression has been fully updated for this change which now fully passes.  Final
+ changes to summary GUI.  Fixed signal underlining for toggle coverage to work for both
+ explicit and implicit signals.  Getting things ready for a preferences window.
+
  Revision 1.11  2006/01/19 00:01:09  phase1geo
  Lots of changes/additions.  Summary report window work is now complete (with the
  exception of adding extra features).  Added support for parsing left and right

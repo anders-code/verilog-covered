@@ -672,7 +672,7 @@ void param_db_write( inst_parm* iparm, FILE* file ) {
   if( iparm->name != NULL ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d #%s 0 ",
+    fprintf( file, "%d #%s 0 0 0 ",
       DB_TYPE_SIGNAL,
       iparm->name
     );
@@ -768,6 +768,12 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.45  2006/01/19 23:10:38  phase1geo
+ Adding line and starting column information to vsignal structure (and associated CDD
+ files).  Regression has been fully updated for this change which now fully passes.  Final
+ changes to summary GUI.  Fixed signal underlining for toggle coverage to work for both
+ explicit and implicit signals.  Getting things ready for a preferences window.
+
  Revision 1.44  2006/01/16 17:27:41  phase1geo
  Fixing binding issues when designs have modules/tasks/functions that are either used
  more than once in a design or have the same name.  Full regression now passes.
