@@ -161,7 +161,8 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
   
   assert( (op == EXP_OP_XOR) || (op == EXP_OP_MULTIPLY) || (op == EXP_OP_DIVIDE) || (op == EXP_OP_MOD) ||
           (op == EXP_OP_ADD) || (op == EXP_OP_SUBTRACT) || (op == EXP_OP_AND)    || (op == EXP_OP_OR)  ||
-          (op == EXP_OP_NOR) || (op == EXP_OP_NAND)     || (op == EXP_OP_NXOR)   || (op == EXP_OP_EXPONENT) );
+          (op == EXP_OP_NOR) || (op == EXP_OP_NAND)     || (op == EXP_OP_NXOR)   || (op == EXP_OP_EXPONENT) ||
+          (op == EXP_OP_LSHIFT) || (op == EXP_OP_RSHIFT) );
 
   if( (right != NULL) && (left != NULL) ) {
 
@@ -187,6 +188,8 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
           case EXP_OP_NOR      :  right->num = ~(left->num | right->num);  break;
           case EXP_OP_NAND     :  right->num = ~(left->num & right->num);  break;
           case EXP_OP_NXOR     :  right->num = ~(left->num ^ right->num);  break;
+          case EXP_OP_LSHIFT   :  right->num = left->num << right->num;    break;
+          case EXP_OP_RSHIFT   :  right->num = left->num >> right->num;    break;
           default              :  break;
         }
 
@@ -298,6 +301,13 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.15  2006/01/19 00:01:09  phase1geo
+ Lots of changes/additions.  Summary report window work is now complete (with the
+ exception of adding extra features).  Added support for parsing left and right
+ shift operators and the exponent operator in static expression scenarios.  Fixed
+ issues related to GUI (due to recent changes in the score command).  Things seem
+ to be generally working as expected with the GUI now.
+
  Revision 1.14  2006/01/13 04:01:04  phase1geo
  Adding support for exponential operation.  Added exponent1 diagnostic to verify
  but Icarus does not support this currently.

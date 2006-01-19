@@ -241,12 +241,15 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
       i++;
       report_parse_metrics( argv[i] );
 
-#ifdef HAVE_TCLTK
     } else if( strncmp( "-view", argv[i], 5 ) == 0 ) {
 
+#ifdef HAVE_TCLTK
       report_gui          = TRUE;
       report_comb_depth   = REPORT_VERBOSE;
       flag_use_line_width = TRUE;
+#else
+      print_output( "The -view option is not available with this build", FATAL, __FILE__, __LINE__ );
+      retval = FALSE;
 #endif
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
@@ -593,6 +596,7 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
   } else {
 
     if( (retval = db_read( ifile, read_mode )) ) {
+      bind( TRUE );
       report_gather_funit_stats( funit_head );
     }
 
@@ -752,6 +756,13 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.52  2006/01/19 00:01:09  phase1geo
+ Lots of changes/additions.  Summary report window work is now complete (with the
+ exception of adding extra features).  Added support for parsing left and right
+ shift operators and the exponent operator in static expression scenarios.  Fixed
+ issues related to GUI (due to recent changes in the score command).  Things seem
+ to be generally working as expected with the GUI now.
+
  Revision 1.51  2006/01/06 23:39:10  phase1geo
  Started working on removing the need to simulate more than is necessary.  Things
  are pretty broken at this point, but all of the code should be in -- debugging.
