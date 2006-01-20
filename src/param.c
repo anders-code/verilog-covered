@@ -56,6 +56,7 @@
 #include "vector.h"
 #include "link.h"
 #include "vsignal.h"
+#include "func_unit.h"
 
 
 inst_parm* defparam_head = NULL;   /*!< Pointer to head of parameter list for global defparams */
@@ -761,6 +762,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.47  2006/01/20 19:27:14  phase1geo
+ Fixing compile warning.
+
  Revision 1.46  2006/01/20 19:15:23  phase1geo
  Fixed bug to properly handle the scoping of parameters when parameters are created/used
  in non-module functional units.  Added param10*.v diagnostics to regression suite to
