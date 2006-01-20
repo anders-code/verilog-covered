@@ -561,12 +561,12 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
         /* Set expression to point at signal */
         exp->sig = sigl->sig;
 
-        if( cdd_reading ) {
+  //       if( cdd_reading ) {
 
           /* Attach the signal's value to our expression value */
           expression_set_value( exp, sigl->sig->value );
 
-        }
+    //     }
 
       }
 
@@ -691,6 +691,11 @@ void bind( bool cdd_reading ) {
 
   }
 
+  /* If we are in parse mode, resolve all parameters now */
+  if( !cdd_reading ) {
+    param_resolve( instance_root );
+  }
+
 }
 
 /*!
@@ -722,6 +727,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.60  2006/01/20 22:44:51  phase1geo
+ Moving parameter resolution to post-bind stage to allow static functions to
+ be considered.  Regression passes without static function testing.  Static
+ function support still has some work to go.  Checkpointing.
+
  Revision 1.59  2006/01/19 23:10:38  phase1geo
  Adding line and starting column information to vsignal structure (and associated CDD
  files).  Regression has been fully updated for this change which now fully passes.  Final
