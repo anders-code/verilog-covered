@@ -209,31 +209,6 @@ funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ign
 }
 
 /*!
- \param mparm  Pointer to module parameter list to resolve.
- \param inst   Pointer to current instance to resolve parameters into.
-
- Performs parameter resolution for all module parameters in mparm list
- and places them into the instance parameter list located in the inst
- structure.  Note:  This function MUST be called after the specified
- instance is attached to the instance tree.
-*/
-void instance_resolve_params( mod_parm* mparm, funit_inst* inst ) {
-
-  while( mparm != NULL ) {
-
-    if( (PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED) || (PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED_LOCAL) ) {
-      param_resolve_declared( mparm, inst );
-    } else {
-      param_resolve_override( mparm, inst );
-    }
-
-    mparm = mparm->next;
-
-  }
-
-}
-
-/*!
  \param inst   Pointer to instance to add child instance to.
  \param child  Pointer to child functional unit to create instance for.
  \param name   Name of instance to add.
@@ -261,9 +236,6 @@ funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name )
 
   /* Point this instance's parent pointer to its parent */
   new_inst->parent = inst;
-
-  /* Resolve all parameters for new instance */
-  // instance_resolve_params( child->param_head, new_inst );
 
   return( new_inst );
 
@@ -319,9 +291,6 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
   if( *root == NULL ) {
 
     *root = instance_create( child, inst_name );
-
-    /* Resolve all parameters for new instance */
-    // instance_resolve_params( child->param_head, *root );
 
   } else {
 
@@ -563,6 +532,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.36  2006/01/20 22:50:50  phase1geo
+ Code cleanup.
+
  Revision 1.35  2006/01/20 22:44:51  phase1geo
  Moving parameter resolution to post-bind stage to allow static functions to
  be considered.  Regression passes without static function testing.  Static
