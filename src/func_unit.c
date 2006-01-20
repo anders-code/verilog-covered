@@ -121,6 +121,32 @@ func_unit* funit_get_curr_function( func_unit* funit ) {
 }
 
 /*!
+ \param name   Name of parameter to search for
+ \param funit  Functional unit to check for existence of named parameter
+
+ \return Returns a pointer to the module parameter structure that contains the specified
+         parameter name if it exists; otherwise, returns NULL.
+
+ Recursively searches from the current functional unit up through its scope until either
+ the parameter is found or until we have exhausted the scope.
+*/
+mod_parm* funit_find_param( char* name, func_unit* funit ) {
+
+  mod_parm* mparm = NULL;  /* Pointer to found module parameter */
+
+  if( funit != NULL ) {
+
+    if( (mparm = mod_parm_find( name, funit->param_head )) == NULL ) {
+      mparm = funit_find_param( name, funit->parent );
+    }
+
+  }
+
+  return( mparm );
+
+}
+
+/*!
  \param orig_name  Verilog name of task, function or named-block.
  \param parent     Pointer to parent functional unit of this functional unit.
 
@@ -271,14 +297,12 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
     curr_exp = curr_exp->next;
   }
 
-  /* Now print all parameters in functional unit (if this is a module) */
-  if( funit->type == FUNIT_MODULE ) {
-    if( inst != NULL ) {
-      curr_parm = inst->param_head;
-      while( curr_parm != NULL ) {
-        param_db_write( curr_parm, file );
-        curr_parm = curr_parm->next;
-      }
+  /* Now print all parameters in functional unit */
+  if( inst != NULL ) {
+    curr_parm = inst->param_head;
+    while( curr_parm != NULL ) {
+      param_db_write( curr_parm, file );
+      curr_parm = curr_parm->next;
     }
   }
 
@@ -779,6 +803,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.13  2006/01/20 19:15:23  phase1geo
+ Fixed bug to properly handle the scoping of parameters when parameters are created/used
+ in non-module functional units.  Added param10*.v diagnostics to regression suite to
+ verify the behavior is correct now.
+
  Revision 1.12  2006/01/13 23:27:02  phase1geo
  Initial attempt to fix problem with handling functions/tasks/named blocks with
  the same name in the design.  Still have a few diagnostics failing in regressions

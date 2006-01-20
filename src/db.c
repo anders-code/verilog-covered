@@ -646,8 +646,7 @@ void db_add_declared_param( char* name, expression* expr, bool local ) {
     if( mod_parm_find( name, curr_funit->param_head ) == NULL ) {
 
       /* Add parameter to module parameter list */
-      mparm = mod_parm_add( name, expr, (local ? PARAM_TYPE_DECLARED_LOCAL : PARAM_TYPE_DECLARED),
-                            &(curr_funit->param_head), &(curr_funit->param_tail), NULL );
+      mparm = mod_parm_add( name, expr, (local ? PARAM_TYPE_DECLARED_LOCAL : PARAM_TYPE_DECLARED), curr_funit, NULL );
 
       /* Also add this to all associated instance parameter lists */
       i      = 0;
@@ -660,11 +659,8 @@ void db_add_declared_param( char* name, expression* expr, bool local ) {
         /* Find scope for current instance */
         instance_gen_scope( scope, inst );
 
-        if( inst->parent == NULL ) {
-          param_resolve_declared( scope, mparm, NULL, &(inst->param_head), &(inst->param_tail) );
-        } else {
-          param_resolve_declared( scope, mparm, inst->parent->param_head, &(inst->param_head), &(inst->param_tail) );
-        }
+        /* Resolve this parameter */
+        param_resolve_declared( mparm, inst );
 
         i++;
         ignore = i;
@@ -702,14 +698,14 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
 #endif
 
   /* Add override parameter to module parameter list */
-  mparm = mod_parm_add( param_name, expr, PARAM_TYPE_OVERRIDE, &(curr_funit->param_head), &(curr_funit->param_tail), inst_name );
+  mparm = mod_parm_add( param_name, expr, PARAM_TYPE_OVERRIDE, curr_funit, inst_name );
 
   /* Also add this to all associated instance parameter lists */
   i      = 0;
   ignore = 0;
   while( (inst = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
 
-    param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
+    param_resolve_override( mparm, inst );
 
     i++;
     ignore = i;
@@ -742,7 +738,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
 #endif
 
   /* Add signal vector parameter to module parameter list */
-  mparm = mod_parm_add( NULL, parm_exp, type, &(curr_funit->param_head), &(curr_funit->param_tail), NULL );
+  mparm = mod_parm_add( NULL, parm_exp, type, curr_funit, NULL );
 
   /* Add signal to module parameter list */
   mparm->sig = sig;
@@ -752,7 +748,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
   ignore = 0;
   while( (inst = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
 
-    param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
+    param_resolve_override( mparm, inst );
 
     i++;
     ignore = i;
@@ -951,7 +947,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 
   /* Check to see if signal is a parameter in this module */
   if( sig_name != NULL ) {
-    if( (mparm = mod_parm_find( sig_name, curr_funit->param_head )) != NULL ) {
+    if( (mparm = funit_find_param( sig_name, curr_funit )) != NULL ) {
       sig_is_parm = TRUE;
       switch( op ) {
         case EXP_OP_SIG      :  op = EXP_OP_PARAM;       break;
@@ -1700,6 +1696,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.166  2006/01/20 19:15:23  phase1geo
+ Fixed bug to properly handle the scoping of parameters when parameters are created/used
+ in non-module functional units.  Added param10*.v diagnostics to regression suite to
+ verify the behavior is correct now.
+
  Revision 1.165  2006/01/19 23:10:38  phase1geo
  Adding line and starting column information to vsignal structure (and associated CDD
  files).  Regression has been fully updated for this change which now fully passes.  Final
