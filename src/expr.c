@@ -755,8 +755,8 @@ statement* expression_get_root_statement( expression* exp ) {
 }
 
 /*!
- \param expr   Pointer to expression to write to database file.
- \param file   Pointer to database file to write to.
+ \param expr  Pointer to expression to write to database file.
+ \param file  Pointer to database file to write to.
 
  This function recursively displays the expression information for the specified
  expression tree to the coverage database specified by file.
@@ -2505,6 +2505,9 @@ void expression_operate_recursively( expression* expr ) {
     
     /* Perform operation */
     expression_operate( expr, NULL );
+
+    /* Clear out the execution number value since we aren't really simulating this */
+    expr->exec_num = 0;
     
   }
   
@@ -2819,6 +2822,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.162  2006/01/23 22:55:10  phase1geo
+ Updates to fix constant function support.  There is some issues to resolve
+ here but full regression is passing with the exception of the newly added
+ static_func1.1 diagnostic.  Fixed problem where expand and multi-bit expressions
+ were getting coverage numbers calculated for them before they were simulated.
+
  Revision 1.161  2006/01/23 17:23:28  phase1geo
  Fixing scope issues that came up when port assignment was added.  Full regression
  now passes.

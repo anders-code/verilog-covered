@@ -57,6 +57,7 @@
 #include "link.h"
 #include "vsignal.h"
 #include "func_unit.h"
+#include "instance.h"
 
 
 inst_parm* defparam_head = NULL;   /*!< Pointer to head of parameter list for global defparams */
@@ -442,11 +443,26 @@ bool param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
 */
 void param_expr_eval( expression* expr, funit_inst* inst ) {
 
+  funit_inst* funiti;      /* Pointer to static function instance */
+  func_unit*  funit;       /* Pointer to constant function */
+  int         ignore = 0;  /* Number of instances to ignore */
+
   if( expr != NULL ) {
+
+    /* For constant functions, resize the functional unit first */
+    if( expr->op == EXP_OP_FUNC_CALL ) {
+      funit = funit_find_by_id( expr->stmt->exp->id );
+      assert( funit != NULL );
+      funiti = instance_find_by_funit( inst, funit, &ignore );
+      assert( funiti != NULL );
+      funit_size_elements( funit, funiti );
+    }
 
     /* Evaluate children first */
     param_expr_eval( expr->left,  inst );
     param_expr_eval( expr->right, inst );
+
+    printf( "$$$$ In param_expr_eval, expression %s line %d\n", expression_string_op( expr->op ), expr->line );
 
     switch( expr->op ) {
       case EXP_OP_STATIC :
@@ -793,6 +809,12 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.50  2006/01/23 22:55:10  phase1geo
+ Updates to fix constant function support.  There is some issues to resolve
+ here but full regression is passing with the exception of the newly added
+ static_func1.1 diagnostic.  Fixed problem where expand and multi-bit expressions
+ were getting coverage numbers calculated for them before they were simulated.
+
  Revision 1.49  2006/01/20 22:50:50  phase1geo
  Code cleanup.
 
