@@ -14,10 +14,10 @@
 
 
 /*! \brief Initializes specified vsignal with specified values. */
-void vsignal_init( vsignal* sig, char* name, vector* value, int lsb, int line, control col );
+void vsignal_init( vsignal* sig, char* name, int type, vector* value, int lsb, int line, int col );
 
 /*! \brief Creates a new vsignal based on the information passed to this function. */
-vsignal* vsignal_create( char* name, int width, int lsb, int line, control col );
+vsignal* vsignal_create( char* name, int type, int width, int lsb, int line, int col );
 
 /*! \brief Outputs this vsignal information to specified file. */
 void vsignal_db_write( vsignal* sig, FILE* file );
@@ -55,6 +55,10 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.10  2006/01/23 03:53:30  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.9  2006/01/19 23:10:38  phase1geo
  Adding line and starting column information to vsignal structure (and associated CDD
  files).  Regression has been fully updated for this change which now fully passes.  Final

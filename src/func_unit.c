@@ -121,6 +121,32 @@ func_unit* funit_get_curr_function( func_unit* funit ) {
 }
 
 /*!
+ \param funit  Pointer to functional unit to process
+
+ \return Returns the number of input, output and inout ports specified in this functional unit
+*/
+int funit_get_port_count( func_unit* funit ) {
+
+  sig_link* sigl;          /* Pointer to current signal link to examine */
+  int       port_cnt = 0;  /* Return value for this function */
+
+  assert( funit != NULL );
+
+  sigl = funit->sig_head;
+  while( sigl != NULL ) {
+    if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT)  ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT) ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) ) {
+      port_cnt++;
+    }
+    sigl = sigl->next;
+  }
+
+  return( port_cnt );
+
+}
+
+/*!
  \param name   Name of parameter to search for
  \param funit  Functional unit to check for existence of named parameter
 
@@ -803,6 +829,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.14  2006/01/23 03:53:30  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.13  2006/01/20 19:15:23  phase1geo
  Fixed bug to properly handle the scoping of parameters when parameters are created/used
  in non-module functional units.  Added param10*.v diagnostics to regression suite to
