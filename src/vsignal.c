@@ -368,8 +368,10 @@ void vsignal_propagate( vsignal* sig ) {
   curr_expr = sig->exp_head;
   while( curr_expr != NULL ) {
 
-    /* Add to simulation queue if expression is a RHS and not a function call */
-    if( (ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0) && (curr_expr->exp->op != EXP_OP_FUNC_CALL) ) {
+    /* Add to simulation queue if expression is a RHS, not a function call and not a port assignment */
+    if( (ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0) &&
+        (curr_expr->exp->op != EXP_OP_FUNC_CALL) &&
+        (curr_expr->exp->op != EXP_OP_PASSIGN) ) {
       sim_expr_changed( curr_expr->exp );
     }
 
@@ -523,6 +525,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.18  2006/01/23 17:23:28  phase1geo
+ Fixing scope issues that came up when port assignment was added.  Full regression
+ now passes.
+
  Revision 1.17  2006/01/23 03:53:30  phase1geo
  Adding support for input/output ports of tasks/functions.  Regressions are not
  running cleanly at this point so there is still some work to do here.  Checkpointing.
