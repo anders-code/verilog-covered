@@ -27,7 +27,7 @@ void bind_remove( int id, bool clear_assigned );
 char* bind_find_sig_name( expression* exp );
 
 /*! \brief Removes the statement block associated with the expression with ID of id after binding has occurred */
-void bind_remove_stmt( int id );
+void bind_rm_stmt( int id );
 
 /*! \brief Binds a signal to an expression */
 bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading, bool clear_assigned, int exp_line );
@@ -44,6 +44,11 @@ void bind_dealloc();
 
 /* 
  $Log$
+ Revision 1.24  2006/01/24 23:24:37  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.23  2006/01/16 17:27:41  phase1geo
  Fixing binding issues when designs have modules/tasks/functions that are either used
  more than once in a design or have the same name.  Full regression now passes.

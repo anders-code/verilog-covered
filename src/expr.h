@@ -26,7 +26,7 @@ void expression_set_value( expression* exp, vector* vec );
 void expression_resize( expression* expr, bool recursive );
 
 /*! \brief Returns expression ID of this expression. */
-int expression_get_id( expression* expr );
+int expression_get_id( expression* expr, bool parse_mode );
 
 /*! \brief Returns last line in this expression tree. */
 expression* expression_get_last_line_expr( expression* expr );
@@ -38,7 +38,7 @@ void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tai
 statement* expression_get_root_statement( expression* exp );
 
 /*! \brief Writes this expression to the specified database file. */
-void expression_db_write( expression* expr, FILE* file );
+void expression_db_write( expression* expr, FILE* file, bool parse_mode );
 
 /*! \brief Reads current line of specified file and parses for expression information. */
 bool expression_db_read( char** line, func_unit* curr_mod, bool eval );
@@ -79,6 +79,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.39  2006/01/24 23:24:37  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.38  2006/01/10 23:13:50  phase1geo
  Completed support for implicit event sensitivity list.  Added diagnostics to verify
  this new capability.  Also started support for parsing inline parameters and port

@@ -15,7 +15,7 @@
 statement* statement_create( expression* exp );
 
 /*! \brief Writes specified statement to the specified output file. */
-void statement_db_write( statement* stmt, FILE* ofile );
+void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode );
 
 /*! \brief Reads in statement line from specified string and stores statement in specified functional unit. */
 bool statement_db_read( char** line, func_unit* curr_funit, int read_mode );
@@ -41,6 +41,11 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.24  2006/01/24 23:24:38  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.23  2006/01/10 23:13:51  phase1geo
  Completed support for implicit event sensitivity list.  Added diagnostics to verify
  this new capability.  Also started support for parsing inline parameters and port

@@ -22,7 +22,7 @@ void fsm_add_arc( fsm* table, expression* from_state, expression* to_state );
 void fsm_create_tables( fsm* table );
 
 /*! \brief Outputs contents of specified FSM to CDD file. */
-bool fsm_db_write( fsm* table, FILE* file );
+bool fsm_db_write( fsm* table, FILE* file, bool parse_mode );
 
 /*! \brief Reads in contents of specified FSM. */
 bool fsm_db_read( char** line, func_unit* funit );
@@ -47,6 +47,11 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.15  2006/01/24 23:24:37  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.14  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

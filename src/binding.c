@@ -428,7 +428,8 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
       /* If this is a port assignment, we need to link the expression and signal together immediately */
       if( exp->op == EXP_OP_PASSIGN ) {
-        expression_set_value( exp, found_sig->value );
+        vector_dealloc( exp->value );
+        exp->value = found_sig->value;
       }
 
     }
@@ -578,19 +579,11 @@ bool bind_task_function_ports( expression* expr, func_unit* funit, char* name, i
       */
       if( sigl != NULL ) {
 
-/*
-        printf( "Binding funit port (order=%d, op=%s) to funit %s, port %s\n",
-                *order, expression_string_op( expr->op ), funit->name, sigl->sig->name );
-*/
-
         /* Create signal name to bind */
         snprintf( sig_name, 4096, "%s.%s", name, sigl->sig->name );
 
         /* Add the signal to the binding list */
         bind_add( 0, sig_name, expr, funit_exp );
-
-        /* Specify that this expression does not own its vector */
-        expr->suppl.part.owns_vec = 0;
 
         /* Specify that this vector will be assigned by Covered and not the dumpfile */
         sigl->sig->value->suppl.part.assigned = 1;
@@ -845,6 +838,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.64  2006/01/24 23:24:37  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.63  2006/01/23 22:55:10  phase1geo
  Updates to fix constant function support.  There is some issues to resolve
  here but full regression is passing with the exception of the newly added
