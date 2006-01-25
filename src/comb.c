@@ -618,7 +618,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         if( exp->sig->name[0] == '#' ) {
           tmpname = exp->sig->name + 1;
         } else {
-          tmpname = exp->sig->name;
+          tmpname = exp->name;
         }
 
         *size = strlen( tmpname );
@@ -718,7 +718,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               if( exp->sig->name[0] == '#' ) {
                 tmpname = exp->sig->name + 1;
               } else {
-                tmpname = exp->sig->name;
+                tmpname = exp->name;
               }
               *size = l_size + r_size + strlen( tmpname ) + 2;
               for( i=0; i<strlen( tmpname ); i++ ) {
@@ -732,7 +732,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               if( exp->sig->name[0] == '#' ) {
                 tmpname = exp->sig->name + 1;
               } else {
-                tmpname = exp->sig->name;
+                tmpname = exp->name;
               }
               *size = l_size + r_size + strlen( tmpname ) + 3;  
               for( i=0; i<strlen( tmpname ); i++ ) {
@@ -742,7 +742,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               strcat( code_fmt, " %s %s " );
               break;
             case EXP_OP_TRIGGER  :
-              tmpname = exp->sig->name;
+              tmpname = exp->name;
               *size = l_size + r_size + strlen( tmpname ) + 2;
               for( i=0; i<strlen( tmpname ) + 2; i++ ) {
                 code_fmt[i] = ' ';
@@ -2034,6 +2034,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.125  2006/01/25 16:51:26  phase1geo
+ Fixing performance/output issue with hierarchical references.  Added support
+ for hierarchical references to parser.  Full regression passes.
+
  Revision 1.124  2006/01/23 03:53:29  phase1geo
  Adding support for input/output ports of tasks/functions.  Regressions are not
  running cleanly at this point so there is still some work to do here.  Checkpointing.
