@@ -796,7 +796,7 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
   } else if( expr->sig != NULL ) {
     fprintf( file, " %s", expr->sig->name );  /* This will be valid for parameters */
   } else if( expr->stmt != NULL ) {
-    fprintf( file, " %d", expr->stmt->exp->id );  /* Statement bindings will always be in the same module as the expr */
+    fprintf( file, " %d", expression_get_id( expr->stmt->exp, parse_mode ) );
   }
 
   fprintf( file, "\n" );
@@ -2827,6 +2827,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.165  2006/01/25 04:32:47  phase1geo
+ Fixing bug with latest checkins.  Full regression is now passing for IV simulated
+ diagnostics.
+
  Revision 1.164  2006/01/24 23:33:14  phase1geo
  A few cleanups.
 
