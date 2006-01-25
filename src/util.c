@@ -781,12 +781,9 @@ void* malloc_safe_nolimit( size_t size, char* file, int line ) {
 */
 void free_safe( void* ptr ) {
 
-  /* curr_malloc_size -= sizeof( *ptr ); */
-
-  /* printf( "Freeing memory, addr: 0x%lx\n", ptr ); */
-
-  // printf( "Deallocating ptr %p\n", ptr );
-  free( ptr );
+  if( ptr != NULL ) {
+    free( ptr );
+  }
 
 }
 
@@ -904,6 +901,13 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.41  2006/01/25 22:13:46  phase1geo
+ Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
+ need to look at a problem at the end of the dumpfile -- I'm getting coredumps
+ when using the new -lxt option.  I also need to disable LXT code if the z
+ library is missing along with documenting the new feature in the user's guide
+ and man page.
+
  Revision 1.40  2006/01/19 23:10:38  phase1geo
  Adding line and starting column information to vsignal structure (and associated CDD
  files).  Regression has been fully updated for this change which now fully passes.  Final

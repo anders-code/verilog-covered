@@ -15,11 +15,18 @@
 bool parse_design( char* top, char* output_db );
 
 /*! \brief Parses VCD dumpfile and scores design. */
-bool parse_and_score_dumpfile( char* db, char* vcd );
+bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode );
 
 
 /*
  $Log$
+ Revision 1.7  2006/01/25 22:13:46  phase1geo
+ Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
+ need to look at a problem at the end of the dumpfile -- I'm getting coredumps
+ when using the new -lxt option.  I also need to disable LXT code if the z
+ library is missing along with documenting the new feature in the user's guide
+ and man page.
+
  Revision 1.6  2002/11/05 00:20:07  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

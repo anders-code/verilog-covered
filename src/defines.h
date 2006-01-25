@@ -70,6 +70,25 @@
 #define DEFAULT_LINE_WIDTH 105
 
 /*!
+ \addtogroup dumpfile_fmt Dumpfile Format
+
+ The following defines are used by Covered to determine what dumpfile parsing mode we are in
+
+ @{
+*/
+
+/*! No dumpfile was specified */
+#define DUMP_FMT_NONE      0
+
+/*! VCD dumpfile was specified */
+#define DUMP_FMT_VCD       1
+
+/*! LXT dumpfile was specified */
+#define DUMP_FMT_LXT       2
+
+/*! @} */
+
+/*!
  \addtogroup output_type Output type
 
  The following defines are used by the print_output function to
@@ -1760,6 +1779,13 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.173  2006/01/25 22:13:46  phase1geo
+ Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
+ need to look at a problem at the end of the dumpfile -- I'm getting coredumps
+ when using the new -lxt option.  I also need to disable LXT code if the z
+ library is missing along with documenting the new feature in the user's guide
+ and man page.
+
  Revision 1.172  2006/01/25 16:51:27  phase1geo
  Fixing performance/output issue with hierarchical references.  Added support
  for hierarchical references to parser.  Full regression passes.
