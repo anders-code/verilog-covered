@@ -299,8 +299,6 @@ void symtable_assign() {
   sym_sig*  sig;   /* Pointer to current sym_sig in list */
   int       i;     /* Loop iterator                      */
 
-  printf( "postsim_size: %d\n", postsim_size );
-
   for( i=0; i<postsim_size; i++ ) {
     curr = timestep_tab[i];
     sig = curr->sig_head;
@@ -351,6 +349,10 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.21  2006/01/26 06:06:37  phase1geo
+ Starting to work on formatting the lxt2_read file and improving error output
+ to conform to Covered's error-reporting mechanism.
+
  Revision 1.20  2006/01/25 22:13:46  phase1geo
  Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
  need to look at a problem at the end of the dumpfile -- I'm getting coredumps
