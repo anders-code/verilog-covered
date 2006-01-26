@@ -337,9 +337,8 @@ void lxt_parse( char* lxt_file ) {
     /* Perform simulation */
     lxt2_rd_iter_blocks( lt, vcd_callback, NULL );
 
-    
     /* Perform last simulation if necessary */
-    if( vcd_prevtime != lxt2_rd_get_end_time( lt ) ) {
+    if( vcd_prevtime >= 0 ) {
       db_do_timestep( vcd_prevtime );
     }
 
@@ -348,8 +347,6 @@ void lxt_parse( char* lxt_file ) {
     if( timestep_tab != NULL ) {
       free_safe( timestep_tab );
     }
-
-    printf( "*********************************\n" );
 
     /* Close LXT file */
     lxt2_rd_close( lt );
@@ -365,6 +362,10 @@ void lxt_parse( char* lxt_file ) {
 
 /*
  $Log$
+ Revision 1.2  2006/01/26 17:34:02  phase1geo
+ Finished work on lxt2_read.c and fixed bug in LXT-based simulator.  Also adding
+ missing lxt.h header file.
+
  Revision 1.1  2006/01/25 22:13:46  phase1geo
  Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
  need to look at a problem at the end of the dumpfile -- I'm getting coredumps
