@@ -206,7 +206,7 @@ void lxt_parse( char* lxt_file ) {
 
   } else {
 
-    print_output( "Unable to open specified LXT file", FATAL, __FILE__, __LINE__ );
+    print_output( "Unable to read data from LXT dumpfile.  Exiting without scoring.", FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
   }
@@ -215,6 +215,13 @@ void lxt_parse( char* lxt_file ) {
 
 /*
  $Log$
+ Revision 1.4  2006/01/27 15:43:57  phase1geo
+ Added ifdefs for HAVE_ZLIB define to allow Covered to compile correctly when
+ zlib.h and associated library is unavailable.  Also handle dumpfile reading
+ appropriately for this condition.  Moved report file opening after the CDD file
+ has been read in to avoid empty report files when a problem is detected in the
+ CDD file.
+
  Revision 1.3  2006/01/26 22:40:13  phase1geo
  Fixing last LXT bug.
 
