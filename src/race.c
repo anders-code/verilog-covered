@@ -397,6 +397,8 @@ void race_check_one_block_assignment( func_unit* mod ) {
   bool       race_found = FALSE;  /* Specifies if at least one race condition was found for this signal */
   bool       curr_race;           /* Set to TRUE if race condition was found in current iteration */
   func_unit* exp_funit;           /* Functional unit containing a signal's expression */
+  int        lval;                /* Left expression value */
+  int        rval;                /* Right expression value */
 
   sigl = mod->sig_head;
   while( sigl != NULL ) {
@@ -432,6 +434,24 @@ void race_check_one_block_assignment( func_unit* mod ) {
               curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
             }
 	    break;
+          case EXP_OP_MBIT_POS :
+            if( expl->exp->left->op == EXP_OP_STATIC ) {
+              lval = vector_to_int( expl->exp->left->value );
+              rval = vector_to_int( expl->exp->right->value );
+              curr_race = vsignal_set_assigned( sigl->sig, ((lval + rval) - 1), lval );
+            } else {
+              curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+            }
+            break;
+          case EXP_OP_MBIT_NEG :
+            if( expl->exp->left->op == EXP_OP_STATIC ) {
+              lval = vector_to_int( expl->exp->left->value );
+              rval = vector_to_int( expl->exp->right->value );
+              curr_race = vsignal_set_assigned( sigl->sig, lval, ((lval - rval) + 1) );
+            } else {
+              curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
+            }
+            break;
           default :
             curr_race = FALSE;
 	    break;	
@@ -871,6 +891,10 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.35  2006/01/31 16:41:00  phase1geo
+ Adding initial support and diagnostics for the variable multi-bit select
+ operators +: and -:.  More to come but full regression passes.
+
  Revision 1.34  2006/01/23 17:23:28  phase1geo
  Fixing scope issues that came up when port assignment was added.  Full regression
  now passes.

@@ -436,12 +436,16 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
     if( cdd_reading ) {
 
-      if( (exp->op == EXP_OP_SIG)        ||
-          (exp->op == EXP_OP_SBIT_SEL)   ||
-          (exp->op == EXP_OP_MBIT_SEL)   ||
-          (exp->op == EXP_OP_PARAM)      ||
-          (exp->op == EXP_OP_PARAM_SBIT) ||
-          (exp->op == EXP_OP_PARAM_MBIT) ||
+      if( (exp->op == EXP_OP_SIG)            ||
+          (exp->op == EXP_OP_SBIT_SEL)       ||
+          (exp->op == EXP_OP_MBIT_SEL)       ||
+          (exp->op == EXP_OP_MBIT_POS)       ||
+          (exp->op == EXP_OP_MBIT_NEG)       ||
+          (exp->op == EXP_OP_PARAM)          ||
+          (exp->op == EXP_OP_PARAM_SBIT)     ||
+          (exp->op == EXP_OP_PARAM_MBIT)     ||
+          (exp->op == EXP_OP_PARAM_MBIT_POS) ||
+          (exp->op == EXP_OP_PARAM_MBIT_NEG) ||
           (exp->op == EXP_OP_TRIGGER) ) {
         expression_set_value( exp, found_sig->value );
       }
@@ -454,9 +458,11 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
       }
 
       if( !clear_assigned &&
-          ((exp->op == EXP_OP_SIG) ||
+          ((exp->op == EXP_OP_SIG)      ||
            (exp->op == EXP_OP_SBIT_SEL) ||
-           (exp->op == EXP_OP_MBIT_SEL)) ) {
+           (exp->op == EXP_OP_MBIT_SEL) ||
+           (exp->op == EXP_OP_MBIT_POS) ||
+           (exp->op == EXP_OP_MBIT_NEG)) ) {
         expression_set_assigned( exp );
       }
 
@@ -847,6 +853,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.67  2006/01/31 16:41:00  phase1geo
+ Adding initial support and diagnostics for the variable multi-bit select
+ operators +: and -:.  More to come but full regression passes.
+
  Revision 1.66  2006/01/25 16:51:26  phase1geo
  Fixing performance/output issue with hierarchical references.  Added support
  for hierarchical references to parser.  Full regression passes.
