@@ -1679,6 +1679,7 @@ struct static_expr_s {
 struct vector_width_s {
   static_expr* left;                 /*!< Specifies left bit value of bit range */
   static_expr* right;                /*!< Specifies right bit value of bit range */
+  bool         implicit;             /*!< Specifies if vector width was explicitly set by user or implicitly set by parser */
 };
 
 struct exp_bind_s {
@@ -1797,6 +1798,12 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.176  2006/02/01 19:58:28  phase1geo
+ More updates to allow parsing of various parameter formats.  At this point
+ I believe full parameter support is functional.  Regression has been updated
+ which now completely passes.  A few new diagnostics have been added to the
+ testsuite to verify additional functionality that is supported.
+
  Revision 1.175  2006/02/01 15:13:11  phase1geo
  Added support for handling bit selections in RHS parameter calculations.  New
  mbit_sel5.4 diagnostic added to verify this change.  Added the start of a

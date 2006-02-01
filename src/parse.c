@@ -19,19 +19,18 @@
 #include "info.h"
 #include "sim.h"
 #include "race.h"
+#include "parser_misc.h"
 
 
 extern void reset_lexer( str_link* file_list_head );
 extern int VLparse();
 
 extern str_link* use_files_head;
-
 extern str_link* modlist_head;
 extern str_link* modlist_tail;
-extern char user_msg[USER_MSG_LENGTH];
-extern int  error_count;
-extern bool flag_scored;
-extern bool flag_race_check;
+extern char      user_msg[USER_MSG_LENGTH];
+extern bool      flag_scored;
+extern bool      flag_race_check;
 
 /*!
  \param file  Pointer to file to read
@@ -90,6 +89,9 @@ bool parse_design( char* top, char* output_db ) {
       print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
       exit( 1 );
     }
+
+    /* Deallocate any memory in curr_range variable */
+    parser_dealloc_curr_range();
 
 #ifdef DEBUG_MODE
     print_output( "========  Completed design parsing  ========\n", DEBUG, __FILE__, __LINE__ );
@@ -208,6 +210,12 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.37  2006/02/01 19:58:28  phase1geo
+ More updates to allow parsing of various parameter formats.  At this point
+ I believe full parameter support is functional.  Regression has been updated
+ which now completely passes.  A few new diagnostics have been added to the
+ testsuite to verify additional functionality that is supported.
+
  Revision 1.36  2006/01/25 22:13:46  phase1geo
  Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
  need to look at a problem at the end of the dumpfile -- I'm getting coredumps
