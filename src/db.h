@@ -31,7 +31,7 @@ void db_add_module( char* name, char* file, int start_line );
 bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line );
 
 /*! \brief Adds specified declared parameter to parameter list.  Called by parser. */
-void db_add_declared_param( char* name, expression* expr, bool local );
+void db_add_declared_param( char* name, static_expr* msb, static_expr* lsb, expression* expr, bool local );
 
 /*! \brief Adds specified override parameter to parameter list.  Called by parser. */
 void db_add_override_param( char* inst_name, expression* expr, char* param_name );
@@ -125,6 +125,11 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.54  2006/02/01 15:13:10  phase1geo
+ Added support for handling bit selections in RHS parameter calculations.  New
+ mbit_sel5.4 diagnostic added to verify this change.  Added the start of a
+ regression utility that will eventually replace the old Makefile system.
+
  Revision 1.53  2006/01/26 22:40:13  phase1geo
  Fixing last LXT bug.
 

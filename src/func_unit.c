@@ -225,7 +225,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
       /* This parameter attaches to an expression tree */
       curr_exp = curr_iparm->mparm->exp_head;
       while( curr_exp != NULL ) {
-        expression_set_value( curr_exp->exp, curr_iparm->value );
+        expression_set_value( curr_exp->exp, curr_iparm->sig->value );
         curr_exp = curr_exp->next;
       }
     }
@@ -830,6 +830,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.16  2006/02/01 15:13:11  phase1geo
+ Added support for handling bit selections in RHS parameter calculations.  New
+ mbit_sel5.4 diagnostic added to verify this change.  Added the start of a
+ regression utility that will eventually replace the old Makefile system.
+
  Revision 1.15  2006/01/24 23:24:37  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work
