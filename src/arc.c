@@ -297,10 +297,12 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
         pos         = (arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) % 8;
         curr        = (start * entry_size) + ((arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) / 8) + ARC_STATUS_SIZE;
         value.value = left->value;
+        value.suppl = left->suppl;
       } else {
         pos         = ARC_ENTRY_SUPPL_SIZE;
         curr        = (start * entry_size) + ARC_STATUS_SIZE;
         value.value = right->value;
+        value.suppl = right->suppl;
       }
 
       value.width = (arc_get_width( arcs ) > (8 - pos)) ? (8 - pos) : arc_get_width( arcs );
@@ -1258,6 +1260,13 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.28  2006/02/02 22:37:40  phase1geo
+ Starting to put in support for signed values and inline register initialization.
+ Also added support for more attribute locations in code.  Regression updated for
+ these changes.  Interestingly, with the changes that were made to the parser,
+ signals are output to reports in order (before they were completely reversed).
+ This is a nice surprise...  Full regression passes.
+
  Revision 1.27  2005/12/21 22:30:54  phase1geo
  More updates to memory leak fix list.  We are getting close!  Added some helper
  scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression

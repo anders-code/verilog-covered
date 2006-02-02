@@ -2846,15 +2846,21 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
         break;
       default:
         /* This is an illegal expression to have on the left-hand-side of an expression */
+#ifdef NOT_SUPPORTED
+        assert( (lhs->op == EXP_OP_SIG)      ||
+                (lhs->op == EXP_OP_SBIT_SEL) ||
+                (lhs->op == EXP_OP_MBIT_SEL) ||
+                (lhs->op == EXP_OP_MBIT_POS) ||
+                (lhs->op == EXP_OP_MBIT_NEG) ||
+                (lhs->op == EXP_OP_CONCAT)   ||
+                (lhs->op == EXP_OP_LIST) );
+#else
 	assert( (lhs->op == EXP_OP_SIG)      ||
 	        (lhs->op == EXP_OP_SBIT_SEL) ||
 		(lhs->op == EXP_OP_MBIT_SEL) ||
-#ifdef NOT_SUPPORTED
-                (lhs->op == EXP_OP_MBIT_POS) ||
-                (lhs->op == EXP_OP_MBIT_NEG) ||
-#endif
 		(lhs->op == EXP_OP_CONCAT)   ||
 		(lhs->op == EXP_OP_LIST) );
+#endif
         break;
     }
 
@@ -2974,6 +2980,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.168  2006/02/02 22:37:41  phase1geo
+ Starting to put in support for signed values and inline register initialization.
+ Also added support for more attribute locations in code.  Regression updated for
+ these changes.  Interestingly, with the changes that were made to the parser,
+ signals are output to reports in order (before they were completely reversed).
+ This is a nice surprise...  Full regression passes.
+
  Revision 1.167  2006/01/31 16:41:00  phase1geo
  Adding initial support and diagnostics for the variable multi-bit select
  operators +: and -:.  More to come but full regression passes.
