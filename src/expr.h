@@ -22,6 +22,9 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
 /*! \brief Sets the specified expression value to the specified vector value. */
 void expression_set_value( expression* exp, vector* vec );
 
+/*! \brief Sets the signed bit for all appropriate parent expressions */
+void expression_set_signed( expression* exp );
+
 /*! \brief Recursively resizes specified expression tree leaf node. */
 void expression_resize( expression* expr, bool recursive );
 
@@ -79,6 +82,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.40  2006/02/03 23:49:38  phase1geo
+ More fixes to support signed comparison and propagation.  Still more testing
+ to do here before I call it good.  Regression may fail at this point.
+
  Revision 1.39  2006/01/24 23:24:37  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work

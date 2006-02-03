@@ -466,6 +466,11 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
         expression_set_assigned( exp );
       }
 
+      /* Set signed bits */
+      if( !clear_assigned ) {
+        expression_set_signed( exp );
+      }
+
       /*
        If the signal is found for the given expression but the signal is marked as "must be assigned" but is also marked as
        "won't be assigned", we need to remove all statement blocks that contain this signal from coverage consideration.
@@ -853,6 +858,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.68  2006/02/03 23:49:38  phase1geo
+ More fixes to support signed comparison and propagation.  Still more testing
+ to do here before I call it good.  Regression may fail at this point.
+
  Revision 1.67  2006/01/31 16:41:00  phase1geo
  Adding initial support and diagnostics for the variable multi-bit select
  operators +: and -:.  More to come but full regression passes.
