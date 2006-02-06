@@ -150,20 +150,30 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
 
       fclose( cmd_handle );
 
-      /* Create argument list */
-      *arg_list = (char**)malloc_safe( (sizeof( char* ) * tmp_num), __FILE__, __LINE__ );
-      *arg_num  = tmp_num;
-      tmp_num   = 0;
+      /* Set the argument list number now */
+      *arg_num = tmp_num;
 
-      curr = head;
-      while( curr != NULL ) {
-        (*arg_list)[tmp_num] = strdup_safe( curr->str, __FILE__, __LINE__ );
-        tmp_num++;
-        curr = curr->next;
+      /*
+       If there were any arguments found in the file, create an argument list and pass it to the
+       command-line parser.
+      */
+      if( tmp_num > 0 ) {
+
+        /* Create argument list */
+        *arg_list = (char**)malloc_safe( (sizeof( char* ) * tmp_num), __FILE__, __LINE__ );
+        tmp_num   = 0;
+
+        curr = head;
+        while( curr != NULL ) {
+          (*arg_list)[tmp_num] = strdup_safe( curr->str, __FILE__, __LINE__ );
+          tmp_num++;
+          curr = curr->next;
+        }
+
+        /* Delete list */
+        str_link_delete_list( head );
+
       }
-
-      /* Delete list */
-      str_link_delete_list( head );
 
     } else {
 
@@ -534,6 +544,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.63  2006/02/06 15:35:36  phase1geo
+ Fixing bug with -f option when the file is empty (previously segfaulted).
+
  Revision 1.62  2006/01/25 22:13:46  phase1geo
  Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
  need to look at a problem at the end of the dumpfile -- I'm getting coredumps
