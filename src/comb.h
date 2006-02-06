@@ -29,7 +29,7 @@ bool combination_get_module_summary( char* funit_name, int funit_type, int* tota
 bool combination_get_expression( char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups, int* code_size, char*** ulines, int* uline_size );
 
 /*! \brief Gets output for specified expression including coverage information */
-bool combination_get_coverage( char* funit_name, int funit_type, int uline_id, char*** info, int* info_size );
+bool combination_get_coverage( char* funit_name, int funit_type, int exp_id, int uline_id, char*** info, int* info_size );
 
 /*! \brief Generates report output for combinational logic coverage. */
 void combination_report( FILE* ofile, bool verbose );
@@ -37,6 +37,10 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.14  2006/02/06 22:48:34  phase1geo
+ Several enhancements to GUI look and feel.  Fixed error in combinational logic
+ window.
+
  Revision 1.13  2005/11/10 19:28:22  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column

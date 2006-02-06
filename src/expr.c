@@ -838,6 +838,36 @@ void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tai
 }
 
 /*!
+ \param expr  Pointer to root expression to search under
+ \param ulid  Underline ID to search for
+
+ \return Returns a pointer to the found expression; otherwise, returns NULL if the expression
+         could not be found.
+
+ Recursively searches the given expression tree for the specified underline ID.  If the
+ expression is found, a pointer to it is returned; otherwise, returns NULL.
+*/
+expression* expression_find_uline_id( expression* expr, int ulid ) {
+
+  expression* found_exp = NULL;  /* Pointer to found expression */
+
+  if( expr != NULL ) {
+
+    if( expr->ulid == ulid ) {
+      found_exp = expr;
+    } else {
+      if( (found_exp = expression_find_uline_id( expr->left, ulid )) == NULL ) {
+        found_exp = expression_find_uline_id( expr->right, ulid );
+      }
+    }
+
+  }
+
+  return( found_exp );
+
+}
+
+/*!
  \param exp  Pointer to expression to get root statement for.
 
  \return Returns a pointer to the root statement of the specified expression if one exists;
@@ -3061,6 +3091,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.171  2006/02/06 22:48:34  phase1geo
+ Several enhancements to GUI look and feel.  Fixed error in combinational logic
+ window.
+
  Revision 1.170  2006/02/06 05:07:26  phase1geo
  Fixed expression_set_static_only function to consider static expressions
  properly.  Updated regression as a result of this change.  Added files
