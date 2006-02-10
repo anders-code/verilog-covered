@@ -324,7 +324,6 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
       */
       if( ESUPPL_STMT_IS_CALLED( stmt->exp->suppl ) == 0 ) {
         thr = sim_add_thread( NULL, stmt );
-        // printf( "CALLED sim_add_thread for statement %d, funit %s, thread %p\n", stmt->exp->id, curr_funit->name, thr );
       }
 
     }
@@ -631,6 +630,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.73  2006/02/10 16:44:29  phase1geo
+ Adding support for register assignment.  Added diagnostic to regression suite
+ to verify its implementation.  Updated TODO.  Full regression passes at this
+ point.
+
  Revision 1.72  2006/01/24 23:24:38  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work

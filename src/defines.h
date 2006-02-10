@@ -653,6 +653,7 @@ typedef enum exp_op_type_e {
                                        (x->parent->expr->op != EXP_OP_DASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_BASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_NASSIGN) && \
+                                       (x->parent->expr->op != EXP_OP_RASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_IF) && \
                                        (x->parent->expr->op != EXP_OP_WHILE) && \
                                        (x->parent->expr->op != EXP_OP_COND)) && \
@@ -701,6 +702,7 @@ typedef enum exp_op_type_e {
                                          (o != EXP_OP_DASSIGN)        && \
                                          (o != EXP_OP_BASSIGN)        && \
                                          (o != EXP_OP_NASSIGN)        && \
+                                         (o != EXP_OP_RASSIGN)        && \
                                          (o != EXP_OP_IF)             && \
                                          (o != EXP_OP_WHILE)          && \
                                          (o != EXP_OP_FUNC_CALL)      && \
@@ -1800,6 +1802,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.179  2006/02/10 16:44:28  phase1geo
+ Adding support for register assignment.  Added diagnostic to regression suite
+ to verify its implementation.  Updated TODO.  Full regression passes at this
+ point.
+
  Revision 1.178  2006/02/03 23:49:38  phase1geo
  More fixes to support signed comparison and propagation.  Still more testing
  to do here before I call it good.  Regression may fail at this point.
