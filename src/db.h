@@ -22,7 +22,7 @@ bool db_write( char* file, bool parse_mode );
 bool db_read( char* file, int read_mode );
 
 /*! \brief Adds specified functional unit node to functional unit tree.  Called by parser. */
-func_unit* db_add_instance( char* scope, char* name, int type );
+func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range );
 
 /*! \brief Adds specified module to module list.  Called by parser. */
 void db_add_module( char* name, char* file, int start_line );
@@ -125,6 +125,11 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.56  2006/02/16 21:19:26  phase1geo
+ Adding support for arrays of instances.  Also fixing some memory problems for
+ constant functions and fixed binding problems when hierarchical references are
+ made to merged modules.  Full regression now passes.
+
  Revision 1.55  2006/02/02 22:37:40  phase1geo
  Starting to put in support for signed values and inline register initialization.
  Also added support for more attribute locations in code.  Regression updated for

@@ -419,7 +419,7 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
           snprintf( tmpfile, tmpchars, "%s/%s", dir, dirp->d_name );
           if( str_link_find( tmpfile, *file_head ) == NULL ) {
             str_link_add( tmpfile, file_head, file_tail );
-            (*file_tail)->suppl1 = 0x1;
+            (*file_tail)->suppl = 0x1;
           }
         }
       }
@@ -540,12 +540,23 @@ void scope_extract_front( char* scope, char* front, char* rest ) {
 */
 void scope_extract_back( char* scope, char* back, char* rest ) {
 
-  char* ptr;    /* Pointer to current character */
+  char* ptr;      /* Pointer to current character */
+  char  endchar;  /* Set to the character we are searching for */
 
   ptr = scope + strlen( scope ) - 1;
 
-  while( (ptr > scope) && (*ptr != '.') ) {
+  /* Figure out if we are looking for a '.' or a ' ' character */
+  endchar = (*ptr == ' ') ? '\\' : '.';
+
+  while( (ptr > scope) && (*ptr != endchar) ) {
     ptr--;
+  }
+
+  /* If this is a literal, keep going until we see the '.' character */
+  if( endchar == '\\' ) {
+    while( (ptr > scope) && (*ptr != '.') ) {
+      ptr--;
+    }
   }
 
   strncpy( rest, scope, (ptr - scope) );
@@ -680,7 +691,7 @@ str_link* get_next_vfile( str_link* curr, char* mod ) {
   char      name[256];    /* String holder for module name of file */
 
   while( (curr != NULL) && (next == NULL) ) {
-    if( (curr->suppl1 & 0x1) != 0x1 ) {
+    if( (curr->suppl & 0x1) != 0x1 ) {
       next = curr;
     } else {
       convert_file_to_module( name, 256, curr->str );
@@ -901,6 +912,11 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.42  2006/02/16 21:19:26  phase1geo
+ Adding support for arrays of instances.  Also fixing some memory problems for
+ constant functions and fixed binding problems when hierarchical references are
+ made to merged modules.  Full regression now passes.
+
  Revision 1.41  2006/01/25 22:13:46  phase1geo
  Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
  need to look at a problem at the end of the dumpfile -- I'm getting coredumps

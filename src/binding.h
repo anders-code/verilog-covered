@@ -30,10 +30,12 @@ char* bind_find_sig_name( expression* exp );
 void bind_rm_stmt( int id );
 
 /*! \brief Binds a signal to an expression */
-bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading, bool clear_assigned, int exp_line );
+bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading,
+                  bool clear_assigned, int exp_line, bool bind_locally );
 
 /*! \brief Binds a function or task to an expression */
-bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading, int exp_line );
+bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp,
+                                    bool cdd_reading, int exp_line, bool bind_locally );
 
 /*! \brief Performs vsignal/expression bind (performed after parse completed). */
 void bind( bool cdd_reading );
@@ -44,6 +46,11 @@ void bind_dealloc();
 
 /* 
  $Log$
+ Revision 1.25  2006/02/16 21:19:26  phase1geo
+ Adding support for arrays of instances.  Also fixing some memory problems for
+ constant functions and fixed binding problems when hierarchical references are
+ made to merged modules.  Full regression now passes.
+
  Revision 1.24  2006/01/24 23:24:37  phase1geo
  More updates to handle static functions properly.  I have redone quite a bit
  of code here which has regressions pretty broke at the moment.  More work
