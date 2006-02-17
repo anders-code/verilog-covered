@@ -174,7 +174,7 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
         texp.id = exp_id;
         expl    = NULL;
 
-        if( (curr_funit->type == FUNIT_FUNCTION) && (strcmp( curr_funit->name, sig->name ) == 0) ) {
+        if( (curr_funit->type == FUNIT_FUNCTION) && scope_compare( curr_funit->name, sig->name ) ) {
           parent_mod = funit_get_curr_module( curr_funit );
           expl       = exp_link_find( &texp, parent_mod->exp_head );
         }
@@ -266,7 +266,7 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
 
     *line = *line + chars_read;
 
-    if( (strcmp( base->name, name ) != 0) || (base->lsb != lsb) ) {
+    if( !scope_compare( base->name, name ) || (base->lsb != lsb) ) {
 
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
@@ -316,7 +316,7 @@ bool vsignal_db_replace( vsignal* base, char** line ) {
 
     *line = *line + chars_read;
 
-    if( (strcmp( base->name, name ) != 0) || (base->lsb != lsb) ) {
+    if( !scope_compare( base->name, name ) || (base->lsb != lsb) ) {
 
       print_output( "Attempting to replace a database derived from a different design.  Unable to replace",
                     FATAL, __FILE__, __LINE__ );
@@ -535,6 +535,9 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.21  2006/02/17 19:50:47  phase1geo
+ Added full support for escaped names.  Full regression passes.
+
  Revision 1.20  2006/02/01 15:13:11  phase1geo
  Added support for handling bit selections in RHS parameter calculations.  New
  mbit_sel5.4 diagnostic added to verify this change.  Added the start of a
