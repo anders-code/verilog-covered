@@ -31,6 +31,9 @@ void expression_resize( expression* expr, bool recursive );
 /*! \brief Returns expression ID of this expression. */
 int expression_get_id( expression* expr, bool parse_mode );
 
+/*! \brief Returns first line in this expression tree. */
+expression* expression_get_first_line_expr( expression* expr );
+
 /*! \brief Returns last line in this expression tree. */
 expression* expression_get_last_line_expr( expression* expr );
 
@@ -85,6 +88,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.42  2006/03/20 16:43:38  phase1geo
+ Fixing code generator to properly display expressions based on lines.  Regression
+ still needs to be updated for these changes.
+
  Revision 1.41  2006/02/06 22:48:34  phase1geo
  Several enhancements to GUI look and feel.  Fixed error in combinational logic
  window.

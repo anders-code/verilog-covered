@@ -1994,7 +1994,6 @@ bool combination_get_expression( char* funit_name, int funit_type, int expr_id, 
 
       for( i=0; i<*code_size; i++ ) {
 
-        printf( "code: %s\n", (*code)[i] );
         assert( (*code)[i] != NULL );
 
         (*uline_groups)[i] = 0;
@@ -2152,6 +2151,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.132  2006/03/20 16:43:38  phase1geo
+ Fixing code generator to properly display expressions based on lines.  Regression
+ still needs to be updated for these changes.
+
  Revision 1.131  2006/03/15 22:48:29  phase1geo
  Updating run program.  Fixing bugs in statement_connect algorithm.  Updating
  regression files.
