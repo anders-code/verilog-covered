@@ -256,15 +256,20 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
               *total = *total + 2;
               *hit   = *hit + 2;
             } else if( EXPR_IS_COMB( exp ) == 1 ) {
-              *total  = *total + 4;
-              num_hit = exp->suppl.part.eval_00 +
-                        exp->suppl.part.eval_01 +
-                        exp->suppl.part.eval_10 +
-                        exp->suppl.part.eval_11;
-              *hit    = *hit + num_hit;
-              if( (num_hit != 4) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
-                exp->ulid = *ulid;
-                (*ulid)++;
+              if( expression_is_static_only( exp->left ) || expression_is_static_only( exp->right ) ) {
+                *total = *total + 2;
+                *hit   = *hit + 2;
+              } else {
+                *total  = *total + 4;
+                num_hit = exp->suppl.part.eval_00 +
+                          exp->suppl.part.eval_01 +
+                          exp->suppl.part.eval_10 +
+                          exp->suppl.part.eval_11;
+                *hit    = *hit + num_hit;
+                if( (num_hit != 4) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
+                  exp->ulid = *ulid;
+                  (*ulid)++;
+                }
               }
             } else if( EXPR_IS_EVENT( exp ) == 1 ) {
               *total  = *total + 1;
@@ -2151,6 +2156,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.133  2006/03/22 22:00:43  phase1geo
+ Fixing bug in missed combinational logic determination where a static expression
+ on the left/right of a combination expression should cause the entire expression to
+ be considered fully covered.  Regressions have not been run which may contain some
+ miscompares due to this change.
+
  Revision 1.132  2006/03/20 16:43:38  phase1geo
  Fixing code generator to properly display expressions based on lines.  Regression
  still needs to be updated for these changes.
