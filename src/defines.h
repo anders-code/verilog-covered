@@ -669,7 +669,9 @@ typedef enum exp_op_type_e {
  Returns a value of true if the specified expression ks considered a combination expression by
  the combinational logic report generator.
 */
-#define EXPR_IS_COMB(x)          exp_op_info[x->op].suppl.is_comb
+#define EXPR_IS_COMB(x)          (exp_op_info[x->op].suppl.is_comb && \
+                                  !expression_is_static_only( x->left ) && \
+                                  !expression_is_static_only( x->right))
 
 /*!
  Returns a value of true if the specified expression is considered to be an event type
@@ -722,8 +724,6 @@ typedef enum exp_op_type_e {
 #define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE( x ) && \
                                     !expression_is_static_only( x ) && \
 				    ((EXPR_IS_COMB( x ) && \
-                                      !expression_is_static_only( x->left ) && \
-                                      !expression_is_static_only( x->right ) && \
 				      (!x->suppl.part.eval_00 || \
                                        !x->suppl.part.eval_01 || \
                                        !x->suppl.part.eval_10 || \
@@ -1464,6 +1464,7 @@ typedef struct param_oride_s param_oride;
 
 struct exp_info_s {
   char* name;                             /*!< Operation name */
+  char* op_str;                           /*!< Operation string name for report output purposes */
   bool  (*func)( expression*, thread* );  /*!< Operation function to call */
   struct {
     nibble is_event:1;                    /*!< Specifies if operation is an event */
@@ -1805,6 +1806,13 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.182  2006/03/23 22:42:54  phase1geo
+ Changed two variable combinational expressions that have a constant value in either the
+ left or right expression tree to unary expressions.  Removed expressions containing only
+ static values from coverage totals.  Fixed bug in stmt_iter_get_next_in_order for looping
+ cases (the verbose output was not being emitted for these cases).  Updated regressions for
+ these changes -- full regression passes.
+
  Revision 1.181  2006/03/22 22:00:43  phase1geo
  Fixing bug in missed combinational logic determination where a static expression
  on the left/right of a combination expression should cause the entire expression to
