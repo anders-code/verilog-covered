@@ -305,7 +305,7 @@ inst_parm* inst_parm_find( char* name, inst_parm* iparm ) {
  \param inst_name  Name of instance containing this parameter name
  \param msb        Static expression containing the MSB of this instance parameter
  \param lsb        Static expression containing the LSB of this instance parameter
- \param scope      Full hierarchical name of parameter value.
+ \param is_signed  Specifies if this instance parameter should be treated as signed or unsigned
  \param value      Vector value of specified instance parameter.
  \param mparm      Pointer to module instance that this instance parameter is derived from.
  \param inst       Pointer to current functional unit instance.
@@ -823,7 +823,7 @@ void param_resolve_override( mod_parm* oparm, funit_inst* inst ) {
 }
 
 /*!
- \param funit  Pointer to functional unit to resolve parameter values
+ \param inst  Pointer to functional unit instance to resolve parameter values for
 
  Called after binding has occurred.  Recursively resolves all parameters for the given
  instance tree.
@@ -977,6 +977,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.59  2006/03/27 23:25:30  phase1geo
+ Updating development documentation for 0.4 stable release.
+
  Revision 1.58  2006/02/16 21:19:26  phase1geo
  Adding support for arrays of instances.  Also fixing some memory problems for
  constant functions and fixed binding problems when hierarchical references are

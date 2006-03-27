@@ -104,7 +104,6 @@ vector_width* parser_copy_curr_range() {
 /*!
  \param left   Pointer to static expression of expression/value on the left side of the colon.
  \param right  Pointer to static expression of expression/value on the right side of the colon.
- \param implicit
 
  Deallocates and sets the curr_range variable from static expressions
 */
@@ -121,7 +120,12 @@ void parser_explicitly_set_curr_range( static_expr* left, static_expr* right ) {
 
 }
 
-/*! \brief Deallocates and sets the curr_range variable from scratch values */
+/*!
+ \param left_num   Integer value of left expression
+ \param right_num  Integer value of right expression
+
+ Deallocates and sets the curr_range variable from known integer values.
+*/
 void parser_implicitly_set_curr_range( int left_num, int right_num ) {
 
   /* Deallocate any memory currently associated with the curr_range variable */
@@ -142,6 +146,9 @@ void parser_implicitly_set_curr_range( int left_num, int right_num ) {
 
 /*
  $Log$
+ Revision 1.6  2006/03/27 23:25:30  phase1geo
+ Updating development documentation for 0.4 stable release.
+
  Revision 1.5  2006/02/01 19:58:28  phase1geo
  More updates to allow parsing of various parameter formats.  At this point
  I believe full parameter support is functional.  Regression has been updated

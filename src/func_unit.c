@@ -1,5 +1,5 @@
 /*!
- \file     module.c
+ \file     func_unit.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     12/7/2001
 */
@@ -830,6 +830,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.17  2006/03/27 23:25:30  phase1geo
+ Updating development documentation for 0.4 stable release.
+
  Revision 1.16  2006/02/01 15:13:11  phase1geo
  Added support for handling bit selections in RHS parameter calculations.  New
  mbit_sel5.4 diagnostic added to verify this change.  Added the start of a

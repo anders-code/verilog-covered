@@ -105,6 +105,10 @@ bool report_gui          = FALSE;
 */
 bool flag_use_line_width = FALSE;
 
+/*!
+ Specifies the number of characters wide that an expression will allowed to be output for
+ if the flag_use_line_width value is set to TRUE.
+*/
 int line_width           = DEFAULT_LINE_WIDTH;
 
 /*!
@@ -748,6 +752,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.56  2006/03/27 23:25:30  phase1geo
+ Updating development documentation for 0.4 stable release.
+
  Revision 1.55  2006/03/20 16:43:38  phase1geo
  Fixing code generator to properly display expressions based on lines.  Regression
  still needs to be updated for these changes.

@@ -171,8 +171,7 @@ bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int*
  \param funit_name  Name of functional unit to retrieve summary information from.
  \param funit_type  Type of functional unit to retrieve summary information from.
  \param total       Pointer to total number of toggles in this functional unit.
- \param hit01       Pointer to number of toggles hit going 0 -> 1 in this functional unit.
- \param hit10       Pointer to number of toggles hit going 1 -> 0 in this functional unit.
+ \param hit         Pointer to total number of toggles hit in this functional unit.
 
  \return Returns TRUE if specified functional unit was found in design; otherwise,
          returns FALSE.
@@ -590,6 +589,9 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.34  2006/03/27 23:25:30  phase1geo
+ Updating development documentation for 0.4 stable release.
+
  Revision 1.33  2006/02/17 19:50:47  phase1geo
  Added full support for escaped names.  Full regression passes.
 
