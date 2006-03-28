@@ -1,3 +1,18 @@
+/*
+ Copyright (c) 2006 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 /*!
  \file     main.c
  \author   Trevor Williams  (trevorw@charter.net)
@@ -169,6 +184,11 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.16  2006/03/28 22:28:27  phase1geo
+ Updates to user guide and added copyright information to each source file in the
+ src directory.  Added test directory in user documentation directory containing the
+ example used in line, toggle, combinational logic and FSM descriptions.
+
  Revision 1.15  2006/01/09 18:58:15  phase1geo
  Updating regression for VCS runs.  Added cleanup function at exit to remove the
  tmp* file (if it exists) regardless of the internal state of Covered at the time
