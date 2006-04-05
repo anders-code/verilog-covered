@@ -188,7 +188,7 @@ fsm_var* fsm_var_is_output_state( expression* expr ) {
 */
 bool fsm_var_bind_expr( char* sig_name, expression* expr, char* funit_name ) {
 
-  bool        retval = TRUE;  /* Return value for this function                */
+  bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit link element */
   func_unit   funit;          /* Temporary functional unit used for searching  */
 
@@ -483,6 +483,11 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.25  2006/04/05 15:19:18  phase1geo
+ Adding support for FSM coverage output in the GUI.  Started adding components
+ for assertion coverage to GUI and report functions though there is no functional
+ support for this at this time.
+
  Revision 1.24  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
