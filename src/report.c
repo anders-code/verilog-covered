@@ -646,7 +646,7 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
   } else {
 
     if( (retval = db_read( ifile, read_mode )) ) {
-      bind( TRUE );
+      bind_perform( TRUE );
       report_gather_funit_stats( funit_head );
     }
 
@@ -699,7 +699,7 @@ int command_report( int argc, int last_arg, char** argv ) {
         if( db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) ) ) {
 
           /* Perform binding */
-          bind( TRUE );
+          bind_perform( TRUE );
 
           /* Open output stream */
           if( output_file != NULL ) {
@@ -798,6 +798,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.59  2006/04/07 03:47:50  phase1geo
+ Fixing run-time issues with VPI.  Things are running correctly now with IV.
+
  Revision 1.58  2006/04/05 15:19:18  phase1geo
  Adding support for FSM coverage output in the GUI.  Started adding components
  for assertion coverage to GUI and report functions though there is no functional

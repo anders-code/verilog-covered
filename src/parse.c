@@ -113,7 +113,7 @@ bool parse_design( char* top, char* output_db ) {
 #endif
 
     /* Perform all signal/expression binding */
-    bind( FALSE );
+    bind_perform( FALSE );
     fsm_var_bind();
   
     /* Perform race condition checking */
@@ -185,7 +185,7 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
   }
   
   /* Bind expressions to signals/functional units */
-  bind( TRUE );
+  bind_perform( TRUE );
 
   /* Add static values to simulator */
   sim_add_statics();
@@ -225,6 +225,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.39  2006/04/07 03:47:50  phase1geo
+ Fixing run-time issues with VPI.  Things are running correctly now with IV.
+
  Revision 1.38  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

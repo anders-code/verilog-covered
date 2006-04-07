@@ -770,7 +770,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
  to the signal's expression pointer list, and setting the expression vector pointer
  to point to the signal vector.
 */
-void bind( bool cdd_reading ) {
+void bind_perform( bool cdd_reading ) {
   
   funit_inst* funiti;        /* Pointer to found functional unit instance */
   exp_bind*   curr_eb;       /* Pointer to current expression binding */
@@ -921,6 +921,9 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.72  2006/04/07 03:47:50  phase1geo
+ Fixing run-time issues with VPI.  Things are running correctly now with IV.
+
  Revision 1.71  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
