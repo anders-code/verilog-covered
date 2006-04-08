@@ -269,7 +269,6 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope ) {
   assert( root != NULL );
 
   /* Strip root name from scope */
-  printf( "scope: %s, root->name: %s\n", scope, root->name );
   if( strncmp( scope, root->name, strlen( root->name ) ) == 0 ) {
     
     strcpy( tmp_scope, scope );
@@ -691,6 +690,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.42  2006/04/08 03:23:28  phase1geo
+ Adding support for CVER simulator VPI support.  I think I may have also fixed
+ support for VCS also.  Recreated configuration/Makefiles with newer version of
+ auto* tools.
+
  Revision 1.41  2006/04/07 22:31:07  phase1geo
  Fixes to get VPI to work with VCS.  Getting close but still some work to go to
  get the callbacks to start working.
