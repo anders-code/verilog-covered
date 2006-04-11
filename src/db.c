@@ -60,7 +60,8 @@ extern funit_link* funit_tail;
 extern nibble      or_optab[16];
 extern char        user_msg[USER_MSG_LENGTH];
 extern bool        one_instance_found;
-extern char        leading_hierarchy[4096];
+extern char**      leading_hierarchies;
+extern int         leading_hier_num;
 extern bool        flag_scored;
 extern int         timestep_update;
 extern bool        debug_mode;
@@ -1469,8 +1470,10 @@ void db_sync_curr_instance() {
  
   char stripped_scope[4096];  /* Temporary string */
 
-  if( strcmp( leading_hierarchy, "*" ) != 0 ) {
-    scope_extract_scope( curr_inst_scope, leading_hierarchy, stripped_scope );
+  assert( leading_hier_num > 0 );
+
+  if( strcmp( leading_hierarchies[0], "*" ) != 0 ) {
+    scope_extract_scope( curr_inst_scope, leading_hierarchies[0], stripped_scope );
   } else {
     strcpy( stripped_scope, curr_inst_scope );
   }
@@ -1689,6 +1692,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.176  2006/04/11 22:42:16  phase1geo
+ First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
  Revision 1.175  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

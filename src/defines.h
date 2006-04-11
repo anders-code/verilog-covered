@@ -156,25 +156,6 @@
 /*! @} */
 
 /*!
- \addtogroup info_merged_types Merge codes on INFO line.
-
- The following defines specify various merge types for CDD files.
-
- @{
-*/
-
-/*! Specifies that the contents of this CDD file have not gone through a merge process */
-#define INFO_NOT_MERGED      0
-
-/*! Specifies that the contents of this CDD file have been merged with one file */
-#define INFO_ONE_MERGED      1
-
-/*! Specifies that the contents of this CDD file is the result of merging two other CDD files */
-#define INFO_TWO_MERGED      2
-
-/*! @} */
-
-/*!
  \addtogroup db_types Database line types
 
  The following defines are used in the coverage database to indicate
@@ -1830,6 +1811,9 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.186  2006/04/11 22:42:16  phase1geo
+ First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
  Revision 1.185  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
