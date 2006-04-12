@@ -554,11 +554,11 @@ void report_print_header( FILE* ofile ) {
       fprintf( ofile, "* Report generated from CDD file that was merged from the following files with the following leading hierarchies:\n" );
       fprintf( ofile, "    Filename                                           Leading Hierarchy\n" );
       fprintf( ofile, "    -----------------------------------------------------------------------------------------------------------------\n" );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n",   input_db,    leading_hierarchies[0] );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n\n", merge_in[0], leading_hierarchies[1] ); 
+      fprintf( ofile, "    %-49.49s  %-62.62s\n", input_db,    leading_hierarchies[0] );
+      fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in[0], leading_hierarchies[1] ); 
 
       if( report_instance && leading_hiers_differ ) {
-        fprintf( ofile, "* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
+        fprintf( ofile, "\n* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
       }
 
     } else {
@@ -572,7 +572,7 @@ void report_print_header( FILE* ofile ) {
       }
 
       if( report_instance && leading_hiers_differ ) {
-        fprintf( ofile, "* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
+        fprintf( ofile, "\n* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
       }
 
     }
@@ -802,6 +802,12 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.61  2006/04/12 18:06:24  phase1geo
+ Updating regressions for changes that were made to support multi-file merging.
+ Also fixing output of FSM state transitions to be what they were.
+ Regressions now pass; however, the support for multi-file merging (beyond two
+ files) has not been tested to this point.
+
  Revision 1.60  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
 

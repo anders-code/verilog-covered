@@ -103,10 +103,16 @@ void info_db_write( FILE* file ) {
            flag_exclude_initial,
            merge_in_num );
 
-  assert( (leading_hier_num - 1) == merge_in_num );
-
-  for( i=0; i<merge_in_num; i++ ) {
-    fprintf( file, " %s %s", merge_in[i], leading_hierarchies[i+1] );
+  /* Display any merge filename information */
+  if( leading_hier_num == merge_in_num ) {
+    for( i=0; i<merge_in_num; i++ ) {
+      fprintf( file, " %s %s", merge_in[i], leading_hierarchies[i] );
+    }
+  } else {
+    assert( (leading_hier_num - 1) == merge_in_num );
+    for( i=0; i<merge_in_num; i++ ) {
+      fprintf( file, " %s %s", merge_in[i], leading_hierarchies[i+1] );
+    }
   }
 
   fprintf( file, "\n" );
@@ -194,6 +200,12 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.13  2006/04/12 18:06:24  phase1geo
+ Updating regressions for changes that were made to support multi-file merging.
+ Also fixing output of FSM state transitions to be what they were.
+ Regressions now pass; however, the support for multi-file merging (beyond two
+ files) has not been tested to this point.
+
  Revision 1.12  2006/04/12 13:28:37  phase1geo
  Fixing problem with memory allocation for merged files.
 
