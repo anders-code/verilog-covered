@@ -634,6 +634,7 @@ typedef enum exp_op_type_e {
   EXP_OP_PARAM_MBIT_POS,  /*!< 75:0x4b.  Specifies positive variable multi-bit parameter select */
   EXP_OP_PARAM_MBIT_NEG,  /*!< 76:0x4c.  Specifies negative variable multi-bit parameter select */
   EXP_OP_NEGATE,          /*!< 77:0x4d.  Specifies the unary negate operator (-) */
+  EXP_OP_NOOP,            /*!< 78:0x4e.  Specifies no operation is to be performed (placeholder) */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -1811,6 +1812,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.188  2006/04/13 21:04:24  phase1geo
+ Adding NOOP expression and allowing $display system calls to not cause its
+ statement block to be excluded from coverage.  Updating regressions which fully
+ pass.
+
  Revision 1.187  2006/04/13 14:59:23  phase1geo
  Updating CDD version from 6 to 7 due to changes in the merge facility.  Full
  regression now passes.
