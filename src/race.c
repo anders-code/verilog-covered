@@ -47,6 +47,7 @@
 #include "stmt_blk.h"
 #include "expr.h"
 #include "func_unit.h"
+#include "ovl.h"
 
 
 /*!
@@ -81,6 +82,7 @@ extern int         flag_race_check;
 extern char        user_msg[USER_MSG_LENGTH];
 extern funit_link* funit_head;
 extern func_unit*  curr_funit;
+extern bool        flag_check_ovl_assertions;
 
 
 /*!
@@ -615,7 +617,7 @@ void race_check_modules() {
 
   while( modl != NULL ) {
 
-    if( modl->funit->type == FUNIT_MODULE ) {
+    if( (modl->funit->type == FUNIT_MODULE) && (!flag_check_ovl_assertions || !ovl_is_assertion_module( modl->funit )) ) {
 
       /* Clear statement block array size */
       sb_size = 0;
@@ -968,6 +970,12 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.40  2006/04/13 22:17:47  phase1geo
+ Adding the beginning of the OVL assertion extractor.  So far the -a option is
+ parsed and the race condition checker is turned off for all detectable
+ OVL assertion modules (we will trust that these modules don't have race conditions
+ inherent in them).
+
  Revision 1.39  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
