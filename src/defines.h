@@ -1069,6 +1069,29 @@ union psuppl_u {
 };
 
 /*------------------------------------------------------------------------------*/
+
+union isuppl_u;
+
+/*!
+ Renaming isuppl_u field for convenience.
+*/
+typedef union isuppl_u isuppl;
+
+/*!
+ Supplemental field for information line in CDD file.
+*/
+union isuppl_u {
+  control all;
+  struct {
+    control scored      : 1;    /*!< Specifies if the design has been scored yet */
+    control excl_assign : 1;    /*!< Specifies if assign statements are being excluded from coverage */
+    control excl_always : 1;    /*!< Specifies if always statements are being excluded from coverage */
+    control excl_init   : 1;    /*!< Specifies if initial statements are being excluded from coverage */
+    control assert_ovl  : 1;    /*!< Specifies that OVL assertions should be included for coverage */
+  } part;
+};
+
+/*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DECLARATIONS  */
 
 union  expr_stmt_u;
@@ -1812,6 +1835,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.189  2006/04/14 17:05:13  phase1geo
+ Reorganizing info line to make it more succinct and easier for future needs.
+ Fixed problems with VPI library with recent merge changes.  Regression has
+ been completely updated for these changes.
+
  Revision 1.188  2006/04/13 21:04:24  phase1geo
  Adding NOOP expression and allowing $display system calls to not cause its
  statement block to be excluded from coverage.  Updating regressions which fully

@@ -62,7 +62,7 @@ extern char        user_msg[USER_MSG_LENGTH];
 extern bool        one_instance_found;
 extern char**      leading_hierarchies;
 extern int         leading_hier_num;
-extern bool        flag_scored;
+extern isuppl      info_suppl;
 extern int         timestep_update;
 extern bool        debug_mode;
 extern int*        fork_block_depth;
@@ -251,7 +251,7 @@ bool db_read( char* file, int read_mode ) {
           retval = info_db_read( &rest_line );
 
           /* If we are in report mode and this CDD file has not been written bow out now */
-          if( !flag_scored && 
+          if( (info_suppl.part.scored == 0) && 
               ((read_mode == READ_MODE_REPORT_NO_MERGE) ||
                (read_mode == READ_MODE_REPORT_MOD_MERGE)) ) {
             print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL, __FILE__, __LINE__ );
@@ -1692,6 +1692,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.177  2006/04/14 17:05:13  phase1geo
+ Reorganizing info line to make it more succinct and easier for future needs.
+ Fixed problems with VPI library with recent merge changes.  Regression has
+ been completely updated for these changes.
+
  Revision 1.176  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
 

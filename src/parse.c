@@ -44,7 +44,7 @@ extern str_link* use_files_head;
 extern str_link* modlist_head;
 extern str_link* modlist_tail;
 extern char      user_msg[USER_MSG_LENGTH];
-extern bool      flag_scored;
+extern isuppl    info_suppl;
 extern bool      flag_race_check;
 
 /*!
@@ -211,7 +211,7 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 #endif
 
   /* Indicate that this CDD contains scored information */
-  flag_scored = TRUE;
+  info_suppl.part.scored = 1;
 
   /* Write contents to database file */
   if( !db_write( db, FALSE ) ) {
@@ -225,6 +225,11 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.40  2006/04/14 17:05:13  phase1geo
+ Reorganizing info line to make it more succinct and easier for future needs.
+ Fixed problems with VPI library with recent merge changes.  Regression has
+ been completely updated for these changes.
+
  Revision 1.39  2006/04/07 03:47:50  phase1geo
  Fixing run-time issues with VPI.  Things are running correctly now with IV.
 
