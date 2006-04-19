@@ -546,6 +546,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       if( strncmp( argv[i], "ovl", 3 ) == 0 ) {
         info_suppl.part.assert_ovl = 1;
+        define_macro( "OVL_VERILOG",  "1" );
+        define_macro( "OVL_COVER_ON", "1" );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Unknown -A value (%s).  Please specify ovl.", argv[i] );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -562,6 +564,11 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     i++;
 
+  }
+
+  /* If there were no errors found and the -A option was not specified, add all OVL modules to list of no-score modules */
+  if( retval ) {
+    ovl_add_assertions_to_no_score_list( info_suppl.part.assert_ovl );
   }
 
   return( retval );
@@ -664,6 +671,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.72  2006/04/19 22:21:33  phase1geo
+ More updates to properly support assertion coverage.  Removing assertion modules
+ from line, toggle, combinational logic, FSM and race condition output so that there
+ won't be any overlap of information here.
+
  Revision 1.71  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
