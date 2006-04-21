@@ -897,10 +897,11 @@ void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode ) {
   if( iparm->sig->name != NULL ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d #%s %d 0 0 ",
+    fprintf( file, "%d #%s %d 0 %x ",
       DB_TYPE_SIGNAL,
       iparm->sig->name,
-      iparm->sig->lsb
+      iparm->sig->lsb,
+      iparm->sig->suppl.all
     );
 
     vector_db_write( iparm->sig->value, file, TRUE );
@@ -996,6 +997,11 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.60.4.2  2006/04/21 04:42:02  phase1geo
+ Adding endian2 and endian3 diagnostics to regression suite to verify other
+ endianness related code.  Made small fix to parameter CDD output function
+ to include the supplemental field output.  Full regression passes.
+
  Revision 1.60.4.1  2006/04/20 21:55:16  phase1geo
  Adding support for big endian signals.  Added new endian1 diagnostic to regression
  suite to verify this new functionality.  Full regression passes.  We may want to do
