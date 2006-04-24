@@ -25,9 +25,8 @@
  signal -- depending on how you look at it).  This latter effect can affect the calculation
  of the expression itself which will have a direct effect on combinational logic coverage.
  To accommodate logic designer's usage of the parameter (which can be quite extensive), all
- IEEE1394-1995 compliant parameter-related constructs are supported with the exception of
- defparams (which will be explained later).  In the future, all IEEE1394-2001 parameter
- constructs are planned to be supported.
+ IEEE1394-1995 and IEEE1394-2001 compliant parameter-related constructs are supported with
+ the exception of defparams (which will be explained later).
  
  \par
  Adding parameter support is tricky from the standpoint of making the process of incorporating
@@ -47,10 +46,8 @@
  parameters and instance parameters.  A module parameter is stored in the module structure and
  contains the expression tree required for calculating the parameter value.  An instance 
  parameter is stored for each parameter in the instance structure.  It contains the value
- of the parameter for the particular instance.  Instance parameter values are always calculated
- immediately upon being added to the instance's instance parameter list.  The two parameter
- structures are linked together via a mod_parm pointer located in the instance parameter
- structure.
+ of the parameter for the particular instance.  The two parameter structures are linked together
+ via a mod_parm pointer located in the instance parameter structure.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -396,7 +393,7 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
   assert( (sig_width <= MAX_BIT_WIDTH) && (sig_width >= 0) );
 
   /* Create instance parameter signal */
-  iparm->sig = vsignal_create( name, SSUPPL_TYPE_DECLARED, sig_width, sig_lsb, 0, 0, sig_be );
+  iparm->sig = vsignal_create( name, SSUPPL_TYPE_PARAM, sig_width, sig_lsb, 0, 0, sig_be );
 
   /* Store signed attribute for this vector */
   iparm->sig->value->suppl.part.is_signed = is_signed;
@@ -484,59 +481,6 @@ void defparam_dealloc() {
 }
 
 /*************************************************************************************/
-
-/*!
- \param expr  Pointer to current expression to evaluate.
- \param inst  Pointer to current instance to search.
-
- \return Returns a pointer to the specified value found.
-
- This function is called by param_expr_eval when it encounters a parameter in its
- expression tree that needs to be resolved for its value.  If the parameter is
- found, the value of that parameter is returned.  If the parameter is not found,
- an error message is displayed to the user (the user has created a module in which
- a parameter value is used without being defined).
-*/
-void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) {
-
-  inst_parm* icurr;  /* Pointer to current instance parameter being evaluated */
-    
-  if( inst != NULL ) {
-
-    icurr = inst->param_head;
-    while( (icurr != NULL) && (exp_link_find( expr, icurr->mparm->exp_head ) == NULL) ) {
-      icurr = icurr->next;
-    }
-
-    /*
-     If we were unable to find the module parameter in the current instance, check the rest of our
-     scope for the value.
-    */
-    if( icurr == NULL ) {
-
-      if( inst->funit->parent != NULL ) {
-        param_find_and_set_expr_value( expr, inst->parent );
-      } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, line %d", expr->line );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
-      }
-
-    } else {
-  
-      /* Set the found instance parameter value to this expression */
-      expression_set_value( expr, icurr->sig->value );
-
-      /* Cause expression/signal to point to each other */
-      expr->sig = icurr->sig;
-      
-      exp_link_add( expr, &(icurr->sig->exp_head), &(icurr->sig->exp_tail) );
-
-    }
-
-  }
-  
-}
 
 /*!
  \param sig    Pointer to signal to search for in instance parameter list.
@@ -632,13 +576,11 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
       case EXP_OP_STATIC    :
       case EXP_OP_FUNC_CALL :
       case EXP_OP_PASSIGN   :
-        break;
-      case EXP_OP_PARAM          :
-      case EXP_OP_PARAM_SBIT     :
-      case EXP_OP_PARAM_MBIT     :
-      case EXP_OP_PARAM_MBIT_POS :
-      case EXP_OP_PARAM_MBIT_NEG :
-        param_find_and_set_expr_value( expr, inst );
+      case EXP_OP_SIG       :
+      case EXP_OP_SBIT_SEL  :
+      case EXP_OP_MBIT_SEL  :
+      case EXP_OP_MBIT_POS  :
+      case EXP_OP_MBIT_NEG  :
         break;
       default :
         /*
@@ -646,11 +588,6 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
          if we don't have some already.
         */
         assert( expr->value != NULL );
-        assert( (expr->op != EXP_OP_SIG)      &&
-                (expr->op != EXP_OP_SBIT_SEL) &&
-                (expr->op != EXP_OP_MBIT_SEL) &&
-                (expr->op != EXP_OP_MBIT_POS) &&
-                (expr->op != EXP_OP_MBIT_NEG) );
         expression_resize( expr, FALSE );
         if( expr->value->value != NULL ) {
           free_safe( expr->value->value );
@@ -897,7 +834,7 @@ void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode ) {
   if( iparm->sig->name != NULL ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d #%s %d 0 %x ",
+    fprintf( file, "%d %s %d 0 %x ",
       DB_TYPE_SIGNAL,
       iparm->sig->name,
       iparm->sig->lsb,
@@ -999,6 +936,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.60.4.2.2.2  2006/04/24 22:54:24  phase1geo
+ Checkpointing work on parameter binding.  In the debug phase.
+
  Revision 1.60.4.2.2.1  2006/04/24 03:01:28  phase1geo
  Starting to redo parameter/expression binding process.  We are not complete
  at this time, however.  Also adding param13.v diagnostic to test suite.

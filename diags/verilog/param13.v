@@ -1,6 +1,6 @@
 module main;
 
-parameter foo = 1'b0;
+parameter foo = 1'b1;
 
 reg a;
 

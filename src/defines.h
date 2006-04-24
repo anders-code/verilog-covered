@@ -440,6 +440,9 @@
 /*! This signal was implicitly created (this signal was created from a negative variable multi-bit expression) */
 #define SSUPPL_TYPE_IMPLICIT_NEG  7
 
+/*! This is a parameter */
+#define SSUPPL_TYPE_PARAM         8
+
 /*! @} */
      
 /*!
@@ -1062,7 +1065,7 @@ union ssuppl_u {
   control all;
   struct {
     control col            :16; /*!< Specifies the starting column this signal is declared on */
-    control type           :3;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
+    control type           :4;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
     control big_endian     :1;  /*!< Specifies if this signal is in big or little endianness */
   } part;
 };
@@ -1370,12 +1373,13 @@ struct vector_s {
   union {
     nibble   all;                    /*!< Allows us to set all bits in the suppl field */
     struct {
-      nibble base      :3;           /*!< Base-type of this data when originally parsed */
-      nibble inport    :1;           /*!< Specifies if this vector is part of an input port */
-      nibble assigned  :1;           /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
-      nibble mba       :1;           /*!< Specifies that this vector MUST be assigned from simulated results because this information
+      nibble base       :3;          /*!< Base-type of this data when originally parsed */
+      nibble inport     :1;          /*!< Specifies if this vector is part of an input port */
+      nibble assigned   :1;          /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
+      nibble mba        :1;          /*!< Specifies that this vector MUST be assigned from simulated results because this information
                                           is NOT provided in the dumpfile */
-      nibble is_signed :1;           /*!< Specifies that this vector should be treated as a signed value */
+      nibble is_signed  :1;          /*!< Specifies that this vector should be treated as a signed value */
+      nibble is_constant:1;          /*!< Specifies that this vector value will not change during simulation */
     } part;
   } suppl;                           /*!< Supplemental field */
   vec_data*  value;                  /*!< 4-state current value and toggle history */
@@ -1831,6 +1835,9 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.185.4.1.2.2  2006/04/24 22:54:24  phase1geo
+ Checkpointing work on parameter binding.  In the debug phase.
+
  Revision 1.185.4.1.2.1  2006/04/24 03:01:28  phase1geo
  Starting to redo parameter/expression binding process.  We are not complete
  at this time, however.  Also adding param13.v diagnostic to test suite.
