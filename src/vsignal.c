@@ -104,19 +104,21 @@ vsignal* vsignal_create( char* name, int type, int width, int lsb, int line, int
 }
 
 /*!
- \param sig      Signal to write to file.
- \param file     Name of file to display vsignal contents to.
+ \param sig         Signal to write to file.
+ \param file        Name of file to display vsignal contents to.
+ \param parse_mode  Set to TRUE when we are writing after parsing the Verilog design.
 
  Prints the vsignal information for the specified vsignal to the
  specified file.  This file will be the database coverage file
  for this design.
 */
-void vsignal_db_write( vsignal* sig, FILE* file ) {
+void vsignal_db_write( vsignal* sig, FILE* file, bool parse_mode ) {
 
   exp_link* curr;  /* Pointer to current expression link element */
 
   /* Don't write this vsignal if it isn't usable by Covered */
-  if( (sig->name[0] != '!') && (sig->value->width != -1) ) {
+  if( (sig->name[0] != '!') && (sig->value->width != -1) &&
+      ((sig->suppl.part.type != SSUPPL_TYPE_PARAM) || !parse_mode) ) {
 
     /* Display identification and value information first */
     fprintf( file, "%d %s %d %d %x ",
@@ -511,6 +513,13 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.22.4.1.2.3  2006/04/25 04:55:08  phase1geo
+ More work on the bug fix for parameter binding.  We are getting close, just need
+ to debug a few problems from regression.  Also added is_constant bit to expression
+ supplemental field to avoid displaying parameters in combinational logic (and this
+ can be expanded for all expressions containing things like signals which do not change
+ value during simulation.
+
  Revision 1.22.4.1.2.2  2006/04/24 22:54:24  phase1geo
  Checkpointing work on parameter binding.  In the debug phase.
 

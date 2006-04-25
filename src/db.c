@@ -683,10 +683,7 @@ void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, 
       mparm = mod_parm_add( name, msb, lsb, is_signed, expr, (local ? PARAM_TYPE_DECLARED_LOCAL : PARAM_TYPE_DECLARED), curr_funit, NULL );
       
       /* Create a signal for this value */
-      tmpname = (char*)malloc_safe( (strlen( name ) + 2), __FILE__, __LINE__ );
-      snprintf( tmpname, (strlen( name ) + 2), "!%s", name );
-      db_add_signal( tmpname, SSUPPL_TYPE_PARAM, msb, lsb, is_signed, TRUE, 0, 0 );
-      free_safe( tmpname );
+      db_add_signal( name, SSUPPL_TYPE_PARAM, msb, lsb, is_signed, TRUE, 0, 0 );
 
     }
 
@@ -1666,6 +1663,13 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.175.4.1.2.2  2006/04/25 04:55:08  phase1geo
+ More work on the bug fix for parameter binding.  We are getting close, just need
+ to debug a few problems from regression.  Also added is_constant bit to expression
+ supplemental field to avoid displaying parameters in combinational logic (and this
+ can be expanded for all expressions containing things like signals which do not change
+ value during simulation.
+
  Revision 1.175.4.1.2.1  2006/04/24 22:54:24  phase1geo
  Checkpointing work on parameter binding.  In the debug phase.
 

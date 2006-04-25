@@ -300,7 +300,7 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  See esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0x3ffff
+#define ESUPPL_MERGE_MASK            0x7ffff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -405,6 +405,12 @@
  shares it with someone else.
 */
 #define ESUPPL_OWNS_VEC(x)           x.part.owns_vec
+
+/*!
+ Returns a value of 1 if the specified expression will not change its value during simulation;
+ otherwise, returns 0.
+*/
+#define ESUPPL_IS_CONSTANT(x)        x.part.is_constant
 
 /*! @} */
 
@@ -628,34 +634,29 @@ typedef enum exp_op_type_e {
   EXP_OP_CASEZ,           /*!< 47:0x2f.  Specifies casez equality expression. */
   EXP_OP_DEFAULT,         /*!< 48:0x30.  Specifies case/casex/casez default expression. */
   EXP_OP_LIST,            /*!< 49:0x31.  Specifies comma separated expression list. */
-  EXP_OP_PARAM,           /*!< 50:0x32.  Specifies full parameter. */
-  EXP_OP_PARAM_SBIT,      /*!< 51:0x33.  Specifies single-bit select parameter. */
-  EXP_OP_PARAM_MBIT,      /*!< 52:0x34.  Specifies multi-bit select parameter. */
-  EXP_OP_ASSIGN,          /*!< 53:0x35.  Specifies an assign assignment operator. */
-  EXP_OP_DASSIGN,         /*!< 54:0x36.  Specifies a wire declaration assignment operator. */
-  EXP_OP_BASSIGN,         /*!< 55:0x37.  Specifies a blocking assignment operator. */
-  EXP_OP_NASSIGN,         /*!< 56:0x38.  Specifies a non-blocking assignment operator. */
-  EXP_OP_IF,              /*!< 57:0x39.  Specifies an if statement operator. */
-  EXP_OP_FUNC_CALL,       /*!< 58:0x3a.  Specifies a function call. */
-  EXP_OP_TASK_CALL,       /*!< 59:0x3b.  Specifies a task call (note: this operator MUST be the root of the expression tree) */
-  EXP_OP_TRIGGER,         /*!< 60:0x3c.  Specifies an event trigger (->). */
-  EXP_OP_NB_CALL,         /*!< 61:0x3d.  Specifies a "call" to a named block */
-  EXP_OP_FORK,            /*!< 62:0x3e.  Specifies a fork command */
-  EXP_OP_JOIN,            /*!< 63:0x3f.  Specifies a join command */
-  EXP_OP_DISABLE,         /*!< 64:0x40.  Specifies a disable command */
-  EXP_OP_REPEAT,          /*!< 65:0x41.  Specifies a repeat loop test expression */
-  EXP_OP_WHILE,           /*!< 66:0x42.  Specifies a while loop test expression */
-  EXP_OP_ALSHIFT,         /*!< 67:0x43.  Specifies arithmetic left shift (<<<) */
-  EXP_OP_ARSHIFT,         /*!< 68:0x44.  Specifies arithmetic right shift (>>>) */
-  EXP_OP_SLIST,           /*!< 69:0x45.  Specifies sensitivity list (*) */
-  EXP_OP_EXPONENT,        /*!< 70:0x46.  Specifies the exponential operator "**" */
-  EXP_OP_PASSIGN,         /*!< 71:0x47.  Specifies a port assignment */
-  EXP_OP_RASSIGN,         /*!< 72:0x48.  Specifies register assignment (reg a = 1'b0) */
-  EXP_OP_MBIT_POS,        /*!< 73:0x49.  Specifies positive variable multi-bit select (a[b+:3]) */
-  EXP_OP_MBIT_NEG,        /*!< 74:0x4a.  Specifies negative variable multi-bit select (a[b-:3]) */
-  EXP_OP_PARAM_MBIT_POS,  /*!< 75:0x4b.  Specifies positive variable multi-bit parameter select */
-  EXP_OP_PARAM_MBIT_NEG,  /*!< 76:0x4c.  Specifies negative variable multi-bit parameter select */
-  EXP_OP_NEGATE,          /*!< 77:0x4d.  Specifies the unary negate operator (-) */
+  EXP_OP_ASSIGN,          /*!< 50:0x32.  Specifies an assign assignment operator. */
+  EXP_OP_DASSIGN,         /*!< 51:0x33.  Specifies a wire declaration assignment operator. */
+  EXP_OP_BASSIGN,         /*!< 52:0x34.  Specifies a blocking assignment operator. */
+  EXP_OP_NASSIGN,         /*!< 53:0x35.  Specifies a non-blocking assignment operator. */
+  EXP_OP_IF,              /*!< 54:0x36.  Specifies an if statement operator. */
+  EXP_OP_FUNC_CALL,       /*!< 55:0x37.  Specifies a function call. */
+  EXP_OP_TASK_CALL,       /*!< 56:0x38.  Specifies a task call (note: this operator MUST be the root of the expression tree) */
+  EXP_OP_TRIGGER,         /*!< 67:0x39.  Specifies an event trigger (->). */
+  EXP_OP_NB_CALL,         /*!< 68:0x3a.  Specifies a "call" to a named block */
+  EXP_OP_FORK,            /*!< 69:0x3b.  Specifies a fork command */
+  EXP_OP_JOIN,            /*!< 60:0x3c.  Specifies a join command */
+  EXP_OP_DISABLE,         /*!< 61:0x3d.  Specifies a disable command */
+  EXP_OP_REPEAT,          /*!< 62:0x3e.  Specifies a repeat loop test expression */
+  EXP_OP_WHILE,           /*!< 63:0x3f.  Specifies a while loop test expression */
+  EXP_OP_ALSHIFT,         /*!< 64:0x40.  Specifies arithmetic left shift (<<<) */
+  EXP_OP_ARSHIFT,         /*!< 65:0x41.  Specifies arithmetic right shift (>>>) */
+  EXP_OP_SLIST,           /*!< 66:0x42.  Specifies sensitivity list (*) */
+  EXP_OP_EXPONENT,        /*!< 77:0x43.  Specifies the exponential operator "**" */
+  EXP_OP_PASSIGN,         /*!< 78:0x44.  Specifies a port assignment */
+  EXP_OP_RASSIGN,         /*!< 79:0x45.  Specifies register assignment (reg a = 1'b0) */
+  EXP_OP_MBIT_POS,        /*!< 70:0x46.  Specifies positive variable multi-bit select (a[b+:3]) */
+  EXP_OP_MBIT_NEG,        /*!< 71:0x47.  Specifies negative variable multi-bit select (a[b-:3]) */
+  EXP_OP_NEGATE,          /*!< 72:0x48.  Specifies the unary negate operator (-) */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -664,6 +665,7 @@ typedef enum exp_op_type_e {
 */
 #define EXPR_IS_MEASURABLE(x)      (((exp_op_info[x->op].suppl.measurable == 1) && \
                                      (ESUPPL_IS_LHS( x->suppl ) == 0) && \
+                                     (ESUPPL_IS_CONSTANT( x->suppl ) == 0) && \
                                      !((ESUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((x->op == EXP_OP_SIG) || \
                                         (x->op == EXP_OP_SBIT_SEL) || \
@@ -681,10 +683,9 @@ typedef enum exp_op_type_e {
                                      (x->line != 0)) ? 1 : 0)
 
 /*!
- Returns a value of TRUE if the specified expression is a STATIC, PARAM, PARAM_SBIT, PARAM_MBIT,
- PARAM_MBIT_POS or PARAM_MBIT_NEG operation type.
+ Returns a value of TRUE if the specified expression is a STATIC or parameter.
 */
-#define EXPR_IS_STATIC(x)        exp_op_info[x->op].suppl.is_static
+#define EXPR_IS_STATIC(x)        (exp_op_info[x->op].suppl.is_static || ESUPPL_IS_CONSTANT( x->suppl ))
 
 /*!
  Returns a value of true if the specified expression ks considered a combination expression by
@@ -716,11 +717,6 @@ typedef enum exp_op_type_e {
                                          (o != EXP_OP_MBIT_POS)       && \
                                          (o != EXP_OP_MBIT_NEG)       && \
                                          (o != EXP_OP_TRIGGER)        && \
-                                         (o != EXP_OP_PARAM)          && \
-                                         (o != EXP_OP_PARAM_SBIT)     && \
-                                         (o != EXP_OP_PARAM_MBIT)     && \
-                                         (o != EXP_OP_PARAM_MBIT_POS) && \
-                                         (o != EXP_OP_PARAM_MBIT_NEG) && \
                                          (o != EXP_OP_ASSIGN)         && \
                                          (o != EXP_OP_DASSIGN)        && \
                                          (o != EXP_OP_BASSIGN)        && \
@@ -798,16 +794,16 @@ typedef enum exp_op_type_e {
  @{
 */
 
-#define COMP_LT         0       /*!< Less than                */
-#define COMP_GT         1       /*!< Greater than             */
-#define COMP_LE         2       /*!< Less than or equal to    */
+#define COMP_LT         0       /*!< Less than */
+#define COMP_GT         1       /*!< Greater than */
+#define COMP_LE         2       /*!< Less than or equal to */
 #define COMP_GE         3       /*!< Greater than or equal to */
-#define COMP_EQ         4       /*!< Equal to                 */
-#define COMP_NE         5       /*!< Not equal to             */
-#define COMP_CEQ        6       /*!< Case equality            */
-#define COMP_CNE        7       /*!< Case inequality          */
-#define COMP_CXEQ       8       /*!< Casex equality           */
-#define COMP_CZEQ       9       /*!< Casez equality           */
+#define COMP_EQ         4       /*!< Equal to */
+#define COMP_NE         5       /*!< Not equal to */
+#define COMP_CEQ        6       /*!< Case equality */
+#define COMP_CNE        7       /*!< Case inequality */
+#define COMP_CXEQ       8       /*!< Casex equality */
+#define COMP_CZEQ       9       /*!< Casez equality */
 
 /*! @} */
 
@@ -821,11 +817,11 @@ typedef enum exp_op_type_e {
 */
 
 #define MAX_BIT_WIDTH           1024    /*!< Maximum number of bits that a vector can hold */
-#define DECIMAL			0	/*!< String in format [dD][0-9]+                   */
-#define BINARY			1	/*!< String in format [bB][01xXzZ_\?]+             */
-#define OCTAL			2	/*!< String in format [oO][0-7xXzZ_\?]+            */
-#define HEXIDECIMAL		3	/*!< String in format [hH][0-9a-fA-FxXzZ_\?]+      */
-#define QSTRING                 4       /*!< Quoted string                                 */
+#define DECIMAL			0	/*!< String in format [dD][0-9]+ */
+#define BINARY			1	/*!< String in format [bB][01xXzZ_\?]+ */
+#define OCTAL			2	/*!< String in format [oO][0-7xXzZ_\?]+ */
+#define HEXIDECIMAL		3	/*!< String in format [hH][0-9a-fA-FxXzZ_\?]+ */
+#define QSTRING                 4       /*!< Quoted string */
 
 /*! @} */
 
@@ -837,16 +833,16 @@ typedef enum exp_op_type_e {
  @{
 */
 
-#define ARC_HIT_F               0       /*!< From state -> to state hit - forward               */
-#define ARC_HIT_R               1       /*!< To state -> from state hit - reverse               */
-#define ARC_BIDIR               2       /*!< Entry is bidirectional                             */
-#define ARC_NOT_UNIQUE_R        3       /*!< Right state is not unique                          */
-#define ARC_NOT_UNIQUE_L        4       /*!< Left state is not unique                           */
+#define ARC_HIT_F               0       /*!< From state -> to state hit - forward */
+#define ARC_HIT_R               1       /*!< To state -> from state hit - reverse */
+#define ARC_BIDIR               2       /*!< Entry is bidirectional */
+#define ARC_NOT_UNIQUE_R        3       /*!< Right state is not unique */
+#define ARC_NOT_UNIQUE_L        4       /*!< Left state is not unique */
 #define ARC_ENTRY_SUPPL_SIZE    5       /*!< Number of bits comprising entry supplemental field */
 
-#define ARC_STATUS_SIZE         7       /*!< Number of characters comprising arc status         */
+#define ARC_STATUS_SIZE         7       /*!< Number of characters comprising arc status */
 
-#define ARC_TRANS_KNOWN         0       /*!< Bit position of transitions known field in suppl   */
+#define ARC_TRANS_KNOWN         0       /*!< Bit position of transitions known field in suppl */
 
 /*! @} */
 
@@ -859,7 +855,7 @@ typedef enum exp_op_type_e {
 */
 
 #define ATTRIBUTE_UNKNOWN       0       /*!< This attribute is not recognized by Covered */
-#define ATTRIBUTE_FSM           1       /*!< FSM attribute                               */
+#define ATTRIBUTE_FSM           1       /*!< FSM attribute */
 
 /*! @} */
 
@@ -965,15 +961,15 @@ typedef union vec_data_u vec_data;
  A vec_data is an 8-bit value that represents one bit of data in a signal or expression/subexpression
 */
 union vec_data_u {
-  nibble all;        /*!< Reference to all bits in this union                         */
+  nibble all;        /*!< Reference to all bits in this union */
   struct {
-    nibble value:2;  /*!< 4-state value                                               */
-    nibble tog01:1;  /*!< Indicator if bit was toggled from 0->1                      */
-    nibble tog10:1;  /*!< Indicator if bit was toggled from 1->0                      */
+    nibble value:2;  /*!< 4-state value */
+    nibble tog01:1;  /*!< Indicator if bit was toggled from 0->1 */
+    nibble tog10:1;  /*!< Indicator if bit was toggled from 1->0 */
     nibble set  :1;  /*!< Indicator if bit has been previously assigned this timestep */
-    nibble false:1;  /*!< Indicator if bit was set to a value of 0 (FALSE)            */
-    nibble true :1;  /*!< Indicator if bit was set to a value of 1 (TRUE)             */
-    nibble misc :1;  /*!< Miscellaneous indicator bit                                 */
+    nibble false:1;  /*!< Indicator if bit was set to a value of 0 (FALSE) */
+    nibble true :1;  /*!< Indicator if bit was set to a value of 1 (TRUE) */
+    nibble misc :1;  /*!< Miscellaneous indicator bit */
   } part;
 };
 
@@ -1033,16 +1029,18 @@ union esuppl_u {
                                      be automatically placed in the thread queue at time 0. */
     control owns_vec       :1;  /*!< Bit 17.  Mask bit = 1.  Indicates that this expression either owns its vector
                                      structure or shares it with someone else. */
+    control is_constant    :1;  /*!< Bit 18.  Mask bit = 1.  Indicates that this expression will not change its value
+                                     during simulation. */
  
     /* UNMASKED BITS */
-    control eval_t         :1;  /*!< Bit 18.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_t         :1;  /*!< Bit 19.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to TRUE (temporary value). */
-    control eval_f         :1;  /*!< Bit 19.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_f         :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to FALSE (temporary value). */
-    control comb_cntd      :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the current expression has been previously
+    control comb_cntd      :1;  /*!< Bit 21.  Mask bit = 0.  Indicates that the current expression has been previously
                                      counted for combinational coverage.  Only set by report command (therefore this bit
                                      will always be a zero when written to CDD file. */
-    control stmt_added     :1;  /*!< Bit 21.  Temporary bit value used by the score command but not displayed to the CDD
+    control stmt_added     :1;  /*!< Bit 22.  Temporary bit value used by the score command but not displayed to the CDD
                                      file.  When this bit is set to a one, it indicates to the db_add_statement
                                      function that this statement and all children statements have already been
                                      added to the functional unit statement list and should not be added again. */
@@ -1379,7 +1377,6 @@ struct vector_s {
       nibble mba        :1;          /*!< Specifies that this vector MUST be assigned from simulated results because this information
                                           is NOT provided in the dumpfile */
       nibble is_signed  :1;          /*!< Specifies that this vector should be treated as a signed value */
-      nibble is_constant:1;          /*!< Specifies that this vector value will not change during simulation */
     } part;
   } suppl;                           /*!< Supplemental field */
   vec_data*  value;                  /*!< 4-state current value and toggle history */
@@ -1835,6 +1832,13 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.185.4.1.2.3  2006/04/25 04:55:08  phase1geo
+ More work on the bug fix for parameter binding.  We are getting close, just need
+ to debug a few problems from regression.  Also added is_constant bit to expression
+ supplemental field to avoid displaying parameters in combinational logic (and this
+ can be expanded for all expressions containing things like signals which do not change
+ value during simulation.
+
  Revision 1.185.4.1.2.2  2006/04/24 22:54:24  phase1geo
  Checkpointing work on parameter binding.  In the debug phase.
 
