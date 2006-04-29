@@ -44,9 +44,16 @@ void assertion_report( FILE* ofile, bool verbose );
 /*! Retrieves the total and hit counts of assertions for the specified functional unit */
 bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
 
+/*! Gets missed coverage point descriptions for the given assertion module */
+bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, char*** cov_points, int* cov_num );
+
 
 /*
  $Log$
+ Revision 1.5  2006/04/29 05:12:14  phase1geo
+ Adding initial version of assertion verbose window.  This is currently working; however,
+ I think that I want to enhance this window a bit more before calling it good.
+
  Revision 1.4  2006/04/28 17:10:19  phase1geo
  Adding GUI support for assertion coverage.  Halfway there.
 
