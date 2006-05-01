@@ -46,10 +46,13 @@ void ovl_display_verbose( FILE* ofile, func_unit* funit );
 void ovl_collect( func_unit* funit, char*** uncov_inst_names, int* uncov_inst_size, char*** cov_inst_names, int* cov_inst_size );
 
 /*! \brief Gets missed coverage points for the given assertion */
-void ovl_get_coverage( func_unit* funit, char* inst_name, str_link** cp_head, str_link** cp_tail );
+void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail );
 
 /*
  $Log$
+ Revision 1.7  2006/05/01 22:27:37  phase1geo
+ More updates with assertion coverage window.  Still have a ways to go.
+
  Revision 1.6  2006/05/01 13:19:07  phase1geo
  Enhancing the verbose assertion window.  Still need to fix a few bugs and add
  a few more enhancements.

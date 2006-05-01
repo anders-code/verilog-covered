@@ -45,11 +45,14 @@ void assertion_report( FILE* ofile, bool verbose );
 bool assertion_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
 
 /*! Gets missed coverage point descriptions for the given assertion module */
-bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, str_link** cp_head, str_link** cp_tail );
+bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail );
 
 
 /*
  $Log$
+ Revision 1.7  2006/05/01 22:27:37  phase1geo
+ More updates with assertion coverage window.  Still have a ways to go.
+
  Revision 1.6  2006/05/01 13:19:07  phase1geo
  Enhancing the verbose assertion window.  Still need to fix a few bugs and add
  a few more enhancements.
