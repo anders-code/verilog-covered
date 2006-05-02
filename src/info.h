@@ -36,11 +36,17 @@ void info_db_write( FILE* file );
 bool info_db_read( char** line );
 
 /*! \brief Reads score args line from specified line and stores information. */
-bool args_db_read( char** line )
+bool args_db_read( char** line );
 
 
 /*
  $Log$
+ Revision 1.5  2006/05/02 21:49:41  phase1geo
+ Updating regression files -- all but three diagnostics pass (due to known problems).
+ Added SCORE_ARGS line type to CDD format which stores the directory that the score
+ command was executed from as well as the command-line arguments to the score
+ command.
+
  Revision 1.4  2006/05/01 22:27:37  phase1geo
  More updates with assertion coverage window.  Still have a ways to go.
 

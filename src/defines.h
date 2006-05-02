@@ -199,6 +199,11 @@
 */
 #define DB_TYPE_RACE         7
 
+/*!
+ Specifies the arguments specified to the score command.
+*/
+#define DB_TYPE_SCORE_ARGS   8
+
 /*! @} */
 
 /*!
@@ -1817,6 +1822,12 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.192  2006/05/02 21:49:41  phase1geo
+ Updating regression files -- all but three diagnostics pass (due to known problems).
+ Added SCORE_ARGS line type to CDD format which stores the directory that the score
+ command was executed from as well as the command-line arguments to the score
+ command.
+
  Revision 1.191  2006/04/21 06:14:45  phase1geo
  Merged in changes from 0.4.3 stable release.  Updated all regression files
  for inclusion of OVL library.  More documentation updates for next development
