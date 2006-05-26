@@ -366,10 +366,11 @@ void bind_rm_stmt( int id ) {
 }
 
 /*!
- \param name       Name of parameter to bind to
- \param exp        Pointer to expression to bind parameter to
- \param funit_exp  Pointer to functional unit containing exp
- \param exp_line   Line number of given expression to bind (for error output purposes only)
+ \param name          Name of parameter to bind to
+ \param exp           Pointer to expression to bind parameter to
+ \param funit_exp     Pointer to functional unit containing exp
+ \param exp_line      Line number of given expression to bind (for error output purposes only)
+ \param bind_locally  Set to TRUE if we are attempting to bind locally.
 
  \return Returns TRUE if the given name referred to a parameter value that was bound; otherwise,
          returns FALSE.
@@ -377,37 +378,41 @@ void bind_rm_stmt( int id ) {
  Attempts to bind the specified expression to a parameter in the design.  If binding is successful,
  returns TRUE; otherwise, returns FALSE.
 */
-bool bind_param( char* name, expression* exp, func_unit* funit_exp, int exp_line ) {
+bool bind_param( char* name, expression* exp, func_unit* funit_exp, int exp_line, bool bind_locally ) {
 
-  bool       retval = TRUE;  /* Return value for this function */
-  mod_parm*  found_parm;     /* Pointer to found parameter in design for the given name */
-  func_unit* found_funit;    /* Pointer to found functional unit containing given signal */
+  bool       retval = FALSE;  /* Return value for this function */
+  mod_parm*  found_parm;      /* Pointer to found parameter in design for the given name */
+  func_unit* found_funit;     /* Pointer to found functional unit containing given signal */
 
-  /* Search for specified parameter in current functional unit */
-  if( scope_find_param( name, funit_exp, &found_parm, &found_funit, exp_line ) ) {
+  /* Skip parameter binding if the name is not local and we are binding locally */
+  if( scope_local( name ) || !bind_locally ) {
 
-    /* Swap operation type */
-    switch( exp->op ) {
-      case EXP_OP_SIG      :  exp->op = EXP_OP_PARAM;           break;
-      case EXP_OP_SBIT_SEL :  exp->op = EXP_OP_PARAM_SBIT;      break;
-      case EXP_OP_MBIT_SEL :  exp->op = EXP_OP_PARAM_MBIT;      break;
-      case EXP_OP_MBIT_POS :  exp->op = EXP_OP_PARAM_MBIT_POS;  break;
-      case EXP_OP_MBIT_NEG :  exp->op = EXP_OP_PARAM_MBIT_NEG;  break;
-      default :
-        assert( (exp->op == EXP_OP_SIG)      ||
-                (exp->op == EXP_OP_SBIT_SEL) ||
-                (exp->op == EXP_OP_MBIT_SEL) ||
-                (exp->op == EXP_OP_MBIT_POS) ||
-                (exp->op == EXP_OP_MBIT_NEG) );
-        break;
+    /* Search for specified parameter in current functional unit */
+    if( scope_find_param( name, funit_exp, &found_parm, &found_funit, exp_line ) ) {
+
+      /* Swap operation type */
+      switch( exp->op ) {
+        case EXP_OP_SIG      :  exp->op = EXP_OP_PARAM;           break;
+        case EXP_OP_SBIT_SEL :  exp->op = EXP_OP_PARAM_SBIT;      break;
+        case EXP_OP_MBIT_SEL :  exp->op = EXP_OP_PARAM_MBIT;      break;
+        case EXP_OP_MBIT_POS :  exp->op = EXP_OP_PARAM_MBIT_POS;  break;
+        case EXP_OP_MBIT_NEG :  exp->op = EXP_OP_PARAM_MBIT_NEG;  break;
+        default :
+          assert( (exp->op == EXP_OP_SIG)      ||
+                  (exp->op == EXP_OP_SBIT_SEL) ||
+                  (exp->op == EXP_OP_MBIT_SEL) ||
+                  (exp->op == EXP_OP_MBIT_POS) ||
+                  (exp->op == EXP_OP_MBIT_NEG) );
+          break;
+      }
+
+      /* Link the expression to the module parameter */
+      exp_link_add( exp, &(found_parm->exp_head), &(found_parm->exp_tail) );
+
+      /* Indicate that we have successfully bound */
+      retval = TRUE;
+
     }
-
-    /* Link the expression to the module parameter */
-    exp_link_add( exp, &(found_parm->exp_head), &(found_parm->exp_tail) );
-
-  } else {
-
-    retval = FALSE;
 
   }
 
@@ -839,100 +844,73 @@ void bind( bool cdd_reading ) {
   exp_link*   tmp_expl;      /* Pointer to current expression link in signal's expression list */
   int         pass;          /* Loop iterator */
     
-  /* Make three passes through binding list, 0=parameters, 1=local signal bindings, 2=remote signal bindings */
-  for( pass=0; pass<3; pass++ ) {
+  /* Make three passes through binding list, 0=local signal/param bindings, 1=remote signal/param bindings */
+  for( pass=0; pass<2; pass++ ) {
 
     curr_eb = eb_head;
     while( curr_eb != NULL ) {
 
-      /* Handle parameter binding */
-      if( pass == 0 ) {
+      if( curr_eb->stmt_id == 0 ) {
 
-        if( (curr_eb->stmt_id == 0) && (curr_eb->type == 0) ) {
+        /* Figure out ID to clear from the binding list after the bind occurs */
+        if( curr_eb->clear_assigned == 0 ) {
+          id = curr_eb->exp->id;
+        } else {
+          id = curr_eb->clear_assigned;
+        }
 
-          /* Figure out ID to clear from the binding list after the bind occurs */
-          if( curr_eb->clear_assigned == 0 ) {
-            id = curr_eb->exp->id;
-          } else {
-            id = curr_eb->clear_assigned;
+        /* Handle signal binding */
+        if( curr_eb->type == 0 ) {
+
+          /* Attempt to bind the expression to a parameter; otherwise, bind to a signal */
+          if( !(bound = bind_param( curr_eb->name, curr_eb->exp, curr_eb->funit, curr_eb->line, (pass == 0) )) ) {
+            bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading,
+                                 (curr_eb->clear_assigned > 0), curr_eb->line, (pass == 0) );
+          }
+  
+          /* If an FSM expression is attached, size it now */
+          if( curr_eb->fsm != NULL ) {
+            curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, TRUE );
           }
 
-          /* Attempt to bind the expression to a parameter */
-          bound = bind_param( curr_eb->name, curr_eb->exp, curr_eb->funit, curr_eb->line );
+        /* Otherwise, handle disable binding */
+        } else if( curr_eb->type == 1 ) {
 
-          /* If we have bound successfully, copy the name of this exp_bind to the expression */
-          if( bound && (curr_eb->exp != NULL) ) {
-            curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
+          /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
+          if( !(bound = bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                       cdd_reading, curr_eb->line, (pass == 0) )) ) {
+            bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                   cdd_reading, curr_eb->line, (pass == 0) );
           }
 
+        /* Otherwise, handle function/task binding */
+        } else {
+
+          /*
+           Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
+           that this expression is a part of.
+          */
+          bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit,
+                                                 cdd_reading, curr_eb->line, (pass == 0) );
+
+        }
+
+        /* If we have bound successfully, copy the name of this exp_bind to the expression */
+        if( bound && (curr_eb->exp != NULL) ) {
+          curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
         }
 
       } else {
-        
-        if( curr_eb->stmt_id == 0 ) {
 
-          /* Figure out ID to clear from the binding list after the bind occurs */
-          if( curr_eb->clear_assigned == 0 ) {
-            id = curr_eb->exp->id;
-          } else {
-            id = curr_eb->clear_assigned;
-          }
-
-          /* Handle signal binding */
-          if( curr_eb->type == 0 ) {
-
-            /*
-             Bind the signal.  If it is unsuccessful, we need to remove the statement that this expression
-             is a part of.
-            */
-            bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading,
-                                 (curr_eb->clear_assigned > 0), curr_eb->line, (pass == 1) );
-  
-            /* If an FSM expression is attached, size it now */
-            if( curr_eb->fsm != NULL ) {
-              curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, TRUE );
-            }
-
-          /* Otherwise, handle disable binding */
-          } else if( curr_eb->type == 1 ) {
-
-            /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
-            if( !(bound = bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                         cdd_reading, curr_eb->line, (pass == 1) )) ) {
-              bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                     cdd_reading, curr_eb->line, (pass == 1) );
-            }
-
-          /* Otherwise, handle function/task binding */
-          } else {
-
-            /*
-             Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
-             that this expression is a part of.
-            */
-            bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                   cdd_reading, curr_eb->line, (pass == 1) );
-
-          }
-
-          /* If we have bound successfully, copy the name of this exp_bind to the expression */
-          if( bound && (curr_eb->exp != NULL) ) {
-            curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
-          }
-
+        /* Figure out ID to clear from the binding list after the bind occurs */
+        if( curr_eb->rm_stmt > 0 ) {
+          id = curr_eb->rm_stmt;
         } else {
-
-          /* Figure out ID to clear from the binding list after the bind occurs */
-          if( curr_eb->rm_stmt > 0 ) {
-            id = curr_eb->rm_stmt;
-          } else {
-            id = curr_eb->exp->id;
-          }
-
-          /* Handle statement binding */
-          bound = bind_statement( curr_eb->stmt_id, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->rm_stmt, (pass == 1) );
-
+          id = curr_eb->exp->id;
         }
+
+        /* Handle statement binding */
+        bound = bind_statement( curr_eb->stmt_id, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->rm_stmt, (pass == 0) );
 
       }
 
@@ -961,7 +939,7 @@ void bind( bool cdd_reading ) {
     }
 
     /* If we are in parse mode, resolve all parameters and arrays of instances now */
-    if( !cdd_reading && (pass == 1) ) {
+    if( !cdd_reading && (pass == 0) ) {
       param_resolve( instance_root );
     }
 
@@ -998,6 +976,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.71.4.1.4.2  2006/05/26 22:35:18  phase1geo
+ More fixes to parameter binding to fix broken diagnostic run.  Updated
+ vcs diagnostics.
+
  Revision 1.71.4.1.4.1  2006/05/25 10:59:35  phase1geo
  Adding bug fix for hierarchically referencing parameters.  Added param13 and
  param13.1 diagnostics to verify this functionality.  Updated regressions.
