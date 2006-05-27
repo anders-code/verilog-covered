@@ -918,7 +918,7 @@ void bind( bool cdd_reading ) {
        If the expression was unable to be bound, put its statement block in a list to be removed after
        binding has been completed.
       */
-      if( !bound && (curr_eb->clear_assigned == 0) && (pass == 2) ) {
+      if( !bound && (curr_eb->clear_assigned == 0) && (pass == 1) ) {
         if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
 #ifdef DEBUG_MODE
           snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d because it was unbindable",
@@ -976,6 +976,9 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.71.4.1.4.3  2006/05/27 05:56:14  phase1geo
+ Fixing last problem with bug fix.  Updated date on NEWS.
+
  Revision 1.71.4.1.4.2  2006/05/26 22:35:18  phase1geo
  More fixes to parameter binding to fix broken diagnostic run.  Updated
  vcs diagnostics.
