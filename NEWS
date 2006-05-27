@@ -1,7 +1,7 @@
 Covered-Related NEWS
 ====================
 
-    * 5/25/2006
+    * 5/28/2006
 
 Stable release covered-0.4.4 made.  This release contains a bug fix to proper handle hierarchical
 referencing of parameter values.  This feature was technically not supported in the past but caused
