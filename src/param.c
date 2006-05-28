@@ -1002,6 +1002,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.64  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.63  2006/05/25 12:11:01  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 
@@ -1012,16 +1016,6 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
  Revision 1.61  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
-
- Revision 1.60.4.2  2006/04/21 04:42:02  phase1geo
- Adding endian2 and endian3 diagnostics to regression suite to verify other
- endianness related code.  Made small fix to parameter CDD output function
- to include the supplemental field output.  Full regression passes.
-
- Revision 1.60.4.1  2006/04/20 21:55:16  phase1geo
- Adding support for big endian signals.  Added new endian1 diagnostic to regression
- suite to verify this new functionality.  Full regression passes.  We may want to do
- some more testing on variants of this before calling it ready for stable release 0.4.3.
 
  Revision 1.60.4.2.4.1  2006/05/25 10:59:35  phase1geo
  Adding bug fix for hierarchically referencing parameters.  Added param13 and

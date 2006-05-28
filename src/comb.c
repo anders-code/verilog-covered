@@ -2251,6 +2251,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.141  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.140  2006/05/25 12:10:57  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 
@@ -2261,6 +2265,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
  Revision 1.138  2006/04/11 22:42:16  phase1geo
  First pass at adding multi-file merging.  Still need quite a bit of work here yet.
+
+ Revision 1.137.8.1  2006/05/25 10:59:35  phase1geo
+ Adding bug fix for hierarchically referencing parameters.  Added param13 and
+ param13.1 diagnostics to verify this functionality.  Updated regressions.
 
  Revision 1.137.8.1  2006/05/25 10:59:35  phase1geo
  Adding bug fix for hierarchically referencing parameters.  Added param13 and

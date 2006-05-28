@@ -693,6 +693,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.79  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.78  2006/05/25 12:11:01  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 
@@ -700,10 +704,6 @@ void statement_dealloc( statement* stmt ) {
  Merged in changes from 0.4.3 stable release.  Updated all regression files
  for inclusion of OVL library.  More documentation updates for next development
  release (but there is more to go here).
-
- Revision 1.76.4.1  2006/04/20 18:48:56  phase1geo
- Fixing bug in statement_connect function to force the last statement of a true
- path to get the stop_true and stop_false bits get set.
 
  Revision 1.76.4.1  2006/04/20 18:48:56  phase1geo
  Fixing bug in statement_connect function to force the last statement of a true

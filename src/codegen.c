@@ -840,8 +840,16 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.69  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.68  2006/05/25 12:10:57  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
+
+ Revision 1.67.8.1  2006/05/25 10:59:35  phase1geo
+ Adding bug fix for hierarchically referencing parameters.  Added param13 and
+ param13.1 diagnostics to verify this functionality.  Updated regressions.
 
  Revision 1.67.8.1  2006/05/25 10:59:35  phase1geo
  Adding bug fix for hierarchically referencing parameters.  Added param13 and

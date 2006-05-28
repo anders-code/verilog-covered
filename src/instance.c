@@ -692,6 +692,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.45  2006/05/28 02:43:49  phase1geo
+ Integrating stable release 0.4.4 changes into main branch.  Updated regressions
+ appropriately.
+
  Revision 1.44  2006/05/25 12:11:01  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 
@@ -708,11 +712,6 @@ void instance_dealloc( funit_inst* root, char* scope ) {
  Revision 1.41  2006/04/07 22:31:07  phase1geo
  Fixes to get VPI to work with VCS.  Getting close but still some work to go to
  get the callbacks to start working.
-
- Revision 1.40.4.1  2006/04/20 21:55:16  phase1geo
- Adding support for big endian signals.  Added new endian1 diagnostic to regression
- suite to verify this new functionality.  Full regression passes.  We may want to do
- some more testing on variants of this before calling it ready for stable release 0.4.3.
 
  Revision 1.40.4.1  2006/04/20 21:55:16  phase1geo
  Adding support for big endian signals.  Added new endian1 diagnostic to regression
