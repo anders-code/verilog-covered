@@ -536,7 +536,8 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
              (exp->op == EXP_OP_SBIT_SEL) ||
              (exp->op == EXP_OP_MBIT_SEL) ||
              (exp->op == EXP_OP_MBIT_POS) ||
-             (exp->op == EXP_OP_MBIT_NEG)) ) {
+             (exp->op == EXP_OP_MBIT_NEG)) &&
+            !ovl_is_assertion_module( funit_exp ) ) {
           expression_set_assigned( exp );
         }
 
@@ -975,6 +976,13 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.76  2006/05/29 23:47:44  phase1geo
+ Adding more diagnostics to verify assertion coverage handling.  Fixed bug
+ to force all signals within an OVL module to be assigned only by the dumpfile
+ results (to ensure accuracy for assertion coverage).  Full regression passes
+ and we should now be ready to release the next development release once the
+ VCS full regression has been updated and passed.
+
  Revision 1.75  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.
