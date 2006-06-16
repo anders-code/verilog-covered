@@ -664,6 +664,19 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
 }
 
 /*!
+ \return Returns TRUE if CDD file was closed properly; otherwise, returns FALSE.
+
+ Closes the currently loaded CDD file.
+*/
+bool report_close_cdd() {
+
+  db_close();
+
+  return( TRUE );
+
+}
+
+/*!
  \param argc      Number of arguments in report command-line.
  \param last_arg  Index of last parsed argument from list.
  \param argv      Arguments passed to report command to parse.
@@ -805,6 +818,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.65  2006/06/16 22:44:19  phase1geo
+ Beginning to add ability to open/close CDD files without needing to close Covered's
+ GUI.  This seems to work but does cause some segfaults yet.
+
  Revision 1.64  2006/04/19 22:21:33  phase1geo
  More updates to properly support assertion coverage.  Removing assertion modules
  from line, toggle, combinational logic, FSM and race condition output so that there
