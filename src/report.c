@@ -677,6 +677,19 @@ bool report_close_cdd() {
 }
 
 /*!
+ \param filename  Name to use for saving the currently loaded filename
+
+ \return Returns TRUE if CDD file was saved without error; otherwise, returns FALSE.
+
+ Saves the currently loaded CDD database to the given filename.
+*/
+bool report_save_cdd( char* filename ) {
+
+  return( db_write( filename, FALSE ) );
+
+}
+
+/*!
  \param argc      Number of arguments in report command-line.
  \param last_arg  Index of last parsed argument from list.
  \param argv      Arguments passed to report command to parse.
@@ -818,6 +831,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.66  2006/06/20 22:14:32  phase1geo
+ Adding support for saving CDD files (needed for file merging and saving exclusion
+ information for a CDD file) in the GUI.  Still have a bit to go as I am getting core
+ dumps to occur.
+
  Revision 1.65  2006/06/16 22:44:19  phase1geo
  Beginning to add ability to open/close CDD files without needing to close Covered's
  GUI.  This seems to work but does cause some segfaults yet.
