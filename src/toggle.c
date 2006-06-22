@@ -65,7 +65,9 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
   
   /* Search signal list */
   while( curr_sig != NULL ) {
-    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
+        (curr_sig->sig->value->suppl.part.mba == 0) &&
+        (curr_sig->sig->suppl.part.excluded == 0) ) {
       *total = *total + curr_sig->sig->value->width;
       vector_toggle_count( curr_sig->sig->value, hit01, hit10 );
     }
@@ -618,6 +620,12 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.39  2006/06/22 21:56:21  phase1geo
+ Adding excluded bits to signal and arc structures and changed statistic gathering
+ functions to not gather coverage for excluded structures.  Started to work on
+ exclude.c file which will quickly adjust coverage information from GUI modifications.
+ Regression has been updated for this change and it fully passes.
+
  Revision 1.38  2006/05/25 12:11:02  phase1geo
  Including bug fix from 0.4.4 stable release and updating regressions.
 

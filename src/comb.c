@@ -144,7 +144,7 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
 
   bool and_op;  /* Specifies if current expression is an AND or LAND operation */
 
-  if( exp != NULL ) {
+  if( (exp != NULL) && (ESUPPL_EXCLUDED( exp->suppl ) == 0) ) {
 
     /* Figure out if this is an AND/LAND operation */
     and_op = (exp->op == EXP_OP_AND) || (exp->op == EXP_OP_LAND);
@@ -257,7 +257,7 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
   int num_hit = 0;  /* Number of expression value hits for the current expression */
   int tot_num;      /* Total number of combinations for the current expression */
 
-  if( exp != NULL ) {
+  if( (exp != NULL) && (ESUPPL_EXCLUDED( exp->suppl ) == 0) ) {
 
     /* Calculate children */
     combination_get_tree_stats( exp->left,  ulid, combination_calc_depth( exp, curr_depth, TRUE ),  total, hit );
@@ -2251,6 +2251,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.142  2006/06/22 21:56:21  phase1geo
+ Adding excluded bits to signal and arc structures and changed statistic gathering
+ functions to not gather coverage for excluded structures.  Started to work on
+ exclude.c file which will quickly adjust coverage information from GUI modifications.
+ Regression has been updated for this change and it fully passes.
+
  Revision 1.141  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.

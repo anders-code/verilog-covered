@@ -75,7 +75,8 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
         (curr.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
         (curr.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
         (curr.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
-        (curr.curr->stmt->exp->line != 0) ) {
+        (curr.curr->stmt->exp->line != 0) &&
+        (ESUPPL_EXCLUDED( curr.curr->stmt->exp->suppl ) == 0) ) {
       *total = *total + 1;
       if( curr.curr->stmt->exp->exec_num > 0 ) {
         (*hit)++;
@@ -548,6 +549,12 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.61  2006/06/22 21:56:21  phase1geo
+ Adding excluded bits to signal and arc structures and changed statistic gathering
+ functions to not gather coverage for excluded structures.  Started to work on
+ exclude.c file which will quickly adjust coverage information from GUI modifications.
+ Regression has been updated for this change and it fully passes.
+
  Revision 1.60  2006/04/19 22:21:33  phase1geo
  More updates to properly support assertion coverage.  Removing assertion modules
  from line, toggle, combinational logic, FSM and race condition output so that there

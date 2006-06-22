@@ -176,7 +176,9 @@ void ovl_get_funit_stats( func_unit* funit, float* total, int* hit ) {
         while( si.curr != NULL ) {
 
           /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
-          if( (si.curr->stmt->exp->op == EXP_OP_TASK_CALL) && (strcmp( si.curr->stmt->exp->name, "ovl_cover_t" ) == 0) ) {
+          if( (si.curr->stmt->exp->op == EXP_OP_TASK_CALL) &&
+              (strcmp( si.curr->stmt->exp->name, "ovl_cover_t" ) == 0) &&
+              (ESUPPL_EXCLUDED( si.curr->stmt->exp->suppl ) == 0) ) {
             *total = *total + 1;
             if( si.curr->stmt->exp->exec_num > 0 ) {
               (*hit)++;
@@ -413,6 +415,12 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str
 
 /*
  $Log$
+ Revision 1.8  2006/06/22 21:56:21  phase1geo
+ Adding excluded bits to signal and arc structures and changed statistic gathering
+ functions to not gather coverage for excluded structures.  Started to work on
+ exclude.c file which will quickly adjust coverage information from GUI modifications.
+ Regression has been updated for this change and it fully passes.
+
  Revision 1.7  2006/05/01 22:27:37  phase1geo
  More updates with assertion coverage window.  Still have a ways to go.
 
