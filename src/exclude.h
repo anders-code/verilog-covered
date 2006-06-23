@@ -11,14 +11,30 @@
 #include "defines.h"
 
 
-/*! \brief Sets the exclude bit of the specified expression and recalculates coverage */
-void exclude_expr_assign_and_recalc( expression* expr, funit_inst* inst, bool excluded );
+/*! \brief Sets the excluded bit for all expressions in the given functional unit with the
+           specified line number and recalculates the summary coverage information. */
+bool exclude_set_line_exclude( char* funit_name, int funit_type, int line, int value );
 
-/*! \brief Sets the exclude bit of the specified signal and recalculates coverage */
-void exclude_sig_assign_and_recalc( vsignal* sig, funit_inst* inst, bool excluded );
+/*! \brief Sets the excluded bit for the specified signal in the given functional unit and
+           recalculates the summary coverage information. */
+bool exclude_set_toggle_exclude( char* funit_name, int funit_type, char* sig_name, int value );
+
+/*! \brief Sets the excluded bit for the specified expression in the given functional unit
+           and recalculates the summary coverage information. */
+bool exclude_set_comb_assert_exclude( char* funit_name, int funit_type, int expr_id, int value );
+
+/*! \brief Sets the excluded bit for the specified state transition in the given functional unit
+           and recalculates the summary coverage information. */
+bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, char* from_state, char* to_state, int value );
+
 
 /*
  $Log$
+ Revision 1.3  2006/06/23 19:45:27  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.2  2006/06/23 04:03:30  phase1geo
  Updating build files and removing syntax errors in exclude.h and exclude.c
  (though this code doesn't do anything meaningful at this point).

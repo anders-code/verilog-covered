@@ -31,6 +31,9 @@
 /*! \brief Resets combination counted bits in expression list */
 void combination_reset_counted_exprs( exp_link* expl );
 
+/*! \brief Calculates combination logic statistics for a single expression tree */
+void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_depth, float* total, int* hit );
+
 /*! \brief Calculates combination logic statistics for summary output */
 void combination_get_stats( exp_link* expl, float* total, int* hit );
 
@@ -52,6 +55,11 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.16  2006/06/23 19:45:26  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.15  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

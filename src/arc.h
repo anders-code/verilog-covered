@@ -37,6 +37,15 @@ void arc_add( char** arcs, vector* fr_st, vector* to_st, int hit );
 /*! \brief Gets supplemental field value from specified arc entry table. */
 int arc_get_suppl( const char* arcs, int type );
 
+/*! \brief Sets supplemental field value to specified arc entry. */
+void arc_set_entry_suppl( char* arcs, int curr, int type, char val );
+
+/*! \brief Gets supplemental field value from specified arc entry. */
+int arc_get_entry_suppl( const char* arcs, int curr, int type );
+
+/*! \brief Finds the specified state transition in the given arc array */
+int arc_find( const char* arcs, vector* from_st, vector* to_st, int* ptr );
+
 /*! \brief Calculates all state and state transition values for reporting purposes. */
 void arc_get_stats( char* arcs, float* state_total, int* state_hits, float* arc_total, int* arc_hits );
 
@@ -63,6 +72,11 @@ void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.13  2006/06/23 19:45:26  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.12  2006/04/05 15:19:18  phase1geo
  Adding support for FSM coverage output in the GUI.  Started adding components
  for assertion coverage to GUI and report functions though there is no functional

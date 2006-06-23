@@ -33,6 +33,9 @@ bool ovl_is_assertion_name( char* name );
 /*! \brief Returns TRUE if specified functional unit is an OVL assertion module. */
 bool ovl_is_assertion_module( func_unit* funit );
 
+/*! \brief Returns TRUE if specified expression corresponds to a functional coverage point. */
+bool ovl_is_coverage_point( expression* exp );
+
 /*! \brief Adds all assertion modules to no score list */
 void ovl_add_assertions_to_no_score_list( bool rm_tasks );
 
@@ -50,6 +53,11 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str
 
 /*
  $Log$
+ Revision 1.8  2006/06/23 19:45:27  phase1geo
+ Adding full C support for excluding/including coverage points.  Fixed regression
+ suite failures -- full regression now passes.  We just need to start adding support
+ to the Tcl/Tk files for full user-specified exclusion support.
+
  Revision 1.7  2006/05/01 22:27:37  phase1geo
  More updates with assertion coverage window.  Still have a ways to go.
 
