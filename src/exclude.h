@@ -15,10 +15,14 @@
 void exclude_expr_assign_and_recalc( expression* expr, funit_inst* inst, bool excluded );
 
 /*! \brief Sets the exclude bit of the specified signal and recalculates coverage */
-void exclude_sig_assign_and_recalc( signal* sig, funit_inst* inst, bool excluded );
+void exclude_sig_assign_and_recalc( vsignal* sig, funit_inst* inst, bool excluded );
 
 /*
  $Log$
+ Revision 1.2  2006/06/23 04:03:30  phase1geo
+ Updating build files and removing syntax errors in exclude.h and exclude.c
+ (though this code doesn't do anything meaningful at this point).
+
  Revision 1.1  2006/06/22 21:56:21  phase1geo
  Adding excluded bits to signal and arc structures and changed statistic gathering
  functions to not gather coverage for excluded structures.  Started to work on
