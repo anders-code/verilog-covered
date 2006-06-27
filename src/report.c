@@ -685,7 +685,7 @@ bool report_close_cdd() {
 */
 bool report_save_cdd( char* filename ) {
 
-  return( db_write( filename, FALSE ) );
+  return( db_write( filename, FALSE, TRUE ) );
 
 }
 
@@ -831,6 +831,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.67  2006/06/27 19:34:43  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.66  2006/06/20 22:14:32  phase1geo
  Adding support for saving CDD files (needed for file merging and saving exclusion
  information for a CDD file) in the GUI.  Still have a bit to go as I am getting core

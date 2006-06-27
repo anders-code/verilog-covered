@@ -135,7 +135,7 @@ bool parse_design( char* top, char* output_db ) {
   }
 
   /* Write contents to baseline database file. */
-  if( !db_write( output_db, TRUE ) ) {
+  if( !db_write( output_db, TRUE, FALSE ) ) {
     print_output( "Unable to write database file", FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
@@ -214,7 +214,7 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
   info_suppl.part.scored = 1;
 
   /* Write contents to database file */
-  if( !db_write( db, FALSE ) ) {
+  if( !db_write( db, FALSE, FALSE ) ) {
     print_output( "Unable to write database file", FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
@@ -225,6 +225,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.41  2006/06/27 19:34:43  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.40  2006/04/14 17:05:13  phase1geo
  Reorganizing info line to make it more succinct and easier for future needs.
  Fixed problems with VPI library with recent merge changes.  Regression has

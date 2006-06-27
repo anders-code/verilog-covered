@@ -31,7 +31,7 @@
 void db_close();
 
 /*! \brief Writes contents of expressions, functional units and vsignals to database file. */
-bool db_write( char* file, bool parse_mode );
+bool db_write( char* file, bool parse_mode, bool report_save );
 
 /*! \brief Reads contents of database file and stores into internal lists. */
 bool db_read( char* file, int read_mode );
@@ -140,6 +140,9 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.58  2006/06/27 19:34:42  phase1geo
+ Permanent fix for the CDD save feature.
+
  Revision 1.57  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
