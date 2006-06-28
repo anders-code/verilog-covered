@@ -214,6 +214,7 @@ bool exclude_set_line_exclude( char* funit_name, int funit_type, int line, int v
       }
       if( expl != NULL ) {
         exclude_expr_assign_and_recalc( expl->exp, funitl->funit, (value == 1) );      
+        expl   = expl->next;
         retval = TRUE;
       }
     } while( expl != NULL );
@@ -402,6 +403,12 @@ bool exclude_set_assert_exclude( char* funit_name, int funit_type, int expr_id, 
 
 /*
  $Log$
+ Revision 1.7  2006/06/28 04:35:47  phase1geo
+ Adding support for line coverage and fixing toggle and combinational coverage
+ to redisplay main textbox to reflect exclusion changes.  Also added messageBox
+ for close and exit menu options when a CDD has been changed but not saved to
+ allow the user to do so before continuing on.
+
  Revision 1.6  2006/06/27 22:06:26  phase1geo
  Fixing more code related to exclusion.  The detailed combinational expression
  window now works correctly.  I am currently working on getting the main window
