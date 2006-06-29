@@ -817,6 +817,7 @@ typedef enum exp_op_type_e {
 #define ARC_EXCLUDED_F          5       /*!< Specifies if the forward transition is excluded or not */
 #define ARC_EXCLUDED_R          6       /*!< Specifies if the backward transition is excluded or not */
 #define ARC_ENTRY_SUPPL_SIZE    7       /*!< Number of bits comprising entry supplemental field */
+#define ARC_ENTRY_SUPPL_MASK    0x7f    /*!< Value to mask off entry supplement field */
 
 #define ARC_STATUS_SIZE         7       /*!< Number of characters comprising arc status */
 
@@ -1839,6 +1840,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.198  2006/06/29 04:26:02  phase1geo
+ More updates for FSM coverage.  We are getting close but are just not to fully
+ working order yet.
+
  Revision 1.197  2006/06/23 19:45:26  phase1geo
  Adding full C support for excluding/including coverage points.  Fixed regression
  suite failures -- full regression now passes.  We just need to start adding support

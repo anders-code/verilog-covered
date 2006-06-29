@@ -67,11 +67,18 @@ void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit
 /*! \brief Outputs arc array state transition values to specified output stream. */
 void arc_get_transitions( char*** from_states, char*** to_states, int** excludes, int* arc_size, const char* arcs, bool hit, bool any );
 
+/*! \brief Specifies if any state transitions have been excluded from coverage. */
+bool arc_are_any_excluded( const char* arcs );
+
 /*! \brief Deallocates memory for specified arcs array. */
 void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.15  2006/06/29 04:26:02  phase1geo
+ More updates for FSM coverage.  We are getting close but are just not to fully
+ working order yet.
+
  Revision 1.14  2006/06/28 22:15:19  phase1geo
  Adding more code to support FSM coverage.  Still a ways to go before this
  is completed.
