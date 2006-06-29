@@ -76,7 +76,7 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
         (curr.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
         (curr.curr->stmt->exp->line != 0) ) {
       *total = *total + 1;
-      if( (curr.curr->stmt->exp->exec_num > 0) || (ESUPPL_EXCLUDED( curr.curr->stmt->exp->suppl ) == 1) ) {
+      if( (curr.curr->stmt->exp->exec_num > 0) || (ESUPPL_STMT_EXCLUDED( curr.curr->stmt->exp->suppl ) == 1) ) {
         (*hit)++;
       }
     }
@@ -550,6 +550,12 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.63  2006/06/29 20:57:24  phase1geo
+ Added stmt_excluded bit to expression to allow us to individually control line
+ and combinational logic exclusion.  This also allows us to exclude combinational
+ logic within excluded lines.  Also fixing problem with highlighting the listbox
+ (due to recent changes).
+
  Revision 1.62  2006/06/26 04:12:55  phase1geo
  More updates for supporting coverage exclusion.  Still a bit more to go
  before this is working properly.
