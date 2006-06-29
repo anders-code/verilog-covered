@@ -575,12 +575,12 @@ void arc_add( char** arcs, vector* fr_st, vector* to_st, int hit ) {
 
       /* printf( "Setting reverse state now, hit: %d, ptr: %d\n", hit, ptr ); */
       arc_set_entry_suppl( *arcs, ptr, ARC_BIDIR, 1 );
-      arc_set_entry_suppl( *arcs, ptr, ARC_HIT_R, hit );
+      arc_set_entry_suppl( *arcs, ptr, ARC_HIT_R, (arc_get_entry_suppl( *arcs, ptr, ARC_HIT_R ) | hit) );
 
     } else if( side == 0 ) {
 
       /* printf( "Setting forward state now, hit: %d, ptr: %d\n", hit, ptr ); */
-      arc_set_entry_suppl( *arcs, ptr, ARC_HIT_F, hit );
+      arc_set_entry_suppl( *arcs, ptr, ARC_HIT_F, (arc_get_entry_suppl( *arcs, ptr, ARC_HIT_F ) | hit) );
 
     }
 
@@ -1327,6 +1327,12 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.37  2006/06/29 22:44:57  phase1geo
+ Fixing newly introduced bug in FSM report handler.  Also adding pointers back
+ to main text window when exclusion properties are changed.  Fixing toggle
+ coverage retension.  This is partially working but doesn't seem to want to
+ save/restore properly at this point.
+
  Revision 1.36  2006/06/29 16:48:14  phase1geo
  FSM exclusion code now complete.
 
