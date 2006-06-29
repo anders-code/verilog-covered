@@ -34,8 +34,9 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 );
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
 bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail );
 
-/*! \brief TBD */
-bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 );
+/*! \brief Gets toggle coverage information for a single signal in the specified functional unit */
+bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb,
+                          char** tog01, char** tog10, int* excluded );
 
 /*! \brief Gets total and hit toggle signal status for the specified functional unit */
 bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
@@ -46,6 +47,12 @@ void toggle_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.14  2006/06/29 22:44:57  phase1geo
+ Fixing newly introduced bug in FSM report handler.  Also adding pointers back
+ to main text window when exclusion properties are changed.  Fixing toggle
+ coverage retension.  This is partially working but doesn't seem to want to
+ save/restore properly at this point.
+
  Revision 1.13  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
