@@ -1363,6 +1363,7 @@ struct str_link_s {
   char*         str;                 /*!< String to store */
   control       suppl;               /*!< 32-bit additional information */
   control       suppl2;              /*!< 32-bit additional information */
+  nibble        suppl3;              /*!< 8-bit additional information */
   vector_width* range;               /*!< Pointer to optional range information */
   str_link*     next;                /*!< Pointer to next str_link element */
 };
@@ -1840,6 +1841,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.199  2006/06/29 20:06:33  phase1geo
+ Adding assertion exclusion code.  Things seem to be working properly with this
+ now.  This concludes the initial version of code exclusion.  There are some
+ things to clean up (and maybe make better looking).
+
  Revision 1.198  2006/06/29 04:26:02  phase1geo
  More updates for FSM coverage.  We are getting close but are just not to fully
  working order yet.

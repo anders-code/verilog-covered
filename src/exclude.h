@@ -29,11 +29,16 @@ bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, cha
 
 /*! \brief Sets the excluded bit for the specified expression in the given functional unit
            and recalculates the summary coverage information. */
-bool exclude_set_assert_exclude( char* funit_name, int funit_type, int expr_id, int value );
+bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_name, int expr_id, int value );
 
 
 /*
  $Log$
+ Revision 1.5  2006/06/29 20:06:33  phase1geo
+ Adding assertion exclusion code.  Things seem to be working properly with this
+ now.  This concludes the initial version of code exclusion.  There are some
+ things to clean up (and maybe make better looking).
+
  Revision 1.4  2006/06/26 22:49:00  phase1geo
  More updates for exclusion of combinational logic.  Also updates to properly
  support CDD saving; however, this change causes regression errors, currently.

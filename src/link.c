@@ -59,6 +59,7 @@ void str_link_add( char* str, str_link** head, str_link** tail ) {
   tmp->str    = str;
   tmp->suppl  = 0x0;
   tmp->suppl2 = 0x0;
+  tmp->suppl3 = 0x0;
   tmp->range  = NULL;
   tmp->next   = NULL;
 
@@ -801,6 +802,11 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
 /*
  $Log$
+ Revision 1.45  2006/06/29 20:06:33  phase1geo
+ Adding assertion exclusion code.  Things seem to be working properly with this
+ now.  This concludes the initial version of code exclusion.  There are some
+ things to clean up (and maybe make better looking).
+
  Revision 1.44  2006/06/23 19:45:27  phase1geo
  Adding full C support for excluding/including coverage points.  Fixed regression
  suite failures -- full regression now passes.  We just need to start adding support
