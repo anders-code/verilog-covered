@@ -229,6 +229,10 @@ mod_parm* mod_parm_add( char* scope, static_expr* msb, static_expr* lsb, bool is
   parm->expr                  = expr;
   if( expr != NULL ) {
     parm->expr->suppl.part.root = 1;
+    if( expr->suppl.part.owned == 0 ) {
+      parm->suppl.part.owns_expr = 1;
+      expr->suppl.part.owned = 1;
+    }
   }
   parm->suppl.all             = 0;
   parm->suppl.part.type       = type;
@@ -949,7 +953,9 @@ void mod_parm_dealloc( mod_parm* parm, bool recursive ) {
     static_expr_dealloc( parm->lsb, FALSE );
 
     /* Remove the attached expression tree */
-    expression_dealloc( parm->expr, FALSE );
+    if( parm->suppl.part.owns_expr == 1 ) {
+      expression_dealloc( parm->expr, FALSE );
+    }
 
     /* Remove the expression list that this parameter is used in */
     exp_link_delete_list( parm->exp_head, FALSE );
@@ -1002,6 +1008,12 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.65  2006/07/08 02:06:54  phase1geo
+ Updating build scripts for next development release and fixing a bug in
+ the score command that caused segfaults for signals that used the same
+ parameters in their range declaration.  Added diagnostic to regression
+ to test this fix.  Full regression passes.
+
  Revision 1.64  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.
