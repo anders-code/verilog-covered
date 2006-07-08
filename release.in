@@ -1,0 +1,19 @@
+# This file is used to create snapshots of the Covered tool.  It is used by
+# my home-brewed release script.  Please add any commands that need
+# to be executed prior to creating a tarball, one command per line.
+#
+# All directories within the project will have the CVS directory removed as
+# well as this file before tarball'ing.
+
+rm -rf ./doc/htdocs
+rm -rf ./doc/manstyle
+rm -rf ./src/vpi
+rm -rf ./covered.spec
+./configure
+cd ./doc; make devel_doc
+cd ./doc/devel/html; tar cvlf ../../../../devel.tar *; gzip ../../../../devel.tar
+cd ./doc; make clean devel_doc_clean
+cd ./doc/user; tar cvlf ../../../user.tar *; gzip ../../../user.tar
+tar cvlf ../covered-diags.tar diags; gzip ../covered-diags.tar
+rm -rf ./diags
+make distclean
