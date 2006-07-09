@@ -542,10 +542,10 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
 
   /* If recursive mode is set, remove children first */
   if( recursive ) {
-    if( exp->left != NULL ) {
+    if( (exp->left != NULL) && EXPR_LEFT_DEALLOCABLE( exp ) ) {
       exp_link_remove( exp->left, head, tail, recursive );
     }
-    if( exp->right != NULL ) {
+    if( (exp->right != NULL) && EXPR_RIGHT_DEALLOCABLE( exp ) ) {
       exp_link_remove( exp->right, head, tail, recursive );
     }
   }
@@ -802,6 +802,13 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
 /*
  $Log$
+ Revision 1.46  2006/07/09 01:40:39  phase1geo
+ Removing the vpi directory (again).  Also fixing a bug in Covered's expression
+ deallocator where a case statement contains an unbindable signal.  Previously
+ the case test expression was being deallocated twice.  This submission fixes
+ this bug (bug was also fixed in the 0.4.5 stable release).  Added new tests
+ to verify fix.  Full regression passes.
+
  Revision 1.45  2006/06/29 20:06:33  phase1geo
  Adding assertion exclusion code.  Things seem to be working properly with this
  now.  This concludes the initial version of code exclusion.  There are some

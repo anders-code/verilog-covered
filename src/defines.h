@@ -744,6 +744,22 @@ typedef enum exp_op_type_e {
 #define EXPR_COMB_MISSED(x)     (EXPR_IS_MEASURABLE( x ) && (x->ulid != -1))
 
 /*!
+ Returns a value of 1 if the specified expression's left child may be deallocated using the
+ expression_dealloc function.  We can deallocate any left expression that doesn't belong to
+ a case statement or has the owned bit set to 1.
+*/
+#define EXPR_LEFT_DEALLOCABLE(x)     (((x->op != EXP_OP_CASE)  && \
+                                       (x->op != EXP_OP_CASEX) && \
+                                       (x->op != EXP_OP_CASEZ)) || \
+                                      (x->suppl.part.owned == 1))
+
+/*!
+ Specifies if the right expression can be deallocated (currently there is no reason why a
+ right expression can't be deallocated.
+*/
+#define EXPR_RIGHT_DEALLOCABLE(x)    (TRUE)
+
+/*!
  \addtogroup op_tables
 
  The following describe the operation table values for AND, OR, XOR, NAND, NOR and
@@ -1852,6 +1868,13 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.202  2006/07/09 01:40:39  phase1geo
+ Removing the vpi directory (again).  Also fixing a bug in Covered's expression
+ deallocator where a case statement contains an unbindable signal.  Previously
+ the case test expression was being deallocated twice.  This submission fixes
+ this bug (bug was also fixed in the 0.4.5 stable release).  Added new tests
+ to verify fix.  Full regression passes.
+
  Revision 1.201  2006/07/08 02:06:53  phase1geo
  Updating build scripts for next development release and fixing a bug in
  the score command that caused segfaults for signals that used the same

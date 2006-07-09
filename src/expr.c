@@ -3133,12 +3133,16 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     if( !exp_only ) {
 
-      expression_dealloc( expr->right, FALSE );
-      expr->right = NULL;
+      if( EXPR_RIGHT_DEALLOCABLE( expr ) ) {
+        expression_dealloc( expr->right, FALSE );
+        expr->right = NULL;
+      }
 
-      expression_dealloc( expr->left, FALSE );
-      expr->left = NULL;
-  
+      if( EXPR_LEFT_DEALLOCABLE( expr ) ) {
+        expression_dealloc( expr->left, FALSE );
+        expr->left = NULL;
+      }
+
     }
 
     /* Remove this expression memory */
@@ -3151,6 +3155,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.184  2006/07/09 01:40:39  phase1geo
+ Removing the vpi directory (again).  Also fixing a bug in Covered's expression
+ deallocator where a case statement contains an unbindable signal.  Previously
+ the case test expression was being deallocated twice.  This submission fixes
+ this bug (bug was also fixed in the 0.4.5 stable release).  Added new tests
+ to verify fix.  Full regression passes.
+
  Revision 1.183  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.
