@@ -6,6 +6,8 @@ Covered-Related NEWS
 Stable release covered-0.4.5 made.  This release contains a bug fix to properly handle cases
 where two or more signals are declared with a parameter in their range field (i.e., reg [FOO:0] a, b;)
 This caused Covered to segfault due to attempting to free the same address twice.  Bug 1518932.
+Also contains a bug fix to properly remove statement blocks that contain case, casex or casez
+expressions and unbindable expressions.
 
     * 5/28/2006
 

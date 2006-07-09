@@ -743,27 +743,23 @@ typedef enum exp_op_type_e {
  coverage but not fully covered during simulation.
 */
 #define EXPR_COMB_MISSED(x)     (EXPR_IS_MEASURABLE( x ) && (x->ulid != -1))
-/*
-#define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE( x ) && \
-                                    !expression_is_static_only( x ) && \
-				    ((EXPR_IS_COMB( x ) && \
-                                      ((exp_op_info[x->op].suppl.is_comb == AND_COMB) && \
-                                       ((!x->suppl.part.eval_00 & !x->suppl.part.eval_01) || \
-                                       ((!x->suppl.part.eval_00 & !x->suppl.part.eval_10) || \
-                                       !x->suppl.part.eval_11))) || \
-                                      ((exp_op_info[x->op].suppl.is_comb == OR_COMB) && \
-                                       ((!x->suppl.part.eval_10 & !x->suppl.part.eval_11) || \
-                                       ((!x->suppl.part.eval_01 & !x->suppl.part.eval_11) || \
-                                       !x->suppl.part.eval_00))) || \
-                                      ((exp_op_info[x->op].suppl.is_comb == OTHER_COMB) && \
-  				       (!x->suppl.part.eval_00 || \
-                                        !x->suppl.part.eval_01 || \
-                                        !x->suppl.part.eval_10 || \
-                                        !x->suppl.part.eval_11))) || \
-				    !ESUPPL_WAS_TRUE( x->suppl ) || \
-				    (!ESUPPL_WAS_FALSE( x->suppl ) && \
-                                     !EXPR_IS_EVENT( x ))))
+
+/*!
+ Returns a value of 1 if the specified expression's left child may be deallocated using the
+ expression_dealloc function.  We can deallocate any left expression that doesn't belong to
+ a case statement or has the owned bit set to 1.
 */
+#define EXPR_LEFT_DEALLOCABLE(x)     (((x->op != EXP_OP_CASE)  && \
+                                       (x->op != EXP_OP_CASEX) && \
+                                       (x->op != EXP_OP_CASEZ)) || \
+                                      (x->suppl.part.owned == 1))
+
+/*!
+ Specifies if the right expression can be deallocated (currently there is no reason why a
+ right expression can't be deallocated.
+*/
+#define EXPR_RIGHT_DEALLOCABLE(x)    (TRUE)
+
 
 /*!
  \addtogroup op_tables
@@ -1838,6 +1834,12 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.185.4.1.4.1.2.2  2006/07/09 01:05:15  phase1geo
+ Fixing bug in expression deallocator where a case statement that contains
+ unbindable signals needs to be removed via the stmt_blk_remove function.
+ The test expression is deallocated more than once in this case.  Adding
+ diagnostics to verify this fix.  Full regression passes.
+
  Revision 1.185.4.1.4.1.2.1  2006/07/08 05:04:04  phase1geo
  Fixing signal declaration bug, added RPM spec file, and updated all
  necessary files for the 0.4.5 stable release.
