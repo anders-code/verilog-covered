@@ -72,6 +72,10 @@ void instance_display_tree_helper( funit_inst* root, char* prefix ) {
     curr = curr->next;
   }
 
+  /* Deallocate memory */
+  free_safe( piname );
+  free_safe( pfname );
+
 }
 
 /*!
@@ -693,6 +697,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.47  2006/07/10 03:05:04  phase1geo
+ Contains bug fixes for memory leaks and segmentation faults.  Also contains
+ some starting code to support generate blocks.  There is absolutely no
+ functionality here, however.
+
  Revision 1.46  2006/06/27 19:34:43  phase1geo
  Permanent fix for the CDD save feature.
 

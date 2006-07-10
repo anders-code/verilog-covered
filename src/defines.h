@@ -441,6 +441,9 @@
 /*! This signal is a parameter */
 #define SSUPPL_TYPE_PARAM         8
 
+/*! This signal is a genvar */
+#define SSUPPL_TYPE_GENVAR        9
+
 /*! @} */
      
 /*!
@@ -728,8 +731,7 @@ typedef enum exp_op_type_e {
                                          (o != EXP_OP_IF)             && \
                                          (o != EXP_OP_WHILE)          && \
                                          (o != EXP_OP_FUNC_CALL)      && \
-					 (o != EXP_OP_PASSIGN)        && \
-                                         ((o == EXP_OP_STATIC) || (ESUPPL_IS_LHS( s ) == 0)))
+					 (o != EXP_OP_PASSIGN))
 
 /*!
  Returns a value of true if the specified expression is considered a unary expression by
@@ -1868,6 +1870,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.203  2006/07/10 03:05:04  phase1geo
+ Contains bug fixes for memory leaks and segmentation faults.  Also contains
+ some starting code to support generate blocks.  There is absolutely no
+ functionality here, however.
+
  Revision 1.202  2006/07/09 01:40:39  phase1geo
  Removing the vpi directory (again).  Also fixing a bug in Covered's expression
  deallocator where a case statement contains an unbindable signal.  Previously
