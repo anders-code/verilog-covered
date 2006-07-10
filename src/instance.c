@@ -566,7 +566,7 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
 
     /* Calculate this instance's name */
     if( root->range != NULL ) {
-      snprintf( tscope1, 4096, "%s[%d]", scope, i );
+      snprintf( tscope1, 4096, "%s[%d]", scope, (i + lsb) );
     } else {
       strcpy( tscope1, scope );
     }
@@ -697,6 +697,12 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.48  2006/07/10 19:30:55  phase1geo
+ Fixing bug in instance.c that ignored the LSB information for an instance
+ array (this also needs to be fixed for the 0.4.6 stable release).  Added
+ diagnostic to verify correctness of this behavior.  Also added case statement
+ to the generate parser.
+
  Revision 1.47  2006/07/10 03:05:04  phase1geo
  Contains bug fixes for memory leaks and segmentation faults.  Also contains
  some starting code to support generate blocks.  There is absolutely no
