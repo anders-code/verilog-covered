@@ -116,7 +116,7 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
   exp_link* curr;  /* Pointer to current expression link element */
 
   /* Don't write this vsignal if it isn't usable by Covered */
-  if( (sig->name[0] != '!') && (sig->value->width != -1) ) {
+  if( (sig->name[0] != '!') && (sig->value->width != -1) && (sig->suppl.part.type != SSUPPL_TYPE_GENVAR) ) {
 
     /* Display identification and value information first */
     fprintf( file, "%d %s %d %d %x ",
@@ -511,6 +511,11 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.26  2006/07/11 04:59:08  phase1geo
+ Reworking the way that instances are being generated.  This is to fix a bug and
+ pave the way for generate loops for instances.  Code not working at this point
+ and may cause serious problems for regression runs.
+
  Revision 1.25  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.

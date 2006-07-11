@@ -43,8 +43,8 @@
  expressions to local signals/parameters.  This local binding is required to allow parameters and constant
  function calls in parameter assignments to be calculated correctly.  As each binding is performed,
  it is removed from the list of all bindings that need to be performed for the design.  After the
- second binding pass is performed, all parameters are resolved for their values, after which all other
- expressions that still need to bound are handled.
+ first binding pass is performed, all parameters are resolved for their values and all generated logic
+ is created, after which all other expressions that still need to bound are handled.
 
  \par Implicit Signal Creation
  In several Verilog simulators, the automatic creation of one-bit wires is allowed.
@@ -450,7 +450,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
   exp_link*  expl;           /* Pointer to current expression link */
 
   /* Skip signal binding if the name is not local and we are binding locally */
-  if( scope_local( name ) || !bind_locally || (exp->op == EXP_OP_PASSIGN) ) {
+  if( scope_local( name ) || !bind_locally || (!clear_assigned && (exp->op == EXP_OP_PASSIGN)) ) {
 
     /* Search for specified signal in current functional unit */
     if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit, exp_line ) ) {
@@ -941,6 +941,7 @@ void bind_perform( bool cdd_reading ) {
     /* If we are in parse mode, resolve all parameters and arrays of instances now */
     if( !cdd_reading && (pass == 0) ) {
       param_resolve( instance_root );
+      instance_resolve( instance_root );
     }
 
   }
@@ -976,6 +977,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.77  2006/07/11 04:59:08  phase1geo
+ Reworking the way that instances are being generated.  This is to fix a bug and
+ pave the way for generate loops for instances.  Code not working at this point
+ and may cause serious problems for regression runs.
+
  Revision 1.76  2006/05/29 23:47:44  phase1geo
  Adding more diagnostics to verify assertion coverage handling.  Fixed bug
  to force all signals within an OVL module to be assigned only by the dumpfile
