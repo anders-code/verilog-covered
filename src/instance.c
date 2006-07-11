@@ -564,7 +564,7 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
 
     /* Calculate this instance's name */
     if( root->range != NULL ) {
-      snprintf( tscope1, 4096, "%s[%d]", scope, i );
+      snprintf( tscope1, 4096, "%s[%d]", scope, (i + lsb) );
     } else {
       strcpy( tscope1, scope );
     }
@@ -695,6 +695,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.40.4.1.8.2  2006/07/11 02:34:54  phase1geo
+ Fixing bug 1520159 (instance array always starting at 0).
+
  Revision 1.40.4.1.8.1  2006/07/10 01:14:03  phase1geo
  Fixing segmentation fault bug which occurs when a multi-bit select on the LHS
  contains any expression besides static values.  Updated regression for this
