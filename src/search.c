@@ -89,13 +89,13 @@ void search_init() {
   /* Initialize instance tree */
   if( top_instance == NULL ) {
     top_instance = strdup_safe( top_module, __FILE__, __LINE__ );
-    instance_parse_add( &instance_root, NULL, mod, top_instance, NULL );
+    instance_parse_add( &instance_root, NULL, mod, top_instance, NULL, FALSE );
     leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
     leading_hierarchies[leading_hier_num] = strdup_safe( "*", __FILE__, __LINE__ );
     leading_hier_num++;
   } else {
     scope_extract_back( top_instance, dutname, lhier );
-    instance_parse_add( &instance_root, NULL, mod, dutname, NULL );
+    instance_parse_add( &instance_root, NULL, mod, dutname, NULL, FALSE );
     if( lhier[0] == '\0' ) {
       leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
       leading_hierarchies[leading_hier_num] = strdup_safe( "*", __FILE__, __LINE__ );
@@ -271,6 +271,11 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.26  2006/07/12 22:16:18  phase1geo
+ Fixing hierarchical referencing for instance arrays.  Also attempted to fix
+ a problem found with unary1; however, the generated report coverage information
+ does not look correct at this time.  Checkpointing what I have done for now.
+
  Revision 1.25  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion

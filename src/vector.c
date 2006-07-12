@@ -1899,10 +1899,13 @@ bool vector_unary_inv( vector* tgt, vector* src ) {
   vector   vec;             /* Temporary vector value */
   vec_data vec_val;         /* Temporary value */
   int      i;               /* Loop iterator */
+  int      swidth;          /* Smallest width between tgt and src */
 
   vector_init( &vec, &vec_val, 1 );
 
-  for( i=0; i<src->width; i++ ) {
+  swidth = (tgt->width < src->width) ? tgt->width : src->width;
+
+  for( i=0; i<swidth; i++ ) {
 
     bit = src->value[i].part.value;
 
@@ -2010,6 +2013,11 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.76  2006/07/12 22:16:18  phase1geo
+ Fixing hierarchical referencing for instance arrays.  Also attempted to fix
+ a problem found with unary1; however, the generated report coverage information
+ does not look correct at this time.  Checkpointing what I have done for now.
+
  Revision 1.75  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
