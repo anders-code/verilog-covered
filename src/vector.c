@@ -1979,7 +1979,13 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
 */
 bool vector_unary_not( vector* tgt, vector* src ) {
 
-  return( vector_unary_op( tgt, src, nor_optab ) );
+  vector   vec;      /* Temporary vector value */
+  vec_data vec_val;  /* Temporary value */
+
+  vector_init( &vec, &vec_val, 1 );
+  vector_unary_op( &vec, src, or_optab );
+
+  return( vector_unary_inv( tgt, &vec ) );
 
 }
 
@@ -2013,6 +2019,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.77  2006/07/13 04:35:40  phase1geo
+ Fixing problem with unary inversion and logical not.  Updated unary1 failures
+ as a result.  Still need to run full regression before considering this fully fixed.
+
  Revision 1.76  2006/07/12 22:16:18  phase1geo
  Fixing hierarchical referencing for instance arrays.  Also attempted to fix
  a problem found with unary1; however, the generated report coverage information
