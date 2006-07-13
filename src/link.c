@@ -46,11 +46,13 @@
  \param head  Pointer to head str_link element of list.
  \param tail  Pointer to tail str_link element of list.
 
+ \return Returns a pointer to newly created string link.
+
  Creates a new str_link element with the value specified for str.  Sets
  next pointer of element to NULL, sets the tail element to point to the
  new element and sets the tail value to the new element.
 */
-void str_link_add( char* str, str_link** head, str_link** tail ) {
+str_link* str_link_add( char* str, str_link** head, str_link** tail ) {
 
   str_link* tmp;    /* Temporary pointer to newly created str_link element */
 
@@ -69,6 +71,8 @@ void str_link_add( char* str, str_link** head, str_link** tail ) {
     (*tail)->next = tmp;
     *tail         = tmp;
   }
+
+  return( tmp );
 
 }
 
@@ -802,6 +806,10 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
 /*
  $Log$
+ Revision 1.47  2006/07/13 22:24:57  phase1geo
+ We are really broke at this time; however, more code has been added to support
+ the -g score option.
+
  Revision 1.46  2006/07/09 01:40:39  phase1geo
  Removing the vpi directory (again).  Also fixing a bug in Covered's expression
  deallocator where a case statement contains an unbindable signal.  Previously
