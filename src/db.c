@@ -436,7 +436,7 @@ bool db_read( char* file, int read_mode ) {
 
 #ifdef DEBUG_MODE
   /* Display the instance tree, if we are debugging */
-  if( debug_mode ) {
+  if( debug_mode && retval ) {
     instance_display_tree( instance_root );
   }
 #endif
@@ -1700,6 +1700,14 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.175.4.1.4.1.4.2  2006/07/15 05:33:31  phase1geo
+ Fixing bug with empty named begin-end block.  This was causing a syntax error
+ message to be output and/or other internal errors.  Added named_block2 diagnostic
+ to regression suite to verify that Covered handles this case correctly.  Full
+ regression passes.  Also fixed a small bug in the db_read function that would
+ cause Covered to flag an internal assertion error if an error occurred while
+ reading the CDD file and the -D option was specified.
+
  Revision 1.175.4.1.4.1.4.1  2006/07/13 22:17:39  phase1geo
  Fixing bug in db_read when a functional unit is being merged to point
  to the used module.

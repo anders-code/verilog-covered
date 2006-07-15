@@ -2763,14 +2763,15 @@ named_begin_end_block
     {
       $$ = NULL;
     }
-  | IDENTIFIER K_end 
+  | IDENTIFIER
     {
       if( $1 != NULL ) {
         free_safe( $1 );
       }
+      ignore_mode++;
       $$ = NULL;
     }
-  | UNUSED_IDENTIFIER K_end
+  | UNUSED_IDENTIFIER
     {
       $$ = NULL;
     }
