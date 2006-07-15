@@ -459,7 +459,7 @@ bool db_read( char* file, int read_mode ) {
 
 #ifdef DEBUG_MODE
   /* Display the instance tree, if we are debugging */
-  if( debug_mode ) {
+  if( debug_mode && retval ) {
     instance_display_tree( instance_root );
   }
 #endif
@@ -1727,6 +1727,17 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.189  2006/07/15 05:49:04  phase1geo
+ Removed the old manstyle documentation directory as this tool is no longer
+ used to generate user documentation.  Created new keywords files to break
+ out 1995, 2001 and SystemVerilog syntax.  Added several new diagnostics
+ to regression suite to verify this new feature (still more parser code to
+ add to completely support this feature).  Also fixed several bugs that
+ existed in the 0.4.5 stable release and added those tests.  Full regression
+ is passing.  Finally, updated the manpage for the new -g option to the score
+ command.  Still need to document this new option in the user's guide.  Added
+ ability to verify the -g option diagnostics to the regression suite.
+
  Revision 1.188  2006/07/14 18:53:32  phase1geo
  Fixing -g option for keywords.  This seems to be working and I believe that
  regressions are passing here as well.
