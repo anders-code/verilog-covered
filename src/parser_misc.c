@@ -25,10 +25,14 @@
 #include "parser_misc.h"
 #include "util.h"
 #include "static.h"
+#include "link.h"
 
 
 extern char          user_msg[USER_MSG_LENGTH];
 extern vector_width* curr_range;
+extern func_unit*    curr_funit;
+extern str_link*     gen_mod_head;
+extern int           flag_global_generation;
 
 
 /*!
@@ -158,9 +162,42 @@ void parser_implicitly_set_curr_range( int left_num, int right_num ) {
 
 }
 
+/*!
+ \param gen  Generation value to check
+
+ \return Returns TRUE if the given gen value (see \ref generations for legal values) is less than
+         or equal to the generation value specified for the current functional unit (or globally).
+*/
+bool parser_check_generation( int gen ) {
+
+  bool      retval;    /* Return value for this function */
+  str_link* strl;      /* Pointer to the str_link found to match the given mod_name */
+
+  /* Search the generation module list to see if the specified module name has been set there */
+  if( (curr_funit != NULL) && ((strl = str_link_find( curr_funit->name, gen_mod_head )) != NULL) ) {
+
+    /* The user has specified a generation value for this module so check it against this */
+    retval = (gen <= strl->suppl);
+
+  } else {
+
+    retval = (gen <= flag_global_generation);
+
+  }
+
+  return( retval );
+
+}
+
 
 /*
  $Log$
+ Revision 1.9  2006/07/15 22:07:14  phase1geo
+ Added all code to parser to check generation value to decide if a piece of
+ syntax is allowable by the parser or not.  This code compiles and has been
+ proven to not break regressions; however, none if it has been tested at this
+ point.  Many regression tests to follow...
+
  Revision 1.8  2006/07/10 22:36:37  phase1geo
  Getting parser to parse generate blocks appropriately.  I believe this is
  accurate now.  Also added the beginnings of gen_item.c which is meant to

@@ -68,8 +68,17 @@ void parser_explicitly_set_curr_range( static_expr* left, static_expr* right );
 /*! \brief Deallocates and sets the curr_range variable from implicitly set values */
 void parser_implicitly_set_curr_range( int left_num, int right_num );
 
+/*! \brief Checks the specified generation value to see if it holds in the specified module */
+bool parser_check_generation( int gen );
+
 /*
  $Log$
+ Revision 1.8  2006/07/15 22:07:14  phase1geo
+ Added all code to parser to check generation value to decide if a piece of
+ syntax is allowable by the parser or not.  This code compiles and has been
+ proven to not break regressions; however, none if it has been tested at this
+ point.  Many regression tests to follow...
+
  Revision 1.7  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
