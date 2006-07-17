@@ -88,6 +88,7 @@
 #include "scope.h"
 #include "func_unit.h"
 #include "stmt_blk.h"
+#include "gen_item.h"
 
 
 extern funit_inst* instance_root;
@@ -942,6 +943,7 @@ void bind_perform( bool cdd_reading ) {
     if( !cdd_reading && (pass == 0) ) {
       param_resolve( instance_root );
       instance_resolve( instance_root );
+      generate_resolve( instance_root );
     }
 
   }
@@ -977,6 +979,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.78  2006/07/17 22:12:42  phase1geo
+ Adding more code for generate block support.  Still just adding code at this
+ point -- hopefully I haven't broke anything that doesn't use generate blocks.
+
  Revision 1.77  2006/07/11 04:59:08  phase1geo
  Reworking the way that instances are being generated.  This is to fix a bug and
  pave the way for generate loops for instances.  Code not working at this point

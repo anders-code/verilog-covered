@@ -115,6 +115,8 @@ funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* ra
   new_inst->stat       = NULL;
   new_inst->param_head = NULL;
   new_inst->param_tail = NULL;
+  new_inst->gitem_head = NULL;
+  new_inst->gitem_tail = NULL;
   new_inst->parent     = NULL;
   new_inst->child_head = NULL;
   new_inst->child_tail = NULL;
@@ -789,6 +791,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.51  2006/07/17 22:12:42  phase1geo
+ Adding more code for generate block support.  Still just adding code at this
+ point -- hopefully I haven't broke anything that doesn't use generate blocks.
+
  Revision 1.50  2006/07/12 22:16:18  phase1geo
  Fixing hierarchical referencing for instance arrays.  Also attempted to fix
  a problem found with unary1; however, the generated report coverage information
