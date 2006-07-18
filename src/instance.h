@@ -26,6 +26,9 @@
 #include "defines.h"
 
 
+/*! \brief Creates a new instance with the given information */
+funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* range );
+
 /*! \brief Displays the current state of the instance tree */
 void instance_display_tree( funit_inst* root );
 
@@ -56,6 +59,9 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.16  2006/07/18 13:37:47  phase1geo
+ Fixing compile issues.
+
  Revision 1.15  2006/07/12 22:16:18  phase1geo
  Fixing hierarchical referencing for instance arrays.  Also attempted to fix
  a problem found with unary1; however, the generated report coverage information
