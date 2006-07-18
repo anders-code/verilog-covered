@@ -1,0 +1,47 @@
+2006-07-15 00:33  phase1geo
+
+	Fixing bug with empty named begin-end block.  This was causing a
+	syntax error message to be output and/or other internal errors. 
+	Added named_block2 diagnostic to regression suite to verify that
+	Covered handles this case correctly.  Full regression passes.  Also
+	fixed a small bug in the db_read function that would cause Covered
+	to flag an internal assertion error if an error occurred while
+	reading the CDD file and the -D option was specified.
+
+2006-07-14 23:15  phase1geo
+
+	Fixing bug with embedded concatenations within function/task
+	parameter lists.  Added new port3 diagnostic to verify the fix. 
+	Full regression passes.
+
+2006-07-14 13:54  phase1geo
+
+	Fixing assertion in link.c such that no segmentation fault occurs
+	if a string is not found in a str_link list for deletion.
+
+2006-07-13 17:17  phase1geo
+
+	Fixing bug in db_read when a functional unit is being merged to
+	point to the used module.
+
+2006-07-12 23:52  phase1geo
+
+	Fixing bug 1521598 having to do with reduction unary invert and
+	logical not operators not calculating correctly.  Full regression
+	passes.
+
+2006-07-10 21:34  phase1geo
+
+	Fixing bug 1520159 (instance array always starting at 0).
+
+2006-07-09 21:41  phase1geo
+
+	Fixes to remove memory leaks.
+
+2006-07-09 20:14  phase1geo
+
+	Fixing segmentation fault bug which occurs when a multi-bit select
+	on the LHS contains any expression besides static values.  Updated
+	regression for this change and added mbit_sel7 diagnostic to verify
+	is correctness.
+
