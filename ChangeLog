@@ -1,3 +1,26 @@
+2006-07-18 12:22  phase1geo
+
+	Fixed upwards name referencing bug (1524705) and reshaped some of
+	the code associated with this functionality.  Added diagnostics to
+	regression suite to fully test this new behavior.  Full regression
+	passes.
+
+2006-07-17 23:18  phase1geo
+
+	Adding hier3 diagnostic to help verify scoping rules.
+
+2006-07-17 23:18  phase1geo
+
+	Getting things prepared for the 0.4.6 stable release.  Still need
+	to fix a bug with upwards scoping before I think that we are ready
+	to release.  Updated documentation for 0.4.6 stable release name.
+
+2006-07-17 23:16  phase1geo
+
+	Attempting to fix upwards scope referencing issue.  Still looks
+	like there is a problem in the instance_find_scope routine. 
+	Checkpointing work.
+
 2006-07-15 00:33  phase1geo
 
 	Fixing bug with empty named begin-end block.  This was causing a
