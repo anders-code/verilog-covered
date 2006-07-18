@@ -1,0 +1,932 @@
+Covered-Related NEWS
+====================
+
+    * 07/22/2006
+
+Stable release covered-0.4.6 made.  This release contains several bug fixes that are listed below.
+
+  - Fixed segmentation fault bug which occurs when a multi-bit select on the LHS contains any
+    expression besides static values.
+  - Fixed several memory leaks found with valgrind
+  - Fixed bug 1520159 - arrays of instances incorrectly always started at index 0.
+  - Fixed bug 1521598 having to do with reduction unary invert and logical not operators not
+    calculating correctly.
+  - Fixed bug in db_read when a functional unit is being merged to point to the used module.
+  - Fixed assertion in link.c such that no segmentation fault occurs if a string is not found
+    in a str_link list for deletion.
+  - Fixed bug pertaining to embedded concatenations within function/task parameter lists.
+  - Fixed bug pertaining to empty named begin-end blocks.
+  - Fixed bug in the db_read function that would cause Covered to flag an internal assertion
+    error if an error occurred while reading the CDD file and the global -D option was specified.
+  - Fixed upwards name referencing bug (1524705).
+  - Enhanced regression suite to verify that all of these bugs are properly fixed.
+
+    * 07/08/2006
+
+Stable release covered-0.4.5 made.  This release contains a bug fix to properly handle cases
+where two or more signals are declared with a parameter in their range field (i.e., reg [FOO:0] a, b;)
+This caused Covered to segfault due to attempting to free the same address twice.  Bug 1518932.
+Also contains a bug fix to properly remove statement blocks that contain case, casex or casez
+expressions and unbindable expressions.
+
+    * 5/28/2006
+
+Stable release covered-0.4.4 made.  This release contains a bug fix to proper handle hierarchical
+referencing of parameter values.  This feature was technically not supported in the past but caused
+an internal assertion error when this was performed.  The feature is now fully supported.
+
+    * 4/21/2006
+
+Stable release covered-0.4.3 made.  This release contains a bug fix to the statement connection function that
+caused segmentation faults during the score command.  Also added support for big endian wires/regs.  This 
+information was being ignored by the parser and, consequently, was not being handled correctly by Covered's
+internal simulator, leading to incorrect coverage information.  The lack of this support was also causing
+an internal error in the memory allocation routine when scoring the dumpfile.
+
+    * 4/17/2006
+
+Stable release covered-0.4.2 made.  This release contains a bug fix that caused an assertion error in the
+binding.c source file to occur.  The reason for this assertion was a syntax error in the parser that caused
+problems when more than one task call was made in a statement block.  Also added support for multi-line
+definitions (i.e., a '\' character used at the end of a definition line).  This was missing but was not meant
+to be missing.
+
+    * 4/4/2006
+
+Stable release covered-0.4.1 made.  This release contains one bug fix that causes an assertion error when
+compiling designs that use a concatenation operation on the left-hand-side of assignment statements.  If
+you are experiencing this problem with the 0.4 release, it is recommended that you use this new release
+instead.
+
+    * 3/29/2006
+
+Stable release covered-0.4 made.  In addition to all of the features, optimizations and bug fixes
+that have gone into the development releases from the 0.3 stable release, the following features, updates
+and bug fixes have been added.
+
+  - Fixed bug with a statement connection issue that causes lines of code to be not considered for
+    coverage that should have been.
+  - Fixed bug in report command where combinational expressions were not being output to match the original
+    Verilog code.
+  - Added CDD file viewer window to GUI to allow the user to see which CDD files are currently loaded/merged.
+  - Fixed bug in combinational logic verbose viewer which caused the window to resize dependent upon
+    the location of the cursor (this was an annoyance)
+  - Changed the output of simple combinational logic to change to unary combinational logic output if either
+    the left or the right expression was a constant value (eliminates unachievable combinational logic cases
+    from being output leading to more accurate coverage results).
+  - Removed combinational expressions that contain only constant values from being considered for coverage.
+  - Updated simple combinational logic output in reports to be as concise as possible for AND and OR type
+    expressions.
+  - Removed duplication of information in CDD files for race conditions.
+  - Fixed bug in GUI dealing with showing race conditions
+  - Fixing bug in GUI pertaining to the next/previous buttons in the combinational logic detail viewer.  Previously,
+    clicking on one of these buttons would only advance you to the next uncovered line.  Now it will advance
+    you to the next uncovered statement.
+  - Updated development, user and GUI documentation to reflect the above changes and to bring them up-to-date
+    with the rest of the tool.
+
+Please see the ChangeLog file for all changes made from the 0.3 stable release to the 0.4 stable release.
+Lots of enhancements, features, optimizations, bug fixes, performance improvements and documentation improvements
+are contained in this stable release, making it very worth while for any Covered users to get their hands on
+it.
+
+    * 2/18/2006
+
+Development release covered-20060218 made.  A lot of work has gone into adding a lot more Verilog-2001
+support, added Verilog-1995 support, GUI improvements/fixes, user documentation additions/updates,
+adding LXT dumpfile support and the usual bug fixes.  I have also removed the diagnostic directory from
+the Covered tarball and am making it available as its own tarball since it is growing by leaps and bounds
+these days.   The following is a list of the changes in this release from the past release.
+
+  - Added support for the following Verilog 2001 constructs:
+    - `ifndef, `elsif and `line preprocessor directives
+    - Constant function support
+    - Explicitly named parameter overrides
+    - Correct support for localparam
+    - Implicit (wildcard) sensitivity lists (@*)
+    - Support for signed values (integers are now treated as signed values) and proper handling of
+      signed expressions
+    - Immediate register assignment (ex. reg a = 1'b0)
+    - Variable multi-bit selects (ex. a[b+:10] or a[b-:2])
+    - Exponential power operator (**)
+    - Arithmetic shift operators (>>> and <<<)
+    - Inline parameters (i.e., parameters placed before a module port list)
+    - Inline port declarations (ex.  module foo ( input wire [1:0] a, ... );)
+    - "Null" parameter overrides (ex.  foo #(0,,2) bar (...);)
+    - Arrays of instances
+    - Added more support for attribute locations
+  - Added support for using LXT/LXT2 -style dumpfiles instead of just VCD files
+  - Fixing bug to properly bind to the appropriate task, function or named block when there
+    are two or more of this functional units with the same name.
+  - Changed all error information to get sent to stderr regardless of the output mode we are in
+  - Added left shift, right shift, exponential power, and constant function call operators to list
+    of valid operators to be used in constant expressions.
+  - Fixed bug for resolving parameter values that are used in tasks, functions or named blocks but
+    are not declared there (they are declared in the parent module).
+  - Added full support for hierarchical referencing
+  - Added full support for escaped names (ex. wire \some_name[0] ;)
+  - Added support for performing bit selection on RHS of parameter assignments
+  - Added full support for sizing parameters (ex. "parameter [2:0] foo = 0;")
+  - Fixed ASCII report output to display uncovered toggle signals in line order (this was inverted
+    for some reason).
+  - Fixed bug in score command-line parser to not segfault if file given in -f option is empty
+  - Fixed several bugs in GUI
+  - Added additional features for report GUI
+    - Added summary report window with ability to see modules/instances ordered by coverage
+      percentage for a given metric in either increasing or decreasing order (coverage information
+      is also color-coded to make it easy to tell which modules are "fully covered", "covered well
+      enough", or "not covered well enough").
+    - Added preferences window and removed preferences menu -- improved method of color selection
+      and added a coverage "good enough" selector used in the summary window
+    - Changed toggle coverage source code browser to only underline one instance of an uncovered
+      signal (this position is first implicit or explicit declaration of the signal) to improve
+      readability.
+    - Added configuration file read/write support for storage of Covered's preferences
+    - Added help buttons to toggle detail, combinational logic detail, preferences and summary window
+      to allow online help pages to be displayed for the current window
+    - Added GUI online help pages for toggle window, combinational logic window, preferences window
+      and summary window as well as updated all out-of-date information.
+    - Added navigational GUI elements to help the user find the next/previous uncovered line from any
+      window.  Also added a search GUI element for finding any string in the source code window.
+  - Updates to user guide and development documentaiton to bring things up-to-date.
+
+  In summary, there have been lots of features added to both the score command and GUI report tool.
+  The CDD files generated from this release are not backward compatible with older releases.  I plan
+  to make this version the next stable release once it has had some more test time applied to it.
+  So please submit those bugs!
+
+    * 1/9/2006
+
+Development release covered-20060109 made.  It has been almost a year since the last development
+release of Covered, but in the meantime there has been a lot of work put into the score command
+of Covered during this time to fix bugs, add more coverage support for various Verilog constructs,
+simulate more accurately, remove memory corruption/estrangement and improve the run-time speed
+of the score command.  I think that user's of Covered will appreciate the enhancements.  Documentation
+updates have been made and build problems have been fixed (Covered now compiles cleanly for
+Fedora Core 3 builds).  I plan to revisit Covered's GUI in the next release to fix various bugs
+and improve the usability.  The following is a description of what has changed in this release from the
+last release:
+
+  - Blocking assignments in covered blocks are now performed by Covered's simulation core instead of
+    being taken from the dumpfile to improve simulation/coverage accuracy.
+  - Fixed lots bugs with statement block removal
+  - Added patch to parser.y to fix compiling problems with bison-2.0.
+  - Increased space for module/instance name in reports
+  - Added full support for the following Verilog constructs:
+    - tasks and task calls
+    - functions and function calls
+    - named begin/end blocks
+    - fork/join
+    - event types and event triggers
+    - hierarchical referencing (both relative and top-of-tree scoping)
+    - initial blocks
+    - for, repeat and while looping
+    - block disabling
+  - Fixed bug with net_decl_assign statements (the line, start column and end column information was
+    incorrect, causing problems with the GUI output).
+  - Fixed implicit signal creation in binding functions.
+  - Fixed binding with merge command. 
+  - Added --enable-debug configuration option to remove verbose outputting code from compilation.
+    This significantly improves run-time performance.
+  - Better race condition reporting
+  - Lots of fixes related to bad memory accesses and memory leaks (found using the valgrind utility).
+  - Removed Tcl/Tk from source files if HAVE_TCLTK is not defined.
+  - Added ability to exclude functions, tasks and named begin/end blocks with the -e score command
+  - Added ability to exclude all continuous assignments from coverage consideration with -ec score command
+  - Added ability to exclude all always blocks from coverage consideration with -ea score command
+  - Added ability to exclude all initial blocks from coverage consideration with -ei score command
+  - Fixed problem with race condition checker statement iterator to eliminate infinite looping.
+  - Also fixed expression assigment when static expressions are used in the LHS
+  - Fixed bug for signals that are on the LHS side of an assignment expression but are not being
+    assigned (bit selects) so that these are NOT considered for race conditions.
+  - Added simulation performance statistical information to end of score command when the -S option is
+    specified to the score command (this will probably only be useful for Covered developers but may
+    be interesting/useful for users later on).
+  - Fixing bug in expression_assign function -- removed recursive assignment when the LHS expression
+    is a signal, single-bit, multi-bit or static value (only recurse when the LHS is a CONCAT or
+    LIST).
+  - Fixing bug in report help information when Tcl/Tk is not available
+  - Lots of improvements to simulator to increase performance (this will be quite noticeable!)
+  - Documentation updates
+  - Regression suite enhancements (lots of new diagnostics added for testing new Verilog constructs as well
+    as testing bug fixes).
+  - Added cleanup function at exit which now automatically removes the temporary files that Covered creates
+    from the pre-processing step even when something goes drastically wrong while this file is opened.
+
+Note:  The format of the generated CDD files has changed quite a bit in format so you will not be able
+to merge CDD files generated from older versions of Covered with CDD files generated from newer versions
+of Covered (Covered will display an error message to the user stating this reason).  As always, please
+e-mail any bugs/problems found with this new release!
+
+    * 2/8/2005
+
+Development release covered-20050208 made.  This release primarily contains support for detecting
+and handling race conditions with the DUT.  Added flags to the score command control the behavior
+of Covered when these race conditions are detected.  Additionally, the race condition information
+is saved to the CDD file for reporting purposes in both the text reports as well as the GUI.  This
+feature is not only useful to logic designers but also sets up Covered to provide better coverage
+results going forward as well as allows Covered to gain coverage for some constructs that are
+currently not supported.  A few other bugs are fixed in this release as well as documentation
+updates for the race condition usage.  The following is a description of what has changed in this
+release:
+
+  - Added support for detecting/handling race conditions in DUT
+  - Added ability to report race conditions to report command
+  - Fixing bug in file search algorithm.  When a file was specified with a -v option after it
+    had already been included, an error was being reported and parsing stopped.  In this case, it
+    now just ignores the duplicate include.
+  - Fixed preprocessor to ignore protected areas of code.
+  - Fixed library extension command-line parser.
+  - Changed was data is stored on a bit-basis for certain data types to use unions.  Eases coding
+    and improves performance of score command just a bit.
+  - Added support for Verilog strings as static values.  Strings can also be used in FSM value assignment
+    from command-line or from inline attribute.
+  - Ran -Wall compiler flag to clean up code.
+  - Added race condition run to regression
+  - Updated man page, User Guide and GUI documentation for changes
+  - Fixing bug in GUI where deselecting/selecting Covered, Uncovered or Race Condition in combinational
+    logic window would redisplay the file incorrectly.
+  - Added code to display help information in information bar of GUI main window when cursor is
+    over missed toggle and/or combinational logic coverage
+  - Added code to display reason for race condition when cursor is over lines that were discarded from
+    coverage consideration.
+
+    * 12/10/2004
+
+Development release covered-20041210 made.  This release contains summary and detailed coverage
+reporting windows for toggle and combinational logic to the GUI.  Lots of bug fixes, updates
+and enhancements to the UI.  The scoring phase was optimized a bit to improve run-time.
+Additionally, help manual has been started for the current state of the GUI.  The following
+is a description of the changes found in this release over the last.
+
+  - Fixing case where user hits cancel button in the open CDD window and application exits.
+  - Added module/instance highlighting in listbox for uncovered modules/instances.
+  - Adding informational bar at the bottom of the main window for providing state-sensitive
+    help/state information.
+  - Added ability to make module/instance listbox resizable.
+  - Fixed configure files for Tcl/TK referencing.
+  - Fixed bug in getting the line summary total for the GUI.
+  - Fixed problem where source viewer would lose its place when switching between different
+    coverage metrics, changing colors and/or specifying different uncovered/covered options.
+  - Added 'Open Related CDD' and 'Merge related CDD' options to File menu to allow user to see
+    different CDD files generated from the same design and to merge CDD information from the
+    same design.
+  - Added verbose toggle coverage information window, allowing the user to see verbose information
+    for a signal by left-clicking on the signal in the source viewer.
+  - Added verbose combinational coverage information window, allowing the user to see verbose
+    information for an expression by left-clicking on the expression in the source viewer.
+  - Modified error reporting for GUI to display this information to an interactive window (instead
+    of the the shell).
+  - Added code to improve efficiency during scoring phase.  The improvement is fairly minor at this
+    stage, but there is more to come with these changes.
+  - Added start of help manual documentation for GUI.
+
+Lots of features, bug fixes, optimizations, documentation enhancements and build improvements in
+this release.  Please report any problems, and, as always, enjoy!
+
+    * 03/21/2004
+
+Release covered-20040321 made.  This release contains lots of bug fixes and also contains the
+initial version of the Covered report viewing GUI (line coverage only).  The following is a
+description of the changes made since the last development release.
+
+  - Ran C linting tool on all Covered source code and updated code based on linting errors/
+    warnings.
+  - Modified debug output to show file and line number of code that called the outputting
+    function (easier to debug problems and useful in error regression testing).
+  - Started initial error testing in regressions.
+  - Several bug fixes made to remove segmentation faults and assertion errors in the new
+    report generation functions.
+  - Initial version of Covered report viewing GUI added.  This version displays line coverage
+    only at the moment.
+  - Fixed bug in score command for statement removal (was resulting in memory errors that led
+    to segmentation faults).
+  - Fixed bug in report command that output bad verbose information when -c option was used.
+  - Added new diagnostics to regression testsuite to reproduce situations where original
+    segmentation faults were found to occur.
+  - Development documentation updates.  No user documentation updates are released at this
+    time (other than information provided using the -h global option to Covered).
+
+Have fun!
+
+    * 02/11/2004
+
+Release covered-20040210 made.  A lot of work has gone into this release to make the report
+output more readable and concise.  Several bug fixes have been made as well.  A GUI is on
+the way for report viewing that will be available in alpha version in the next development
+release.  Below are some of the highlights of this release.
+
+  - Added GUI interfacing functions in preparation of upcoming GUI report viewing utility.
+  - Added more information about expressions to line and combinational logic coverage verbose
+    information.  Rather than just outputting the RHS of the expression, the LHS and assignment
+    operator (blocking or non-blocking) or IF statement are output to give the user a better
+    context of the missed logic.
+  - Fixed bug in param.c where parameters found in the RHS of expressions that were part of
+    statements being removed were not being properly removed.
+  - Fixed bug in sim.c where expressions in tree above conditional operator were not being
+    evaluated if conditional expression was not at the top of tree.
+  - Changed output of logic in combinational logic verbose coverage reporting to (by default)
+    use the same format (in terms of endline characters) as the logic was found in the source
+    code.
+  - Added '-w [<line_width>]' option to report command that causes combinational logic to be
+    output to report as much logic as will fit in the value of <line_width> in the report.  A
+    default value of line width is specified internally in Covered to be 105 characters;
+    however, the user may make this value larger or smaller to suit.  This value reverses the
+    effect of the above bulletin.  Added this option to Covered's regression suite to test.
+  - Completely modified output format of missing combinational logic coverage.  Removed a lot
+    of coverage information that was extraneous.  When three or more subexpressions are ANDed,
+    ORed, logical ANDed, or logical ORed, coverage information is output in a special way to
+    increase readability/understandability for this coverage.
+  - Added "GENERAL INFORMATION" section to all reports which specifies general information
+    about this report (this eliminates a lot of redundant information in the report to improve
+    readability).
+  - Added the name of the CDD file from which a report has been generated from in the
+    GENERAL INFORMATION section of the report.
+  - When a CDD file is created due to merging CDD files, the names of the original CDD files
+    are now stored in the merged CDD file.  This information is output in the GENERAL
+    INFORMATION section of the report (created from this merged CDD file) to indicate to the
+    user this information.
+  - If a CDD file is created due to merging CDD files and the leading hierarchies in each of
+    those CDD files are different, a bullet in the GENERAL INFORMATION specifies this and
+    reminds the user that the leading hierarchy information will not be output in the rest of
+    the report (instead the string "<NA>" replaces the leading hierarchy information).  This
+    will help to eliminate confusion when viewing the reports and fixes an outstanding bug
+    in Covered.
+  - Added starting and ending line information to module structure for GUI purposes.
+  - Removed scope information in CDD file for expressions, signals and statements.  This
+    information was not used, caused CDD files to become excessive in size and mildly speeds
+    up reading in CDD files.
+  - Fixed bugs in combinational logic report section where summary coverage numbers and verbose
+    coverage numbers did not agree.
+  - Removed 'c' directory in 'diags' directory and cleaned up Makefile to run regressions.
+  - Masked off the value of the SET bit in expressions output to CDD files.  This information
+    is not needed and sometimes caused regression failures due to CDD file mismatches on
+    different platforms or using different simulators.
+  - Modified regression Makefile to specify the 'vvp' command prior to the compiled VVP
+    executable when running Icarus Verilog regressions (due to recent change to IV).
+  - Changed instance-based reports to not merge child instance coverage information into parent
+    instance coverage information.  This is not done in module-based reports, makes reading
+    this information confusing and doesn't provide us any extra information.
+  - Fixed bug where modules were being reported in verbose reports when coverage numbers were
+    100% covered.
+  - Changed toggle coverage report output to output toggle information in hexidecimal format
+    versus binary format.  This keeps the toggle coverage information more succinct/readable.
+    Added underlines between every 4th hexidecimal value to help user's to discern the bit
+    position of a toggle bit.
+  - Changed the format of the report entirely to enhance readability (many changes here that
+    the user will immediately see).
+  - Updated user documentation for new changes and added new section called "Reading the
+    Report" which will walk the user through several reports and how to interpret the report
+    information.  This section is still in progress at this time.
+  - Updates to development documentation.
+  - Lots of new diagnostics added to regression suite.  We now have over 200 diagnostics in this
+    regression.
+
+Special note:  Please note that the CDD file format for this release has changed from previous
+CDD files and is therefore incompatible with older versions.  If you try to read a CDD file
+generated from an older version of Covered with the newer version, Covered will tell you that
+this cannot be done due to incompatible CDD versions.
+
+    * 11/16/2003
+
+Release covered-20031116 made.  This development release contains a new way to specify FSMs
+within the design by using inline Verilog-2001 attribute syntax.  There are also a lot of
+bug fixes contained in this release as well as the usual user and development documentation
+enhancements.  See the list below for more details on the changes made for this release.
+
+  - Added better VCD parsing capability to allow bit selects to be "attached" to the signal
+    names in the VCD variable definition section.  The newer versions of Icarus Verilog now
+    output this format style.
+  - Added ability to specify FSM location and transition information using Verilog-2001
+    attributes.  Added many diagnostics to regress suite to verify this capability.
+  - Fixed bug found in stable release that caused an incorrect calculation of unary operations
+    performed on single-bit values.  Fixes bug 835366.
+  - Fixed bug found in using constant values in the right-hand side of repetitive concatenation
+    operators.  Fixes bug 832730.
+  - Fixed bugs in reporting of FSM coverage information in the report command.
+  - Fixed bug in FSM variable binding stage that caused incorrect coverage numbers to be reported
+    for FSM coverage.
+  - Fixed bug in handling variables that are too long (more than the allowed 1024 bits).  Removes
+    memory corruption problems when this occurs.  Displays warning to user that it has found
+    a variable that it cannot handle and gracefully disregards any logic that uses these variables.
+  - Updated user documentation to include new chapter on inline attributes that Covered can
+    now handle.
+  - Updated development documentation for new functions added in this release.
+
+    * 10/19/2003
+
+Release covered-20031019 made.  Lots of modifications to existing structures and supporting
+code to increase scoring speed.  In my testbenches, I am seeing about a 3-4x improvement
+in speed.  Additionally, code enhancement for allowing bit selects and signal concatenations
+in command-line FSM variable descriptions are now allowed.  User documentation has been
+updated for these changes.  Some bug fixes are also included in this release.  The
+following list shows the changes from last development release.
+
+  - Added ability to parse more complex state "variables".  This includes the ability
+    to specify single and multi-bit signals and the ability to concatenate more than
+    one signal (or signal bit select) to make a state variable.  Please see user
+    documentation for more information on this.
+  - Minor tweaks to report format for displaying filenames (only basename of filename
+    is output instead of the entire path).
+  - Fixing bug in VCD parser to allow bit select parsing of a variable when the
+    variable name and bit-select information are not separated by spaces (this is something
+    that newer versions of Icarus Verilog now does in its VCD files).
+  - Changed structure for vectors from ints to chars.  Each vector element stores information
+    for one 4-state bit value and its coverage information (instead of storing 4 4-state
+    variables and coverage information).  This reduces memory needed and increases calculation
+    speed on vectors.
+  - Fixing bug in signal_from_string function.
+  - Fixing bug in arc.c related to non-zero LSBs of signals.
+  - Added new parameter to info line in CDD file that specifies the format of the CDD file.
+    This is used by Covered to keep CDD files with different formats from being merged, read,
+    etc.
+  - Removed LSB information from vector and storing this information in the signal
+    structure.  Reduces memory required, enhances speed, and fixes existing bugs with bit
+    selects.
+  - Added more diagnostics to regression suite to test new functionality.
+  - Updated user documentation for new changes.
+
+    * 09/25/2003
+
+Release covered-20030925 made.  This release contains the first working FSM code
+coverage portion in Covered.  There is a lot more to work on in the FSM code coverage
+area in the way of automatic FSM extraction and state transition specification, but
+this version is able to extract FSM coverage information for an FSM that is located
+by the user.  Please see user's manual for this release for more details on specifying
+FSM location.  Summary and verbose reporting are available for FSM coverage at this
+point.  Additionally, the data format for FSM coverage information in the CDD file
+has been finalized.  FSM coverage merging is also supported in this release.  User and
+development documentation has been updated.  Please give this development version a
+go to get any bugs out of the FSM code coverage engine.
+
+In addition to the FSM coverage support, a bug was fixed in the vector_to_int()
+function when converting a vector whose LSB is a non-zero value.
+
+Here is what is on the horizon for FSM coverage that you should expect to see in the
+coming development releases.
+
+  - Ability for user to specify the location of an FSM using $attribute function.
+  - Ability for user to specify all possible state transitions for a given FSM on the
+    command-line and using inline $attribute functions.
+  - Automatic FSM extraction including locating an FSM and extracting all possible
+    state transitions.
+
+    * 08/20/2003  - Stable Release 0.2.1
+
+Some bugs were found in the covered-0.2 release that needed to be fixed to consider
+Covered to be completely stable.  This release (covered-0.2.1) contains these fixes
+which are outlined below.  Please get a hold of this stable release if you have already
+downloaded covered-0.2.
+
+  - Fixing bug with the initialization of the new symtable structure.  Only 255 of the
+    256 children of each node were being initialized correctly.  Fixes a segfault problem with
+    the symtable_dealloc routine.
+  - Fixed memory leak problem with file list in parser.  This was a long outstanding problem
+    that has now been understood and fixed.
+  - Added fclose() after the VCD parsing was complete.
+  - Fixed a memory problem with the symtable structure that caused other data structure
+    values to be corrupted.
+  - Fixed assertion error problem with VCD symbol aliasing.
+
+    * 08/16/2003
+
+Stable release covered-0.2 finally made!  This release will be the springboard
+for adding FSM coverage code, code optimizations as well as a few new features
+that should make the score command run much faster.  Some important bug fixes
+were made in this release and code optimizations have been added to the score
+command.  If you are getting coverage for a larger design, you should definitely
+notice the speed increase.  In one of my designs, the speedup was a facter of
+a bit more than 3x.  The following are the list of changes made for this release.
+
+  - Added -ts option to score command to allow the user to see where in the
+    simulation process the score command is currently at.  Please see user
+    documentation for more details on this new option.
+  - Fixed bug with multiple wait event statements within same always block.
+    This means that the CDD files created with the last version of Covered
+    will be incompatible with the new CDD files.
+  - Fixed bug with posedge, negedge and anyedge expressions when more than
+    one of these is found in the same always block.
+  - Fixed bug in vector comparison function.  Vectors will now compare to a value
+    of true if the values of two vectors (whose bit size is different) are equal
+    up to the smallest MSB of the two vectors.  Before, if two vectors were not
+    of equal size, a compare would always evaluate to FALSE.
+  - Removed unnecessary global variables.
+  - Removed generated development documentation from release and opted to
+    generate these with a user 'make' in the doc directory (makes release size
+    smaller and is unnecessary for most users anyways).
+  - Development documentation updated.
+  - User documentation and man file updated.
+
+    * 08/06/2003
+
+Release covered-0.2pre3 made.  It has been quite a while since a release has been made
+which has been due to a particularly tricky bug that was found with non-blocking
+assignments.  This bug generated bad coverage information (this is considered very bad!)
+This release contains bug fixes and development documentation updates.  If no more problems
+are found with this release, I will get the 0.2 release made very soon.  The following
+is a list of the changes for this release.
+
+  - Fixes to line.c and toggle.c to provide better cross-platform support.
+  - Lots of updates to the development documentation.
+  - Fixed bug with properly handling hierarchical references in expressions.
+  - Fixing bug with single-bit parameter handling (caused a diagnostic miscompare
+    between Linux and Irix OS's).
+  - Fixed non-blocking assignment bug.  This bug affected the order of execution in
+    Covered's simulator which resulted in bad coverage information being generated.
+  - Fixed bugs in divide, mod, left shift, right shift and some other expression types
+    to avoid converting variables that have unknown values to integers (which results
+    in Covered errors at run-time).
+
+The list of changes is short, but the changes made are very necessary to getting reliable
+coverage numbers from Covered.  Please get a copy of this version and test it out so that
+we can get the stable 0.2 release made ASAP.
+
+    * 02/18/2003
+
+Release covered-0.2pre2 made.  Bug fixes and enhancements for allowing more Verilog
+code to be parsed without spewing parsing errors.  The list of open bugs is empty at
+the moment.  I will be working on enhancing the user documents and development
+documents in preparation for the stable release.  The stable release will be made
+next unless there are new bugs found for which the bug fixes convince me that additional
+testing is necessary.  The following is a list of the changes for this release.
+
+  - Fixed bug with copying instance trees for instances of modules that were previously
+    parsed and built into the main instance tree.
+  - Fixing bug in file finder so that only missing modules are displayed after the
+    parsing phase is completed.
+  - Updated output of filenames as they are parsed to give more consistent look.
+  - Fixing bug with leftover tmp* file when missing module error is reported.
+  - Adding parsing support for pullup, pulldown and gate types though these are not
+    supported for coverage at the current time (probably will be supported after stable
+    release).
+  - Adding parsing support for real numbers in statement delays.
+  - Fixing case where statement is found to be unsupported in middle of statement tree.
+    The entire statement tree is removed from consideration for simulation.
+  - Added preliminary support for parsing attributes though the parsing support is not
+    complete at this time.
+  - Fixing bug with line ordering where case statement lines were not being output
+    to reports.
+  - Fixing bug with statement deallocation for NULL statements within statement trees.
+  - Updates to parser for new bison version 1.875
+  - Added support for named blocks
+  - Fixing bug with handling of preprocessor directives with leading whitespace.
+  - Fixes/optimizations to db_add_statement function which avoids stack overflow errors.
+  - Added check in regard to -i option to score command.  Bad -i values would cause no
+    coverage information to be generated but would not tell user explicitly.  Error
+    message now provided with -i option is not specified but is needed and/or -i option
+    is incorrect.
+  - Lots of parser updates to be able to parse UDPs, escaped identifiers, specify blocks,
+    and some other various Verilog code that was causing parse errors or assertion errors.
+  - Fixed proper handling of the event type.
+  - Fixed bug with merging constant/parameter vector values which caused assertion error
+    in report command when reporting on a merged file.
+  - Fixed user error message for merge command when CDD files are unable to be read.
+  - Added new type to CDD for general CDD file information.  This allows CDD files from
+    different testbenches with the same DUT instantiated to be properly merged.
+  - Fixed problem with generating report from CDD file that has not been scored.  Covered
+    detects that the CDD file has not been scored and outputs an error message to the user
+    not allowing them to generate these reports.
+  - Added support for reading bit selects from VCD files (this information was previously
+    ignored).  This was necessary as other simulators bit blast module ports in VCD files. 
+  - Updated look of instance reports to display full hierarchy of an instance instead of
+    the instance name and the instance name of the parent module.  Much easier to locate
+    the instance in the design now.
+  - Fixed bug with using -D/-Q option with merge command.
+  - Added merge regression testing capability to regression suite.
+  - Updated build environment for RedHat 8.0 requirements.
+  - Updates to regression suite
+  - Development documentation updates.
+
+The way that Covered looks and feels for 0.2 stable release is set in stone now.  Please
+make sure that you test this version as much as possible to get any leftover bugs out of
+the code.  I only plan on updating documentation, adding code comments, and fixing bugs.
+If any bugs are sent in, a 0.2pre3 release will be created, otherwise, I will make
+the 0.2 stable release available.
+
+I've got some exciting things in Covered's future in plan after 0.2 stable release,
+including FSM support, new text report look, code optimizations, support to be fully
+Verilog-2001 compliant, a parallel scoring algorithm, and a new GTK+ interface.
+Happy testing!
+
+    * 01/05/2003
+
+Happy New Year!  Release covered-0.2pre1_20030105 made.  This release is primarily a
+bug fix release; however, many of the bugs required larger changes than would be
+expected before a stable release.  The most significant change being to the lexer which
+is now split into a preprocessor and a normal lexer (before these two functions were
+combined into one).  As such, this is the first prelease with a second release most
+likely expected before stable release.  The following is a list of changes included in
+this release.
+
+  - Preprocessor split out from lexer to allow proper handling of defined values within
+    code.
+  - Added -p option to score command to allow user override of preprocessor intermediate
+    output file.
+  - Fixed bug where report output was not squelched when -Q global option specified on
+    report command line.
+  - Modified regression suite to verify CDD file generation (was being performed before),
+    module report generation (new) and instance report generation (new) to make sure that
+    report output was consistent.
+  - Fixed bug where integer, time, real, realtime and memory data types used in expressions
+    where considered to be implicitly defined and given 1-bit values.  When these types
+    are seen in expressions now, they are ignored by Covered (caused nasty segfault).
+  - Fixed bug when a parameterized module is instantiated more than once in a design
+    (sent error message to user when this occurred).
+  - Fixed bug where a parsed module that was required but not at the head of the module
+    list was not being found by the parser.
+  - Added internal assertions and code to verify that we never try to overrun arrays
+    in the VCD parsing/running stage (caused nasty segmentation fault).
+  - Reorganized code for symtable symbol lookup and value assignment.
+  - Fixing bug where a parameterized module that was instantiated in a design more than
+    once was not getting the correct parameter value(s).
+  - Fixed module search algorithm to reparse a Verilog file that contains a module
+    that was previously ignored (not needed at the time) but is later found to be
+    needed.
+  - Created tree.c and tree.h to handle new module search algorithm and to replace
+    preprocessor define tree structure.
+  - Updated development documentation.
+  - Updates to user manual and manpage for new -p option, notes from this release
+    and a new section that starts to describe what logic is analyzed by Covered and
+    which code is not analyzed.
+
+I've got some fairly large designs being run with this version of Covered and the regression
+suite has grown to over 130 diagnostics with more on the way.  Keep the bug reports coming!
+
+    * 12/14/2002
+
+Release covered-20021214 made.  This release is a bug fix release.  See list below
+for details.  Bugs that lead to infinite looping in the score command and segmentation
+faults should now be cleared up.  Please let me know if there are any other bugs that
+need to be addressed before first stable release.  Development documentation updated
+to match changes in files.  Regression suite has been updated quite a bit from last
+time.  There are now over 125 diagnostics in the regression suite (my goal was to
+write about 100 before first stable release).
+
+  - Segmentation fault fixes in report command
+  - Parser can now handle all net types (not just wire).  Diagnostics added to regression
+    suite to verify their proper handling.
+  - Parser updated to handle net declaration assignments (e.g., wire a = b & c;).
+    Diagnostics added to verify proper handling.
+  - Added human-understandable error messages in parser to help identify file and
+    line number along with a quasi-helpful error message description.
+  - When parser error is found, Covered exits after parsing phase without continuing
+    to write CDD file.
+  - Fixed bug where a multi-bit select expression existed in a module that was
+    instantiated more than once.  Assertion error fired in this case.
+  - Updated regression suite for VCS testing.
+  - Fixed bug where parameters were used in modules that were instantiated more than
+    once.
+  - Fixed bug that dealt with parameters (see param6.1.v for test case).
+  - Fixed bug where a delay statement was the last statement in a statement block used
+    by Covered.  Added diagnostics to verify correct behavior.
+  - Fixed infinite loop problem with db_add_statement function.
+  - Fixed infinite loop problem with statement_set_stop function.
+  - Fixed bug with parsing order.  When an instance is found for a module that has
+    already been parsed, the instance was incorrectly being handled.  Bug replicated
+    with instance6.v diagnostic.
+  - Fixed output of edge-triggered events to add @(...) around the expression (they
+    were easily confused with other code that could exist on the same line).
+  - Fixed bug in parser to not allow module to be parsed more than once.
+  - Fixed bug that lead to an assertion error (see instance6.1.v for test case).
+  - Fixing bug with calculating list and concatenation lengths when MBIT_SEL 
+    expressions were included.
+  - Changed Covered's handling of -y directories.  Before, all files in these directories
+    were fed into the parser to look for missing modules.  Now, when a module is needed,
+    the module name is used to find the matching filename in the -y list (basically,
+    the -y option works like the -y option in Icarus Verilog and VCS).  This fix really
+    streamlined the parsing phase and fixed several bugs.
+  - Memory declarations are now properly ignored (produced segmentation fault previously).
+  - Fixed report command to display all lines and expressions in order according to
+    their line number (the problem is REALLY fixed now).
+  - Removed hierarchical references from being scored.
+
+All in all, you should notice a huge improvement in the parsing speed, syntax errors are
+reported better, more Verilog syntax should be handled properly, the score command will
+run a bit faster than before, and the reports should be a bit easier to read.  Segmentation
+faults and assertion errors should become lesser in number (if not gone altogether?).
+I am feeling pretty confident that we are getting close to a stable release as I have
+been able to generate a CDD file for a chip that is millions of gates in size (CDD file
+was created in the range of 30 - 45 seconds!)  Keep the bug reports coming.  I have some
+things to work on for next release already.
+
+    * 11/27/2002
+
+Release covered-20021127 made.  This release contains mostly bug fixes to get closer
+to first stable release.  In addition, it should be noted that bug fixes to allow
+Covered to work on 64-bit architectures have been added.  The various bug fixes
+have been listed below.  User documentation, development documentation and regress
+suite has been added to and enhanced.
+
+  - Reformatted parser.y code to make it more readable.
+  - Fixed bug in parser.y that existed in 20021026 which caused the bison parser
+    to either spew an error or warning
+  - Fixed bug in expression resizer that caused a segmentation fault for expressions
+    with NULL values in right side child expressions
+  - Fixed CVS automatic log commenting.  This was causing /* to show up within
+    the Log comments.  Resulted in the C compiler spewing warning messages.
+  - Fixed code that handles Verilog constructs that are not supported by Covered.
+    These caused segmentation faults previously.  Any code not handled by Covered
+    should be ignored and cause the statement block to not be examined that contains
+    the ignored code.
+  - Fixed expression CDD file reader to read short numbers correctly.
+  - Fixed compatibility problems between cc and gcc compilers.
+  - Fixed problem that resulted in bus errors from the parser.
+  - Removing compiler warnings from source and header files.  Code should now compile
+    clean when the -Wall option is provided to the compiler.
+  - Fixed problem where EXPAND expressions were failing when the multiplier of the
+    expander was an expression itself.
+  - Fixed problem with combinational logic output in the report command.
+  - Fixed bug when parameters are used in expression resizing.
+  - Verified that `ifdef cases work appropriately when parts of the `ifdef/`else/`endif
+    are commented out (bug found in Icarus Verilog)
+  - Added start of FAQ to user manual.
+  - Fixed bug in report command for underlining parameters in the reports.
+  - Fixed bugs with multi-bit and single-bit handling.
+  - Fixed bug with combinational logic being output when it is unmeasurable.
+  - Fixed bug in report command when an expression can be counted more than once.  All
+    expressions are now only able to be counted and displayed once (removal of redundant
+    information).
+  - Fixed static expression calculation to yield proper coverage results for expressions
+    containing constant values.
+  - Verified -T option works correctly for min, typ, and max values.
+  - Changed delay specifier to only report a warning if min/typ/max is not specified and
+    we have parsed a delay with these specifiers.  Still default to typ.
+
+Keep the bug reports coming.  I really want to get to first stable release as I have figured
+out how to handle FSMs and want to start working on a GUI front-end for the report command.
+
+    * 10/26/2002
+
+Release covered-20021026 finally made.  This release is an enormous step toward
+getting to first stable release.  Added support for parameters which should be
+complete for stable release.  Supports all Verilog-1995 standard parameter code.
+This caused some parts of the code to be completely redesigned and in the process
+enhanced the efficiency of the score command.  Additional enhancements and bug fixes
+are so numerous that I will list them below:
+
+  - Fixed bug in VCD for reading $var definitions containing optional bit selects
+  - Fixed bug with calculating initial values of signals for all simulators
+  - Fixed bug with coverage results for static values.
+  - Modified regression to run with Icarus Verilog or VCS.
+  - Full support parameters as specified for Verilog-1995 (Verilog-2000 will be supported
+    in the future) -- simple bullet in list but a lot of work involved here.
+  - Fixing bug with concatenations specified on the left-hand-side of equations
+  - Fixed several other bugs in handling concatenations.
+  - Added lots of new diagnostics to regression suite to test parameters and other
+    Verilog components which were found to be buggy.
+  - Fixed bugs with single and mult-bit signal selects.  Multi-bit select bugs were
+    causing internal assertion errors to fire.
+  - Expressions changed to be more efficient with memory consumption.
+  - Added ability to parse real types in VCD dumpfiles (though real numbers are not
+    supported internally) -- VCD dumpfile parsing should be complete now.
+  - Fixing -i option in score command to use full Verilog hierarchy rather than just
+    the instance name (this was the intended behavior).
+  - Added -T option to allow user to select min, typ, or max delay values in
+    min:typ:max delay statements.
+  - Fixed bug leading to segmentation fault in report command when outputting verbose
+    information for large expression trees.
+  - Added initial fix for ordering line and combinational logic outputs in verbose
+    reports (they were backwards before).
+  - Updates to development documentation, user manual, and man page for new features
+    and redescribed a few things in user manual for clarification purposes.
+
+Overall, this is a MAJOR release.  Please give this one a try and submit bug reports.
+I only have a few more small features to add before first stable release so I want to
+really work the problems out of this release.  All Verilog code that Covered will
+pay attention to in a design for the Verilog-1995 standard is now in place.  A lot of
+work went into this release -- thus the delay in getting the release out.
+
+    * 9/14/2002
+
+Release covered-20020914 made.  This release is mostly a feature release with a few
+bug fixes in place.  Code has been added and development documentation started to
+handle parameters.  To make Covered as efficient as possible in the score command,
+certain unnecessary steps were removed; however, this makes supporting parameters
+more complicated to code.  I am narrowing in on the implementation but as of yet
+parameter support is not included in this release.  The next release should provide
+support for parameters.  I did make some progress on checking off a few of the things
+on the TODO list before first stable release.  I have added the initial version of 
+combinational logic depth control.  When the -v option was present, all subexpressions 
+found to be not fully covered where output for combinational logic.  This type of 
+output, though very useful, was somewhat too verbose to gain an understanding of 
+initial coverage information.  To remedy the situation, I have removed the -v option 
+and added the -d (detail control) option which may take the following parameters:  
+s, summary output only; d, detail output (intermediate verbose output); and v, verbose 
+output (same as the old -v option).  The information contained in detailed output is 
+similar to most commercial coverage tools that I have used.  The -d v option will 
+provide that "over the top" information as to exactly what subexpressions where not 
+fully covered.  Additionally, bug fixes were made to the -c option to the report command, 
+and MULTIPLY, DIVIDE and MOD expressions should now be output in detailed and verbose 
+reports.  Fixed bug with initial value of signals that was causing Covered to report 
+incorrect coverage results for signals that were not initialized and not toggled during 
+simulation.  Updated regression test suite for all changes mentioned above and updated 
+user, manpage and development documentation.
+
+    * 8/22/2002
+
+Release covered-20020822 finally made.  Took some time off away from the project to get
+some other chores done and get refreshed.  This release contains mostly bug fixes that I
+have found while testing the tool on some "real" logic.  The CDD database merging (used
+in the merge and report commands) was rewritten for optimization purposes and to remove
+a hard-to-pin-down segmentation fault.  As a result, merging CDD files and generating
+reports should be a bit faster and the bizarre bug should be eliminated.  Fixed some
+bugs in Verilog parser to generate user error/warning messages instead of core dumping.
+Also added -c option to report command that allows the user (and maintainer) to generate
+a report that shows what code is covered (instead of the default behavior to show what is
+uncovered).  This is useful for debugging and understanding exactly what the tool is
+capable of measuring.  Removed Bison generated VCD parser and replaced it with an optimized,
+hand-written VCD parser.  This should make reading in the VCD file much faster and should
+totally eliminate any problems in reading in these files.  Added manpage as an additional 
+documentation source and updated Makefiles to install this manpage.  Updated user
+documentation and development documentation.
+
+    * 7/21/2002
+
+Release covered-20020721 made.  Lots of bug fixes and feature enhancements.  Fixed output
+to a more understandable format when modules cannot be found during parsing.  Added support
+for the -e option which allows the user to omit modules from coverage.  Fixed single and
+multi-bit selectors.  These should work properly now, selecting the correct values from
+vectors.  Added -D option to allow the user define values at the command-line.  Fixed
+problems associated with the `ifdef/`ifndef directives.  Fixed problem with module trees
+that were 3 or more modules deep.  Created TODO list for items that I want to complete
+before 0.1 stable release.  This will give users/developers an insight to the short-term
+goals of the project.  All items in TODO list preceded by an X have also been worked on
+in this release.  Improved performance of signal/expression binding.  Support has been
+added to allow implicit wire declarations.  Added ability to parse the design and score
+the dumpfile in two calls to the score command.  This could aid performance later as a
+design would only need to be parsed once.  More diagnostics have been added to the
+Verilog test suite.  Development and user documentation has been updated to bring them
+up-to-date with current functionality.
+
+    * 7/15/2002
+
+Release covered-20020715 made.  Several bug fixes for problems found in previous release
+and additional Verilog constructs are now supported.  The `ifdef, `else, and `endif
+directives are now supported.  VCD scoping problems have been dealt with.  It should be
+possible now to get coverage results on an entire tree of Verilog instances.  It should
+also be possible to provide a dumpfile that contains more information than is necessary
+for getting coverage.  Some performance improvements have been made that will be noticeable
+for larger designs.  Fixed bugs for always statements that did not contain any coverage-able
+code.  Support is now in place for concatenation and replication in operations.  The
+binding phase has been revamped to provide better performance, easier maintenance and
+less memory consumption.  New diagnostics have been added to start testing new code support.
+Full regression passes.
+
+    * 7/11/2002
+
+Release covered-20020711 made.  This release contains a lot of fixes to the score and report
+commands.  Proper support for `include and `define preprocessor now available.  Fixes to the
+-y, -I, and -f options to score command.  These now seem to working correctly.  Added -D and
+-Q options to covered (for score, merge and report commands) for adjusting amount of output
+to the screen.  The -D option causes debug information to be spewed to standard output for
+debugging tool problems (not recommended for standard usage).  The -Q option will omit all
+output to standard output (stderr is still displayed).  By default, the minimal amount of output
+is displayed to show tool progress.  Added proper support for default case, casex and casez
+statements.  Fixed a lot of problems in the report command output, including reformatting the
+toggle information to help make this more readable.  Lots of bug fixes and support enhancements
+make upgrading to this version worthwhile.
+
+    * 7/6/2002
+
+Second release of Covered (covered-20020706) made.  Proper support for case, casex and casez
+now exists and has been tested to an extent.  Fixed problem with reading VCD files appropriately.
+Support for multi-bit anyedge (i.e., always @(b) ...) is now installed.  Lots of other bugs
+in the first release have been fixed.  I have noticed a small performance degradation by changing
+the VCD reader and am looking into it.  All in all, this release fixes many bugs and enhances
+support for case statements and always blocks.
+
+    * 7/3/2002
+
+Finally release first unstable version of Covered in tarball format. This version should 
+be considered alpha at this point but may be considered ready for good testing. Please 
+read the release note that accompanies the pointer to the download for information on what 
+type of code is currently supported for testing purposes. Happy bug finding!
+
+    * 6/19/2002
+
+Added beginnings of development on-line documentation. At the moment, this documentation 
+mostly lays out the ground-work for interested developers. Lots of details are missing at 
+the moment; though, the generated documentation contains a lot of source-code-specific 
+information. With initial documentation out of the way, for the most part, the first 
+release should be right around the corner.
+
+    * 5/1/2002
+
+Added user on-line manual. The download still isn't available for use; however, it may be 
+interesting to see how the tool will be used. By the way, the download should be available 
+soon for first release. All of the features may not be present but it should be somewhat 
+usable.
+
+    * 4/12/2002
+
+Created a home for the Covered utility on SourceForge.net. Currently, the HTML website is 
+only available for viewing. No downloads are yet available. There are a few features that 
+need to be added to the tool (and verification of those and other parts) before the source 
+files and tool become available for public use. Check out the ToDo page for items that are 
+on my todo list before making the tool available on-line!
+
+    * 11/27/2001
+
+Started working on the Covered utility. After searching long and hard for a free, open 
+source code coverage utility and coming up empty, decided to start working on one. This 
+utility will be available on the gEDA website and database.
