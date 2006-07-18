@@ -57,8 +57,6 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
 
   assert( curr_funit != NULL );
 
-  printf( "In scope_find_funit_from_scope, scope: %s, curr_funit: %s\n", scope, curr_funit->name );
-
   /* Get current instance */
   curr_inst = instance_find_by_funit( instance_root, curr_funit, &ignore );
   assert( curr_inst != NULL );
@@ -84,21 +82,17 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
    that matches.
   */
   if( funiti == NULL ) {
-    scope_extract_front( scope, tscope1, tscope2 );
-    curr_inst = curr_inst->parent;
-    while( (curr_inst != NULL) && (funiti == NULL) ) {
-      snprintf( tscope1, 4096, "%s.%s", curr_inst->name, tscope2 );
-      funiti = instance_find_scope( curr_inst, tscope1 );
-      curr_inst = curr_inst->parent;
-    }
-  }
-
-  if( funiti != NULL ) {
-    tscope1[0] = '\0';
-    instance_gen_scope( tscope1, funiti );
-    printf( "Found functional unit: %s\n", tscope1 );
-  } else {
-    printf( "Unable to find scope: %s\n", scope );
+    do {
+      if( curr_inst->parent == NULL ) {
+        strcpy( tscope1, scope );
+        funiti = instance_find_scope( curr_inst, tscope1 );
+        curr_inst = curr_inst->parent;
+      } else {
+        curr_inst = curr_inst->parent;
+        snprintf( tscope1, 4096, "%s.%s", curr_inst->name, scope );
+        funiti = instance_find_scope( curr_inst, tscope1 );
+      }
+    } while( (curr_inst != NULL) && (funiti == NULL) );
   }
 
   return( (funiti == NULL) ? NULL : funiti->funit );
@@ -366,6 +360,11 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.12.8.1.4.2  2006/07/18 17:22:34  phase1geo
+ Fixed upwards name referencing bug (1524705) and reshaped some of the code associated
+ with this functionality.  Added diagnostics to regression suite to fully
+ test this new behavior.  Full regression passes.
+
  Revision 1.12.8.1.4.1  2006/07/18 04:16:34  phase1geo
  Attempting to fix upwards scope referencing issue.  Still looks like there
  is a problem in the instance_find_scope routine.  Checkpointing work.
