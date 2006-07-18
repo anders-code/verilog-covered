@@ -258,21 +258,6 @@ void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) {
 
   assert( stmt != NULL );
 
-#ifdef EFFICIENCY_CODE
-  /* Write succeeding statements first */
-  if( ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
-
-    statement_db_write( stmt->next_true, ofile );
-    statement_db_write( stmt->next_false, ofile );
-
-  }
-
-  assert( stmt->exp != NULL );
-
-  /* Write out expression tree second */
-  expression_db_write( stmt->exp, ofile );
-#endif
-
   /* Write out contents of this statement last */
   fprintf( ofile, "%d %d %d %d",
     DB_TYPE_STATEMENT,
@@ -693,6 +678,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.82  2006/07/18 21:52:49  phase1geo
+ More work on generate blocks.  Currently working on assembling generate item
+ statements in the parser.  Still a lot of work to go here.
+
  Revision 1.81  2006/06/27 19:34:43  phase1geo
  Permanent fix for the CDD save feature.
 

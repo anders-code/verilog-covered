@@ -72,6 +72,9 @@ void db_end_function_task( int end_line );
 /*! \brief Finds specified signal in functional unit and returns pointer to the signal structure.  Called by parser. */
 vsignal* db_find_signal( char* name );
 
+/*! \brief Find specified generate item in the current functional unit.  Called by parser. */
+gen_item* db_find_gen_item( gen_item* gi );
+
 /*! \brief Creates new expression from specified information.  Called by parser and db_add_expression. */
 expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name );
 
@@ -140,6 +143,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.59  2006/07/18 21:52:49  phase1geo
+ More work on generate blocks.  Currently working on assembling generate item
+ statements in the parser.  Still a lot of work to go here.
+
  Revision 1.58  2006/06/27 19:34:42  phase1geo
  Permanent fix for the CDD save feature.
 
