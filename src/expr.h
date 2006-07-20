@@ -83,7 +83,7 @@ void expression_display( expression* expr );
 bool expression_operate( expression* expr, thread* thr );
 
 /*! \brief Performs recursive expression operation (parse mode only). */
-void expression_operate_recursively( expression* expr );
+void expression_operate_recursively( expression* expr, bool sizing );
 
 /*! \brief Returns TRUE if specified expression is found to contain all static leaf expressions. */
 bool expression_is_static_only( expression* expr );
@@ -103,6 +103,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.44  2006/07/20 20:11:09  phase1geo
+ More work on generate statements.  Trying to figure out a methodology for
+ handling namespaces.  Still a lot of work to go...
+
  Revision 1.43  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
