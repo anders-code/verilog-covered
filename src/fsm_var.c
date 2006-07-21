@@ -230,8 +230,8 @@ void fsm_var_add_expr( expression* expr, func_unit* funit ) {
       curr_funit = funit;
 
       /* Add expression's children first. */
-      db_add_expression( expr->right, NULL );
-      db_add_expression( expr->left, NULL );
+      db_add_expression( expr->right );
+      db_add_expression( expr->left );
 
       /* Now add this expression to the list. */
       exp_link_add( expr, &(funit->exp_head), &(funit->exp_tail) );
@@ -490,6 +490,12 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.28  2006/07/21 05:47:42  phase1geo
+ More code additions for generate functionality.  At this point, we seem to
+ be creating proper generate item blocks and are creating the generate loop
+ namespace appropriately.  However, the binder is still unable to find a signal
+ created by a generate block.
+
  Revision 1.27  2006/07/20 20:11:09  phase1geo
  More work on generate statements.  Trying to figure out a methodology for
  handling namespaces.  Still a lot of work to go...

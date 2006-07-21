@@ -16,6 +16,9 @@
 /*! \brief Displays the specified generate item to standard output */
 void gen_item_display( gen_item* gi );
 
+/*! \brief Searches for a generate item in the generate block of root that matches gi */
+gen_item* gen_item_find( gen_item* root, gen_item* gi );
+
 /*! \brief Creates a generate item for an expression */
 gen_item* gen_item_create_expr( expression* expr );
 
@@ -48,6 +51,12 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.6  2006/07/21 05:47:42  phase1geo
+ More code additions for generate functionality.  At this point, we seem to
+ be creating proper generate item blocks and are creating the generate loop
+ namespace appropriately.  However, the binder is still unable to find a signal
+ created by a generate block.
+
  Revision 1.5  2006/07/20 20:11:09  phase1geo
  More work on generate statements.  Trying to figure out a methodology for
  handling namespaces.  Still a lot of work to go...
