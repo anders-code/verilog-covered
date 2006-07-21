@@ -345,6 +345,15 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
     curr_exp = curr_exp->next;
   }
 
+  /* Now print all expressions within generated statements in functional unit */
+  if( inst != NULL ) {
+    curr_gi = inst->gitem_head;
+    while( curr_gi != NULL ) {
+      gen_item_db_write_expr_tree( curr_gi->gi, file );
+      curr_gi = curr_gi->next;
+    }
+  }
+
   /* Now print all parameters in functional unit */
   if( inst != NULL ) {
     curr_parm = inst->param_head;
@@ -873,6 +882,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.23  2006/07/21 22:39:01  phase1geo
+ Started adding support for generated statements.  Still looks like I have
+ some loose ends to tie here before I can call it good.  Added generate5
+ diagnostic to regression suite -- this does not quite pass at this point, however.
+
  Revision 1.22  2006/07/21 15:52:41  phase1geo
  Checking in an initial working version of the generate structure.  Diagnostic
  generate1 passes.  Still a lot of work to go before we fully support generate

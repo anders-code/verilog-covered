@@ -34,8 +34,14 @@ gen_item* gen_item_create_inst( funit_inst* inst );
 /*! \brief Creates a generate item for a namespace */
 gen_item* gen_item_create_tfn( funit_inst* inst );
 
+/*! \brief Assigns unique expression IDs to all expressions for specified statement block */
+void gen_item_assign_expr_ids( gen_item* gi );
+
 /*! \brief Outputs the current generate item to the given output file if it matches the type specified */
 void gen_item_db_write( gen_item* gi, control type, FILE* file );
+
+/*! \brief Outputs the entire expression tree from the given generate statement */
+void gen_item_db_write_expr_tree( gen_item* gi, FILE* file );
 
 /*! \brief Connects a generate item block to a new generate item */
 bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id );
@@ -51,6 +57,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.7  2006/07/21 22:39:01  phase1geo
+ Started adding support for generated statements.  Still looks like I have
+ some loose ends to tie here before I can call it good.  Added generate5
+ diagnostic to regression suite -- this does not quite pass at this point, however.
+
  Revision 1.6  2006/07/21 05:47:42  phase1geo
  More code additions for generate functionality.  At this point, we seem to
  be creating proper generate item blocks and are creating the generate loop
