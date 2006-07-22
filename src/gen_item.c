@@ -14,6 +14,7 @@
 #include "vsignal.h"
 #include "instance.h"
 #include "statement.h"
+#include "param.h"
 
 
 extern funit_inst* instance_root;
@@ -509,6 +510,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst ) {
           // instance_parse_add( &instance_root, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE );
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( gi->genvar->value ) );
           child = instance_find_scope( inst, inst_name );
+          param_resolve( child );
         }
         gen_item_resolve( gi->next_true, child );
         gen_item_resolve( gi->next_false, inst );
@@ -607,6 +609,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.12  2006/07/22 03:57:07  phase1geo
+ Adding support for parameters within generate blocks.  Adding more diagnostics
+ to verify statement support and parameter usage (signal sizing).
+
  Revision 1.11  2006/07/21 22:39:01  phase1geo
  Started adding support for generated statements.  Still looks like I have
  some loose ends to tie here before I can call it good.  Added generate5
