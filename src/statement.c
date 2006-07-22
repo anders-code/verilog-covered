@@ -280,9 +280,6 @@ void statement_db_write_tree( statement* stmt, FILE* ofile ) {
 
   if( stmt != NULL ) {
 
-    /* Output ourselves first */
-    statement_db_write( stmt, ofile, TRUE );
-
     /* Traverse down the rest of the statement block */
     if( (stmt->next_true == stmt->next_false) && (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) ) {
       statement_db_write_tree( stmt->next_true, ofile );
@@ -294,6 +291,9 @@ void statement_db_write_tree( statement* stmt, FILE* ofile ) {
         statement_db_write_tree( stmt->next_true, ofile );
       }
     }
+
+    /* Output ourselves first */
+    statement_db_write( stmt, ofile, TRUE );
 
   }
 
@@ -767,6 +767,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.84  2006/07/22 01:17:22  phase1geo
+ Fixing generate statement output function to output statements in the correct order.
+ Diagnostic generate5.v should now work correctly with VCS.
+
  Revision 1.83  2006/07/21 22:39:01  phase1geo
  Started adding support for generated statements.  Still looks like I have
  some loose ends to tie here before I can call it good.  Added generate5
