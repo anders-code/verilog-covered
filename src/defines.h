@@ -1949,6 +1949,7 @@ struct gen_item_s {
     control     conn_id    : 1;      /*!< Connection ID (used for connecting) */
     control     stop_true  : 1;      /*!< Specifies that we should stop traversing the true path */
     control     stop_false : 1;      /*!< Specifies that we should stop traversing the false path */
+    control     resolved   : 1;      /*!< Specifies if this generate item has been resolved */
   } suppl;
   vsignal*      genvar;              /*!< Specifies a genvar to use for this type (only valid for TFN) */
   gen_item*     next_true;           /*!< Pointer to the next generate item if expr is true */
@@ -1965,6 +1966,11 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.209  2006/07/24 22:20:23  phase1geo
+ Things are quite hosed at the moment -- trying to come up with a scheme to
+ handle embedded hierarchy in generate blocks.  Chances are that a lot of
+ things are currently broken at the moment.
+
  Revision 1.208  2006/07/21 05:47:42  phase1geo
  More code additions for generate functionality.  At this point, we seem to
  be creating proper generate item blocks and are creating the generate loop
