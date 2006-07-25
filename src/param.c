@@ -440,6 +440,37 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
 
 }
 
+/*!
+ \param sig   Pointer to generate signal to copy
+ \param inst  Pointer to instance to add this instance parameter to 
+
+ Creates an instance parameter for a generate variable and adds it to the
+ given instance parameter list.
+*/
+void inst_parm_add_genvar( vsignal* sig, funit_inst* inst ) {
+
+  inst_parm* iparm;  /* Pointer to the newly allocated instance parameter */
+
+  /* Allocate the new instance parameter */
+  iparm = (inst_parm*)malloc_safe( sizeof( inst_parm ), __FILE__, __LINE__ );
+
+  /* Initialize the instance parameter */
+  iparm->inst_name            = NULL;
+  iparm->sig                  = vsignal_duplicate( sig ); 
+  iparm->sig->suppl.part.type = SSUPPL_TYPE_PARAM;
+  iparm->mparm                = NULL;
+  iparm->next                 = NULL;
+
+  /* Add the instance parameter to the parameter list */
+  if( inst->param_head == NULL ) {
+    inst->param_head = inst->param_tail = iparm;
+  } else {
+    inst->param_tail->next = iparm;
+    inst->param_tail       = iparm;
+  }
+
+}
+
 
 /************************************************************************************/
 
@@ -1017,6 +1048,12 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.69  2006/07/25 21:35:54  phase1geo
+ Fixing nested namespace problem with generate blocks.  Also adding support
+ for using generate values in expressions.  Still not quite working correctly
+ yet, but the format of the CDD file looks good as far as I can tell at this
+ point.
+
  Revision 1.68  2006/07/22 03:57:07  phase1geo
  Adding support for parameters within generate blocks.  Adding more diagnostics
  to verify statement support and parameter usage (signal sizing).

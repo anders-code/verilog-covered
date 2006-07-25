@@ -48,6 +48,9 @@ inst_parm* inst_parm_find( char* name, inst_parm* parm );
 inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_expr* lsb, bool is_signed,
                           vector* value, mod_parm* mparm, funit_inst* inst );
 
+/*! \brief Creates a new instance parameter for a generate variable */
+void inst_parm_add_genvar( vsignal* sig, funit_inst* inst );
+
 /*! \brief Adds parameter override to defparam list. */
 void defparam_add( char* scope, vector* expr );
 
@@ -84,6 +87,12 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.25  2006/07/25 21:35:54  phase1geo
+ Fixing nested namespace problem with generate blocks.  Also adding support
+ for using generate values in expressions.  Still not quite working correctly
+ yet, but the format of the CDD file looks good as far as I can tell at this
+ point.
+
  Revision 1.24  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

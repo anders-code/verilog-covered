@@ -495,8 +495,6 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
     if( retval ) {
 
-      printf( "SIGNAL WAS SUCCESSFULLY FOUND!!!!!!!!!!\n" );
-
       /* Bind signal and expression if we are not clearing or this is an MBA */
       if( !clear_assigned ) {
 
@@ -582,8 +580,6 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
     retval = FALSE;
 
   }
-
-  printf( "RETURN VALUE: %d\n", retval );
 
   return( retval );
 
@@ -770,20 +766,6 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
         }
 
-        /* If we did not find the head statement in the functional unit's statement list, check the generate items */
-        if( !retval ) {
-          gitem_link* gil;
-          printf( "Checking functional unit %s for statement\n", found_funit->name );
-          gil = found_funit->gitem_head;
-          while( (gil != NULL) && (gil->gi->suppl.type != GI_TYPE_STMT) ) {
-            gil = gil->next;
-          }
-          if( gil != NULL ) {
-            exp->stmt = gil->gi->elem.stmt;
-            retval = TRUE;
-          }
-        }
-
         if( retval ) {
 
           /* If this is a function, also bind the return value signal vector to the expression's vector */
@@ -931,8 +913,6 @@ void bind_perform( bool cdd_reading ) {
 
       }
 
-      printf( "bound: %d, name: %s, curr_funit: %s, type: %d\n", bound, curr_eb->name, curr_eb->funit->name, curr_eb->type );
-
       /*
        If the expression was unable to be bound, put its statement block in a list to be removed after
        binding has been completed.
@@ -1012,6 +992,12 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.83  2006/07/25 21:35:54  phase1geo
+ Fixing nested namespace problem with generate blocks.  Also adding support
+ for using generate values in expressions.  Still not quite working correctly
+ yet, but the format of the CDD file looks good as far as I can tell at this
+ point.
+
  Revision 1.82  2006/07/24 22:20:23  phase1geo
  Things are quite hosed at the moment -- trying to come up with a scheme to
  handle embedded hierarchy in generate blocks.  Chances are that a lot of

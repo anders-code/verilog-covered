@@ -104,6 +104,33 @@ vsignal* vsignal_create( char* name, int type, int width, int lsb, int line, int
 }
 
 /*!
+ \param sig  Pointer to signal to duplicate
+
+ \return Returns a newly allocated and initialized copy of the given signal
+
+ Duplicates the contents of the given signal with the exception of the expression list.
+*/
+vsignal* vsignal_duplicate( vsignal* sig ) {
+
+  vsignal* new_sig;  /* Pointer to newly created vsignal */
+
+  assert( sig != NULL );
+
+  new_sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
+  new_sig->name      = strdup_safe( sig->name, __FILE__, __LINE__ );
+  new_sig->suppl.all = sig->suppl.all;
+  new_sig->lsb       = sig->lsb;
+  new_sig->line      = sig->line;
+  new_sig->exp_head  = NULL;
+  new_sig->exp_tail  = NULL;
+
+  vector_copy( sig->value, &(new_sig->value) );
+
+  return( new_sig );
+
+}
+
+/*!
  \param sig      Signal to write to file.
  \param file     Name of file to display vsignal contents to.
 
@@ -511,6 +538,12 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.27  2006/07/25 21:35:54  phase1geo
+ Fixing nested namespace problem with generate blocks.  Also adding support
+ for using generate values in expressions.  Still not quite working correctly
+ yet, but the format of the CDD file looks good as far as I can tell at this
+ point.
+
  Revision 1.26  2006/07/11 04:59:08  phase1geo
  Reworking the way that instances are being generated.  This is to fix a bug and
  pave the way for generate loops for instances.  Code not working at this point

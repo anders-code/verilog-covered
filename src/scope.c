@@ -268,12 +268,9 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
   /* Get the current module */
   *found_funit = funit_get_curr_module( *found_funit );
 
-  printf( "Current module %s\n", (*found_funit)->name );
-
   /* Search for functional unit in the module's tf_head list */
   funitl = (*found_funit)->tf_head;
   while( (funitl != NULL) && !found ) {
-    printf( "Comparing functional unit %s\n", funitl->funit->name );
     scope_extract_back( funitl->funit->name, back, rest );
     if( scope_compare( back, name ) ) {
       found        = TRUE;
@@ -282,8 +279,6 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
       funitl = funitl->next;
     }
   }
-
-  printf( "Results of searching for NB %s, found: %d\n", name, found );
 
   return( found );
 
@@ -363,6 +358,12 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.18  2006/07/25 21:35:54  phase1geo
+ Fixing nested namespace problem with generate blocks.  Also adding support
+ for using generate values in expressions.  Still not quite working correctly
+ yet, but the format of the CDD file looks good as far as I can tell at this
+ point.
+
  Revision 1.17  2006/07/24 22:20:23  phase1geo
  Things are quite hosed at the moment -- trying to come up with a scheme to
  handle embedded hierarchy in generate blocks.  Chances are that a lot of

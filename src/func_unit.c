@@ -214,8 +214,6 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
   int         i         = 0;     /* Loop iterator */
   funit_inst* inst;              /* Pointer to current functional unit instance */
 
-  printf( "Searching for signal %s in functional unit %s\n", name, funit->name );
-
   /* Populate a signal structure for searching purposes */
   sig.name = name;
 
@@ -226,21 +224,14 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
 
   } else {
 
-    printf( "Unable to find signal %s in functional unit %s, searching generate items...\n", name, funit->name );
-
     /* If it was not found, search in the functional unit generate item list */
     gi = gen_item_create_sig( &sig );
 
     ignore = i;
     while( (found_sig == NULL) && ((inst = instance_find_by_funit( instance_root, funit, &ignore )) != NULL) ) {
 
-      user_msg[0] = '\0';
-      instance_gen_scope( user_msg, inst );
-      printf( "Searching instance %s\n", user_msg );
-
       if( ((gil = gitem_link_find( gi, inst->gitem_head )) != NULL) && ((found_gi = gen_item_find( gil->gi, gi )) != NULL) ) {
         found_sig = found_gi->elem.sig;
-        printf( "FOUND SIGNAL!!!\n" );
       }
 
       i++;
@@ -301,20 +292,19 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   */
   curr_iparm = inst->param_head;
   while( curr_iparm != NULL ) {
-    assert( curr_iparm->mparm != NULL );
-    
-    /* This parameter sizes a signal so perform the signal size */
-    if( curr_iparm->mparm->sig != NULL ) {
-      param_set_sig_size( curr_iparm->mparm->sig, curr_iparm );
-    } else {
-      /* This parameter attaches to an expression tree */
-      curr_exp = curr_iparm->mparm->exp_head;
-      while( curr_exp != NULL ) {
-        expression_set_value( curr_exp->exp, curr_iparm->sig->value );
-        curr_exp = curr_exp->next;
+    if( curr_iparm->mparm != NULL ) {
+      /* This parameter sizes a signal so perform the signal size */
+      if( curr_iparm->mparm->sig != NULL ) {
+        param_set_sig_size( curr_iparm->mparm->sig, curr_iparm );
+      } else {
+        /* This parameter attaches to an expression tree */
+        curr_exp = curr_iparm->mparm->exp_head;
+        while( curr_exp != NULL ) {
+          expression_set_value( curr_exp->exp, curr_iparm->sig->value );
+          curr_exp = curr_exp->next;
+        }
       }
     }
-    
     curr_iparm = curr_iparm->next;
   }
   
@@ -951,6 +941,12 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.25  2006/07/25 21:35:54  phase1geo
+ Fixing nested namespace problem with generate blocks.  Also adding support
+ for using generate values in expressions.  Still not quite working correctly
+ yet, but the format of the CDD file looks good as far as I can tell at this
+ point.
+
  Revision 1.24  2006/07/24 22:20:23  phase1geo
  Things are quite hosed at the moment -- trying to come up with a scheme to
  handle embedded hierarchy in generate blocks.  Chances are that a lot of
