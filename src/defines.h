@@ -586,9 +586,6 @@
 /*! Holds a task, function, named begin/end block */
 #define GI_TYPE_TFN             4
 
-/*! Specifies the end of the current scope */
-#define GI_TYPE_END             5
-
 /*! @} */
 
 /*!
@@ -1986,6 +1983,11 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.212  2006/07/27 18:02:22  phase1geo
+ More diagnostic additions and upgraded the generate item display functionality
+ for better debugging using this feature.  We are about to forge into some new
+ territory with regard to generate blocks, so we will tag at this point.
+
  Revision 1.211  2006/07/27 16:08:46  phase1geo
  Fixing several memory leak bugs, cleaning up output and fixing regression
  bugs.  Full regression now passes (including all current generate diagnostics).
