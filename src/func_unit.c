@@ -835,8 +835,6 @@ func_unit* funit_find_by_id( int id ) {
 
   exp.id = id;
 
-  funit_link_display( funit_head );
-
   funitl = funit_head;
   while( (funitl != NULL) && (expl == NULL) ) {
     if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) == NULL ) {
@@ -983,6 +981,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.28  2006/07/27 02:14:52  phase1geo
+ Cleaning up verbose output and fixing a few bugs for regression.  IV
+ regression passes at this point.
+
  Revision 1.27  2006/07/27 02:04:30  phase1geo
  Fixing problem with parameter usage in a generate block for signal sizing.
 

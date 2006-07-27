@@ -207,11 +207,11 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
   }
 
   /* First, look in the current functional unit */
-  if( (*found_sig = funit_find_signal( name, *found_funit )) == NULL ) {
+  if( (*found_sig = funit_find_signal( sig_name, *found_funit )) == NULL ) {
 
     /* Continue to look in parent modules (if there are any) */
     parent = (*found_funit)->parent;
-    while( (parent != NULL) && ((*found_sig = funit_find_signal( name, parent )) == NULL) ) {
+    while( (parent != NULL) && ((*found_sig = funit_find_signal( sig_name, parent )) == NULL) ) {
       parent = parent->parent;
     }
 
@@ -373,6 +373,10 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.21  2006/07/27 02:14:52  phase1geo
+ Cleaning up verbose output and fixing a few bugs for regression.  IV
+ regression passes at this point.
+
  Revision 1.20  2006/07/26 06:22:27  phase1geo
  Fixing rest of issues with generate6 diagnostic.  Still need to know if I
  have broken regressions or not and there are plenty of cases in this area
