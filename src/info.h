@@ -38,9 +38,16 @@ bool info_db_read( char** line );
 /*! \brief Reads score args line from specified line and stores information. */
 bool args_db_read( char** line );
 
+/*! \brief Deallocates all memory associated with the information section of a database file. */
+void info_dealloc();
+
 
 /*
  $Log$
+ Revision 1.6  2006/07/27 16:08:46  phase1geo
+ Fixing several memory leak bugs, cleaning up output and fixing regression
+ bugs.  Full regression now passes (including all current generate diagnostics).
+
  Revision 1.5  2006/05/02 21:49:41  phase1geo
  Updating regression files -- all but three diagnostics pass (due to known problems).
  Added SCORE_ARGS line type to CDD format which stores the directory that the score
