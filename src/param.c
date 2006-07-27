@@ -556,7 +556,7 @@ void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) {
   if( inst != NULL ) {
 
     icurr = inst->param_head;
-    while( (icurr != NULL) && (exp_link_find( expr, icurr->mparm->exp_head ) == NULL) ) {
+    while( (icurr != NULL) && ((icurr->mparm == NULL) || (exp_link_find( expr, icurr->mparm->exp_head ) == NULL)) ) {
       icurr = icurr->next;
     }
 
@@ -575,7 +575,7 @@ void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) {
       }
 
     } else {
-  
+
       /* Set the found instance parameter value to this expression */
       expression_set_value( expr, icurr->sig->value );
 
@@ -1048,6 +1048,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.70  2006/07/27 02:04:30  phase1geo
+ Fixing problem with parameter usage in a generate block for signal sizing.
+
  Revision 1.69  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly
