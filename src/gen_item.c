@@ -586,12 +586,12 @@ void generate_resolve( funit_inst* root ) {
 
   if( root != NULL ) {
 
-    gitem_link_display( root->funit->gitem_head );
+    // gitem_link_display( root->funit->gitem_head );
 
     /* Resolve ourself */
     curr_gi = root->funit->gitem_head;
     while( curr_gi != NULL ) {
-      gen_item_display_block( curr_gi->gi );
+      // gen_item_display_block( curr_gi->gi );
       gen_item_resolve( curr_gi->gi, root, TRUE );
       curr_gi = curr_gi->next;
     }
@@ -653,6 +653,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.20  2006/07/27 21:19:27  phase1geo
+ Small updates.
+
  Revision 1.19  2006/07/27 18:02:22  phase1geo
  More diagnostic additions and upgraded the generate item display functionality
  for better debugging using this feature.  We are about to forge into some new
