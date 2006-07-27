@@ -259,8 +259,40 @@ bool args_db_read( char** line ) {
 
 }
 
+/*!
+ Deallocates all memory associated with the database information section.  Needs to be called
+ when the database is closed.
+*/
+void info_dealloc() {
+
+  int i;  /* Loop iterator */
+
+  /* Deallocate all information regarding hierarchies */
+  for( i=0; i<leading_hier_num; i++ ) {
+    free_safe( leading_hierarchies[i] );
+  }
+  free_safe( leading_hierarchies );
+
+  leading_hierarchies = NULL;
+  leading_hier_num    = 0;
+
+  /* Free score arguments */
+  for( i=0; i<score_arg_num; i++ ) {
+    free_safe( score_args[i] );
+  }
+  free_safe( score_args );
+
+  score_args    = NULL;
+  score_arg_num = 0;
+
+}
+
 /*
  $Log$
+ Revision 1.18  2006/07/27 16:08:46  phase1geo
+ Fixing several memory leak bugs, cleaning up output and fixing regression
+ bugs.  Full regression now passes (including all current generate diagnostics).
+
  Revision 1.17  2006/05/02 21:49:41  phase1geo
  Updating regression files -- all but three diagnostics pass (due to known problems).
  Added SCORE_ARGS line type to CDD format which stores the directory that the score
