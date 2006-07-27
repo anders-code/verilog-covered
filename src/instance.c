@@ -696,6 +696,9 @@ void instance_dealloc_tree( funit_inst* root ) {
 
     /* Deallocate memory for instance parameter list */
     inst_parm_dealloc( root->param_head, TRUE );
+
+    /* Deallocate memory for generate item list */
+    gitem_link_delete_list( root->gitem_head, FALSE );
   
     /* Free up memory for this functional unit instance */
     free_safe( root );
@@ -769,6 +772,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.55  2006/07/27 16:08:46  phase1geo
+ Fixing several memory leak bugs, cleaning up output and fixing regression
+ bugs.  Full regression now passes (including all current generate diagnostics).
+
  Revision 1.54  2006/07/21 22:39:01  phase1geo
  Started adding support for generated statements.  Still looks like I have
  some loose ends to tie here before I can call it good.  Added generate5
