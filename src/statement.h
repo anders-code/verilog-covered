@@ -29,6 +29,9 @@
 /*! \brief Creates new statement structure. */
 statement* statement_create( expression* exp );
 
+/*! \brief Sizes all expressions for the given statement block */
+void statement_size_elements( statement* stmt );
+
 /*! \brief Writes specified statement to the specified output file. */
 void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode );
 
@@ -68,6 +71,10 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.28  2006/07/28 22:42:51  phase1geo
+ Updates to support expression/signal binding for expressions within a generate
+ block statement block.
+
  Revision 1.27  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly

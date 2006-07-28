@@ -82,6 +82,9 @@ bool expression_db_replace( expression* base, char** line );
 /*! \brief Returns user-readable name of specified expression operation. */
 const char* expression_string_op( int op );
 
+/*! \brief Returns user-readable version of the supplied expression. */
+char* expression_string( expression* exp );
+
 /*! \brief Displays the specified expression information. */
 void expression_display( expression* expr );
 
@@ -109,6 +112,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.46  2006/07/28 22:42:51  phase1geo
+ Updates to support expression/signal binding for expressions within a generate
+ block statement block.
+
  Revision 1.45  2006/07/21 22:39:01  phase1geo
  Started adding support for generated statements.  Still looks like I have
  some loose ends to tie here before I can call it good.  Added generate5

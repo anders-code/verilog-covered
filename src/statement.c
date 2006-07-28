@@ -243,6 +243,36 @@ void statement_queue_compare( statement* stmt ) {
   }
 
 }
+
+/*!
+ \param stmt  Pointer to statement block to size elements for
+
+ Recursively sizes all elements for the given statement block.
+*/
+void statement_size_elements( statement* stmt ) {
+
+  if( stmt != NULL ) {
+
+    /* Size the current statement */
+    expression_resize( stmt->exp, TRUE );
+
+    /* Iterate to the next statement */
+    if( stmt->next_true == stmt->next_false ) {
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        statement_size_elements( stmt->next_true );
+      }
+    } else {
+      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+        statement_size_elements( stmt->next_false );
+      }
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        statement_size_elements( stmt->next_true );
+      }
+    }
+
+  }
+
+}
     
 /*!
  \param stmt        Pointer to statement to write out value.
@@ -812,6 +842,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.86  2006/07/28 22:42:51  phase1geo
+ Updates to support expression/signal binding for expressions within a generate
+ block statement block.
+
  Revision 1.85  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly
