@@ -98,6 +98,9 @@ void str_link_remove( char* str, str_link** head, str_link** tail );
 /*! \brief Searches for and removes specified expression link from list. */
 void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool recursive );
 
+/*! \brief Searches for and removes specified generate item link from list. */
+void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail );
+
 
 /*! \brief Deletes entire list specified by head pointer. */
 void str_link_delete_list( str_link* head );
@@ -126,6 +129,10 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems );
 
 /*
  $Log$
+ Revision 1.20  2006/07/29 20:53:43  phase1geo
+ Fixing some code related to generate statements; however, generate8.1 is still
+ not completely working at this point.  Full regression passes for IV.
+
  Revision 1.19  2006/07/17 22:12:43  phase1geo
  Adding more code for generate block support.  Still just adding code at this
  point -- hopefully I haven't broke anything that doesn't use generate blocks.

@@ -75,8 +75,8 @@ vsignal* db_find_signal( char* name );
 /*! \brief Find specified generate item in the current functional unit.  Called by parser. */
 gen_item* db_find_gen_item( gen_item* root, gen_item* gi );
 
-/*! \brief Returns a pointer to the last generate item added to the current functional unit.  Called by parser. */
-gen_item* db_find_last_gen_item();
+/*! \brief Returns a pointer to the current implicitly connected generate block.  Called by parser. */
+gen_item* db_get_curr_gen_block();
 
 /*! \brief Creates new expression from specified information.  Called by parser and db_add_expression. */
 expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name );
@@ -158,6 +158,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.63  2006/07/29 20:53:43  phase1geo
+ Fixing some code related to generate statements; however, generate8.1 is still
+ not completely working at this point.  Full regression passes for IV.
+
  Revision 1.62  2006/07/21 05:47:42  phase1geo
  More code additions for generate functionality.  At this point, we seem to
  be creating proper generate item blocks and are creating the generate loop
