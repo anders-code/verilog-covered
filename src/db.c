@@ -1376,6 +1376,12 @@ void db_add_statement( statement* stmt, statement* start ) {
 
       last_gi = gen_item_create_stmt( stmt );
 
+      if( curr_gi_block != NULL ) {
+        db_gen_item_connect( curr_gi_block, last_gi );
+      } else {
+        curr_gi_block = last_gi;
+      }
+
     } else {
 
       /* Add TRUE and FALSE statement paths to list */
@@ -1944,6 +1950,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.202  2006/07/29 21:15:08  phase1geo
+ Fixing last issue with generate8.1.v.  Full regression passes with IV.  Still
+ need to check VCS regression run.
+
  Revision 1.201  2006/07/29 20:53:42  phase1geo
  Fixing some code related to generate statements; however, generate8.1 is still
  not completely working at this point.  Full regression passes for IV.
