@@ -451,6 +451,8 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
   statement* stmt;           /* Pointer to root statement for the given expression */
   exp_link*  expl;           /* Pointer to current expression link */
 
+  printf( "In bind_signal, sig_name: %s, expr: %s, funit: %s\n", name, expression_string( exp ), funit_exp->name );
+
   /* Skip signal binding if the name is not local and we are binding locally */
   if( scope_local( name ) || !bind_locally || (!clear_assigned && (exp->op == EXP_OP_PASSIGN)) ) {
 
@@ -743,6 +745,8 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
 
+  printf( "In bind_task_function_namedblock, name: %s, type: %d, funit_exp: %s\n", name, type, funit_exp->name );
+
   /* Search the no_score list to make sure that this function is not being manually excluded */
   if( str_link_find( name, no_score_head ) == NULL ) {
 
@@ -992,6 +996,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.84  2006/07/31 22:11:07  phase1geo
+ Fixing bug with generated tasks.  Added diagnostic to test generate functions
+ (this is currently failing with a binding issue).
+
  Revision 1.83  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly
