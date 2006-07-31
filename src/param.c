@@ -450,6 +450,7 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
 void inst_parm_add_genvar( vsignal* sig, funit_inst* inst ) {
 
   inst_parm* iparm;  /* Pointer to the newly allocated instance parameter */
+  exp_link*  expl;   /* Pointer to current expression link */
 
   /* Allocate the new instance parameter */
   iparm = (inst_parm*)malloc_safe( sizeof( inst_parm ), __FILE__, __LINE__ );
@@ -460,6 +461,24 @@ void inst_parm_add_genvar( vsignal* sig, funit_inst* inst ) {
   iparm->sig->suppl.part.type = SSUPPL_TYPE_PARAM;
   iparm->mparm                = NULL;
   iparm->next                 = NULL;
+
+#ifdef OBSOLETE
+  /* Change over any connected expressions from SIG, SBIT_SEL, MBIT_SEL, etc. to parameter types */
+  expl = iparm->sig->exp_head;
+  while( expl != NULL ) {
+    if( expl->exp->suppl.part.gen_expr == 0 ) {
+      switch( expl->exp->op ) {
+        case EXP_OP_SIG      :  expl->exp->op = EXP_OP_PARAM;           break;
+        case EXP_OP_SBIT_SEL :  expl->exp->op = EXP_OP_PARAM_SBIT;      break;
+        case EXP_OP_MBIT_SEL :  expl->exp->op = EXP_OP_PARAM_MBIT;      break;
+        case EXP_OP_MBIT_POS :  expl->exp->op = EXP_OP_PARAM_MBIT_POS;  break;
+        case EXP_OP_MBIT_NEG :  expl->exp->op = EXP_OP_PARAM_MBIT_NEG;  break;
+        default              :  break;
+      }
+    }
+    expl = expl->next;
+  }
+#endif
 
   /* Add the instance parameter to the parameter list */
   if( inst->param_head == NULL ) {
@@ -1048,6 +1067,11 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.71  2006/07/31 16:26:53  phase1geo
+ Tweaking the is_static_only function to consider expressions using generate
+ variables to be static.  Updating regression for changes.  Full regression
+ now passes.
+
  Revision 1.70  2006/07/27 02:04:30  phase1geo
  Fixing problem with parameter usage in a generate block for signal sizing.
 

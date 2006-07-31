@@ -2863,7 +2863,9 @@ bool expression_is_static_only( expression* expr ) {
 
   if( expr != NULL ) {
 
-    if( (EXPR_IS_STATIC( expr ) == 1) || (ESUPPL_IS_LHS( expr->suppl ) == 1) ) {
+    if( (EXPR_IS_STATIC( expr ) == 1) ||
+        (ESUPPL_IS_LHS( expr->suppl ) == 1) ||
+        ((expr->op == EXP_OP_SIG) && (expr->sig != NULL) && (expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM)) ) {
       return( TRUE );
     } else {
       return( (expr->op != EXP_OP_MBIT_SEL)           &&
@@ -3234,6 +3236,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.191  2006/07/31 16:26:53  phase1geo
+ Tweaking the is_static_only function to consider expressions using generate
+ variables to be static.  Updating regression for changes.  Full regression
+ now passes.
+
  Revision 1.190  2006/07/28 22:42:51  phase1geo
  Updates to support expression/signal binding for expressions within a generate
  block statement block.
