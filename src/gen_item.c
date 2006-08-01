@@ -577,6 +577,9 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
     }
 #endif
 
+    /* Specify that this generate item has been resolved */
+    gi->suppl.part.resolved = 1;
+
     switch( gi->suppl.part.type ) {
   
       case GI_TYPE_EXPR :
@@ -730,6 +733,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.24  2006/08/01 18:05:13  phase1geo
+ Adding more diagnostics to test generate item structure connectivity.  Fixing
+ bug in funit_find_signal function to search the function (instead of the instance
+ for for finding a signal to bind).
+
  Revision 1.23  2006/07/30 04:30:50  phase1geo
  Adding generate8.2 diagnostic which uses nested generate loops.  The problem
  with Covered with this diagnostic is not in the nested for loops but rather it

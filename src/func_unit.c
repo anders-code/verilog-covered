@@ -211,9 +211,11 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
   gen_item*   gi;                /* Pointer to temporary generate item */
   gen_item*   found_gi;          /* Pointer to found generate item */
   gitem_link* gil;               /* Pointer to found generate item link */
+#ifdef OBSOLETE
   int         ignore;            /* Value to use for ignore purposes */
   int         i         = 0;     /* Loop iterator */
   funit_inst* inst;              /* Pointer to current functional unit instance */
+#endif
 
   /* Populate a signal structure for searching purposes */
   sig.name = name;
@@ -228,6 +230,11 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
     /* If it was not found, search in the functional unit generate item list */
     gi = gen_item_create_sig( &sig );
 
+    if( ((gil = gitem_link_find( gi, funit->gitem_head )) != NULL) && ((found_gi = gen_item_find( gil->gi, gi )) != NULL) ) {
+      found_sig = found_gi->elem.sig;
+    }
+
+#ifdef OBSOLETE
     ignore = i;
     while( (found_sig == NULL) && ((inst = instance_find_by_funit( instance_root, funit, &ignore )) != NULL) ) {
 
@@ -239,6 +246,7 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
       ignore = i;
 
     }
+#endif
 
     /* Deallocate temporary generate item */
     gen_item_dealloc( gi, FALSE );
@@ -1007,6 +1015,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.33  2006/08/01 18:05:13  phase1geo
+ Adding more diagnostics to test generate item structure connectivity.  Fixing
+ bug in funit_find_signal function to search the function (instead of the instance
+ for for finding a signal to bind).
+
  Revision 1.32  2006/08/01 04:38:20  phase1geo
  Fixing issues with binding to non-module scope and not binding references
  that reference a "no score" module.  Full regression passes.
