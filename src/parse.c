@@ -113,7 +113,7 @@ bool parse_design( char* top, char* output_db ) {
 #endif
 
     /* Perform all signal/expression binding */
-    bind_perform( FALSE );
+    bind_perform( FALSE, 0 );
     fsm_var_bind();
   
     /* Perform race condition checking */
@@ -185,7 +185,7 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
   }
   
   /* Bind expressions to signals/functional units */
-  bind_perform( TRUE );
+  bind_perform( TRUE, 0 );
 
   /* Add static values to simulator */
   sim_add_statics();
@@ -225,6 +225,12 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.42  2006/08/02 22:28:32  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.41  2006/06/27 19:34:43  phase1geo
  Permanent fix for the CDD save feature.
 

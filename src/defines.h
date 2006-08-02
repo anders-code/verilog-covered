@@ -589,6 +589,9 @@
 /*! Holds a task, function, named begin/end block */
 #define GI_TYPE_TFN             4
 
+/*! Holds information for a signal/expression bind */
+#define GI_TYPE_BIND            5
+
 /*! @} */
 
 /*!
@@ -1971,7 +1974,7 @@ struct gen_item_s {
       control   resolved   : 1;      /*!< Specifies if this generate item has been resolved */
     } part;
   } suppl;
-  vsignal*      genvar;              /*!< Specifies a genvar to use for this type (only valid for TFN) */
+  char*         varname;             /*!< Specifies genvar name (for TFN) or signal/TFN name to bind to (BIND) */
   gen_item*     next_true;           /*!< Pointer to the next generate item if expr is true */
   gen_item*     next_false;          /*!< Pointer to the next generate item if expr is false */
 };
@@ -1986,6 +1989,12 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.215  2006/08/02 22:28:31  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.214  2006/08/01 04:38:20  phase1geo
  Fixing issues with binding to non-module scope and not binding references
  that reference a "no score" module.  Full regression passes.

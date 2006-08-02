@@ -653,7 +653,7 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
   } else {
 
     if( (retval = db_read( ifile, read_mode )) ) {
-      bind_perform( TRUE );
+      bind_perform( TRUE, 0 );
       report_gather_funit_stats( funit_head );
     }
 
@@ -732,7 +732,7 @@ int command_report( int argc, int last_arg, char** argv ) {
         if( db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) ) ) {
 
           /* Perform binding */
-          bind_perform( TRUE );
+          bind_perform( TRUE, 0 );
 
           /* Open output stream */
           if( output_file != NULL ) {
@@ -831,6 +831,12 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.68  2006/08/02 22:28:32  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.67  2006/06/27 19:34:43  phase1geo
  Permanent fix for the CDD save feature.
 

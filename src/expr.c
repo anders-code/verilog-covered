@@ -2997,6 +2997,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 
     switch( lhs->op ) {
       case EXP_OP_SIG      :
+        printf( "assigned: %d\n", lhs->sig->value->suppl.part.assigned );
         if( lhs->sig->value->suppl.part.assigned == 1 ) {
           vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
           if( rhs->value->width < lhs->value->width ) {
@@ -3236,6 +3237,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.192  2006/08/02 22:28:32  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.191  2006/07/31 16:26:53  phase1geo
  Tweaking the is_static_only function to consider expressions using generate
  variables to be static.  Updating regression for changes.  Full regression
