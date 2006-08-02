@@ -53,7 +53,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
                                     bool cdd_reading, int exp_line, bool bind_locally );
 
 /*! \brief Performs vsignal/expression bind (performed after parse completed). */
-void bind_perform( bool cdd_reading );
+void bind_perform( bool cdd_reading, int pass );
 
 /*! \brief Deallocates memory used for binding */
 void bind_dealloc();
@@ -61,6 +61,12 @@ void bind_dealloc();
 
 /* 
  $Log$
+ Revision 1.28  2006/08/02 22:28:31  phase1geo
+ Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
+ with setting the assigned bit in a signal expression that contains a hierarchical reference
+ using a genvar reference.  Adding generate11.1 diagnostic to verify a slightly different
+ syntax style for the same code.  Note sure how badly I broke regression at this point.
+
  Revision 1.27  2006/04/07 03:47:50  phase1geo
  Fixing run-time issues with VPI.  Things are running correctly now with IV.
 
