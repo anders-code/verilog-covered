@@ -451,6 +451,8 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
           if( str_link_find( tmpfile, *file_head ) == NULL ) {
             str_link_add( tmpfile, file_head, file_tail );
             (*file_tail)->suppl = 0x1;
+          } else {
+            free_safe( tmpfile );
           }
         }
       }
@@ -1060,6 +1062,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.50  2006/08/06 04:36:20  phase1geo
+ Fixing bugs 1533896 and 1533827.  Also added -rI option that will ignore
+ the race condition check altogether (has not been verified to this point, however).
+
  Revision 1.49  2006/05/03 21:17:49  phase1geo
  Finishing assertion source code viewer functionality.  We just need to add documentation
  to the GUI user's guide and we should be set here (though we may want to consider doing

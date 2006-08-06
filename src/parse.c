@@ -45,7 +45,7 @@ extern str_link* modlist_head;
 extern str_link* modlist_tail;
 extern char      user_msg[USER_MSG_LENGTH];
 extern isuppl    info_suppl;
-extern bool      flag_race_check;
+extern bool      flag_check_races;
 
 /*!
  \param file  Pointer to file to read
@@ -117,8 +117,10 @@ bool parse_design( char* top, char* output_db ) {
     fsm_var_bind();
   
     /* Perform race condition checking */
-    print_output( "\nChecking for race conditions...", NORMAL, __FILE__, __LINE__ );
-    race_check_modules();
+    if( flag_check_races ) {
+      print_output( "\nChecking for race conditions...", NORMAL, __FILE__, __LINE__ );
+      race_check_modules();
+    }
 
     /* Remove all statement blocks that cannot be considered for coverage */
     stmt_blk_remove();
@@ -225,6 +227,10 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.43  2006/08/06 04:36:20  phase1geo
+ Fixing bugs 1533896 and 1533827.  Also added -rI option that will ignore
+ the race condition check altogether (has not been verified to this point, however).
+
  Revision 1.42  2006/08/02 22:28:32  phase1geo
  Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
  with setting the assigned bit in a signal expression that contains a hierarchical reference

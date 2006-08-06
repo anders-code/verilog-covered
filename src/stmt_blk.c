@@ -38,7 +38,7 @@ stmt_link* rm_stmt_head    = NULL;
 stmt_link* rm_stmt_tail    = NULL;
 
 /*! Array containing statement IDs that have been listed for removal */
-int*       rm_stmt_ids;
+int*       rm_stmt_ids     = NULL;
 
 /*! Size indicator of rm_stmt_ids array */
 int        rm_stmt_id_size = 0;
@@ -123,12 +123,17 @@ void stmt_blk_remove() {
 
   /* Now deallocate the entire rm_stmt_ids array */
   free_safe( rm_stmt_ids );
+  rm_stmt_ids     = NULL;
   rm_stmt_id_size = 0;
 
 }
 
 /*
  $Log$
+ Revision 1.4  2006/08/06 04:36:20  phase1geo
+ Fixing bugs 1533896 and 1533827.  Also added -rI option that will ignore
+ the race condition check altogether (has not been verified to this point, however).
+
  Revision 1.3  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
