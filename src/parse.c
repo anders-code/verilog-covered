@@ -120,6 +120,10 @@ bool parse_design( char* top, char* output_db ) {
     if( flag_check_races ) {
       print_output( "\nChecking for race conditions...", NORMAL, __FILE__, __LINE__ );
       race_check_modules();
+    } else {
+      print_output( "The -rI option was specified in the command-line, causing Covered to skip race condition", WARNING, __FILE__, __LINE__ );
+      print_output( "checking; therefore, coverage information may not be accurate if actual race conditions", WARNING_WRAP, __FILE__, __LINE__ );
+      print_output( "do exist.  Proceed at your own risk!", WARNING_WRAP, __FILE__, __LINE__ );
     }
 
     /* Remove all statement blocks that cannot be considered for coverage */
@@ -227,6 +231,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.44  2006/08/06 05:02:59  phase1geo
+ Documenting and adding warning message to parse.c for the -rI option.
+
  Revision 1.43  2006/08/06 04:36:20  phase1geo
  Fixing bugs 1533896 and 1533827.  Also added -rI option that will ignore
  the race condition check altogether (has not been verified to this point, however).
