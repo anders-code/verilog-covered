@@ -3056,14 +3056,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
       /* If this is a named block call or fork statement, remove the statement that this expression points to */
       if( (expr->op == EXP_OP_NB_CALL) || (expr->op == EXP_OP_FORK) ) {
 
-        if( expr->stmt == NULL ) {
-          bind_rm_stmt( expr->id );
-        } else if( !exp_only ) {
+        if( !exp_only ) {
 #ifdef DEBUG_MODE
           snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL or FORK and its calling expression is being removed", expr->stmt->exp->line );
           print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
           stmt_blk_add_to_remove_list( expr->stmt );
+        } else {
+          bind_rm_stmt( expr->id );
         }
 
       }
@@ -3148,6 +3148,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179.4.1.6.1.2.2  2006/08/09 21:52:37  phase1geo
+ Fixing bug 1535412.  Implicit sensitivity blocks now correctly traverse named
+ begin/end blocks and fork/join blocks.  Added new diangostics to verify this
+ fix.  Full regression passes.
+
  Revision 1.179.4.1.6.1.2.1  2006/07/10 01:14:03  phase1geo
  Fixing segmentation fault bug which occurs when a multi-bit select on the LHS
  contains any expression besides static values.  Updated regression for this

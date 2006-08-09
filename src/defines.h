@@ -1117,6 +1117,7 @@ struct sym_sig_s;
 struct symtable_s;
 struct static_expr_s;
 struct vector_width_s;
+struct nb_call_s;
 struct exp_bind_s;
 struct case_stmt_s;
 struct funit_inst_s;
@@ -1262,6 +1263,11 @@ typedef struct static_expr_s static_expr;
  Renaming vector width structure for convenience.
 */
 typedef struct vector_width_s vector_width;
+
+/*!
+ Renaming named block call structure for convenience.
+*/
+typedef struct nb_call_s nb_call;
 
 /*!
  Renaming signal/functional unit to expression binding structure for convenience.
@@ -1666,6 +1672,14 @@ struct vector_width_s {
 };
 
 /*!
+ Specifies a named block calling structure for storing the head statement and block name.
+*/
+struct nb_call_s {
+  char*      name;                   /*!< Specifies the name of the named block */
+  statement* stmt;                   /*!< Pointer to the head statement of the named block */
+};
+
+/*!
  Binds a signal to an expression.
 */
 struct exp_bind_s {
@@ -1833,6 +1847,11 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.185.4.1.4.1.2.2.2.2  2006/08/09 21:52:37  phase1geo
+ Fixing bug 1535412.  Implicit sensitivity blocks now correctly traverse named
+ begin/end blocks and fork/join blocks.  Added new diangostics to verify this
+ fix.  Full regression passes.
+
  Revision 1.185.4.1.4.1.2.2.2.1  2006/07/10 01:14:02  phase1geo
  Fixing segmentation fault bug which occurs when a multi-bit select on the LHS
  contains any expression besides static values.  Updated regression for this

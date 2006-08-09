@@ -1138,6 +1138,7 @@ statement* db_parallelize_statement( statement* stmt ) {
     exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
 
     /* Bind the FORK expression to this statement */
+    exp->stmt = stmt;
     bind_add_stmt( stmt->exp->id, exp, curr_funit );
 
     /* Reduce fork and block depth for the new statement */
@@ -1700,6 +1701,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.175.4.1.4.1.4.3  2006/08/09 21:52:37  phase1geo
+ Fixing bug 1535412.  Implicit sensitivity blocks now correctly traverse named
+ begin/end blocks and fork/join blocks.  Added new diangostics to verify this
+ fix.  Full regression passes.
+
  Revision 1.175.4.1.4.1.4.2  2006/07/15 05:33:31  phase1geo
  Fixing bug with empty named begin-end block.  This was causing a syntax error
  message to be output and/or other internal errors.  Added named_block2 diagnostic
