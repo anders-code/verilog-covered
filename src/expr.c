@@ -847,21 +847,14 @@ void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tai
         (expr->op == EXP_OP_MBIT_POS) ||
         (expr->op == EXP_OP_MBIT_NEG) ) {
  
-      /*
-       If the expression doesn't current contain the signal (i.e., it hasn't been bound yet),
-       get the signal name from the binder.
-      */
-      if( expr->sig == NULL ) {
-        sig_name = bind_find_sig_name( expr );
-      } else {
-        sig_name = expr->sig->name;
-      }
+      /* Get the signal name from the binder */
+      sig_name = bind_find_sig_name( expr );
        
       assert( sig_name != NULL );
     
       /* If the signal isn't already in the list, add it */
       if( str_link_find( sig_name, *head ) == NULL ) {
-        str_link_add( strdup_safe( sig_name, __FILE__, __LINE__ ), head, tail );
+        str_link_add( sig_name, head, tail );
       }
 
     }
@@ -3148,6 +3141,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179.4.1.6.1.2.3  2006/08/10 20:27:30  phase1geo
+ Fixing issue with an implicitly created signal caused from binding an
+ implicit event expression to a signal in a lower-level hierarchy.  Added
+ slist3.2 diagnostic to verify the appropriate behavior.  Also updated the
+ scoping function to match the development branch.  Full regression passes.
+
  Revision 1.179.4.1.6.1.2.2  2006/08/09 21:52:37  phase1geo
  Fixing bug 1535412.  Implicit sensitivity blocks now correctly traverse named
  begin/end blocks and fork/join blocks.  Added new diangostics to verify this

@@ -52,47 +52,35 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
   funit_inst* funiti = NULL;  /* Pointer to functional unit instance found */
   func_unit*  funit;          /* Pointer to parent functional unit */
   int         ignore = 0;     /* Used for functional unit instance search */
-  char        tscope1[4096];  /* Temporary scope value */
-  char        tscope2[4096];  /* Temporary scope value */
+  char        tscope[4096];   /* Temporary scope value */
 
   assert( curr_funit != NULL );
 
   /* Get current instance */
-  curr_inst = instance_find_by_funit( instance_root, curr_funit, &ignore );
-  assert( curr_inst != NULL );
+  if( (curr_inst = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
 
-  /* First check scope based on a relative path */
-  snprintf( tscope1, 4096, "%s.%s", curr_inst->name, scope );
-  funiti = instance_find_scope( curr_inst, tscope1 );
+    /* First check scope based on a relative path */
+    snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
+    funiti = instance_find_scope( curr_inst, tscope );
 
-  /*
-   If we did not find the functional unit yet, check the scope relative to the parent module
-   (if this functional unit is not a module)
-  */
-  if( (funiti == NULL) && (curr_funit->type != FUNIT_MODULE) ) {
-    funit = funit_get_curr_module( curr_funit );
-    curr_inst = instance_find_by_funit( instance_root, funit, &ignore );
-    assert( curr_inst != NULL );
-    snprintf( tscope1, 4096, "%s.%s", curr_inst->name, scope );
-    funiti = instance_find_scope( curr_inst, tscope1 );
-  }
+    /*
+     If we still did not find the functional unit, iterate up the scope tree looking for a module
+     that matches.
+    */
+    if( funiti == NULL ) {
+      do {
+        if( curr_inst->parent == NULL ) {
+          strcpy( tscope, scope );
+          funiti = instance_find_scope( curr_inst, tscope );
+          curr_inst = curr_inst->parent;
+        } else {
+          curr_inst = curr_inst->parent;
+          snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
+          funiti = instance_find_scope( curr_inst, tscope );
+        }
+      } while( (curr_inst != NULL) && (funiti == NULL) );
+    }
 
-  /*
-   If we still did not find the functional unit, iterate up the scope tree looking for a module
-   that matches.
-  */
-  if( funiti == NULL ) {
-    do {
-      if( curr_inst->parent == NULL ) {
-        strcpy( tscope1, scope );
-        funiti = instance_find_scope( curr_inst, tscope1 );
-        curr_inst = curr_inst->parent;
-      } else {
-        curr_inst = curr_inst->parent;
-        snprintf( tscope1, 4096, "%s.%s", curr_inst->name, scope );
-        funiti = instance_find_scope( curr_inst, tscope1 );
-      }
-    } while( (curr_inst != NULL) && (funiti == NULL) );
   }
 
   return( (funiti == NULL) ? NULL : funiti->funit );
@@ -135,10 +123,12 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
     /* Get the functional unit that contains this signal */
     if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit )) == NULL ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      if( line > 0 ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
+                  name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
  
     }
 
@@ -147,7 +137,11 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
   }
 
   /* Get the module parameter, if it exists */
-  *found_parm = funit_find_param( parm_name, *found_funit );
+  if( *found_funit != NULL ) {
+    *found_parm = funit_find_param( parm_name, *found_funit );
+  } else {
+    *found_parm = NULL;
+  }
 
   free_safe( parm_name );
 
@@ -171,11 +165,10 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
 */
 bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line ) {
 
-  vsignal    sig;       /* Temporary holder for signal */
-  sig_link*  sigl;      /* Pointer to current signal link */
-  char*      sig_name;  /* Signal basename holder */
-  char*      scope;     /* Signal scope holder */
-  func_unit* parent;    /* Pointer to parent functional unit */
+  vsignal   sig;          /* Temporary holder for signal */
+  sig_link* sigl = NULL;  /* Pointer to current signal link */
+  char*     sig_name;     /* Signal basename holder */
+  char*     scope;        /* Signal scope holder */
 
   assert( curr_funit != NULL );
 
@@ -194,10 +187,13 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
     /* Get the functional unit that contains this signal */
     if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit )) == NULL ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      /* Don't worry about bad references for expressions that do not have a valid line number */
+      if( line > 0 ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
+                  name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
  
     }
 
@@ -205,13 +201,17 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
 
   }
 
-  /* First, look in the current functional unit */
-  if( (sigl = sig_link_find( &sig, (*found_funit)->sig_head )) == NULL ) {
+  if( *found_funit != NULL ) {
 
-    /* Continue to look in parent modules (if there are any) */
-    parent = (*found_funit)->parent;
-    while( (parent != NULL) && ((sigl = sig_link_find( &sig, parent->sig_head )) == NULL) ) {
-      parent = parent->parent;
+    /* First, look in the current functional unit */
+    if( (sigl = sig_link_find( &sig, (*found_funit)->sig_head )) == NULL ) {
+
+      /* Continue to look in parent modules (if there are any) */
+      *found_funit = (*found_funit)->parent;
+      while( (*found_funit != NULL) && ((sigl = sig_link_find( &sig, (*found_funit)->sig_head )) == NULL) ) {
+        *found_funit = (*found_funit)->parent;
+      }
+
     }
 
   }
@@ -360,6 +360,12 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.12.8.1.4.3  2006/08/10 20:27:30  phase1geo
+ Fixing issue with an implicitly created signal caused from binding an
+ implicit event expression to a signal in a lower-level hierarchy.  Added
+ slist3.2 diagnostic to verify the appropriate behavior.  Also updated the
+ scoping function to match the development branch.  Full regression passes.
+
  Revision 1.12.8.1.4.2  2006/07/18 17:22:34  phase1geo
  Fixed upwards name referencing bug (1524705) and reshaped some of the code associated
  with this functionality.  Added diagnostics to regression suite to fully
