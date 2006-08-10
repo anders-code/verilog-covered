@@ -123,8 +123,8 @@ void score_usage() {
   printf( "      -r(S|W|E|I)                  Specifies action to take when race condition checking finds problems in design.\n" );
   printf( "                                    (-rS = Silent.  Do not report condition was found, just handle it.\n" );
   printf( "                                     -rW = Warning.  Report race condition information, but just handle it.  Default.\n" );
-  printf( "                                     -rE = Error.  Report race condition information and stop scoring.)\n" );
-  printf( "                                     -rI = Ignore.  Skip race condition checking completely.\n" );
+  printf( "                                     -rE = Error.  Report race condition information and stop scoring.\n" );
+  printf( "                                     -rI = Ignore.  Skip race condition checking completely.)\n" );
   printf( "      -S                           Outputs simulation performance information after scoring has completed.  This\n" );
   printf( "                                    information is currently only useful for the developers of Covered.\n" );
   printf( "      -g (<module>=)[1|2|3]        Selects generation of Verilog syntax that the parser will handle.  If\n" );
@@ -809,6 +809,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.80  2006/08/10 22:35:14  phase1geo
+ Updating with fixes for upcoming 0.4.7 stable release.  Updated regressions
+ for this change.  Full regression still fails due to an unrelated issue.
+
  Revision 1.79  2006/08/06 05:02:59  phase1geo
  Documenting and adding warning message to parse.c for the -rI option.
 
