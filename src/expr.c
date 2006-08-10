@@ -855,6 +855,8 @@ void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tai
       /* If the signal isn't already in the list, add it */
       if( str_link_find( sig_name, *head ) == NULL ) {
         str_link_add( sig_name, head, tail );
+      } else {
+        free_safe( sig_name );
       }
 
     }
@@ -3141,6 +3143,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179.4.1.6.1.2.4  2006/08/10 22:22:13  phase1geo
+ Fixing memory leak issue with the latest checkin.
+
  Revision 1.179.4.1.6.1.2.3  2006/08/10 20:27:30  phase1geo
  Fixing issue with an implicitly created signal caused from binding an
  implicit event expression to a signal in a lower-level hierarchy.  Added
