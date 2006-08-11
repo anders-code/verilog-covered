@@ -152,7 +152,7 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
   exp_link* curr;  /* Pointer to current expression link element */
 
   /* Don't write this vsignal if it isn't usable by Covered */
-  if( (sig->name[0] != '!') && (sig->value->width != -1) && (sig->suppl.part.type != SSUPPL_TYPE_GENVAR) ) {
+  if( (sig->suppl.part.not_handled == 0) && (sig->value->width != -1) && (sig->suppl.part.type != SSUPPL_TYPE_GENVAR) ) {
 
     /* Display identification and value information first */
     fprintf( file, "%d %s %d %d %x ",
@@ -547,6 +547,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.29  2006/08/11 15:16:49  phase1geo
+ Joining slist3.3 diagnostic to latest development branch.  Adding changes to
+ fix memory issues from bug 1535412.
+
  Revision 1.28  2006/07/27 02:04:30  phase1geo
  Fixing problem with parameter usage in a generate block for signal sizing.
 
