@@ -462,11 +462,9 @@ bool bind_param( char* name, expression* exp, func_unit* funit_exp, int exp_line
  
  Performs a binding of an expression and signal based on the name of the
  signal.  Looks up signal name in the specified functional unit and sets the expression
- and signal to point to each other.  If the signal name is not found, it is checked to
- see if the signal is an unused type (name preceded by the '!' character).  If the signal
- is unused, the bind does not occur and the function returns a value of FALSE.  If the
- signal neither exists or is an unused signal, it is considered to be an implicit signal
- and a 1-bit signal is created.
+ and signal to point to each other.  If the signal is unused, the bind does not occur and
+ the function returns a value of FALSE.  If the signal does not exist, it is considered to
+ be an implicit signal and a 1-bit signal is created.
 */
 bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading,
                   bool clear_assigned, int exp_line, bool bind_locally ) {
@@ -484,37 +482,30 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
     /* Search for specified signal in current functional unit */
     if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit, exp_line ) ) {
 
-      /* Check to see if it is an unused signal */
-      tmpname = (char*)malloc_safe( (strlen( name ) + 2), __FILE__, __LINE__ );
-      snprintf( tmpname, (strlen( name ) + 2), "!%s", name );
-
-      if( !scope_find_signal( tmpname, funit_exp, &found_sig, &found_funit, exp_line ) ) {
-
-        /* If we are binding an FSM, output an error message */
-        if( fsm_bind ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
-                    name,
-                    funit_exp->name,
-                    funit_exp->filename );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
-
-        /* Otherwise, implicitly create the signal and bind to it */
-        } else {
-          assert( exp != NULL );
-          snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
-          print_output( user_msg, WARNING, __FILE__, __LINE__ );
-          found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff), 0 );
-          sig_link_add( found_sig, &(funit_exp->sig_head), &(funit_exp->sig_tail) );
-        }
-
-      } else {
-
+      /* If we are binding an FSM, output an error message */
+      if( fsm_bind ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
+                  name,
+                  funit_exp->name,
+                  funit_exp->filename );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
 
+      /* Otherwise, implicitly create the signal and bind to it */
+      } else {
+        assert( exp != NULL );
+        snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
+        print_output( user_msg, WARNING, __FILE__, __LINE__ );
+        found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff), 0 );
+        sig_link_add( found_sig, &(funit_exp->sig_head), &(funit_exp->sig_tail) );
       }
 
-      free_safe( tmpname );
+    } else {
+
+      /* If the found signal is not handled, do not attempt to bind to it */
+      if( found_sig->suppl.part.not_handled == 1 ) {
+        retval = FALSE;
+      }
 
     }
 
@@ -1004,6 +995,14 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.71.4.1.4.3.4.2  2006/08/11 04:13:09  phase1geo
+ Fixing another issue related to bug 1535412 dealing with implicit event
+ expressions and embedded memories.  I have altered the way that memories
+ (and other unsupported variable types) are handled internally in Covered.
+ The names are no longer prefixed with an '!' character but rather have
+ the "not_handled" vsignal attribute set.  Full Icarus Verilog regression
+ passes.
+
  Revision 1.71.4.1.4.3.4.1  2006/08/10 20:27:30  phase1geo
  Fixing issue with an implicitly created signal caused from binding an
  implicit event expression to a signal in a lower-level hierarchy.  Added

@@ -1064,6 +1064,7 @@ union ssuppl_u {
     control col            :16; /*!< Specifies the starting column this signal is declared on */
     control type           :4;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
     control big_endian     :1;  /*!< Specifies if this signal is in big or little endianness */
+    control not_handled    :1;  /*!< Specifies if this signal is handled by Covered or not */
   } part;
 };
 
@@ -1847,6 +1848,14 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.185.4.1.4.1.2.2.2.3  2006/08/11 04:13:13  phase1geo
+ Fixing another issue related to bug 1535412 dealing with implicit event
+ expressions and embedded memories.  I have altered the way that memories
+ (and other unsupported variable types) are handled internally in Covered.
+ The names are no longer prefixed with an '!' character but rather have
+ the "not_handled" vsignal attribute set.  Full Icarus Verilog regression
+ passes.
+
  Revision 1.185.4.1.4.1.2.2.2.2  2006/08/09 21:52:37  phase1geo
  Fixing bug 1535412.  Implicit sensitivity blocks now correctly traverse named
  begin/end blocks and fork/join blocks.  Added new diangostics to verify this

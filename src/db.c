@@ -773,6 +773,7 @@ void db_add_defparam( char* name, expression* expr ) {
  \param mba        Set to TRUE if specified signal must be assigned by simulated results.
  \param line       Line number where signal was declared.
  \param col        Starting column where signal was declared.
+ \param handled    Specifies if this signal is handled by Covered or not.
 
  Creates a new signal with the specified parameter information and adds this
  to the signal list if it does not already exist.  If width == 0, the sig_msb
@@ -780,7 +781,7 @@ void db_add_defparam( char* name, expression* expr ) {
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba, int line, int col ) {
+void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool is_signed, bool mba, int line, int col, bool handled ) {
 
   vsignal  tmpsig;      /* Temporary signal for signal searching */
   vsignal* sig;         /* Container for newly created signal */
@@ -835,6 +836,9 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
 
     /* Indicate signed attribute */
     sig->value->suppl.part.is_signed = is_signed;
+
+    /* Indicate handled attribute */
+    sig->suppl.part.not_handled = handled ? 0 : 1;
 
   }
   
@@ -1701,6 +1705,14 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.175.4.1.4.1.4.4  2006/08/11 04:13:10  phase1geo
+ Fixing another issue related to bug 1535412 dealing with implicit event
+ expressions and embedded memories.  I have altered the way that memories
+ (and other unsupported variable types) are handled internally in Covered.
+ The names are no longer prefixed with an '!' character but rather have
+ the "not_handled" vsignal attribute set.  Full Icarus Verilog regression
+ passes.
+
  Revision 1.175.4.1.4.1.4.3  2006/08/09 21:52:37  phase1geo
  Fixing bug 1535412.  Implicit sensitivity blocks now correctly traverse named
  begin/end blocks and fork/join blocks.  Added new diangostics to verify this
