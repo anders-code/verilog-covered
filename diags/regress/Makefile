@@ -110,7 +110,8 @@ VCSONLYDIAGS1 = always7.1       assign2.4       assign2.5       assign2.6       
                 hier1.1         implicit2.1     line1           mbit_sel5       mbit_sel5.1     mbit_sel5.2 \
                 mbit_sel5.3     mbit_sel5.4     mbit_sel6       mbit_sel6.1     mbit_sel6.2 \
                 mbit_sel6.3     mbit_sel6.4     param8.2        param12         param12.1 \
-                real1           slist3.1        static_func1    static_func1.1  static_func2    static_func2.1 \
+                real1           slist3.1        slist3.3        static_func1    static_func1.1 \
+                static_func2    static_func2.1 \
                 static_func2.2  triand          trior           trireg          wand            wor
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
