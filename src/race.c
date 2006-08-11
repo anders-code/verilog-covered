@@ -235,11 +235,11 @@ void race_calc_stmt_blk_type( expression* expr, int sb_index ) {
     race_calc_stmt_blk_type( expr->left,  sb_index );
     race_calc_stmt_blk_type( expr->right, sb_index );
 
-    if( (expr->op == EXP_OP_PEDGE) || (expr->op == EXP_OP_NEDGE) ) {
+    if( (expr->op == EXP_OP_PEDGE) || (expr->op == EXP_OP_NEDGE) || (expr->op == EXP_OP_ALWAYS_LATCH) ) {
       sb[sb_index].seq = TRUE;
     }
 
-    if( expr->op == EXP_OP_AEDGE ) {
+    if( (expr->op == EXP_OP_AEDGE) || (expr->op == EXP_OP_ALWAYS_COMB) ) {
       sb[sb_index].cmb = TRUE;
     }
 
@@ -974,6 +974,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.43  2006/08/11 18:57:04  phase1geo
+ Adding support for always_comb, always_latch and always_ff statement block
+ types.  Added several diagnostics to regression suite to verify this new
+ behavior.
+
  Revision 1.42  2006/07/21 20:12:46  phase1geo
  Fixing code to get generated instances and generated array of instances to
  work.  Added diagnostics to verify correct functionality.  Full regression

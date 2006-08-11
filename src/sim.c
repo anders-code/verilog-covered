@@ -384,12 +384,33 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
       /* We are the first statement */
       thr->exec_first = TRUE;
 
-      if( thread_head == NULL ) {
-        thread_head = thread_tail = thr;
+      /*
+       If this statement is an always_comb or always_latch, add it to the delay list and change its right
+       expression so that it will be executed at time 0 after all initial and always blocks have completed
+      */
+      if( (stmt->exp->op == EXP_OP_ALWAYS_COMB) || (stmt->exp->op == EXP_OP_ALWAYS_LATCH) ) {
+
+        if( delay_head == NULL ) {
+          delay_head = delay_tail = thr;
+        } else {
+          thr->prev        = delay_tail;
+          delay_tail->next = thr;
+          delay_tail       = thr;
+        }
+
+        /* Specify that this block should be evaluated */
+        stmt->exp->right->suppl.part.eval_t = 1;
+
       } else {
-        thr->prev         = thread_tail;
-        thread_tail->next = thr;
-        thread_tail       = thr;
+
+        if( thread_head == NULL ) {
+          thread_head = thread_tail = thr;
+        } else {
+          thr->prev         = thread_tail;
+          thread_tail->next = thr;
+          thread_tail       = thr;
+        }
+
       }
  
     }
@@ -726,6 +747,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.69  2006/08/11 18:57:04  phase1geo
+ Adding support for always_comb, always_latch and always_ff statement block
+ types.  Added several diagnostics to regression suite to verify this new
+ behavior.
+
  Revision 1.68  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
