@@ -56,6 +56,7 @@ char* ppfilename             = NULL;                /*!< Name of preprocessor fi
 bool  instance_specified     = FALSE;               /*!< Specifies if -i option was specified */
 int   timestep_update        = 0;                   /*!< Specifies timestep increment to display current time */
 int   flag_race_check        = WARNING;             /*!< Specifies how race conditions should be handled */
+bool  flag_check_races       = TRUE;                /*!< Specifies if race condition checking should occur */
 bool  flag_exclude_assign    = FALSE;               /*!< Specifies if continuous assignments blocks should be sim'd */
 bool  flag_exclude_always    = FALSE;               /*!< Specifies if always blocks should be sim'd */
 bool  flag_exclude_initial   = FALSE;               /*!< Specifies if initial blocks should be sim'd */
@@ -113,10 +114,11 @@ void score_usage() {
   printf( "      -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.\n" );
   printf( "      -ts <number>                 If design is being scored, specifying this option will output\n" );
   printf( "                                    the current timestep (by increments of <number>) to standard output.\n" );
-  printf( "      -r(S|W|E)                    Specifies action to take when race condition checking finds problems in design.\n" );
+  printf( "      -r(S|W|E|I)                  Specifies action to take when race condition checking finds problems in design.\n" );
   printf( "                                    (-rS = Silent.  Do not report condition was found, just handle it.\n" );
   printf( "                                     -rW = Warning.  Report race condition information, but just handle it.  Default.\n" );
-  printf( "                                     -rE = Error.  Report race condition information and stop scoring.)\n" );
+  printf( "                                     -rE = Error.  Report race condition information and stop scoring.\n" );
+  printf( "                                     -rI = Ignore.  Skip race condition checking completely.)\n" );
   printf( "      -S                           Outputs simulation performance information after scoring has completed.  This\n" );
   printf( "                                    information is currently only useful for the developers of Covered.\n" );
   printf( "      -h                           Displays this help information.\n" );
@@ -455,10 +457,11 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       switch( argv[i][2] ) {
         case 'E'  :  flag_race_check = FATAL;    break;
         case 'W'  :  flag_race_check = WARNING;  break;
+        case 'I'  :  flag_check_races = FALSE;   break;
         case 'S'  :
         case '\0' :  flag_race_check = NORMAL;   break;
         default   :
-          snprintf( user_msg, USER_MSG_LENGTH, "Unknown race condition value %c (available types are E, W or S)", argv[i][2] );
+          snprintf( user_msg, USER_MSG_LENGTH, "Unknown race condition value %c (available types are E, W, S or I)", argv[i][2] );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           retval = FALSE;
           break;
@@ -579,6 +582,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.64.12.2  2006/08/14 01:56:23  phase1geo
+ Adding -rI option to allow the user to completely skip the race condition
+ checking phase of scoring.
+
  Revision 1.64.12.1  2006/08/11 22:32:55  phase1geo
  Fixing bug 1538922.  Adding missing slist3.2.cdd file.
 
