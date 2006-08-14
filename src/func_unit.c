@@ -323,6 +323,16 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   }
 
   /*
+   Second, traverse through any BIND generate items and update the expression name.
+  */
+  curr_gi = inst->gitem_head;
+  while( curr_gi != NULL ) {
+    gen_item_bind( curr_gi->gi, inst->funit );
+    curr_gi = curr_gi->next;
+  }
+
+#ifdef OBSOLETE
+  /*
    Second, traverse through any BIND generate items and resolve them immediately
   */
   curr_gi = inst->gitem_head;
@@ -337,6 +347,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   if( bind ) {
     bind_perform( FALSE, 1 );
   }
+#endif
   
   /* 
    Third, traverse through current instance's instance parameter list and
@@ -1032,6 +1043,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.35  2006/08/14 04:19:56  phase1geo
+ Fixing problem with generate11* diagnostics (generate variable used in
+ signal name).  These tests pass now but full regression hasn't been verified
+ at this point.
+
  Revision 1.34  2006/08/02 22:28:32  phase1geo
  Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
  with setting the assigned bit in a signal expression that contains a hierarchical reference
