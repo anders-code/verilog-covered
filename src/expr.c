@@ -2396,8 +2396,9 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
 
     if( expr->value->value[0].part.misc == 0 ) {
       sim_add_thread( thr, expr->stmt );
-      expr->value->value[0].part.misc  = 1;
-      expr->value->value[0].part.value = 0;
+      expr->value->value[0].part.misc   = 1;
+      expr->value->value[0].part.value  = 0;
+      expr->suppl.part.eval_t = 0;
     } else if( thr->child_head == NULL ) {
       expr->value->value[0].part.misc  = 0;
       expr->value->value[0].part.value = 1;
@@ -3143,6 +3144,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179.4.1.6.1.2.5  2006/08/14 03:52:21  phase1geo
+ Attempting to fix bug 1538920.  Updating regressions for change.  Icarus
+ Verilog regression passes.
+
  Revision 1.179.4.1.6.1.2.4  2006/08/10 22:22:13  phase1geo
  Fixing memory leak issue with the latest checkin.
 
