@@ -214,6 +214,33 @@ void print_output( char* msg, int type, char* file, int line ) {
 }
 
 /*!
+ \param argc          Number of arguments in the argv parameter list
+ \param argv          List of arguments being parsed
+ \param option_index  Index of current option being parsed
+
+ \return Returns TRUE if the specified option has a valid argument; otherwise,
+         returns FALSE to indicate that there was an error in parsing the command-line.
+
+ This function is called whenever a command-line argument requires a value.  It verifies
+ that a value was specified (however, it does not make sure that the value is
+ the correct type).  Outputs an error message and returns a value of FALSE if a value was
+ not specified; otherwise, returns TRUE.
+*/
+bool check_option_value( int argc, char** argv, int option_index ) {
+
+  bool retval = TRUE;  /* Return value for this function */
+
+  if( ((option_index + 1) >= argc) || (argv[option_index+1][0] == '-') ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Missing option value to the right of the %s option", argv[option_index] );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = FALSE;
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param token String to check for valid variable name.
  \return Returns TRUE if the specified string is a legal variable name; otherwise,
          returns FALSE.
@@ -995,6 +1022,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.45.12.2  2006/08/17 21:03:53  phase1geo
+ Fixing bug 1541944 by checking to make sure that any command-line option
+ that requires a value has that value specified.
+
  Revision 1.45.12.1  2006/08/10 03:15:37  phase1geo
  Fixing two bugs submitted to database to fix segmentation fault and memory
  leakage issue.

@@ -225,11 +225,11 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
 */
 bool score_parse_args( int argc, int last_arg, char** argv ) {
 
-  bool   retval  = TRUE;          /* Return value for this function                */
-  int    i       = last_arg + 1;  /* Loop iterator                                 */
-  char** arg_list;                /* List of command_line arguments                */
-  int    arg_num;                 /* Number of arguments in arg_list               */
-  int    j;                       /* Loop iterator 2                               */
+  bool   retval  = TRUE;          /* Return value for this function */
+  int    i       = last_arg + 1;  /* Loop iterator */
+  char** arg_list;                /* List of command_line arguments */
+  int    arg_num;                 /* Number of arguments in arg_list */
+  int    j;                       /* Loop iterator 2 */
   char*  ptr;                     /* Pointer to current character in defined value */
 
   while( (i < argc) && retval ) {
@@ -241,66 +241,82 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
-      i++;
-      top_instance       = strdup_safe( argv[i], __FILE__, __LINE__ );
-      instance_specified = TRUE;
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        top_instance       = strdup_safe( argv[i], __FILE__, __LINE__ );
+        instance_specified = TRUE;
+      }
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
-      i++;
-      if( is_directory( argv[i] ) ) {
-        output_db = strdup_safe( argv[i], __FILE__, __LINE__ );
-      } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        if( is_directory( argv[i] ) ) {
+          output_db = strdup_safe( argv[i], __FILE__, __LINE__ );
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+        }
       }
 
     } else if( strncmp( "-ts", argv[i], 3 ) == 0 ) {
 
-      i++;
-      timestep_update = atol( argv[i] );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        timestep_update = atol( argv[i] );
+      }
 
     } else if( strncmp( "-t", argv[i], 2 ) == 0 ) {
 
-      i++;
-      if( is_variable( argv[i] ) ) {
-        top_module = strdup_safe( argv[i], __FILE__, __LINE__ );
-      } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        if( is_variable( argv[i] ) ) {
+          top_module = strdup_safe( argv[i], __FILE__, __LINE__ );
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+        }
       }
 
     } else if( strncmp( "-I", argv[i], 2 ) == 0 ) {
 
-      i++;
-      retval = search_add_include_path( argv[i] );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        retval = search_add_include_path( argv[i] );
+      }
 
     } else if( strncmp( "-y", argv[i], 2 ) == 0 ) {
 
-      i++;
-      retval = search_add_directory_path( argv[i] );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        retval = search_add_directory_path( argv[i] );
+      }
 
     } else if( strncmp( "-F", argv[i], 2 ) == 0 ) {
 
-      i++;
-      retval = fsm_arg_parse( argv[i] );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        retval = fsm_arg_parse( argv[i] );
+      }
       
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
-      i++;
-      if( file_exists( argv[i] ) ) {
-        read_command_file( argv[i], &arg_list, &arg_num );
-        retval = score_parse_args( arg_num, -1, arg_list );
-        for( j=0; j<arg_num; j++ ) {
-          free_safe( arg_list[j] );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        if( file_exists( argv[i] ) ) {
+          read_command_file( argv[i], &arg_list, &arg_num );
+          retval = score_parse_args( arg_num, -1, arg_list );
+          for( j=0; j<arg_num; j++ ) {
+            free_safe( arg_list[j] );
+          }
+          free_safe( arg_list );
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Cannot find argument file %s specified with -f option", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
         }
-        free_safe( arg_list );
-      } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Cannot find argument file %s specified with -f option", argv[i] );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
       }
 
     } else if( strncmp( "-ec", argv[i], 3 ) == 0 ) {
@@ -317,67 +333,73 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-e", argv[i], 2 ) == 0 ) {
 
-      i++;
-      retval = search_add_no_score_funit( argv[i] );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        retval = search_add_no_score_funit( argv[i] );
+      }
 
     } else if( strncmp( "-vcd", argv[i], 4 ) == 0 ) {
 
-      i++;
-      switch( dump_mode ) {
-        case DUMP_FMT_NONE :
-          if( file_exists( argv[i] ) ) {
-            dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
-            dump_mode = DUMP_FMT_VCD;
-          } else {
-            snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
-            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        switch( dump_mode ) {
+          case DUMP_FMT_NONE :
+            if( file_exists( argv[i] ) ) {
+              dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+              dump_mode = DUMP_FMT_VCD;
+            } else {
+              snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
+              print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              retval = FALSE;
+            }
+            break;
+          case DUMP_FMT_VCD :
+            print_output( "Only one -vcd option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
             retval = FALSE;
-          }
-          break;
-        case DUMP_FMT_VCD :
-          print_output( "Only one -vcd option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
-          break;
-        case DUMP_FMT_LXT :
-          print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
-          break;
-        default :
-          assert( 0 );
-          break;
+            break;
+          case DUMP_FMT_LXT :
+            print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
+            retval = FALSE;
+            break;
+          default :
+            assert( 0 );
+            break;
+        }
       }
 
     } else if( strncmp( "-lxt", argv[i], 4 ) == 0 ) {
  
-      i++; 
-      switch( dump_mode ) {
-        case DUMP_FMT_NONE :
-          if( file_exists( argv[i] ) ) {
-            dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
-            dump_mode = DUMP_FMT_LXT;
-          } else {
-            snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
-            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++; 
+        switch( dump_mode ) {
+          case DUMP_FMT_NONE :
+            if( file_exists( argv[i] ) ) {
+              dump_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+              dump_mode = DUMP_FMT_LXT;
+            } else {
+              snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
+              print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              retval = FALSE;
+            }
+            break;
+          case DUMP_FMT_VCD :
+            print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
             retval = FALSE;
-          }
-          break;
-        case DUMP_FMT_VCD :
-          print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
-          break;
-        case DUMP_FMT_LXT :
-          print_output( "Only one -lxt option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
-          break;
-        default :
-          assert( 0 );
-          break;
+            break;
+          case DUMP_FMT_LXT :
+            print_output( "Only one -lxt option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
+            retval = FALSE;
+            break;
+          default :
+            assert( 0 );
+            break;
+        }
       }
 
     } else if( strncmp( "-vpi", argv[i], 4 ) == 0 ) {
 
       i++;
-      if( argv[i][0] != '-' ) {
+      if( (i < argc) && (argv[i][0] != '-') ) {
         vpi_file = strdup_safe( argv[i], __FILE__, __LINE__ );
       } else {
         vpi_file = strdup_safe( DFLT_VPI_NAME, __FILE__, __LINE__ );
@@ -386,8 +408,10 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-v", argv[i], 2 ) == 0 ) {
 
-      i++;
-      retval = search_add_file( argv[i] );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        retval = search_add_file( argv[i] );
+      }
 
     } else if( strncmp( "+libext+", argv[i], 8 ) == 0 ) {
 
@@ -395,61 +419,68 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-D", argv[i], 2 ) == 0 ) {
 
-      i++;
-      ptr = argv[i];
-      while( (*ptr != '\0') && (*ptr != '=') ) {
-        ptr++;
-      }
-      if( *ptr == '=' ) {
-        *ptr = '\0';
-        ptr++;
-        define_macro( argv[i], ptr );
-      } else {
-        define_macro( argv[i], "1" );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        ptr = argv[i];
+        while( (*ptr != '\0') && (*ptr != '=') ) {
+          ptr++;
+        }
+        if( *ptr == '=' ) {
+          *ptr = '\0';
+          ptr++;
+          define_macro( argv[i], ptr );
+        } else {
+          define_macro( argv[i], "1" );
+        }
       }
 
     } else if( strncmp( "-p", argv[i], 2 ) == 0 ) {
       
-      i++;
-      if( is_variable( argv[i] ) ) {
-        ppfilename = strdup_safe( argv[i], __FILE__, __LINE__ );
-      } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        if( is_variable( argv[i] ) ) {
+          ppfilename = strdup_safe( argv[i], __FILE__, __LINE__ );
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          exit( 1 );
+        }
       }
         
     } else if( strncmp( "-P", argv[i], 2 ) == 0 ) {
 
-      i++;
-      ptr = argv[i];
-      while( (*ptr != '\0') && (*ptr != '=') ) {
-        ptr++;
-      }
-      if( *ptr == '\0' ) {
-        print_output( "Option -P must specify a value to assign.  See \"covered score -h\" for more information.",
-                      FATAL, __FILE__, __LINE__ );
-        exit( 1 );
-      } else {
-        *ptr = '\0';
-        ptr++;
-        defparam_add( argv[i], vector_from_string( &ptr, FALSE ) );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        ptr = argv[i];
+        while( (*ptr != '\0') && (*ptr != '=') ) {
+          ptr++;
+        }
+        if( *ptr == '\0' ) {
+          print_output( "Option -P must specify a value to assign.  See \"covered score -h\" for more information.",
+                        FATAL, __FILE__, __LINE__ );
+          exit( 1 );
+        } else {
+          *ptr = '\0';
+          ptr++;
+          defparam_add( argv[i], vector_from_string( &ptr, FALSE ) );
+        }
       }
       
     } else if( strncmp( "-T", argv[i], 2 ) == 0 ) {
       
-      i++;
-      
-      if( strcmp( argv[i], "min" ) == 0 ) {
-        delay_expr_type = DELAY_EXPR_MIN;
-      } else if( strcmp( argv[i], "max" ) == 0 ) {
-        delay_expr_type = DELAY_EXPR_MAX;
-      } else if( strcmp( argv[i], "typ" ) == 0 ) {
-        delay_expr_type = DELAY_EXPR_TYP;
-      } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        if( strcmp( argv[i], "min" ) == 0 ) {
+          delay_expr_type = DELAY_EXPR_MIN;
+        } else if( strcmp( argv[i], "max" ) == 0 ) {
+          delay_expr_type = DELAY_EXPR_MAX;
+        } else if( strcmp( argv[i], "typ" ) == 0 ) {
+          delay_expr_type = DELAY_EXPR_TYP;
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          exit( 1 );
+        }
       }
 
     } else if( strncmp( "-r", argv[i], 2 ) == 0 ) {
@@ -582,6 +613,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.64.12.3  2006/08/17 21:03:53  phase1geo
+ Fixing bug 1541944 by checking to make sure that any command-line option
+ that requires a value has that value specified.
+
  Revision 1.64.12.2  2006/08/14 01:56:23  phase1geo
  Adding -rI option to allow the user to completely skip the race condition
  checking phase of scoring.
