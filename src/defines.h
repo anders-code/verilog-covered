@@ -1809,6 +1809,9 @@ struct thread_s {
   thread*    parent;                 /*!< Pointer to parent thread that spawned this thread */
   statement* head;                   /*!< Pointer to original head statement that created this thread */
   statement* curr;                   /*!< Pointer to current head statement for this thread */
+#ifdef DEBUG_MODE
+  int        id;                     /*!< Thread ID used for debugging purposes */
+#endif
   bool       kill;                   /*!< Set to true if this thread should be killed */
   bool       queued;                 /*!< Set to true when thread exists in the thread queue */
   bool       exec_first;             /*!< Set to true when the first statement is being executed */
@@ -1848,6 +1851,14 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.185.4.1.4.1.2.2.2.4  2006/08/17 22:41:36  phase1geo
+ Fixing bug 1538920, correcting the calculation of the AEDGE operator.  Also
+ fixed this calculation when it is examining events -- always passes when it
+ is looking at an event (events will automatically cause these operators to
+ be evaluated).  Also added extra debugging information in the sim.c file
+ to aid in tracking down simulation problems.  Updated full regression which
+ now passes with these changes.
+
  Revision 1.185.4.1.4.1.2.2.2.3  2006/08/11 04:13:13  phase1geo
  Fixing another issue related to bug 1535412 dealing with implicit event
  expressions and embedded memories.  I have altered the way that memories

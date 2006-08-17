@@ -684,12 +684,12 @@ void expression_resize( expression* expr, bool recursive ) {
 
       /*
        In the case of an AEDGE expression, it needs to have the size of its LAST child expression
-       to be the width of its right child + one bit for an armed value.
+       to be the width of its right child.
       */
       case EXP_OP_AEDGE :
         if( (expr->left->value->width != expr->right->value->width) || (expr->left->value->value == NULL) ) {
           assert( expr->left->value->value == NULL );
-          expression_create_value( expr->left, (expr->right->value->width + 1), FALSE );
+          expression_create_value( expr->left, expr->right->value->width, FALSE );
         }
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
@@ -2107,18 +2107,34 @@ bool expression_op_func__aedge( expression* expr, thread* thr ) {
   vec_data bit;     /* 1-bit vector value */
   bool     retval;  /* Return value of this function */
 
-  vector_init( &vec, &bit, 1 );
-  vector_op_compare( &vec, expr->left->value, expr->right->value, COMP_CEQ );
+  /* If our signal is an event, automatically set ourselves to true */
+  if( (expr->right->sig != NULL) && (expr->right->sig->suppl.part.type == SSUPPL_TYPE_EVENT) ) {
 
-  /* If the last value and the current value are NOT equal, we have a fired event */
-  if( (bit.part.value == 0) && thr->exec_first ) {
-    expr->suppl.part.true   = 1;
-    expr->suppl.part.eval_t = 1;
-    retval = TRUE;
-    vector_set_value_only( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+    if( thr->exec_first ) {
+      expr->suppl.part.true   = 1;
+      expr->suppl.part.eval_t = 1;
+      retval = TRUE;
+    } else {
+      expr->suppl.part.eval_t = 0;
+      retval = FALSE;
+    }
+
   } else {
-    expr->suppl.part.eval_t = 0;
-    retval = FALSE;
+
+    vector_init( &vec, &bit, 1 );
+    vector_op_compare( &vec, expr->left->value, expr->right->value, COMP_CEQ );
+
+    /* If the last value and the current value are NOT equal, we have a fired event */
+    if( (bit.part.value == 0) && thr->exec_first ) {
+      expr->suppl.part.true   = 1;
+      expr->suppl.part.eval_t = 1;
+      retval = TRUE;
+      vector_set_value_only( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+    } else {
+      expr->suppl.part.eval_t = 0;
+      retval = FALSE;
+    }
+
   }
 
   return( retval );
@@ -2910,12 +2926,12 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
           if( rhs->value->width < lhs->value->width ) {
             vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
           }
-  	  vsignal_propagate( lhs->sig );
 #ifdef DEBUG_MODE
   	  if( debug_mode ) {
             printf( "        " );  vsignal_display( lhs->sig );
           }
 #endif
+  	  vsignal_propagate( lhs->sig );
         }
         *lsb = *lsb + lhs->value->width;
         break;
@@ -2932,12 +2948,12 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
             }
           }
           vector_set_value( lhs->value, rhs->value->value, 1, *lsb, 0 );
-	  vsignal_propagate( lhs->sig );
 #ifdef DEBUG_MODE
           if( debug_mode ) {
             printf( "        " );  vsignal_display( lhs->sig );
           }
 #endif
+	  vsignal_propagate( lhs->sig );
         }
         *lsb = *lsb + lhs->value->width;
         break;
@@ -2947,12 +2963,12 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
           if( rhs->value->width < lhs->value->width ) {
             vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
           }
-  	  vsignal_propagate( lhs->sig );
 #ifdef DEBUG_MODE
           if( debug_mode ) {
             printf( "        " );  vsignal_display( lhs->sig );
           }
 #endif
+  	  vsignal_propagate( lhs->sig );
         }
         *lsb = *lsb + lhs->value->width;
         break;
@@ -2967,12 +2983,12 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
             lhs->value->value = lhs->sig->value->value + intval1;
           }
           vector_set_value( lhs->value, rhs->value->value, intval2, *lsb, 0 );
-          vsignal_propagate( lhs->sig );
 #ifdef DEBUG_MODE
           if( debug_mode ) {
             printf( "        " );  vsignal_display( lhs->sig );
           }
 #endif
+          vsignal_propagate( lhs->sig );
         }
         *lsb = *lsb + lhs->value->width;
         break;
@@ -2986,12 +3002,12 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
             lhs->value->value = lhs->sig->value->value + ((intval1 - intval2) + 1);
           }
           vector_set_value( lhs->value, rhs->value->value, intval2, *lsb, 0 );
-          vsignal_propagate( lhs->sig );
 #ifdef DEBUG_MODE
           if( debug_mode ) {
             printf( "        " );  vsignal_display( lhs->sig );
           }
 #endif
+          vsignal_propagate( lhs->sig );
         }
         *lsb = *lsb + lhs->value->width;
         break;
@@ -3144,6 +3160,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179.4.1.6.1.2.6  2006/08/17 22:41:36  phase1geo
+ Fixing bug 1538920, correcting the calculation of the AEDGE operator.  Also
+ fixed this calculation when it is examining events -- always passes when it
+ is looking at an event (events will automatically cause these operators to
+ be evaluated).  Also added extra debugging information in the sim.c file
+ to aid in tracking down simulation problems.  Updated full regression which
+ now passes with these changes.
+
  Revision 1.179.4.1.6.1.2.5  2006/08/14 03:52:21  phase1geo
  Attempting to fix bug 1538920.  Updating regressions for change.  Icarus
  Verilog regression passes.

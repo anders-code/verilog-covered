@@ -92,6 +92,10 @@ extern nibble   or_optab[OPTAB_SIZE];
 extern char     user_msg[USER_MSG_LENGTH];
 extern exp_info exp_op_info[EXP_OP_NUM];
 
+#ifdef DEBUG_MODE
+extern bool     debug_mode;
+#endif
+
 /*!
  Pointer to head of expression list that contains all expressions that contain static (non-changing)
  values.  These expressions will be forced to be simulated, making sure that correct coverage numbers
@@ -130,7 +134,16 @@ thread* delay_head  = NULL;
 */
 thread* delay_tail  = NULL;
 
+#ifdef DEBUG_MODE
+/*!
+ Current thread ID number.  Incremented for each newly created thread such that every thread
+ during a simulation run receives a unique identifier.  Used for debug purposes only.
+*/
+int curr_thread_id = 1;
+#endif
 
+
+#ifdef DEBUG_MODE
 /*!
  \param head  Pointer to head of thread queue to display
 
@@ -149,7 +162,10 @@ void sim_display_thread_queue( thread** head ) {
   }
 
   while( curr != NULL ) {
-    printf( "     stmt %d, %s, line %d, thr: %p, queued: %d, parent: %p  ", curr->curr->exp->id, expression_string_op( curr->curr->exp->op ), curr->curr->exp->line, curr, ((curr == NULL) ? 0 : curr->queued), ((curr == NULL) ? 0 : curr->parent) );
+    printf( "     stmt %d, %s, line %d, thr: %d, queued: %d, parent: %d  ",
+            curr->curr->exp->id, expression_string_op( curr->curr->exp->op ), curr->curr->exp->line,
+            ((curr == NULL) ? 0 : curr->id), ((curr == NULL) ? 0 : curr->queued),
+            (((curr == NULL) || (curr->parent == NULL)) ? 0 : curr->parent->id) );
     if( curr == thread_head ) {
       printf( "H" );
     }
@@ -161,6 +177,7 @@ void sim_display_thread_queue( thread** head ) {
   }
 
 }
+#endif
 
 /*!
  \param thr   Pointer to thread to add to the tail of the simulation queue.
@@ -173,11 +190,20 @@ void sim_display_thread_queue( thread** head ) {
 */
 void sim_thread_push( thread* thr, thread** head, thread** tail ) {
 
-  // printf( "Before thread is pushed...\n" );
-  // sim_display_thread_queue( head );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "Before thread is pushed...\n" );
+  }
+#endif
 
   /* Only add the thread if it exists, it isn't already in a queue and it has no children */
   if( (thr != NULL) && !thr->queued && (thr->child_head == NULL) ) {
+
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      sim_display_thread_queue( head );
+    }
+#endif
 
     /* Add thread to tail-end of queue */
     if( *tail == NULL ) {
@@ -194,10 +220,14 @@ void sim_thread_push( thread* thr, thread** head, thread** tail ) {
     /* Set the queue indicator to TRUE */
     thr->queued = TRUE;
 
-  }
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      printf( "After thread is pushed...\n" );
+      sim_display_thread_queue( head );
+    }
+#endif
 
-  // printf( "After thread is pushed...\n" );
-  // sim_display_thread_queue( head );
+  }
 
 }
 
@@ -208,8 +238,12 @@ void sim_thread_pop_head() {
 
   thread* tmp_head = thread_head;  /* Pointer to head of thread queue */
 
-  // printf( "Before thread is popped from thread queue...\n" );
-  // sim_display_thread_queue( &thread_head );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "Before thread is popped from thread queue...\n" );
+    sim_display_thread_queue( &thread_head );
+  }
+#endif
 
   if( thread_head != NULL ) {
 
@@ -234,8 +268,12 @@ void sim_thread_pop_head() {
 
   }
 
-  // printf( "After thread is popped from thread queue...\n" );
-  // sim_display_thread_queue( &thread_head );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "After thread is popped from thread queue...\n" );
+    sim_display_thread_queue( &thread_head );
+  }
+#endif
 
 }
 
@@ -331,8 +369,12 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
   /* Only add expression if it is the head statement of its statement block */
   if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
 
-    // printf( "Before thread is added to thread queue...\n" );
-    // sim_display_thread_queue( &thread_head );
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      printf( "Before thread is added to thread queue...\n" );
+      sim_display_thread_queue( &thread_head );
+    }
+#endif
 
     /* Create and initialize thread */
     thr               = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
@@ -347,6 +389,11 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     thr->next_sib     = NULL;
     thr->prev         = NULL;
     thr->next         = NULL;
+
+#ifdef DEBUG_MODE
+    thr->id = curr_thread_id;
+    curr_thread_id++;
+#endif
 
     /* Set statement pointer to this thread */
     stmt->thr        = thr;
@@ -397,8 +444,12 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
  
     }
 
-    // printf( "After thread is added to thread queue...\n" );
-    // sim_display_thread_queue( &thread_head );
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      printf( "After thread is added to thread queue...\n" );
+      sim_display_thread_queue( &thread_head );
+    }
+#endif
 
   }
 
@@ -418,8 +469,12 @@ void sim_kill_thread( thread* thr ) {
 
   assert( thr != NULL );
 
-  // printf( "Before thread is killed...\n" );
-  // sim_display_thread_queue( &thread_head );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "Before thread is killed...\n" );
+    sim_display_thread_queue( &thread_head );
+  }
+#endif
 
   /* Remove this thread from its parent, if it has a parent */
   if( thr->parent != NULL ) {
@@ -475,8 +530,12 @@ void sim_kill_thread( thread* thr ) {
   /* Now we can deallocate the thread */
   free_safe( thr );
 
-  // printf( "After thread is killed...\n" );
-  // sim_display_thread_queue( &thread_head );
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    printf( "After thread is killed...\n" );
+    sim_display_thread_queue( &thread_head );
+  }
+#endif
 
 }
 
@@ -736,6 +795,14 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.68.12.2  2006/08/17 22:41:36  phase1geo
+ Fixing bug 1538920, correcting the calculation of the AEDGE operator.  Also
+ fixed this calculation when it is examining events -- always passes when it
+ is looking at an event (events will automatically cause these operators to
+ be evaluated).  Also added extra debugging information in the sim.c file
+ to aid in tracking down simulation problems.  Updated full regression which
+ now passes with these changes.
+
  Revision 1.68.12.1  2006/08/14 03:52:21  phase1geo
  Attempting to fix bug 1538920.  Updating regressions for change.  Icarus
  Verilog regression passes.
