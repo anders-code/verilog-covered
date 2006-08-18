@@ -28,6 +28,7 @@
 #include "instance.h"
 #include "util.h"
 #include "func_unit.h"
+#include "obfuscate.h"
 
 
 extern funit_inst* instance_root;
@@ -125,7 +126,8 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
 
       if( line > 0 ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                  name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
+                  obfuscate_name( name, 's' ), get_funit_type( curr_funit->type ),
+                  obfuscate_name( curr_funit->name, 'f' ), obfuscate_name( curr_funit->filename, 'v' ), line );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
@@ -190,7 +192,8 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
       /* Don't worry about bad references for expressions that do not have a valid line number */
       if( line > 0 ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                  name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
+                  obfuscate_name( name, 's' ), get_funit_type( curr_funit->type ),
+                  obfuscate_name( curr_funit->name, 'f' ), obfuscate_name( curr_funit->filename, 'v' ), line );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
@@ -259,7 +262,8 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
     if( (*found_funit = scope_find_funit_from_scope( name, curr_funit )) == NULL ) {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy in %s %s, file %s, line %d",
-                get_funit_type( type ), get_funit_type( curr_funit->type ), name, curr_funit->filename, line );
+                get_funit_type( type ), get_funit_type( curr_funit->type ), obfuscate_name( name, 'f' ),
+                obfuscate_name( curr_funit->filename, 'v' ), line );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
 
@@ -360,6 +364,10 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.12.8.1.4.4  2006/08/18 04:50:51  phase1geo
+ First swag at integrating name obfuscation for all output (with the exception
+ of CDD output).
+
  Revision 1.12.8.1.4.3  2006/08/10 20:27:30  phase1geo
  Fixing issue with an implicitly created signal caused from binding an
  implicit event expression to a signal in a lower-level hierarchy.  Added

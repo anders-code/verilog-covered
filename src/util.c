@@ -47,8 +47,10 @@
 #include "defines.h"
 #include "util.h"
 #include "link.h"
+#include "obfuscate.h"
 
 extern bool        report_gui;
+extern bool        obf_mode;
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
 extern Tcl_Interp* interp;
@@ -108,6 +110,17 @@ void set_output_suppression( bool value ) {
 void set_debug( bool value ) {
 
   debug_mode = value;
+
+}
+
+/*!
+ \param value  Boolean value of obfuscation mode.
+
+ Sets the global obfuscation mode to the specified value.
+*/
+void set_obfuscate( bool value ) {
+
+  obf_mode = value;
 
 }
 
@@ -658,7 +671,7 @@ char* scope_gen_printable( char* str ) {
   char* new_str;  /* New version of string with escaped sequences removed */
 
   /* Allocate memory for new string */
-  new_str = strdup_safe( str, __FILE__, __LINE__ );
+  new_str = strdup_safe( obfuscate_name( str, 's' ), __FILE__, __LINE__ );
 
   /* Remove escape sequences, if any */
   if( str[0] == '\\' ) {
@@ -1022,6 +1035,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.45.12.3  2006/08/18 04:50:51  phase1geo
+ First swag at integrating name obfuscation for all output (with the exception
+ of CDD output).
+
  Revision 1.45.12.2  2006/08/17 21:03:53  phase1geo
  Fixing bug 1541944 by checking to make sure that any command-line option
  that requires a value has that value specified.

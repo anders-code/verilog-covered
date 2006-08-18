@@ -73,6 +73,7 @@
 #include "vsignal.h"
 #include "func_unit.h"
 #include "instance.h"
+#include "obfuscate.h"
 
 
 /*!
@@ -277,7 +278,8 @@ void mod_parm_display( mod_parm* mparm ) {
     if( mparm->name == NULL ) {
       printf( "  mparam => type: %s, order: %d, owns_exp: %d", type_str, mparm->suppl.part.order, mparm->suppl.part.owns_expr );
     } else {
-      printf( "  mparam => name: %s, type: %s, order: %d, owns_exp: %d", mparm->name, type_str, mparm->suppl.part.order, mparm->suppl.part.owns_expr );
+      printf( "  mparam => name: %s, type: %s, order: %d, owns_exp: %d",
+              obfuscate_name( mparm->name, 's' ), type_str, mparm->suppl.part.order, mparm->suppl.part.owns_expr );
     }
     if( mparm->expr != NULL ) {
       printf( ", exp_id: %d\n", mparm->expr->id );
@@ -472,7 +474,7 @@ void defparam_add( char* scope, vector* value ) {
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Parameter (%s) value is assigned more than once", scope );
+    snprintf( user_msg, USER_MSG_LENGTH, "Parameter (%s) value is assigned more than once", obfuscate_name( scope, 's' ) );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
@@ -1005,6 +1007,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.60.4.2.4.1.2.1.2.2  2006/08/18 04:50:51  phase1geo
+ First swag at integrating name obfuscation for all output (with the exception
+ of CDD output).
+
  Revision 1.60.4.2.4.1.2.1.2.1  2006/07/10 02:41:44  phase1geo
  Fixes to remove memory leaks.
 

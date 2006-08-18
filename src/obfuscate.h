@@ -10,7 +10,7 @@
 
 
 /*! \brief Gets an obfuscated name for the given actual name */
-char* obfuscate_get_name( char* real_name, char prefix );
+char* obfuscate_name( char* real_name, char prefix );
 
 /*! \brief Deallocates all memory associated with obfuscation */
 void obfuscate_dealloc();
@@ -18,6 +18,10 @@ void obfuscate_dealloc();
 
 /*
  $Log$
+ Revision 1.1.2.2  2006/08/18 04:50:51  phase1geo
+ First swag at integrating name obfuscation for all output (with the exception
+ of CDD output).
+
  Revision 1.1.2.1  2006/08/17 04:17:38  phase1geo
  Adding files to obfuscate actual names when outputting any user-visible
  information.

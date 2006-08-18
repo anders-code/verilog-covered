@@ -34,6 +34,9 @@ void set_output_suppression( bool value );
 /*! \brief Sets global debug flag to specified value */
 void set_debug( bool value );
 
+/*! \brief Sets global obfuscation flag to the specified value */
+void set_obfuscate( bool value );
+
 /*! \brief Displays error message to standard output. */
 void print_output( char* msg, int type, char* file, int line );
 
@@ -117,6 +120,10 @@ const char* get_funit_type( int type );
 
 /*
  $Log$
+ Revision 1.21.12.2  2006/08/18 04:50:51  phase1geo
+ First swag at integrating name obfuscation for all output (with the exception
+ of CDD output).
+
  Revision 1.21.12.1  2006/08/17 21:03:53  phase1geo
  Fixing bug 1541944 by checking to make sure that any command-line option
  that requires a value has that value specified.

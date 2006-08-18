@@ -89,12 +89,14 @@
 #include "scope.h"
 #include "func_unit.h"
 #include "stmt_blk.h"
+#include "obfuscate.h"
 
 
 extern funit_inst* instance_root;
 extern funit_link* funit_head;
 extern char        user_msg[USER_MSG_LENGTH];
 extern str_link*   no_score_head;
+extern bool        obf_mode;
 
 
 /*!
@@ -234,22 +236,30 @@ void bind_display_list() {
       switch( curr->type ) {
         case FUNIT_FUNCTION :
           printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Function: %s\n",
-                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
+                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
+                  obfuscate_name( curr->funit->name, 'f' ),
+                  obfuscate_name( curr->name, 's' ) );
           break;
         case FUNIT_TASK :
           printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Task: %s\n",
-                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
+                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
+                  obfuscate_name( curr->funit->name, 'f' ),
+                  obfuscate_name( curr->name, 's' ) );
           break;
         case FUNIT_NAMED_BLOCK :
           printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Named Block: %s\n",
-                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
+                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
+                  obfuscate_name( curr->funit->name, 'f' ),
+                  obfuscate_name( curr->name, 's' ) );
           break;
         case 0 :
           if( curr->clear_assigned > 0 ) {
-            printf( "  Signal to be cleared: %s\n", curr->name );
+            printf( "  Signal to be cleared: %s\n", obfuscate_name( curr->name, 's' ) );
           } else {
             printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Signal: %s\n",
-                    curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
+                    curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line,
+                    obfuscate_name( curr->funit->name, 'f' ),
+                    obfuscate_name( curr->name, 's' ) );
           }
           break;
         default :  break;
@@ -485,16 +495,17 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
       /* If we are binding an FSM, output an error message */
       if( fsm_bind ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
-                  name,
-                  funit_exp->name,
-                  funit_exp->filename );
+                  obfuscate_name( name, 's' ),
+                  obfuscate_name( funit_exp->name, 'f' ),
+                  obfuscate_name( funit_exp->filename, 'v' ) );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
 
       /* Otherwise, implicitly create the signal and bind to it */
       } else {
         assert( exp != NULL );
-        snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
+        snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal",
+                  obfuscate_name( name, 's' ) );
         print_output( user_msg, WARNING, __FILE__, __LINE__ );
         found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff), 0 );
         sig_link_add( found_sig, &(funit_exp->sig_head), &(funit_exp->sig_tail) );
@@ -806,7 +817,8 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
           /* Check to see if the call port count matches the actual port count */
           if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
             snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
-                      get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, funit_exp->filename, exp->line );
+                      get_funit_type( type ), port_order, get_funit_type( type ), port_cnt,
+                      obfuscate_name( funit_exp->filename, 'v' ), exp->line );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             exit( 1 );
           }
@@ -995,6 +1007,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.71.4.1.4.3.4.3  2006/08/18 04:50:44  phase1geo
+ First swag at integrating name obfuscation for all output (with the exception
+ of CDD output).
+
  Revision 1.71.4.1.4.3.4.2  2006/08/11 04:13:09  phase1geo
  Fixing another issue related to bug 1535412 dealing with implicit event
  expressions and embedded memories.  I have altered the way that memories

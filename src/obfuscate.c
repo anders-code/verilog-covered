@@ -23,6 +23,11 @@ tnode* obf_tree    = NULL;
 */
 int    obf_curr_id = 0;
 
+/*!
+ Specifies obfuscation mode.
+*/
+bool   obf_mode;
+
 
 /*!
  \param real_name  Name of actual object in design
@@ -34,37 +39,48 @@ int    obf_curr_id = 0;
  return the given name; otherwise, create a new element in the tree to represent
  this new name.
 */
-char* obfuscate_get_name( char* real_name, char prefix ) {
+char* obfuscate_name( char* real_name, char prefix ) {
 
   tnode* obfnode;    /* Pointer to obfuscated tree node */
   char*  obfname;    /* Obfuscated name */
   char*  key;        /* Temporary name used for searching */
   char   tname[30];  /* Temporary name used for sizing obfuscation ID */
 
-  /* Create temporary name */
-  key = (char*)malloc_safe( (strlen( real_name ) + 3), __FILE__, __LINE__ );
-  snprintf( key, (strlen( real_name ) + 2), "%s-%c", real_name, prefix );
+  if( obf_mode ) {
 
-  /* If the name was previously obfuscated, return that name */
-  if( (obfnode = tree_find( key, obf_tree )) != NULL ) {
+    /* Create temporary name */
+    key = (char*)malloc_safe( (strlen( real_name ) + 3), __FILE__, __LINE__ );
+    snprintf( key, (strlen( real_name ) + 3), "%s-%c", real_name, prefix );
 
-    obfname = strdup_safe( obfnode->value, __FILE__, __LINE__ );
+    /* If the name was previously obfuscated, return that name */
+    if( (obfnode = tree_find( key, obf_tree )) != NULL ) {
 
-  /* Otherwise, create a new obfuscated entry in the tree and return the new name */
+      obfname = obfnode->value;
+
+    /* Otherwise, create a new obfuscated entry in the tree and return the new name */
+    } else {
+
+      /* Calculate the size needed for storing the obfuscated name */
+      snprintf( tname, 30, "%04d", obf_curr_id );
+
+      /* Create obfuscated name */
+      obfname = (char*)malloc_safe( (strlen( tname ) + 2), __FILE__, __LINE__ );
+      snprintf( obfname, (strlen( tname ) + 2), "%c%04d", prefix, obf_curr_id );
+      obf_curr_id++;
+
+      /* Add the obfuscated name to the tree */
+      tree_add( key, obfname, FALSE, &obf_tree );
+
+    }
+
+    /* Deallocate key string */
+    free_safe( key );
+
   } else {
 
-    /* Calculate the size needed for storing the obfuscated name */
-    snprintf( tname, 30, "%04d", obf_curr_id );
+    obfname = real_name;
 
-    /* Create obfuscated name */
-    obfname = (char*)malloc_safe( (strlen( tname ) + 2), __FILE__, __LINE__ );
-    snprintf( obfname, (strlen( tname ) + 2), "%c%04d", prefix, obf_curr_id );
-    obf_curr_id++;
-
-    /* Add the obfuscated name to the tree */
-    tree_add( key, obfname, FALSE, &obf_tree );
-
-  }  
+  }
 
   return( obfname );
 
@@ -82,6 +98,10 @@ void obfuscate_dealloc() {
 
 /*
  $Log$
+ Revision 1.1.2.2  2006/08/18 04:50:51  phase1geo
+ First swag at integrating name obfuscation for all output (with the exception
+ of CDD output).
+
  Revision 1.1.2.1  2006/08/17 04:17:37  phase1geo
  Adding files to obfuscate actual names when outputting any user-visible
  information.
