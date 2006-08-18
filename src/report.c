@@ -265,8 +265,10 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
     
-      i++;
-      report_parse_metrics( argv[i] );
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        report_parse_metrics( argv[i] );
+      }
 
     } else if( strncmp( "-view", argv[i], 5 ) == 0 ) {
 
@@ -289,29 +291,32 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-d", argv[i], 2 ) == 0 ) {
 
-      i++;
-     
-      if( argv[i][0] == 's' ) {
-        report_comb_depth = REPORT_SUMMARY;
-      } else if( argv[i][0] == 'd' ) {
-        report_comb_depth = REPORT_DETAILED;
-      } else if( argv[i][0] == 'v' ) {
-        report_comb_depth = REPORT_VERBOSE;
-      } else {
-        snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s\n", argv[i] );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        if( argv[i][0] == 's' ) {
+          report_comb_depth = REPORT_SUMMARY;
+        } else if( argv[i][0] == 'd' ) {
+          report_comb_depth = REPORT_DETAILED;
+        } else if( argv[i][0] == 'v' ) {
+          report_comb_depth = REPORT_VERBOSE;
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s\n", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+        }
       }
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
-      i++;
-      if( is_directory( argv[i] ) ) {
-        output_file = strdup_safe( argv[i], __FILE__, __LINE__ );
-      } else {
-  	snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+      if( retval = check_option_value( argc, argv, i ) ) {
+        i++;
+        if( is_directory( argv[i] ) ) {
+          output_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+        }
       }
 
     } else if( strncmp( "-w", argv[i], 2 ) == 0 ) {
@@ -319,7 +324,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
       flag_use_line_width = TRUE;
 
       /* Check to see if user specified a line width value */
-      if( sscanf( argv[i+1], "%d%n", &line_width, &chars_read ) == 1 ) {
+      if( ((i+1) < argc) && (sscanf( argv[i+1], "%d%n", &line_width, &chars_read ) == 1) ) {
         if( strlen( argv[i+1] ) != chars_read ) {
           line_width = DEFAULT_LINE_WIDTH;
         } else {
@@ -831,6 +836,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.69  2006/08/18 04:41:14  phase1geo
+ Incorporating bug fixes 1538920 and 1541944.  Updated regressions.  Only
+ event1.1 does not currently pass (this does not pass in the stable version
+ yet either).
+
  Revision 1.68  2006/08/02 22:28:32  phase1geo
  Attempting to fix the bug pulled out by generate11.v.  We are just having an issue
  with setting the assigned bit in a signal expression that contains a hierarchical reference

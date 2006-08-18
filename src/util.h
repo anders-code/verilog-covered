@@ -37,6 +37,9 @@ void set_debug( bool value );
 /*! \brief Displays error message to standard output. */
 void print_output( char* msg, int type, char* file, int line );
 
+/*! \brief Checks to make sure that a value was properly specified for a given option. */
+bool check_option_value( int argc, char** argv, int option_index );
+
 /*! \brief Returns TRUE if the specified string is a legal variable name. */
 bool is_variable( char* token );
 
@@ -117,6 +120,11 @@ const char* get_funit_type( int type );
 
 /*
  $Log$
+ Revision 1.23  2006/08/18 04:41:14  phase1geo
+ Incorporating bug fixes 1538920 and 1541944.  Updated regressions.  Only
+ event1.1 does not currently pass (this does not pass in the stable version
+ yet either).
+
  Revision 1.22  2006/04/18 21:59:54  phase1geo
  Adding support for environment variable substitution in configuration files passed
  to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
