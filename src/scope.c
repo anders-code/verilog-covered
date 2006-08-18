@@ -29,6 +29,7 @@
 #include "util.h"
 #include "func_unit.h"
 #include "gen_item.h"
+#include "obfuscate.h"
 
 
 extern funit_inst* instance_root;
@@ -126,7 +127,8 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
 
       if( line > 0 ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                  name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
+                  obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
+                  obf_file( curr_funit->filename ), line );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
@@ -188,7 +190,8 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
 
       if( line > 0 ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                  name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
+                  obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
+                  obf_file( curr_funit->filename ), line );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
@@ -245,7 +248,7 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
   if( ((*found_funit = scope_find_funit_from_scope( name, curr_funit )) == NULL) && must_find ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy in %s %s, file %s, line %d",
-              get_funit_type( type ), get_funit_type( curr_funit->type ), name, curr_funit->filename, line );
+              get_funit_type( type ), get_funit_type( curr_funit->type ), obf_funit( name ), obf_file( curr_funit->filename ), line );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
@@ -329,6 +332,11 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.27  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.26  2006/08/10 22:35:14  phase1geo
  Updating with fixes for upcoming 0.4.7 stable release.  Updated regressions
  for this change.  Full regression still fails due to an unrelated issue.

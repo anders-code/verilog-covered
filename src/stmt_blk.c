@@ -72,7 +72,7 @@ void stmt_blk_add_to_remove_list( statement* stmt ) {
    blocks that contain expressions that call this task or function.
   */
   if( (funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_TASK) ) {
-    // printf( "Searching for all expressions that call %s...\n", funit->name );
+    // printf( "Searching for all expressions that call %s...\n", obf_funit( funit->name ) );
     if( (exp_head = db_get_exprs_with_statement( stmt )) != NULL ) {
       expl = exp_head;
       while( expl != NULL ) {
@@ -130,6 +130,11 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.5  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.4  2006/08/06 04:36:20  phase1geo
  Fixing bugs 1533896 and 1533827.  Also added -rI option that will ignore
  the race condition check altogether (has not been verified to this point, however).

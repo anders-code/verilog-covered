@@ -38,6 +38,7 @@
 #include "iter.h"
 #include "search.h"
 #include "vector.h"
+#include "obfuscate.h"
 
 
 /*!
@@ -280,10 +281,11 @@ void ovl_display_verbose( FILE* ofile, func_unit* funit ) {
 
           /* Output the coverage verbose results to the specified output file */
           if( (si.curr->stmt->exp->exec_num == 0) && !report_covered ) {
-            fprintf( ofile, "      %-26s  %-22s  \"%-38s\"\n", curr_child->name, curr_child->funit->name, cov_point );
+            fprintf( ofile, "      %-26s  %-22s  \"%-38s\"\n",
+                     obf_inst( curr_child->name ), obf_funit( curr_child->funit->name ), cov_point );
           } else if( (si.curr->stmt->exp->exec_num > 0) && report_covered ) {
             fprintf( ofile, "      %-26s  %-22s  \"%-38s\"  %9d\n",
-                     curr_child->name, curr_child->funit->name, cov_point, si.curr->stmt->exp->exec_num );
+                     obf_inst( curr_child->name ), obf_funit( curr_child->funit->name ), cov_point, si.curr->stmt->exp->exec_num );
           }
           
         }
@@ -440,6 +442,11 @@ void ovl_get_coverage( func_unit* funit, char* inst_name, char** assert_mod, str
 
 /*
  $Log$
+ Revision 1.11  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.10  2006/06/29 20:06:33  phase1geo
  Adding assertion exclusion code.  Things seem to be working properly with this
  now.  This concludes the initial version of code exclusion.  There are some

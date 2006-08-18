@@ -310,12 +310,16 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
       if( retval = check_option_value( argc, argv, i ) ) {
         i++;
-        if( is_directory( argv[i] ) ) {
-          output_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+        if( output_file != NULL ) {
+          print_output( "Only one -o option is allowed on the report command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
+          if( is_directory( argv[i] ) ) {
+            output_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+          } else {
+            snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            retval = FALSE;
+          }
         }
       }
 
@@ -836,6 +840,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.70  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.69  2006/08/18 04:41:14  phase1geo
  Incorporating bug fixes 1538920 and 1541944.  Updated regressions.  Only
  event1.1 does not currently pass (this does not pass in the stable version

@@ -26,6 +26,7 @@
 #include "util.h"
 #include "static.h"
 #include "link.h"
+#include "obfuscate.h"
 
 
 extern char          user_msg[USER_MSG_LENGTH];
@@ -55,7 +56,8 @@ void VLerror( char* msg ) {
 
   error_count += 1;
   
-  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d, col: %d", msg, yylloc.text, yylloc.first_line, yylloc.first_column );
+  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d, col: %d",
+            msg, obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
   print_output( user_msg, FATAL, __FILE__, __LINE__ );
 
 }
@@ -70,7 +72,8 @@ void VLwarn( char* msg ) {
 
   warn_count += 1;
   
-  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d, col: %d", msg, yylloc.text, yylloc.first_line, yylloc.first_column );
+  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d, col: %d",
+            msg, obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
   print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
 }
@@ -192,6 +195,11 @@ bool parser_check_generation( int gen ) {
 
 /*
  $Log$
+ Revision 1.10  2006/08/18 22:07:45  phase1geo
+ Integrating obfuscation into all user-viewable output.  Verified that these
+ changes have not made an impact on regressions.  Also improved performance
+ impact of not obfuscating output.
+
  Revision 1.9  2006/07/15 22:07:14  phase1geo
  Added all code to parser to check generation value to decide if a piece of
  syntax is allowable by the parser or not.  This code compiles and has been
