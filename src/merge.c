@@ -92,12 +92,16 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
     
       if( retval = check_option_value( argc, argv, i ) ) {
         i++;
-        if( is_directory( argv[i] ) ) {
-          merged_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+        if( merged_file != NULL ) {
+          print_output( "Only one -o option is allowed on the merge command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output file specified \"%s\"", argv[i] );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
+          if( is_directory( argv[i] ) ) {
+            merged_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+          } else {
+            snprintf( user_msg, USER_MSG_LENGTH, "Illegal output file specified \"%s\"", argv[i] );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            retval = FALSE;
+          }
         }
       }
 
@@ -198,6 +202,10 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.22.12.2  2006/08/18 17:56:39  phase1geo
+ Fixing bug 1542454 and fixing hole in event triggering/detection logic that
+ was created when fixing bug 1538920.
+
  Revision 1.22.12.1  2006/08/17 21:03:53  phase1geo
  Fixing bug 1541944 by checking to make sure that any command-line option
  that requires a value has that value specified.

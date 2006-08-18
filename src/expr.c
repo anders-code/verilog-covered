@@ -2107,15 +2107,19 @@ bool expression_op_func__aedge( expression* expr, thread* thr ) {
   vec_data bit;     /* 1-bit vector value */
   bool     retval;  /* Return value of this function */
 
-  /* If our signal is an event, automatically set ourselves to true */
+  /* If our signal is an event that has been triggered, automatically set ourselves to true */
   if( (expr->right->sig != NULL) && (expr->right->sig->suppl.part.type == SSUPPL_TYPE_EVENT) ) {
 
-    if( thr->exec_first ) {
-      expr->suppl.part.true   = 1;
-      expr->suppl.part.eval_t = 1;
-      retval = TRUE;
+    if( expr->right->suppl.part.eval_t == 1 ) {
+      if( thr->exec_first ) {
+        expr->suppl.part.true   = 1;
+        expr->suppl.part.eval_t = 1;
+        retval = TRUE;
+      } else {
+        expr->suppl.part.eval_t = 0;
+        retval = FALSE;
+      }
     } else {
-      expr->suppl.part.eval_t = 0;
       retval = FALSE;
     }
 
@@ -2253,11 +2257,8 @@ bool expression_op_func__delay( expression* expr, thread* thr ) {
 */
 bool expression_op_func__trigger( expression* expr, thread* thr ) {
 
-  if( expr->value->value[0].part.value == 1 ) {
-    expr->value->value[0].part.value = 0;
-  } else {
-    expr->value->value[0].part.value = 1;
-  }
+  /* Specify that we have triggered */
+  expr->value->value[0].part.value = 1;
 
   /* Propagate event */
   vsignal_propagate( expr->sig );
@@ -3160,6 +3161,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179.4.1.6.1.2.7  2006/08/18 17:56:39  phase1geo
+ Fixing bug 1542454 and fixing hole in event triggering/detection logic that
+ was created when fixing bug 1538920.
+
  Revision 1.179.4.1.6.1.2.6  2006/08/17 22:41:36  phase1geo
  Fixing bug 1538920, correcting the calculation of the AEDGE operator.  Also
  fixed this calculation when it is examining events -- always passes when it
