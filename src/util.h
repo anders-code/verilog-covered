@@ -52,6 +52,9 @@ bool is_func_unit( char* token );
 /*! \brief Extracts filename from file pathname. */
 char* get_basename( char* str );
 
+/*! \brief Extracts directory path from file pathname. */
+char* get_dirname( char* str );
+
 /*! \brief Returns TRUE if the specified directory exists. */
 bool directory_exists( char* dir );
 
@@ -120,6 +123,9 @@ const char* get_funit_type( int type );
 
 /*
  $Log$
+ Revision 1.24  2006/08/18 22:32:57  phase1geo
+ Adding get_dirname routine to util.c for future use.
+
  Revision 1.23  2006/08/18 04:41:14  phase1geo
  Incorporating bug fixes 1538920 and 1541944.  Updated regressions.  Only
  event1.1 does not currently pass (this does not pass in the stable version
