@@ -51,7 +51,6 @@
 #include "obfuscate.h"
 
 extern bool        report_gui;
-extern bool        obf_mode;
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
 extern Tcl_Interp* interp;
@@ -1091,6 +1090,9 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.53  2006/08/18 22:19:54  phase1geo
+ Fully integrated obfuscation into the development release.
+
  Revision 1.52  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

@@ -30,6 +30,17 @@ bool   obf_mode;
 
 
 /*!
+ \param value  Boolean value to set obfuscation mode to.
+
+ Sets the global 'obf_mode' variable to the specified value.
+*/
+void obfuscate_set_mode( bool value ) {
+
+  obf_mode = value;
+
+}
+
+/*!
  \param real_name  Name of actual object in design
  \param prefix     Character representing the prefix of the obfuscated name
 
@@ -90,6 +101,9 @@ void obfuscate_dealloc() {
 
 /*
  $Log$
+ Revision 1.4  2006/08/18 22:19:54  phase1geo
+ Fully integrated obfuscation into the development release.
+
  Revision 1.3  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance
@@ -102,6 +116,5 @@ void obfuscate_dealloc() {
  Revision 1.1.2.1  2006/08/17 04:17:37  phase1geo
  Adding files to obfuscate actual names when outputting any user-visible
  information.
-
 */
 
