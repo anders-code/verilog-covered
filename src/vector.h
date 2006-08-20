@@ -142,6 +142,12 @@ bool vector_op_subtract( vector* tgt, vector* left, vector* right );
 /*! \brief Performs multiplication operation on left and right expression values. */
 bool vector_op_multiply( vector* tgt, vector* left, vector* right );
 
+/*! \brief Performs increment operation on specified vector. */
+bool vector_op_inc( vector* tgt );
+
+/*! \brief Performs increment operation on specified vector. */
+bool vector_op_dec( vector* tgt );
+
 /*! \brief Performs unary bitwise inversion operation on specified vector value. */
 bool vector_unary_inv( vector* tgt, vector* src );
 
@@ -157,6 +163,18 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.35  2006/08/20 03:21:00  phase1geo
+ Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
+ and -- operators.  The op-and-assign operators are currently good for
+ simulation and code generation purposes but still need work in the comb.c
+ file for proper combinational logic underline and reporting support.  The
+ increment and decrement operations should be fully supported with the exception
+ of their use in FOR loops (I'm not sure if this is supported by SystemVerilog
+ or not yet).  Also started adding support for delayed assignments; however, I
+ need to rework this completely as it currently causes segfaults.  Added lots of
+ new diagnostics to verify this new functionality and updated regression for
+ these changes.  Full IV regression now passes.
+
  Revision 1.34  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
