@@ -793,6 +793,14 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           *code_depth      = right_code_depth;
           right_code_depth = 0;
           break;
+        case EXP_OP_DLY_ASSIGN :
+          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " = ",
+                               right_code, right_code_depth, expr->right, NULL );
+          break;
+        case EXP_OP_DLY_OP   :
+          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " ",
+                               right_code, right_code_depth, expr->right, NULL );
+          break;
         case EXP_OP_IF       :
           codegen_create_expr( code, code_depth, expr->line, "if( ", right_code, right_code_depth, expr->right, " )",
                                NULL, 0, NULL, NULL );
@@ -842,6 +850,12 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.73  2006/08/21 22:49:59  phase1geo
+ Adding more support for delayed assignments.  Added dly_assign1 to testsuite
+ to verify the #... type of delayed assignment.  This seems to be working for
+ this case but has a potential issue in the report generation.  Checkpointing
+ work.
+
  Revision 1.72  2006/08/20 03:20:58  phase1geo
  Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
  and -- operators.  The op-and-assign operators are currently good for

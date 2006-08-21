@@ -714,6 +714,7 @@ typedef enum exp_op_type_e {
   EXP_OP_INC,             /*!< 81:0x51.  Specifies the increment SystemVerilog operator (++) */
   EXP_OP_DEC,             /*!< 82:0x52.  Specifies the decrement SystemVerilog operator (--) */
   EXP_OP_DLY_ASSIGN,      /*!< 83:0x53.  Specifies a delayed assignment (i.e., a = #5 b; or a = @(c) b;) */
+  EXP_OP_DLY_OP,          /*!< 84:0x54.  Child expression of DLY_ASSIGN, points to the delay expr and the op expr */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -733,6 +734,7 @@ typedef enum exp_op_type_e {
                                        (x->parent->expr->op != EXP_OP_BASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_NASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_RASSIGN) && \
+                                       (x->parent->expr->op != EXP_OP_DLY_OP) && \
                                        (x->parent->expr->op != EXP_OP_IF) && \
                                        (x->parent->expr->op != EXP_OP_WHILE) && \
                                        (x->parent->expr->op != EXP_OP_COND)) && \
@@ -2021,6 +2023,12 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.222  2006/08/21 22:50:00  phase1geo
+ Adding more support for delayed assignments.  Added dly_assign1 to testsuite
+ to verify the #... type of delayed assignment.  This seems to be working for
+ this case but has a potential issue in the report generation.  Checkpointing
+ work.
+
  Revision 1.221  2006/08/20 03:21:00  phase1geo
  Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
  and -- operators.  The op-and-assign operators are currently good for
