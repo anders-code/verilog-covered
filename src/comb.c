@@ -1351,9 +1351,12 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) {
 */
 void combination_multi_var_exprs( char** line1, char** line2, char** line3, expression* exp ) {
 
-  char* left_line1;
-  char* left_line2;
-  char* left_line3;
+  char* left_line1  = NULL;
+  char* left_line2  = NULL;
+  char* left_line3  = NULL;
+  char* right_line1 = NULL;
+  char* right_line2 = NULL;
+  char* right_line3 = NULL;
   char  curr_id_str[20];
   int   curr_id_str_len;
   int   i;
@@ -1398,38 +1401,66 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
 
     }
 
-    /* Take left side and merge it with right side */
-    assert( left_line1 != NULL );
-    assert( exp->right->ulid != -1 );
-    snprintf( curr_id_str, 20, "%d", exp->right->ulid );
-    curr_id_str_len = strlen( curr_id_str );
-    *line1 = (char*)malloc_safe( (strlen( left_line1 ) + curr_id_str_len + 4), __FILE__, __LINE__ );
-    *line2 = (char*)malloc_safe( (strlen( left_line2 ) + curr_id_str_len + 4), __FILE__, __LINE__ );
-    *line3 = (char*)malloc_safe( (strlen( left_line3 ) + curr_id_str_len + 4), __FILE__, __LINE__ );
-    snprintf( *line1, (strlen( left_line1 ) + curr_id_str_len + 4), "%s %s |", left_line1, curr_id_str );
-    for( i=0; i<(curr_id_str_len-1); i++ ) {
-      curr_id_str[i] = '=';
-    }
-    curr_id_str[i] = '\0'; 
-    if( and_op ) {
-      snprintf( *line2, (strlen( left_line2 ) + curr_id_str_len + 4), "%s=0%s=|", left_line2, curr_id_str );
-    } else { 
-      snprintf( *line2, (strlen( left_line2 ) + curr_id_str_len + 4), "%s=1%s=|", left_line2, curr_id_str );
-    }
-    for( i=0; i<(curr_id_str_len - 1); i++ ) {
-      curr_id_str[i] = ' ';
-    }
-    curr_id_str[i] = '\0';
-    if( and_op ) {
-      snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %c%s  ",
-                left_line3, ((ESUPPL_WAS_FALSE( exp->right->suppl ) == 1) ? ' ' : '*'), curr_id_str );
+    /* Get right-side information */
+    if( (exp->right != NULL) && (exp->op != exp->right->op) ) {
+
+      assert( exp->right->ulid != -1 );
+      snprintf( curr_id_str, 20, "%d", exp->right->ulid );
+      curr_id_str_len = strlen( curr_id_str );
+      right_line1 = (char*)malloc_safe( (curr_id_str_len + 4), __FILE__, __LINE__ );
+      right_line2 = (char*)malloc_safe( (curr_id_str_len + 4), __FILE__, __LINE__ );
+      right_line3 = (char*)malloc_safe( (curr_id_str_len + 4), __FILE__, __LINE__ );
+      snprintf( right_line1, (curr_id_str_len + 4), " %s |", curr_id_str );
+      for( i=0; i<(curr_id_str_len-1); i++ ) {
+        curr_id_str[i] = '=';
+      }
+      curr_id_str[i] = '\0';
+      if( and_op ) {
+        snprintf( right_line2, (curr_id_str_len + 4), "=0%s=|", curr_id_str );
+      } else {
+        snprintf( right_line2, (curr_id_str_len + 4), "=1%s=|", curr_id_str );
+      }
+      for( i=0; i<(curr_id_str_len - 1); i++ ) {
+        curr_id_str[i] = ' ';
+      }
+      curr_id_str[i] = '\0';
+      if( and_op ) {
+        snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_FALSE( exp->right->suppl ) == 1) ? ' ' : '*'), curr_id_str );
+      } else {
+        snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_TRUE( exp->right->suppl )  == 1) ? ' ' : '*'), curr_id_str );
+      }
+
     } else {
-      snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %c%s  ",
-                left_line3, ((ESUPPL_WAS_TRUE( exp->right->suppl )  == 1) ? ' ' : '*'),  curr_id_str );
+
+      combination_multi_var_exprs( &right_line1, &right_line2, &right_line3, exp->right );
+
     }
-    free_safe( left_line1 );
-    free_safe( left_line2 );
-    free_safe( left_line3 );
+
+    if( left_line1 != NULL ) {
+      if( right_line1 != NULL ) {
+        *line1 = (char*)malloc_safe( (strlen( left_line1 ) + strlen( right_line1 ) + 1), __FILE__, __LINE__ );
+        *line2 = (char*)malloc_safe( (strlen( left_line2 ) + strlen( right_line2 ) + 1), __FILE__, __LINE__ );
+        *line3 = (char*)malloc_safe( (strlen( left_line3 ) + strlen( right_line3 ) + 1), __FILE__, __LINE__ );
+        snprintf( *line1, (strlen( left_line1 ) + strlen( right_line1 ) + 1), "%s%s", left_line1, right_line1 );
+        snprintf( *line2, (strlen( left_line2 ) + strlen( right_line2 ) + 1), "%s%s", left_line2, right_line2 );
+        snprintf( *line3, (strlen( left_line3 ) + strlen( right_line3 ) + 1), "%s%s", left_line3, right_line3 );
+        free_safe( left_line1 );
+        free_safe( left_line2 );
+        free_safe( left_line3 );
+        free_safe( right_line1 );
+        free_safe( right_line2 );
+        free_safe( right_line3 );
+      } else {
+        *line1 = left_line1;
+        *line2 = left_line2;
+        *line3 = left_line3;
+      }
+    } else {
+      assert( right_line1 != NULL );
+      *line1 = right_line1;
+      *line2 = right_line2;
+      *line3 = right_line3;
+    }
 
     /* If we are the root, output all value */
     if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) || (exp->op != exp->parent->expr->op) ) {
@@ -1628,7 +1659,10 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
          (exp->op != EXP_OP_OR)   &&
          (exp->op != EXP_OP_LOR)) ) {
 
-      if( (exp->left != NULL) && (exp->op == exp->left->op) &&
+      if( (((exp->left != NULL) &&
+            (exp->op == exp->left->op)) ||
+           ((exp->right != NULL) &&
+            (exp->op == exp->right->op))) &&
           ((exp->op == EXP_OP_AND)  ||
            (exp->op == EXP_OP_OR)   ||
            (exp->op == EXP_OP_LAND) ||
@@ -2197,6 +2231,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.137.8.1.4.3  2006/08/22 03:57:36  phase1geo
+ Fixing bug 1544325.  Updated regressions.  Full IV regressions now pass.
+
  Revision 1.137.8.1.4.2  2006/08/22 03:44:36  phase1geo
  Fixing bug 1544322.
 
