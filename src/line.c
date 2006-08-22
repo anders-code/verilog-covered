@@ -347,6 +347,7 @@ void line_display_verbose( FILE* ofile, func_unit* funit ) {
         (stmti.curr->stmt->exp->op != EXP_OP_CASEX)   &&
         (stmti.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
         (stmti.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
+        (stmti.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
         (stmti.curr->stmt->exp->line != 0) ) {
 
       if( ((stmti.curr->stmt->exp->exec_num > 0) ? 1 : 0) == report_covered ) {
@@ -536,6 +537,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.57.12.2  2006/08/22 21:17:40  phase1geo
+ Fixing bug 1544169.  NB_CALL expressions were somehow being output as a an
+ uncovered line in line reporting.
+
  Revision 1.57.12.1  2006/08/18 04:50:51  phase1geo
  First swag at integrating name obfuscation for all output (with the exception
  of CDD output).

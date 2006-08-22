@@ -344,7 +344,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     if( (expr->op == EXP_OP_LAST) || (expr->op == EXP_OP_NB_CALL) ) {
 
-      /* Do nothing. */
+      *code_depth = 0;
 
     } else if( expr->op == EXP_OP_STATIC ) {
 
@@ -841,6 +841,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.67.8.1.4.2  2006/08/22 21:17:40  phase1geo
+ Fixing bug 1544169.  NB_CALL expressions were somehow being output as a an
+ uncovered line in line reporting.
+
  Revision 1.67.8.1.4.1  2006/08/18 04:50:44  phase1geo
  First swag at integrating name obfuscation for all output (with the exception
  of CDD output).
