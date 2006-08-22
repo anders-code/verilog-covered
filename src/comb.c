@@ -288,14 +288,10 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
               if( EXPR_IS_COMB( exp ) == 1 ) {
                 if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
                   tot_num = 3;
-                  num_hit = (((exp->suppl.part.eval_00 + exp->suppl.part.eval_01) > 0) ? 1 : 0) +
-                            (((exp->suppl.part.eval_00 + exp->suppl.part.eval_10) > 0) ? 1 : 0) +
-                            exp->suppl.part.eval_11;
+                  num_hit = ESUPPL_WAS_FALSE( exp->left->suppl ) + ESUPPL_WAS_FALSE( exp->right->suppl ) + exp->suppl.part.eval_11;
                 } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
                   tot_num = 3;
-                  num_hit = (((exp->suppl.part.eval_10 + exp->suppl.part.eval_11) > 0) ? 1 : 0) +
-                            (((exp->suppl.part.eval_01 + exp->suppl.part.eval_11) > 0) ? 1 : 0) +
-                            exp->suppl.part.eval_00;
+                  num_hit = ESUPPL_WAS_TRUE( exp->left->suppl ) + ESUPPL_WAS_TRUE( exp->right->suppl ) + exp->suppl.part.eval_00;
                 } else {
                   tot_num = 4;
                   num_hit = exp->suppl.part.eval_00 +
@@ -680,17 +676,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
       if( (exp->op == EXP_OP_SIG) || (exp->op == EXP_OP_PARAM) ) {
 
-#ifdef OBSOLETE
-        if( exp->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-          tmpname = scope_gen_printable( exp->sig->name );
-        } else {
-#endif
-          tmpname = scope_gen_printable( exp->name );
-#ifdef OBSOLETE
-        }
-#endif
-
-        *size = strlen( tmpname );
+        tmpname = scope_gen_printable( exp->name );
+        *size   = strlen( tmpname );
         switch( *size ) {
           case 0 :  assert( *size > 0 );                     break;
           case 1 :  *size = 3;  strcpy( code_fmt, " %s " );  break;
@@ -786,16 +773,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_UNXOR      :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"             );  break;
             case EXP_OP_PARAM_SBIT :
             case EXP_OP_SBIT_SEL   :  
-#ifdef OBSOLETE
-              if( exp->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-                tmpname = scope_gen_printable( exp->sig->name );
-              } else {
-#endif
-                tmpname = scope_gen_printable( exp->name );
-#ifdef OBSOLETE
-              }
-#endif
-              *size = l_size + r_size + strlen( tmpname ) + 2;
+              tmpname = scope_gen_printable( exp->name );
+              *size   = l_size + r_size + strlen( tmpname ) + 2;
               for( i=0; i<strlen( tmpname ); i++ ) {
                 code_fmt[i] = ' ';
               }
@@ -805,16 +784,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               break;
             case EXP_OP_PARAM_MBIT :
             case EXP_OP_MBIT_SEL   :  
-#ifdef OBSOLETE
-              if( exp->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-                tmpname = scope_gen_printable( exp->sig->name );
-              } else {
-#endif
-                tmpname = scope_gen_printable( exp->name );
-#ifdef OBSOLETE
-              }
-#endif
-              *size = l_size + r_size + strlen( tmpname ) + 3;  
+              tmpname = scope_gen_printable( exp->name );
+              *size   = l_size + r_size + strlen( tmpname ) + 3;  
               for( i=0; i<strlen( tmpname ); i++ ) {
                 code_fmt[i] = ' ';
               }
@@ -826,16 +797,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_PARAM_MBIT_NEG :
             case EXP_OP_MBIT_POS       :
             case EXP_OP_MBIT_NEG       :
-#ifdef OBSOLETE
-              if( exp->sig->suppl.part.type == SSUPPL_TYPE_PARAM ) {
-                tmpname = scope_gen_printable( exp->sig->name );
-              } else {
-#endif
-                tmpname = scope_gen_printable( exp->name );
-#ifdef OBSOLETE
-              }
-#endif
-              *size = l_size + r_size + strlen( tmpname ) + 4;
+              tmpname = scope_gen_printable( exp->name );
+              *size   = l_size + r_size + strlen( tmpname ) + 4;
               for( i=0; i<strlen( tmpname ); i++ ) {
                 code_fmt[i] = ' ';
               }
@@ -1304,14 +1267,10 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) {
 
   /* Get hit information */
   if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
-    hit   = (((exp->suppl.part.eval_00 + exp->suppl.part.eval_01) > 0) ? 1 : 0) +
-            (((exp->suppl.part.eval_00 + exp->suppl.part.eval_10) > 0) ? 1 : 0) +
-            exp->suppl.part.eval_11;
+    hit   = ESUPPL_WAS_FALSE( exp->left->suppl ) + ESUPPL_WAS_FALSE( exp->right->suppl ) + exp->suppl.part.eval_11;
     total = 3;
   } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
-    hit   = (((exp->suppl.part.eval_10 + exp->suppl.part.eval_11) > 0) ? 1 : 0) +
-            (((exp->suppl.part.eval_01 + exp->suppl.part.eval_11) > 0) ? 1 : 0) +
-            exp->suppl.part.eval_00;
+    hit   = ESUPPL_WAS_TRUE( exp->left->suppl ) + ESUPPL_WAS_TRUE( exp->right->suppl ) + exp->suppl.part.eval_00;
     total = 3;
   } else {
     hit = exp->suppl.part.eval_00 +
@@ -1346,8 +1305,8 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) {
       length = 21;
       (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
       snprintf( (*info)[4], length, "         %c    %c    %c",
-                (((exp->suppl.part.eval_00 + exp->suppl.part.eval_01) > 0) ? ' ' : '*'),
-                (((exp->suppl.part.eval_00 + exp->suppl.part.eval_10) > 0) ? ' ' : '*'),
+                (ESUPPL_WAS_FALSE( exp->left->suppl )  ? ' ' : '*'),
+                (ESUPPL_WAS_FALSE( exp->right->suppl ) ? ' ' : '*'),
                 ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
 
     } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
@@ -1358,8 +1317,8 @@ void combination_two_vars( char*** info, int* info_size, expression* exp ) {
       length = 21;
       (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
       snprintf( (*info)[4], length, "         %c    %c    %c",
-                (((exp->suppl.part.eval_10 + exp->suppl.part.eval_11) > 0) ? ' ' : '*'),
-                (((exp->suppl.part.eval_01 + exp->suppl.part.eval_11) > 0) ? ' ' : '*'),
+                (ESUPPL_WAS_TRUE( exp->left->suppl )  ? ' ' : '*'),
+                (ESUPPL_WAS_TRUE( exp->right->suppl ) ? ' ' : '*'),
                 ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
 
     } else {
@@ -2238,6 +2197,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.137.8.1.4.2  2006/08/22 03:44:36  phase1geo
+ Fixing bug 1544322.
+
  Revision 1.137.8.1.4.1  2006/08/18 04:50:44  phase1geo
  First swag at integrating name obfuscation for all output (with the exception
  of CDD output).
