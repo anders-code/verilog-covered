@@ -133,6 +133,7 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int* 
           (stmti.curr->stmt->exp->op != EXP_OP_CASEX)   &&
           (stmti.curr->stmt->exp->op != EXP_OP_CASEZ)   &&
           (stmti.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
+          (stmti.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
           (stmti.curr->stmt->exp->line != 0) ) {
 
         if( ((stmti.curr->stmt->exp->exec_num > 0) ? 1 : 0) == cov ) {
@@ -537,6 +538,11 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.57.12.3  2006/08/22 21:35:58  phase1geo
+ Adding named_block3 diagnostic to verify previous fix.  Also fixed GUI
+ function for getting missing line numbers (to match the previous fix).
+ Full regression passes.
+
  Revision 1.57.12.2  2006/08/22 21:17:40  phase1geo
  Fixing bug 1544169.  NB_CALL expressions were somehow being output as a an
  uncovered line in line reporting.
