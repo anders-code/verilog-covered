@@ -225,7 +225,6 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
   if( (sigl = sig_link_find( &sig, funit->sig_head )) != NULL ) {
 
     found_sig = sigl->sig;
-    printf( "Found signal: %s, value: %p\n", found_sig->name, found_sig->value->value );
 
   } else {
 
@@ -1025,6 +1024,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.38  2006/08/24 22:25:12  phase1geo
+ Fixing issue with generate expressions within signal hierarchies.  Also added
+ ability to parse implicit named and * port lists.  Added diagnostics to regressions
+ to verify this new ability.  Full regression passes.
+
  Revision 1.37  2006/08/24 03:39:02  phase1geo
  Fixing some issues with new static_lexer/parser.  Working on debugging issue
  related to the generate variable mysteriously losing its vector data.

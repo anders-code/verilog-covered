@@ -634,8 +634,6 @@ void expression_resize( expression* expr, bool recursive ) {
       expression_resize( expr->right, recursive );
     }
 
-    printf( "In expression_resize, %s\n", expression_string( expr ) );
-
     /* Get vector supplemental field */
     old_vec_suppl = expr->value->suppl.all;
 
@@ -653,7 +651,6 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_MBIT_POS       :
       case EXP_OP_MBIT_NEG       :
         if( recursive && (expr->sig != NULL) ) {
-          printf( "Setting expression value to that of signal %s (%p)\n", expr->sig->name, expr->sig->value->value );
           expression_set_value( expr, expr->sig->value );
           assert( expr->value->value != NULL );
         }
@@ -3441,6 +3438,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.200  2006/08/24 22:25:11  phase1geo
+ Fixing issue with generate expressions within signal hierarchies.  Also added
+ ability to parse implicit named and * port lists.  Added diagnostics to regressions
+ to verify this new ability.  Full regression passes.
+
  Revision 1.199  2006/08/24 03:39:02  phase1geo
  Fixing some issues with new static_lexer/parser.  Working on debugging issue
  related to the generate variable mysteriously losing its vector data.
