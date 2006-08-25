@@ -751,8 +751,9 @@ typedef enum exp_op_type_e {
  the combinational logic report generator.
 */
 #define EXPR_IS_COMB(x)          ((exp_op_info[x->op].suppl.is_comb > 0) && \
-                                  !expression_is_static_only( x->left ) && \
-                                  !expression_is_static_only( x->right))
+                                  (EXPR_IS_OP_AND_ASSIGN(x) || \
+                                  (!expression_is_static_only( x->left ) && \
+                                   !expression_is_static_only( x->right))))
 
 /*!
  Returns a value of true if the specified expression is considered to be an event type
@@ -2023,6 +2024,12 @@ struct gitem_link_s {
 
 /*
  $Log$
+ Revision 1.223  2006/08/25 18:25:24  phase1geo
+ Modified gen39 and gen40 to not use the Verilog-2001 port syntax.  Fixed problem
+ with detecting implicit .name and .* syntax.  Fixed op-and-assign report output.
+ Added support for 'typedef', 'struct', 'union' and 'enum' syntax for SystemVerilog.
+ Updated user documentation.  Full regression completely passes now.
+
  Revision 1.222  2006/08/21 22:50:00  phase1geo
  Adding more support for delayed assignments.  Added dly_assign1 to testsuite
  to verify the #... type of delayed assignment.  This seems to be working for

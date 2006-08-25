@@ -361,7 +361,6 @@ char* gen_item_calc_signal_name( char* name, expression* expr, func_unit* funit 
     gen_item_get_genvar( tmpname, &pre, &genvar, &post );
     if( genvar != NULL ) {
       snprintf( intstr, 20, "%d", parse_static_expr( genvar, ESUPPL_IS_LHS( expr->suppl ), funit, expr->line ) );
-      // printf( "Generate expression value: %s\n", intstr );
       new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
       strncat( new_name, pre, strlen( pre ) );
       strncat( new_name, "[", 1 );
@@ -832,7 +831,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
 
       case GI_TYPE_BIND :
         varname = gen_item_calc_signal_name( gi->varname, gi->elem.expr, inst->funit );
-        printf( "varname: %s\n", varname );
+        // printf( "varname: %s\n", varname );
         switch( gi->elem.expr->op ) {
           case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    varname, gi->elem.expr, inst->funit );  break;
           case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        varname, gi->elem.expr, inst->funit );  break;
@@ -985,6 +984,12 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.31  2006/08/25 18:25:24  phase1geo
+ Modified gen39 and gen40 to not use the Verilog-2001 port syntax.  Fixed problem
+ with detecting implicit .name and .* syntax.  Fixed op-and-assign report output.
+ Added support for 'typedef', 'struct', 'union' and 'enum' syntax for SystemVerilog.
+ Updated user documentation.  Full regression completely passes now.
+
  Revision 1.30  2006/08/24 22:25:12  phase1geo
  Fixing issue with generate expressions within signal hierarchies.  Also added
  ability to parse implicit named and * port lists.  Added diagnostics to regressions
