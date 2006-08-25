@@ -25,6 +25,10 @@ gen_item* gen_item_find( gen_item* root, gen_item* gi );
 /*! \brief Returns TRUE if the specified variable name contains a generate variable within it */
 bool gen_item_varname_contains_genvar( char* name );
 
+/*! \brief Returns the actual signal name specified by the given signal name which references a
+           generated hierarchy */
+char* gen_item_calc_signal_name( char* name, func_unit* funit, int line, bool no_genvars );
+
 /*! \brief Creates a generate item for an expression */
 gen_item* gen_item_create_expr( expression* expr );
 
@@ -72,6 +76,13 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.14  2006/08/25 22:49:45  phase1geo
+ Adding support for handling generated hierarchical names in signals that are outside
+ of generate blocks.  Added support for op-and-assigns in generate for loops as well
+ as normal for loops.  Added generate11.4 and for3 diagnostics to regression suite
+ to verify this new behavior.  Full regressions have not been verified with these
+ changes however.  Checkpointing.
+
  Revision 1.13  2006/08/14 04:19:56  phase1geo
  Fixing problem with generate11* diagnostics (generate variable used in
  signal name).  These tests pass now but full regression hasn't been verified
