@@ -1248,6 +1248,11 @@ void db_add_statement( statement* stmt, statement* start ) {
 */
 void db_remove_statement_from_current_funit( statement* stmt ) {
 
+  funit_link* funitl;  /* Pointer to current functional unit link */
+  mod_parm*   mparm;   /* Pointer to current module parameter */
+  exp_link*   expl;    /* Pointer to current expression link */
+  exp_link*   texpl;   /* Temporary pointer to current expression link */
+
   if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
 #ifdef DEBUG_MODE
@@ -1258,7 +1263,26 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
 #endif
 
     /* Remove expression from any module parameter expression lists */
+    funitl = funit_head;
+    while( funitl != NULL ) {
+      mparm = funitl->funit->param_head;
+      while( mparm != NULL ) {
+        expl = mparm->exp_head;
+        while( expl != NULL ) {
+          texpl = expl;
+          expl  = expl->next;
+          if( expression_find_expr( stmt->exp, texpl->exp ) ) {
+            exp_link_remove( texpl->exp, &(mparm->exp_head), &(mparm->exp_tail), FALSE );
+          }
+        }
+        mparm = mparm->next;
+      }
+      funitl = funitl->next;
+    }
+    
+#ifdef OBSOLETE
     mod_parm_find_expr_and_remove( stmt->exp, curr_funit->param_head );
+#endif
 
     /* Remove expression from current module expression list and delete expressions */
     exp_link_remove( stmt->exp, &(curr_funit->exp_head), &(curr_funit->exp_tail), TRUE );
@@ -1721,6 +1745,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.175.4.1.4.1.4.6  2006/08/27 04:17:39  phase1geo
+ Fixing bug 1546059 and also fixes a statement connection problem.  Full IV
+ regression passes; however, I am going to attempt to fix the bug in a way that
+ is more optimal.
+
  Revision 1.175.4.1.4.1.4.5  2006/08/18 04:50:44  phase1geo
  First swag at integrating name obfuscation for all output (with the exception
  of CDD output).

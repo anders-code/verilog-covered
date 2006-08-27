@@ -904,6 +904,19 @@ expression* expression_find_uline_id( expression* expr, int ulid ) {
 }
 
 /*!
+ \param root  Pointer to root of expression tree to search
+ \param expr  Pointer to expression to search for
+
+ \return Returns TRUE if the given expression exists within the given expression tree; otherwise,
+         returns FALSE
+*/
+bool expression_find_expr( expression* root, expression* expr ) {
+
+  return( (root != NULL) && ((root == expr) || expression_find_expr( root->left, expr ) || expression_find_expr( root->right, expr )) );
+
+}
+
+/*!
  \param exp  Pointer to expression to get root statement for.
 
  \return Returns a pointer to the root statement of the specified expression if one exists;
@@ -3161,6 +3174,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179.4.1.6.1.2.8  2006/08/27 04:17:39  phase1geo
+ Fixing bug 1546059 and also fixes a statement connection problem.  Full IV
+ regression passes; however, I am going to attempt to fix the bug in a way that
+ is more optimal.
+
  Revision 1.179.4.1.6.1.2.7  2006/08/18 17:56:39  phase1geo
  Fixing bug 1542454 and fixing hole in event triggering/detection logic that
  was created when fixing bug 1538920.

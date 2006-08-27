@@ -494,7 +494,9 @@ void str_link_remove( char* str, str_link** head, str_link** tail ) {
 
   if( curr != NULL ) {
 
-    if( curr == *head ) {
+    if( (curr == *head) && (curr == *tail) ) {
+      *head = *tail = NULL;
+    } else if( curr == *head ) {
       *head = curr->next;
     } else if( curr == *tail ) {
       last->next = NULL;
@@ -560,7 +562,9 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
 
   if( curr != NULL ) {
 
-    if( curr == *head ) {
+    if( (curr == *head) && (curr == *tail) ) {
+      *head = *tail = NULL;
+    } else if( curr == *head ) {
       *head = curr->next;
     } else if( curr == *tail ) {
       last->next = NULL;
@@ -577,6 +581,56 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
   if( recursive ) {
     expression_dealloc( exp, TRUE );
   }
+
+}
+
+/*!
+ \param funit     Pointer to functional unit to find and remove
+ \param head      Pointer to head of functional unit list to remove functional unit from
+ \param tail      Pointer to tail of functional unit list to remove functional unit from
+ \param rm_funit  If set to TRUE, deallocates functional unit as well
+
+ Searches for and removes the given functional unit from the given list and adjusts list as
+ necessary.
+*/
+void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, bool rm_funit ) {
+
+  funit_link* curr = *head;  /* Pointer to current functional unit link */
+  funit_link* last = NULL;   /* Pointer to last functional unit link traversed */
+
+  assert( funit != NULL );
+
+  /* Search for matching functional unit */
+  while( (curr != NULL) && (curr->funit != funit) ) {
+    last = curr;
+    curr = curr->next;
+  }
+
+  if( curr != NULL ) {
+
+    /* Remove the functional unit from the list */
+    if( (curr == *head) && (curr == *tail) ) {
+      *head = *tail = NULL;
+    } else if( curr == *head ) {
+      *head = curr->next;
+    } else if( curr == *tail ) {
+      last->next = NULL;
+      *tail      = last;
+    } else {
+      last->next = curr->next;
+    }
+
+    /* Remove the functional unit, if necessary */
+    if( rm_funit ) {
+      funit_dealloc( curr->funit );
+    }
+
+    /* Deallocate the link */
+    free_safe( curr );
+
+  }
+
+
 
 }
 
@@ -618,8 +672,8 @@ void str_link_delete_list( str_link* head ) {
 
 void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) {
 
-  stmt_iter  curr;   /* Statement list iterator                       */
-  stmt_link* next;   /* Pointer to next stmt_link in list             */
+  stmt_iter  curr;   /* Statement list iterator */
+  stmt_link* next;   /* Pointer to next stmt_link in list */
   stmt_link* next2;  /* Pointer to next after next stmt_link in list  */
   stmt_link* last2;  /* Pointer to last before last stmt_link in list */
 
@@ -800,6 +854,11 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
 /*
  $Log$
+ Revision 1.43.10.1.2.2  2006/08/27 04:17:39  phase1geo
+ Fixing bug 1546059 and also fixes a statement connection problem.  Full IV
+ regression passes; however, I am going to attempt to fix the bug in a way that
+ is more optimal.
+
  Revision 1.43.10.1.2.1  2006/07/14 18:54:56  phase1geo
  Fixing assertion in link.c such that no segmentation fault occurs if a string
  is not found in a str_link list for deletion.

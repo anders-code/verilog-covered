@@ -433,6 +433,8 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
         //display( "Setting stop_true and stop_false", curr_stmt, next_stmt, conn_id );
         curr_stmt->exp->suppl.part.stmt_stop_true  = 1;
         curr_stmt->exp->suppl.part.stmt_stop_false = 1;
+      } else {
+        curr_stmt->next_true->conn_id = conn_id;
       }
       retval = TRUE;
     /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
@@ -478,6 +480,8 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
       if( curr_stmt->next_true->conn_id == conn_id ) {
         //display( "Setting stop_true", curr_stmt, next_stmt, conn_id );
         curr_stmt->exp->suppl.part.stmt_stop_true = 1;
+      } else {
+        curr_stmt->next_true->conn_id = conn_id;
       }
       retval = TRUE;
     /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
@@ -643,7 +647,7 @@ statement* statement_find_head_statement( statement* stmt, stmt_link* head ) {
 void statement_dealloc_recursive( statement* stmt ) {
     
   if( stmt != NULL ) {
-  
+
     assert( stmt->exp != NULL );
 
     /* Remove TRUE path */
@@ -701,6 +705,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.76.4.1.8.2  2006/08/27 04:17:39  phase1geo
+ Fixing bug 1546059 and also fixes a statement connection problem.  Full IV
+ regression passes; however, I am going to attempt to fix the bug in a way that
+ is more optimal.
+
  Revision 1.76.4.1.8.1  2006/08/09 21:52:39  phase1geo
  Fixing bug 1535412.  Implicit sensitivity blocks now correctly traverse named
  begin/end blocks and fork/join blocks.  Added new diangostics to verify this
