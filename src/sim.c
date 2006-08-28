@@ -603,7 +603,7 @@ bool sim_expression( expression* expr, thread* thr ) {
 
   /* Traverse right child expression if it has changed */
   if( (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1) &&
-      ((expr->op != EXP_OP_DLY_ASSIGN) || !thr->exec_first) ) {
+      ((expr->op != EXP_OP_DLY_OP) || !thr->exec_first) ) {
 
     /* Simulate the right expression if it has changed */
     if( expr->right != NULL ) {
@@ -750,6 +750,13 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.72  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.71  2006/08/21 22:50:01  phase1geo
  Adding more support for delayed assignments.  Added dly_assign1 to testsuite
  to verify the #... type of delayed assignment.  This seems to be working for

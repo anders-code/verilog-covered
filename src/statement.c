@@ -540,6 +540,8 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
         //display( "Setting stop_true and stop_false", curr_stmt, next_stmt, conn_id );
         curr_stmt->exp->suppl.part.stmt_stop_true  = 1;
         curr_stmt->exp->suppl.part.stmt_stop_false = 1;
+      } else {
+        curr_stmt->next_true->conn_id = conn_id;
       }
       retval = TRUE;
     /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
@@ -585,6 +587,8 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
       if( curr_stmt->next_true->conn_id == conn_id ) {
         //display( "Setting stop_true", curr_stmt, next_stmt, conn_id );
         curr_stmt->exp->suppl.part.stmt_stop_true = 1;
+      } else {
+        curr_stmt->next_true->conn_id = conn_id;
       }
       retval = TRUE;
     /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
@@ -853,6 +857,13 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.90  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.89  2006/08/16 15:32:15  phase1geo
  Fixing issues with do..while loop handling.  Full regression now passes.
 

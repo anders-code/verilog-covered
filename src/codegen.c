@@ -703,7 +703,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
                                NULL, 0, NULL, NULL );
           break;
         case EXP_OP_PEDGE    :
-          if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+          if( (ESUPPL_IS_ROOT( expr->suppl ) == 1)       ||
+              (expr->parent->expr->op == EXP_OP_RPT_DLY) || 
+              (expr->parent->expr->op == EXP_OP_DLY_OP) ) {
             codegen_create_expr( code, code_depth, expr->line, "@(posedge ", right_code, right_code_depth, expr->right, ")",
                                  NULL, 0, NULL, NULL );
           } else {
@@ -712,7 +714,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           }
           break;
         case EXP_OP_NEDGE    :
-          if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+          if( (ESUPPL_IS_ROOT( expr->suppl ) == 1)       ||
+              (expr->parent->expr->op == EXP_OP_RPT_DLY) ||
+              (expr->parent->expr->op == EXP_OP_DLY_OP) ) {
             codegen_create_expr( code, code_depth, expr->line, "@(negedge ", right_code, right_code_depth, expr->right, ")",
                                  NULL, 0, NULL, NULL );
           } else {
@@ -721,7 +725,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           }
           break;
         case EXP_OP_AEDGE    :
-          if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+          if( (ESUPPL_IS_ROOT( expr->suppl ) == 1)       ||
+              (expr->parent->expr->op == EXP_OP_RPT_DLY) ||
+              (expr->parent->expr->op == EXP_OP_DLY_OP) ) {
             codegen_create_expr( code, code_depth, expr->line, "@(", right_code, right_code_depth, expr->right, ")",
                                  NULL, 0, NULL, NULL );
           } else {
@@ -730,7 +736,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           }
           break;
         case EXP_OP_EOR      :
-          if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+          if( (ESUPPL_IS_ROOT( expr->suppl ) == 1)       ||
+              (expr->parent->expr->op == EXP_OP_RPT_DLY) ||
+              (expr->parent->expr->op == EXP_OP_DLY_OP) ) {
             codegen_create_expr( code, code_depth, expr->line, "@(", left_code, left_code_depth, expr->left, " or ",
                                  right_code, right_code_depth, expr->right, ")" );
           } else {
@@ -799,6 +807,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
                                right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_DLY_OP   :
+        case EXP_OP_RPT_DLY  :
           codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " ",
                                right_code, right_code_depth, expr->right, NULL );
           break;
@@ -851,6 +860,13 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.75  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.74  2006/08/22 21:46:03  phase1geo
  Updating from stable branch.
 

@@ -1437,6 +1437,11 @@ void db_add_statement( statement* stmt, statement* start ) {
 */
 void db_remove_statement_from_current_funit( statement* stmt ) {
 
+  funit_link* funitl;  /* Pointer to current functional unit link */
+  mod_parm*   mparm;   /* Pointer to current module parameter */
+  exp_link*   expl;    /* Pointer to current expression link */
+  exp_link*   texpl;   /* Temporary pointer to current expression link */
+
   if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
 #ifdef DEBUG_MODE
@@ -1446,7 +1451,22 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
 #endif
 
     /* Remove expression from any module parameter expression lists */
-    mod_parm_find_expr_and_remove( stmt->exp, curr_funit->param_head );
+    funitl = funit_head;
+    while( funitl != NULL ) {
+      mparm = funitl->funit->param_head;
+      while( mparm != NULL ) {
+        expl = mparm->exp_head;
+        while( expl != NULL ) {
+          texpl = expl;
+          expl  = expl->next;
+          if( expression_find_expr( stmt->exp, texpl->exp ) ) {
+            exp_link_remove( texpl->exp, &(mparm->exp_head), &(mparm->exp_tail), FALSE );
+          }
+        }
+        mparm = mparm->next;
+      }
+      funitl = funitl->next;
+    }
 
     /* Remove expression from current module expression list and delete expressions */
     exp_link_remove( stmt->exp, &(curr_funit->exp_head), &(curr_funit->exp_tail), TRUE );
@@ -1975,6 +1995,13 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.213  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.212  2006/08/25 22:49:45  phase1geo
  Adding support for handling generated hierarchical names in signals that are outside
  of generate blocks.  Added support for op-and-assigns in generate for loops as well

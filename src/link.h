@@ -101,6 +101,9 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
 /*! \brief Searches for and removes specified generate item link from list. */
 void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail );
 
+/*! \brief Searches for and removes specified functional unit link from list. */
+void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, bool rm_funit );
+
 
 /*! \brief Deletes entire list specified by head pointer. */
 void str_link_delete_list( str_link* head );
@@ -129,6 +132,13 @@ void gitem_link_delete_list( gitem_link* head, bool rm_elems );
 
 /*
  $Log$
+ Revision 1.21  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.20  2006/07/29 20:53:43  phase1geo
  Fixing some code related to generate statements; however, generate8.1 is still
  not completely working at this point.  Full regression passes for IV.

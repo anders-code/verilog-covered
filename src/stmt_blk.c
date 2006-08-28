@@ -68,10 +68,10 @@ void stmt_blk_add_to_remove_list( statement* stmt ) {
   assert( funit != NULL );
 
   /*
-   If we are removing the statement contained in a task or function, we need to remove all statement
-   blocks that contain expressions that call this task or function.
+   If we are removing the statement contained in a task, function or named block, we need to remove all statement
+   blocks that contain expressions that call this task, function or named block.
   */
-  if( (funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_TASK) ) {
+  if( (funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_TASK) || (funit->type == FUNIT_NAMED_BLOCK) ) {
     // printf( "Searching for all expressions that call %s...\n", obf_funit( funit->name ) );
     if( (exp_head = db_get_exprs_with_statement( stmt )) != NULL ) {
       expl = exp_head;
@@ -130,6 +130,13 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.6  2006/08/28 22:28:28  phase1geo
+ Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
+ expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
+ assignments (i.e., a = @(b) c).  Adding several new diagnostics to verify this
+ new level of support and updating regressions for these changes.  Also added
+ parser support for logic port types.
+
  Revision 1.5  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance
