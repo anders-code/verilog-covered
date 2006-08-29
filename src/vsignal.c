@@ -164,7 +164,7 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
       sig->suppl.all
     );
 
-    vector_db_write( sig->value, file, (sig->suppl.part.type == SSUPPL_TYPE_PARAM) );
+    vector_db_write( sig->value, file, ((sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (sig->suppl.part.type == SSUPPL_TYPE_ENUM)) );
 
     fprintf( file, "\n" );
 
@@ -549,6 +549,11 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.31  2006/08/29 22:49:31  phase1geo
+ Added enumeration support and partial support for typedefs.  Added enum1
+ diagnostic to verify initial enumeration support.  Full regression has not
+ been run at this point -- checkpointing.
+
  Revision 1.30  2006/08/18 22:07:46  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

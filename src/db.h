@@ -64,7 +64,13 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
 statement* db_add_fork_join( statement* stmt );
 
 /*! \brief Creates an enumerated list based on the given parameters */
-void db_add_enum_list( static_expr* left, static_expr* right, str_link* enum_list );
+void db_add_enum( vsignal* enum_sig, static_expr* value );
+
+/*! \brief Called after all enumerated values for the current list have been added */
+void db_end_enum_list();
+
+/*! \brief Adds given typedefs to the database */
+void db_add_typedef( char* name, bool is_signed, bool is_handled, bool is_sizable, static_expr* msb, static_expr* lsb );
 
 /*! \brief Called when the endmodule keyword is parsed. */
 void db_end_module( int end_line );
@@ -77,6 +83,9 @@ vsignal* db_find_signal( char* name );
 
 /*! \brief Find specified generate item in the current functional unit.  Called by parser. */
 gen_item* db_find_gen_item( gen_item* root, gen_item* gi );
+
+/*! \brief Finds specified typedef and returns TRUE if it is found */
+typedef_item* db_find_typedef( const char* name );
 
 /*! \brief Returns a pointer to the current implicitly connected generate block.  Called by parser. */
 gen_item* db_get_curr_gen_block();
@@ -161,6 +170,11 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.66  2006/08/29 22:49:31  phase1geo
+ Added enumeration support and partial support for typedefs.  Added enum1
+ diagnostic to verify initial enumeration support.  Full regression has not
+ been run at this point -- checkpointing.
+
  Revision 1.65  2006/08/29 02:51:33  phase1geo
  Adding enumeration parsing support to parser.  No functionality at this point, however.
 

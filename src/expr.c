@@ -3122,7 +3122,8 @@ bool expression_is_static_only( expression* expr ) {
 
     if( (EXPR_IS_STATIC( expr ) == 1) ||
         (ESUPPL_IS_LHS( expr->suppl ) == 1) ||
-        ((expr->op == EXP_OP_SIG) && (expr->sig != NULL) && (expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM)) ) {
+        ((expr->op == EXP_OP_SIG) && (expr->sig != NULL) &&
+         ((expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (expr->sig->suppl.part.type == SSUPPL_TYPE_ENUM))) ) {
       return( TRUE );
     } else {
       return( (expr->op != EXP_OP_MBIT_SEL)           &&
@@ -3495,6 +3496,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.202  2006/08/29 22:49:31  phase1geo
+ Added enumeration support and partial support for typedefs.  Added enum1
+ diagnostic to verify initial enumeration support.  Full regression has not
+ been run at this point -- checkpointing.
+
  Revision 1.201  2006/08/28 22:28:28  phase1geo
  Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
  expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed
