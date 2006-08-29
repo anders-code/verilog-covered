@@ -63,6 +63,9 @@ void db_add_signal( char* name, int type, static_expr* left, static_expr* right,
 /*! \brief Creates statement block that acts like a fork join block from a standard statement block */
 statement* db_add_fork_join( statement* stmt );
 
+/*! \brief Creates an enumerated list based on the given parameters */
+void db_add_enum_list( static_expr* left, static_expr* right, str_link* enum_list );
+
 /*! \brief Called when the endmodule keyword is parsed. */
 void db_end_module( int end_line );
 
@@ -158,6 +161,9 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.65  2006/08/29 02:51:33  phase1geo
+ Adding enumeration parsing support to parser.  No functionality at this point, however.
+
  Revision 1.64  2006/08/11 15:16:48  phase1geo
  Joining slist3.3 diagnostic to latest development branch.  Adding changes to
  fix memory issues from bug 1535412.
