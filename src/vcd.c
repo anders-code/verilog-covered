@@ -228,6 +228,11 @@ void vcd_parse_def( FILE* vcd ) {
   
   }
 
+  if( !enddef_found ) {
+    print_output( "Specified VCD file is not a valid VCD file", FATAL, __FILE__, __LINE__ );
+    exit( 1 );
+  }
+
   assert( enddef_found );
 
   /* Check to see that at least one instance was found */
@@ -412,6 +417,11 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.24  2006/08/30 12:02:48  phase1geo
+ Changing assertion in vcd.c that fails when the VCD file is improperly formatted
+ to a user error message with a bit more meaning.  Fixing problem with signedness
+ of enumeration resolution.  Added enum1.1 diagnostic to testsuite.
+
  Revision 1.23  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.
