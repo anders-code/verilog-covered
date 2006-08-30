@@ -56,7 +56,7 @@ DIAGS1        = add1            always1         always2         always3         
                 localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
                 long_sig        mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1 \
                 mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel7 \
-                mem1            mult1           multi_exp1      multi_exp1.1    multi_exp1.2 \
+                mem1            mem2            mult1           multi_exp1      multi_exp1.1    multi_exp1.2 \
                 multi_exp1.3    multi_exp1.4    multi_exp1.5    multi_exp1.6    multi_exp1.7 \
                 multi_exp1.8    multi_exp1.9    multi_exp1.10   multi_exp1.11   multi_exp1.12 \
                 multi_exp1.13   multi_exp1.14   multi_exp1.15   multi_exp2      multi_exp2.1 \
