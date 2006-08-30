@@ -1,6 +1,42 @@
 Covered-Related NEWS
 ====================
 
+    * 08/30/2006
+
+Stable release covered-0.4.7 made.  This release is mostly a bug fix release with two feature
+additions.  The new feature is the global -B option was performs name obfuscation on all identifying,
+design-sensitive names from all output (with the exception of CDD file output).  This option is
+mostly useful as a way to share debugging information with the maintainer(s) of Covered without giving
+away sensitive information.  Additionally, the -rI score option was added to allow user's to completely
+skip the race condition checking phase.  This allows users to force Covered to consider all code for
+coverage (if race condition checking is performed, all code considered to be potential race conditions
+are automatically excluded from coverage consideration).  User documentation has been updated for these
+changes.  The following lists the changes in this release.
+
+  - Fixed bug 1535412.  Implicit event expressions (i.e., "always @*") now traverse named begin/end
+    blocks correctly to search for RHS variables.
+  - Fixed bugs related to segmentation faults and memory leak issues
+  - Fixed hierarchical reference search to match Verilog-1995 LRM
+  - Fixed bug 1538922.  If -vcd or -lxt option was specified twice, an incorrect error message was
+    displayed to the user.
+  - Added -rI option to allow user's to bypass the race condition checking step in the score command.
+  - Fixed bug 1538920.  Handling of any-edge triggered events (i.e., "@(b)") was incorrectly handled
+    by Covered.  Additionally, fixed the event trigger operator (->) to work correctly with the new
+    changes.
+  - Fixed bug 1541944.  Command options that require a value are now checked to make sure that a value
+    exists, and an appropriate error message is output if this is not achieved.
+  - Fixed bug 1542454.  Command options that must only be allowed once on a command-line are now
+    checked and handled appropriately (caused a segmentation fault previously).
+  - Fixed bug 1544322.  When an AND- or OR-type expression has either a left or right expression evaluate
+    to 0 or 1, respectively, Covered now outputs correct coverage information when the opposite expression
+    evaluates to an X or Z value, simultaneously.
+  - Fixed bug 1544325.  Multi-variable expressions are now always output as such in report files.
+  - Fixed bug 1544169.  Avoiding consideration of named begin/end block keywords in line coverage.
+  - Fixed bug 1546059.  Covered now properly handles the removal of statement blocks that cannot be
+    considered for coverage which also contain parameters from another functional unit block.
+  - Fixed bug with connection of statements in a statement block.
+  - Updated documentation to match new features added in this release.
+
     * 07/22/2006
 
 Stable release covered-0.4.6 made.  This release contains several bug fixes that are listed below.
