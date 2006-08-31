@@ -908,6 +908,11 @@ str_link* get_next_vfile( str_link* curr, char* mod ) {
     }
   }
 
+  /* Specify that the returned file will be parsed */
+  if( next != NULL ) {
+    next->suppl2 = 1;
+  }
+
   return( next );
 
 }
@@ -1117,6 +1122,14 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.55  2006/08/31 22:32:18  phase1geo
+ Things are in a state of flux at the moment.  I have added proper parsing support
+ for assertions, properties and sequences.  Also added partial support for the $root
+ space (though I need to work on figuring out how to handle it in terms of the
+ instance tree) and all that goes along with that.  Add parsing support with an
+ error message for multi-dimensional array declarations.  Regressions should not be
+ expected to run correctly at the moment.
+
  Revision 1.54  2006/08/18 22:32:57  phase1geo
  Adding get_dirname routine to util.c for future use.
 

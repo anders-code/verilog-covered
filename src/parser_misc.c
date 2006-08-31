@@ -124,6 +124,30 @@ vector_width* parser_copy_curr_range() {
 }
 
 /*!
+ \param left   Pointer to left static_expression to copy to current range
+ \param right  Pointer to right static_expression to copy to current range
+
+ Copies specifies static expressions to the current range.  Primarily used for
+ copying typedef'ed ranges to the current range.
+*/
+void parser_copy_se_to_curr_range( static_expr* left, static_expr* right ) {
+
+  /* Deallocate any memory currently associated with the curr_range variable */
+  parser_dealloc_curr_range();
+
+  /* Allocate and set curr_range */
+  curr_range             = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
+  curr_range->left       = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+  curr_range->left->num  = left->num;
+  curr_range->left->exp  = left->exp;
+  curr_range->right      = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+  curr_range->right->num = right->num;
+  curr_range->right->exp = right->exp;
+  curr_range->implicit   = FALSE;
+
+}
+
+/*!
  \param left   Pointer to static expression of expression/value on the left side of the colon.
  \param right  Pointer to static expression of expression/value on the right side of the colon.
 
@@ -195,6 +219,14 @@ bool parser_check_generation( int gen ) {
 
 /*
  $Log$
+ Revision 1.11  2006/08/31 22:32:18  phase1geo
+ Things are in a state of flux at the moment.  I have added proper parsing support
+ for assertions, properties and sequences.  Also added partial support for the $root
+ space (though I need to work on figuring out how to handle it in terms of the
+ instance tree) and all that goes along with that.  Add parsing support with an
+ error message for multi-dimensional array declarations.  Regressions should not be
+ expected to run correctly at the moment.
+
  Revision 1.10  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

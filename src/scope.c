@@ -33,6 +33,7 @@
 
 
 extern funit_inst* instance_root;
+extern func_unit*  global_funit;
 extern char        user_msg[USER_MSG_LENGTH];
 
 
@@ -142,6 +143,12 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
   /* Get the module parameter, if it exists */
   *found_parm = funit_find_param( parm_name, *found_funit );
 
+  /* If we could not find the module parameter in the found_funit, search the global funit, if it exists */
+  if( (*found_parm == NULL) && (global_funit != NULL) ) {
+    *found_funit = global_funit;
+    *found_parm  = funit_find_param( parm_name, *found_funit );
+  }
+
   free_safe( parm_name );
 
   return( *found_parm != NULL );
@@ -211,6 +218,12 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
       *found_funit = (*found_funit)->parent;
       while( (*found_funit != NULL) && ((*found_sig = funit_find_signal( sig_name, *found_funit )) == NULL) ) {
         *found_funit = (*found_funit)->parent;
+      }
+
+      /* If we could still not find the signal, look in the global funit, if it exists */
+      if( (*found_sig == NULL) && (global_funit != NULL) ) {
+        *found_funit = global_funit;
+        *found_sig = funit_find_signal( sig_name, *found_funit );
       }
 
     }
@@ -332,6 +345,14 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.28  2006/08/31 22:32:18  phase1geo
+ Things are in a state of flux at the moment.  I have added proper parsing support
+ for assertions, properties and sequences.  Also added partial support for the $root
+ space (though I need to work on figuring out how to handle it in terms of the
+ instance tree) and all that goes along with that.  Add parsing support with an
+ error message for multi-dimensional array declarations.  Regressions should not be
+ expected to run correctly at the moment.
+
  Revision 1.27  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance
