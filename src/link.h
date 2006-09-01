@@ -140,7 +140,7 @@ void sig_link_delete_list( sig_link* head, bool del_sig );
 void fsm_link_delete_list( fsm_link* head );
 
 /*! \brief Deletes entire list specified by head pointer. */
-void funit_link_delete_list( funit_link* head, bool rm_funit );
+void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit );
 
 /*! \brief Deletes entire list specified by head pointer. */
 void gitem_link_delete_list( gitem_link* head, bool rm_elems );
@@ -151,6 +151,9 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.23  2006/09/01 23:06:02  phase1geo
+ Fixing regressions per latest round of changes.  Full regression now passes.
+
  Revision 1.22  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.
