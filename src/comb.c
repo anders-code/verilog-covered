@@ -74,7 +74,7 @@
 #include "obfuscate.h"
 
 
-extern funit_inst*    instance_root;
+extern inst_link*     inst_head;
 extern funit_link*    funit_head;
 extern bool           report_covered;
 extern unsigned int   report_comb_depth;
@@ -2373,8 +2373,9 @@ bool combination_get_coverage( char* funit_name, int funit_type, int exp_id, int
 */
 void combination_report( FILE* ofile, bool verbose ) {
 
-  bool missed_found;  /* If set to TRUE, indicates combinations were missed */
-  char tmp[4096];     /* Temporary string value                             */
+  bool       missed_found = FALSE;  /* If set to TRUE, indicates combinations were missed */
+  char       tmp[4096];             /* Temporary string value */
+  inst_link* instl;                 /* Pointer to current instance link */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   COMBINATIONAL LOGIC COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -2393,11 +2394,19 @@ void combination_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "                                                                      Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = combination_instance_summary( ofile, instance_root, tmp );
+    instl = inst_head;
+    while( instl != NULL ) {
+      missed_found |= combination_instance_summary( ofile, instl->inst, tmp );
+      instl = instl->next;
+    }
     
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      combination_instance_verbose( ofile, instance_root, tmp );
+      instl = inst_head;
+      while( instl != NULL ) {
+        combination_instance_verbose( ofile, instl->inst, tmp );
+        instl = instl->next;
+      }
     }
 
   } else {
@@ -2422,6 +2431,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.155  2006/09/01 04:06:36  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.154  2006/08/28 22:28:28  phase1geo
  Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
  expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed

@@ -31,7 +31,7 @@
 #include "obfuscate.h"
 
 
-extern funit_inst* instance_root;
+extern inst_link*  inst_head;
 extern funit_link* funit_head;
 extern bool        report_covered;
 extern bool        report_instance;
@@ -337,8 +337,9 @@ void assertion_funit_verbose( FILE* ofile, funit_link* head ) {
 */
 void assertion_report( FILE* ofile, bool verbose ) {
 
-  bool missed_found;  /* If set to TRUE, lines were found to be missed */
-  char tmp[4096];     /* Temporary string value */
+  bool       missed_found = FALSE;  /* If set to TRUE, lines were found to be missed */
+  char       tmp[4096];             /* Temporary string value */
+  inst_link* instl;                 /* Pointer to current instance link */
 
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   ASSERTION COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -356,11 +357,20 @@ void assertion_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = assertion_instance_summary( ofile, instance_root, tmp );
+    instl = inst_head;
+    while( instl != NULL ) {
+      missed_found |= assertion_instance_summary( ofile, instl->inst, tmp );
+      instl = instl->next;
+    }
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      assertion_instance_verbose( ofile, instance_root, tmp );
+      instl = inst_head;
+      while( instl != NULL ) {
+        assertion_instance_verbose( ofile, instl->inst, tmp );
+        instl = instl->next;
+      }
+
     }
 
   } else {
@@ -518,6 +528,11 @@ bool assertion_get_coverage( char* funit_name, int funit_type, char* inst_name, 
 
 /*
  $Log$
+ Revision 1.13  2006/09/01 04:06:36  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.12  2006/08/18 22:07:44  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance

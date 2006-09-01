@@ -92,7 +92,7 @@
 #include "obfuscate.h"
 
 
-extern funit_inst* instance_root;
+extern inst_link*  inst_head;
 extern funit_link* funit_head;
 extern char        user_msg[USER_MSG_LENGTH];
 extern bool        debug_mode;
@@ -957,24 +957,37 @@ void bind_perform( bool cdd_reading, int pass ) {
 
     /* If we are in parse mode, resolve all parameters and arrays of instances now */
     if( !cdd_reading && (pass == 0) ) {
+      inst_link* instl;
 #ifdef DEBUG_MODE
       if( debug_mode ) {
         print_output( "Resolving parameters...", DEBUG, __FILE__, __LINE__ );
       }
 #endif
-      param_resolve( instance_root );
+      instl = inst_head;
+      while( instl != NULL ) {
+        param_resolve( instl->inst );
+        instl = instl->next;
+      }
 #ifdef DEBUG_MODE
       if( debug_mode ) {
         print_output( "Resolving generate statements...", DEBUG, __FILE__, __LINE__ );
       }
 #endif
-      generate_resolve( instance_root );
+      instl = inst_head;
+      while( instl != NULL ) {
+        generate_resolve( instl->inst );
+        instl = instl->next;
+      }
 #ifdef DEBUG_MODE
       if( debug_mode ) {
         print_output( "Resolving arrays of instances...", DEBUG, __FILE__, __LINE__ );
       }
 #endif
-      instance_resolve( instance_root );
+      instl = inst_head;
+      while( instl != NULL ) {
+        instance_resolve( instl->inst );
+        instl = instl->next;
+      }
     }
 
   }
@@ -1010,6 +1023,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.90  2006/09/01 04:06:36  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.89  2006/08/18 22:07:44  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance
