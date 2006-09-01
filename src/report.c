@@ -53,7 +53,7 @@
 
 
 extern char        user_msg[USER_MSG_LENGTH];
-extern funit_inst* instance_root;
+extern inst_link*  inst_head;
 extern funit_link* funit_head;
 extern int         merge_in_num;
 extern char**      merge_in;
@@ -609,7 +609,11 @@ void report_generate( FILE* ofile ) {
 
   /* Gather statistics first */
   if( report_instance ) {
-    report_gather_instance_stats( instance_root );
+    inst_link* instl = inst_head;
+    while( instl != NULL ) {
+      report_gather_instance_stats( instl->inst );
+      instl = instl->next;
+    }
   } else {
     report_gather_funit_stats( funit_head );
   }
@@ -840,6 +844,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.71  2006/09/01 04:06:37  phase1geo
+ Added code to support more than one instance tree.  Currently, I am seeing
+ quite a few memory errors that are causing some major problems at the moment.
+ Checkpointing.
+
  Revision 1.70  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance
