@@ -771,18 +771,6 @@ void funit_clean( func_unit* funit ) {
 
   if( funit != NULL ) {
 
-    /* Free functional unit name */
-    if( funit->name != NULL ) {
-      free_safe( funit->name );
-      funit->name = NULL;
-    }
-
-    /* Free functional unit filename */
-    if( funit->filename != NULL ) {
-      free_safe( funit->filename );
-      funit->filename = NULL;
-    }
-
     /* Free signal list */
     sig_link_delete_list( funit->sig_head, TRUE );
     funit->sig_head = NULL;
@@ -817,7 +805,19 @@ void funit_clean( func_unit* funit ) {
     statistic_dealloc( funit->stat );
 
     /* Free tf elements */
-    funit_link_delete_list( funit->tf_head, FALSE );
+    funit_link_delete_list( &(funit->tf_head), &(funit->tf_tail), FALSE );
+
+    /* Free functional unit name */
+    if( funit->name != NULL ) {
+      free_safe( funit->name );
+      funit->name = NULL;
+    }
+
+    /* Free functional unit filename */
+    if( funit->filename != NULL ) {
+      free_safe( funit->filename );
+      funit->filename = NULL;
+    }
 
   }
 
@@ -845,6 +845,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.18.12.2  2006/09/02 20:46:44  phase1geo
+ Fixing memory access issues that were found in the development branch.
+
  Revision 1.18.12.1  2006/08/18 04:50:50  phase1geo
  First swag at integrating name obfuscation for all output (with the exception
  of CDD output).

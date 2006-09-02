@@ -825,18 +825,19 @@ void fsm_link_delete_list( fsm_link* head ) {
 
 /*!
  \param head      Pointer to head funit_link element of list.
+ \param tail      Pointer to tail funit_link element of list.
  \param rm_funit  If TRUE, deallocates specified functional unit; otherwise, just deallocates the links
 
  Deletes each element of the specified list.
 */
-void funit_link_delete_list( funit_link* head, bool rm_funit ) {
+void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit ) {
 
   funit_link* tmp;   /* Temporary pointer to current link in list */
 
-  while( head != NULL ) {
+  while( *head != NULL ) {
 
-    tmp  = head;
-    head = tmp->next;
+    tmp  = *head;
+    *head = tmp->next;
 
     /* Deallocate signal */
     if( rm_funit ) {
@@ -849,11 +850,16 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
   }
 
+  *tail = NULL;
+
 }
 
 
 /*
  $Log$
+ Revision 1.43.10.1.2.3  2006/09/02 20:46:44  phase1geo
+ Fixing memory access issues that were found in the development branch.
+
  Revision 1.43.10.1.2.2  2006/08/27 04:17:39  phase1geo
  Fixing bug 1546059 and also fixes a statement connection problem.  Full IV
  regression passes; however, I am going to attempt to fix the bug in a way that

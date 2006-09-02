@@ -135,7 +135,7 @@ void db_close() {
     /* Remove memory allocated for instance_root and mod_head */
     assert( instance_root->funit != NULL );
     instance_dealloc( instance_root, instance_root->name );
-    funit_link_delete_list( funit_head, TRUE );
+    funit_link_delete_list( &funit_head, &funit_tail, TRUE );
 
     /* Deallocate preprocessor define tree */
     tree_dealloc( def_table );
@@ -144,8 +144,6 @@ void db_close() {
     bind_dealloc();
 
     instance_root = NULL;
-    funit_head    = NULL;
-    funit_tail    = NULL;
     def_table     = NULL;
 
   }
@@ -1745,6 +1743,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.175.4.1.4.1.4.7  2006/09/02 20:46:43  phase1geo
+ Fixing memory access issues that were found in the development branch.
+
  Revision 1.175.4.1.4.1.4.6  2006/08/27 04:17:39  phase1geo
  Fixing bug 1546059 and also fixes a statement connection problem.  Full IV
  regression passes; however, I am going to attempt to fix the bug in a way that
