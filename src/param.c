@@ -419,6 +419,7 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
     expl = mparm->exp_head;
     while( expl != NULL ) {
       expl->exp->sig = iparm->sig;
+      exp_link_add( expl->exp, &(iparm->sig->exp_head), &(iparm->sig->exp_tail) );
       expl = expl->next;
     }
   }
@@ -1007,6 +1008,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.60.4.2.4.1.2.1.2.3  2006/09/04 05:13:48  phase1geo
+ Final fix for bug 1546059.
+
  Revision 1.60.4.2.4.1.2.1.2.2  2006/08/18 04:50:51  phase1geo
  First swag at integrating name obfuscation for all output (with the exception
  of CDD output).
