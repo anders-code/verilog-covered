@@ -71,11 +71,22 @@ void gen_item_bind( gen_item* gi, func_unit* funit );
 /*! \brief Resolves all generate items in the design */
 void generate_resolve( funit_inst* inst );
 
+/*! \brief "Removes" any generate item statements that match the given statement such that they will
+           not be output to the CDD file. */
+void generate_remove_stmt( statement* stmt );
+
 /*! \brief Deallocates all associated memory for the given generate item */
 void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.15  2006/09/05 21:00:45  phase1geo
+ Fixing bug in removing statements that are generate items.  Also added parsing
+ support for multi-dimensional array accessing (no functionality here to support
+ these, however).  Fixing bug in race condition checker for generated items.
+ Currently hitting into problem with genvars used in SBIT_SEL or MBIT_SEL type
+ expressions -- we are hitting into an assertion error in expression_operate_recursively.
+
  Revision 1.14  2006/08/25 22:49:45  phase1geo
  Adding support for handling generated hierarchical names in signals that are outside
  of generate blocks.  Added support for op-and-assigns in generate for loops as well

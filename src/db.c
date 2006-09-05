@@ -1297,6 +1297,40 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 }
 
 /*!
+ \param root      Pointer to root of expression tree to bind
+ \param sig_name  Name of signal to bind to
+
+ Recursively iterates through the entire expression tree binding all selection expressions within that tree
+ to the given signal.
+*/
+void db_bind_expr_tree( expression* root, char* sig_name ) {
+
+  assert( sig_name != NULL );
+
+  if( root != NULL ) {
+
+#ifdef DEBUG_MODE
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_bind_expr_tree, root id: %d, sig_name: %s", root->id, sig_name );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+
+    /* Bind the children first */
+    db_bind_expr_tree( root->left,  sig_name );
+    db_bind_expr_tree( root->right, sig_name );
+
+    /* Now bind ourselves if necessary */
+    if( (root->op == EXP_OP_SBIT_SEL) ||
+        (root->op == EXP_OP_MBIT_SEL) ||
+        (root->op == EXP_OP_MBIT_POS) ||
+        (root->op == EXP_OP_MBIT_NEG) ) {
+      bind_add( 0, sig_name, root, curr_funit );
+    }
+
+  }
+
+}
+
+/*!
  \param se  Pointer to static expression structure
  
  \return Returns a pointer to an expression that represents the static expression specified
@@ -2136,6 +2170,13 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.219  2006/09/05 21:00:44  phase1geo
+ Fixing bug in removing statements that are generate items.  Also added parsing
+ support for multi-dimensional array accessing (no functionality here to support
+ these, however).  Fixing bug in race condition checker for generated items.
+ Currently hitting into problem with genvars used in SBIT_SEL or MBIT_SEL type
+ expressions -- we are hitting into an assertion error in expression_operate_recursively.
+
  Revision 1.218  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 

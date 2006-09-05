@@ -188,7 +188,7 @@ statement* race_find_head_statement_containing_statement( statement* stmt ) {
  Finds the head statement of the statement block containing the expression specified in the parameter list.
  Verifies that the return value is never NULL (this would be an internal error if it existed).
 */
-statement* race_get_head_statement( func_unit* mod, expression* expr ) {
+statement* race_get_head_statement( expression* expr ) {
 
   statement* curr_stmt;  /* Pointer to current statement containing the expression */
 
@@ -474,7 +474,6 @@ void race_check_one_block_assignment( func_unit* mod ) {
   int        sig_stmt;            /* Index of base signal statement in statement block array */
   bool       race_found = FALSE;  /* Specifies if at least one race condition was found for this signal */
   bool       curr_race;           /* Set to TRUE if race condition was found in current iteration */
-  func_unit* exp_funit;           /* Functional unit containing a signal's expression */
   int        lval;                /* Left expression value */
   int        rval;                /* Right expression value */
 
@@ -540,17 +539,12 @@ void race_check_one_block_assignment( func_unit* mod ) {
 	      break;	
           }
 
-          /* Get the functional unit containing this expression */
-          exp_funit = funit_find_by_id( expl->exp->id );
-
-          assert( exp_funit != NULL );
-
           /*
            Get expression's head statement and if the statement is not a register assignment, check for
            race conditions (the way that RASSIGNs are treated, they will not cause race conditions so omit
            them from being checked.
           */
-          if( ((curr_stmt = race_get_head_statement( exp_funit, expl->exp )) != NULL) && (curr_stmt->exp->op != EXP_OP_RASSIGN) ) {
+          if( ((curr_stmt = race_get_head_statement( expl->exp )) != NULL) && (curr_stmt->exp->op != EXP_OP_RASSIGN) ) {
 
             /* Check to see if the current signal is already being assigned in another statement */
             if( sig_stmt == -1 ) {
@@ -980,6 +974,13 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.45  2006/09/05 21:00:45  phase1geo
+ Fixing bug in removing statements that are generate items.  Also added parsing
+ support for multi-dimensional array accessing (no functionality here to support
+ these, however).  Fixing bug in race condition checker for generated items.
+ Currently hitting into problem with genvars used in SBIT_SEL or MBIT_SEL type
+ expressions -- we are hitting into an assertion error in expression_operate_recursively.
+
  Revision 1.44  2006/08/18 22:07:45  phase1geo
  Integrating obfuscation into all user-viewable output.  Verified that these
  changes have not made an impact on regressions.  Also improved performance
