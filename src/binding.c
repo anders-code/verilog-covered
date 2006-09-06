@@ -945,7 +945,6 @@ void bind_perform( bool cdd_reading, int pass ) {
                     curr_eb->exp->line, obf_file( curr_eb->funit->filename ) );
           print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif        
-          printf( "Adding statement %d to remove list\n", tmp_stmt->exp->id );
           stmt_blk_add_to_remove_list( tmp_stmt );
         }
       }
@@ -1027,6 +1026,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.92  2006/09/06 22:09:22  phase1geo
+ Fixing bug with multiply-and-op operation.  Also fixing bug in gen_item_resolve
+ function where an instance was incorrectly being placed into a new instance tree.
+ Full regression passes with these changes.  Also removed verbose output.
+
  Revision 1.91  2006/09/05 21:00:44  phase1geo
  Fixing bug in removing statements that are generate items.  Also added parsing
  support for multi-dimensional array accessing (no functionality here to support

@@ -755,7 +755,7 @@ void expression_resize( expression* expr, bool recursive ) {
         }
         if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
           assert( expr->left->value->value == NULL );
-          expression_create_value( expr->left, expr->value->width, FALSE );
+          expression_create_value( expr->left, expr->parent->expr->left->value->width, FALSE );
         }
         break;
 
@@ -1460,7 +1460,7 @@ bool expression_op_func__xor( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->left->value->width, 0, 0 );
+    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, xor_optab ) );
@@ -1479,7 +1479,7 @@ bool expression_op_func__multiply( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->left->value->width, 0, 0 );
+    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_op_multiply( expr->value, expr->left->value, expr->right->value ) );
@@ -1506,7 +1506,7 @@ bool expression_op_func__divide( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->left->value->width, 0, 0 );
+    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
@@ -1558,7 +1558,7 @@ bool expression_op_func__mod( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->left->value->width, 0, 0 );
+    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
@@ -1602,7 +1602,7 @@ bool expression_op_func__add( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->left->value->width, 0, 0 );
+    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_op_add( expr->value, expr->left->value, expr->right->value ) );
@@ -1621,7 +1621,7 @@ bool expression_op_func__subtract( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->left->value->width, 0, 0 );
+    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_op_subtract( expr->value, expr->left->value, expr->right->value ) );
@@ -1640,7 +1640,7 @@ bool expression_op_func__and( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->left->value->width, 0, 0 );
+    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, and_optab ) );
@@ -1659,7 +1659,7 @@ bool expression_op_func__or( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->left->value->width, 0, 0 );
+    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, or_optab ) );
@@ -1748,7 +1748,7 @@ bool expression_op_func__lshift( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->left->value->width, 0, 0 );
+    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_op_lshift( expr->value, expr->left->value, expr->right->value ) );
@@ -1767,7 +1767,7 @@ bool expression_op_func__rshift( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->left->value->width, 0, 0 );
+    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_op_rshift( expr->value, expr->left->value, expr->right->value ) );
@@ -1786,7 +1786,7 @@ bool expression_op_func__arshift( expression* expr, thread* thr ) {
 
   /* If this is an operate and assign, copy the contents of left side of the parent BASSIGN to the LAST value */
   if( EXPR_IS_OP_AND_ASSIGN( expr ) == 1 ) {
-    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->left->value->width, 0, 0 );
+    vector_set_value_only( expr->left->value, expr->parent->expr->left->value->value, expr->parent->expr->left->value->width, 0, 0 );
   }
 
   return( vector_op_arshift( expr->value, expr->left->value, expr->right->value ) );
@@ -3097,15 +3097,12 @@ void expression_operate_recursively( expression* expr, bool sizing ) {
     
     if( sizing ) {
 
-      printf( "In expression_operate_recursively, expr: %s\n", expression_string( expr ) );
-
       /*
        Non-static expression found where static expression required.  Simulator
        should catch this error before us, so no user error (too much work to find
        expression in functional unit expression list for now.
       */
-      assert( (expr->op != EXP_OP_SIG)      &&
-              (expr->op != EXP_OP_SBIT_SEL) &&
+      assert( (expr->op != EXP_OP_SBIT_SEL) &&
               (expr->op != EXP_OP_MBIT_SEL) &&
               (expr->op != EXP_OP_MBIT_POS) &&
               (expr->op != EXP_OP_MBIT_NEG) );
@@ -3522,6 +3519,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.204  2006/09/06 22:09:22  phase1geo
+ Fixing bug with multiply-and-op operation.  Also fixing bug in gen_item_resolve
+ function where an instance was incorrectly being placed into a new instance tree.
+ Full regression passes with these changes.  Also removed verbose output.
+
  Revision 1.203  2006/09/05 21:00:45  phase1geo
  Fixing bug in removing statements that are generate items.  Also added parsing
  support for multi-dimensional array accessing (no functionality here to support
