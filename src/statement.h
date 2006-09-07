@@ -62,6 +62,9 @@ statement* statement_find_head_statement( statement* stmt, stmt_link* head );
 /*! \brief Searches for statement with ID in the given statement block */
 statement* statement_find_statement( statement* curr, int id );
 
+/*! \brief Searches the specified statement block for expression that calls the given stmt */
+bool statement_contains_expr_calling_stmt( statement* curr, statement* stmt );
+
 /*! \brief Recursively deallocates specified statement tree. */
 void statement_dealloc_recursive( statement* stmt );
 
@@ -71,6 +74,10 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.29  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.28  2006/07/28 22:42:51  phase1geo
  Updates to support expression/signal binding for expressions within a generate
  block statement block.
