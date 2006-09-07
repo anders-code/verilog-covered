@@ -249,6 +249,28 @@ vsignal* funit_find_signal( char* name, func_unit* funit ) {
 }
 
 /*!
+ \param funit  Pointer to functional unit to search in
+ \param stmt   Pointer to statement to search for
+
+ TBD
+*/
+void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt ) {
+
+  stmt_iter   si;   /* Statement list iterator */
+  gitem_link* gil;  /* Generate item link pointer */
+
+  /* Search all of the statement blocks */
+  stmt_iter_reset( &si, funit->stmt_head );
+  while( si.curr != NULL ) {
+    if( (ESUPPL_IS_STMT_HEAD( si.curr->stmt->exp->suppl ) == 1) && statement_contains_expr_calling_stmt( si.curr->stmt, stmt ) ) {
+      stmt_blk_add_to_remove_list( si.curr->stmt );
+    }
+    stmt_iter_next( &si );
+  }
+
+}
+
+/*!
  \param orig_name  Verilog name of task, function or named-block.
  \param parent     Pointer to parent functional unit of this functional unit.
 
@@ -1020,6 +1042,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.43  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.42  2006/09/06 22:09:22  phase1geo
  Fixing bug with multiply-and-op operation.  Also fixing bug in gen_item_resolve
  function where an instance was incorrectly being placed into a new instance tree.

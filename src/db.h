@@ -145,7 +145,7 @@ attr_param* db_create_attr_param( char* name, expression* expr );
 void db_parse_attribute( attr_param* ap );
 
 /*! \brief Searches entire design for expressions that call the specified statement */
-exp_link* db_get_exprs_with_statement( statement* stmt );
+void db_remove_stmt_blks_calling_statement( statement* stmt );
 
 /*! \brief Synchronizes the curr_instance pointer to match the curr_inst_scope hierarchy */
 void db_sync_curr_instance();
@@ -173,6 +173,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.68  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.67  2006/09/05 21:00:44  phase1geo
  Fixing bug in removing statements that are generate items.  Also added parsing
  support for multi-dimensional array accessing (no functionality here to support

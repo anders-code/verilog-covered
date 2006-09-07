@@ -1915,29 +1915,17 @@ void db_parse_attribute( attr_param* ap ) {
  function.  This function should only be called after the entire design has
  been parsed to be completely correct.
 */
-exp_link* db_get_exprs_with_statement( statement* stmt ) {
+void db_remove_stmt_blks_calling_statement( statement* stmt ) {
 
-  exp_link*   exp_head = NULL;  /* Pointer to head of expression list */
-  exp_link*   exp_tail = NULL;  /* Pointer to tail of expression list */
-  funit_link* funitl;           /* Pointer to current functional unit link being examined */
-  exp_link*   expl;             /* Pointer to current expression link being examined */
+  inst_link* instl;  /* Pointer to current instance */ 
 
   assert( stmt != NULL );
-  
-  funitl = funit_head;
 
-  while( funitl != NULL ) {
-    expl = funitl->funit->exp_head;
-    while( expl != NULL ) {
-      if( expl->exp->stmt == stmt ) {
-        exp_link_add( expl->exp, &exp_head, &exp_tail );
-      }
-      expl = expl->next;
-    }
-    funitl = funitl->next;
+  instl = inst_head;
+  while( instl != NULL ) {
+    instance_remove_stmt_blks_calling_stmt( instl->inst, stmt );
+    instl = instl->next;
   }
-
-  return( exp_head );
 
 }
 
@@ -2170,6 +2158,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.220  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.219  2006/09/05 21:00:44  phase1geo
  Fixing bug in removing statements that are generate items.  Also added parsing
  support for multi-dimensional array accessing (no functionality here to support

@@ -22,6 +22,9 @@ void gen_item_display_block( gen_item* root );
 /*! \brief Searches for a generate item in the generate block of root that matches gi */
 gen_item* gen_item_find( gen_item* root, gen_item* gi );
 
+/*! \brief Searches for an expression in the generate list that calls the given statement */
+void gen_item_remove_if_contains_expr_calling_stmt( gen_item* gi, statement* stmt );
+
 /*! \brief Returns TRUE if the specified variable name contains a generate variable within it */
 bool gen_item_varname_contains_genvar( char* name );
 
@@ -71,15 +74,18 @@ void gen_item_bind( gen_item* gi, func_unit* funit );
 /*! \brief Resolves all generate items in the design */
 void generate_resolve( funit_inst* inst );
 
-/*! \brief "Removes" any generate item statements that match the given statement such that they will
-           not be output to the CDD file. */
-void generate_remove_stmt( statement* stmt );
+/*! \brief Removes the given generate statement from the correct instance */
+bool generate_remove_stmt( statement* stmt );
 
 /*! \brief Deallocates all associated memory for the given generate item */
 void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.16  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.15  2006/09/05 21:00:45  phase1geo
  Fixing bug in removing statements that are generate items.  Also added parsing
  support for multi-dimensional array accessing (no functionality here to support

@@ -793,6 +793,25 @@ statement* statement_find_statement( statement* curr, int id ) {
 }
 
 /*!
+ \param curr  Pointer to current statement to traverse
+ \param stmt  Pointer to statement to find in the associated expression tree
+ \param head  Pointer to head of expression list containing matched expressions
+ \param tail  Pointer to tail of expression list containing matched expressions
+
+*/
+bool statement_contains_expr_calling_stmt( statement* curr, statement* stmt ) {
+
+  return( (curr != NULL) &&
+          (expression_contains_expr_calling_stmt( curr->exp, stmt ) ||
+           ((ESUPPL_IS_STMT_STOP_TRUE( curr->exp->suppl ) == 0) &&
+            statement_contains_expr_calling_stmt( curr->next_true, stmt )) ||
+           ((curr->next_false != curr->next_false) &&
+            (ESUPPL_IS_STMT_STOP_FALSE( curr->exp->suppl ) == 0) &&
+            statement_find_expr_calls( curr->next_false, stmt ))) );
+
+}
+
+/*!
  \param stmt  Pointer to head of statement tree to deallocate.
  
  Recursively deallocates specified statement tree.
@@ -858,6 +877,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.92  2006/09/07 21:59:24  phase1geo
+ Fixing some bugs related to statement block removal.  Also made some significant
+ optimizations to this code.
+
  Revision 1.91  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 
