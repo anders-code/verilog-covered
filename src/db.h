@@ -168,11 +168,12 @@ void db_set_symbol_string( char* sym, char* value );
 /*! \brief Performs a timestep for all signal changes during this timestep. */
 void db_do_timestep( int time ); 
 
-/*! \brief Deallocates all memory associated with a particular design. */
-void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.69  2006/09/08 22:39:50  phase1geo
+ Fixes for memory problems.
+
  Revision 1.68  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.
