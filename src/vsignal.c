@@ -98,7 +98,7 @@ vsignal* vsignal_create( char* name, int type, int width, int lsb, int line, int
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
 
   vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name, __FILE__, __LINE__ ) : NULL),
-                type, vector_create( width, TRUE ), lsb, line, col, big_endian );
+                type, vector_create( width, VTYPE_SIG, TRUE ), lsb, line, col, big_endian );
 
   return( new_sig );
 
@@ -208,6 +208,8 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
 
       /* Create new vsignal */
       sig = vsignal_create( name, suppl.part.type, vec->width, lsb, sline, suppl.part.col, suppl.part.big_endian );
+      sig->suppl.part.assigned = suppl.part.assigned;
+      sig->suppl.part.mba      = suppl.part.mba;
 
       /* Copy over vector value */
       vector_dealloc( sig->value );
@@ -549,6 +551,14 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.32  2006/09/11 22:27:55  phase1geo
+ Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
+ fields to allow this to work.  Full regression has been updated for the current changes
+ though this feature is still not fully implemented at this time.  Also added parsing support
+ for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
+ time).  Also added lexer support for the return, void, continue, break, final, program and
+ endprogram SystemVerilog keywords.  Checkpointing work.
+
  Revision 1.31  2006/08/29 22:49:31  phase1geo
  Added enumeration support and partial support for typedefs.  Added enum1
  diagnostic to verify initial enumeration support.  Full regression has not

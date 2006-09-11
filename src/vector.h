@@ -29,10 +29,10 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init( vector* vec, vec_data* value, int width );
+void vector_init( vector* vec, vec_data* value, int width, int type );
 
 /*! \brief Creates and initializes new vector */
-vector* vector_create( int width, bool data );
+vector* vector_create( int width, int type, bool data );
 
 /*! \brief Copies contents of from_vec to to_vec, allocating memory */
 void vector_copy( vector* from_vec, vector** to_vec );
@@ -65,7 +65,7 @@ void vector_display_toggle10( vec_data* nib, int width, FILE* ofile );
 void vector_display_value( vec_data* nib, int width );
 
 /*! \brief Outputs nibble to standard output. */
-void vector_display_nibble( vec_data* nib, int width );
+void vector_display_nibble( vec_data* nib, int width, int type );
 
 /*! \brief Outputs vector contents to standard output. */
 void vector_display( vector* vec );
@@ -75,9 +75,6 @@ nibble vector_bit_val( nibble* value, int pos );
 
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
 bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx );
-
-/*! \brief Sets specified vector value to new value */
-bool vector_set_value_only( vector* vec, vec_data* value, int width, int from_idx, int to_idx );
 
 /*! \brief Performs a zero-fill of all bits starting at lsb and continuing to the vector's msb */
 bool vector_zero_fill( vector* vec, int msb, int lsb );
@@ -108,9 +105,6 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb );
 
 /*! \brief Counts toggle01 and toggle10 information from specifed vector. */
 void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
-
-/*! \brief Counts FALSE and TRUE information from the specified vector. */
-void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt );
 
 /*! \brief Sets all assigned bits in vector bit value array within specified range. */
 bool vector_set_assigned( vector* vec, int msb, int lsb );
@@ -163,6 +157,14 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.36  2006/09/11 22:27:55  phase1geo
+ Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
+ fields to allow this to work.  Full regression has been updated for the current changes
+ though this feature is still not fully implemented at this time.  Also added parsing support
+ for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
+ time).  Also added lexer support for the return, void, continue, break, final, program and
+ endprogram SystemVerilog keywords.  Checkpointing work.
+
  Revision 1.35  2006/08/20 03:21:00  phase1geo
  Adding support for +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++
  and -- operators.  The op-and-assign operators are currently good for

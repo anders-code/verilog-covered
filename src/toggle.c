@@ -68,7 +68,7 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
   while( curr_sig != NULL ) {
     if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
         (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-        (curr_sig->sig->value->suppl.part.mba == 0) ) {
+        (curr_sig->sig->suppl.part.mba == 0) ) {
       *total += curr_sig->sig->value->width;
       if( curr_sig->sig->suppl.part.excluded == 1 ) {
         *hit01 += curr_sig->sig->value->width;
@@ -119,7 +119,7 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_h
 
       if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
           (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-          (curr_sig->sig->value->suppl.part.mba == 0) ) {
+          (curr_sig->sig->suppl.part.mba == 0) ) {
 
         vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
@@ -239,7 +239,7 @@ bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int
 
       if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
           (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-          (curr_sig->sig->value->suppl.part.mba == 0) ) {
+          (curr_sig->sig->suppl.part.mba == 0) ) {
 
         /* We have found a valid signal to look at; therefore, increment the total */
         (*total)++;
@@ -451,7 +451,7 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 
     if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
         (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-        (curr_sig->sig->value->suppl.part.mba == 0) ) {
+        (curr_sig->sig->suppl.part.mba == 0) ) {
 
       vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
@@ -648,6 +648,14 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.49  2006/09/11 22:27:55  phase1geo
+ Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
+ fields to allow this to work.  Full regression has been updated for the current changes
+ though this feature is still not fully implemented at this time.  Also added parsing support
+ for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
+ time).  Also added lexer support for the return, void, continue, break, final, program and
+ endprogram SystemVerilog keywords.  Checkpointing work.
+
  Revision 1.48  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 
