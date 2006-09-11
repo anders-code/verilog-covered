@@ -135,16 +135,17 @@ void db_close() {
     /* Remove memory allocated for instance_root and mod_head */
     assert( instance_root->funit != NULL );
     instance_dealloc( instance_root, instance_root->name );
+    instance_root = NULL;
+
+    /* Remove memory allocated for all functional units */
     funit_link_delete_list( &funit_head, &funit_tail, TRUE );
 
     /* Deallocate preprocessor define tree */
     tree_dealloc( def_table );
+    def_table = NULL;
 
     /* Deallocate the binding list */
     bind_dealloc();
-
-    instance_root = NULL;
-    def_table     = NULL;
 
   }
 
@@ -1260,27 +1261,11 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-    /* Remove expression from any module parameter expression lists */
-    funitl = funit_head;
-    while( funitl != NULL ) {
-      mparm = funitl->funit->param_head;
-      while( mparm != NULL ) {
-        expl = mparm->exp_head;
-        while( expl != NULL ) {
-          texpl = expl;
-          expl  = expl->next;
-          if( expression_find_expr( stmt->exp, texpl->exp ) ) {
-            exp_link_remove( texpl->exp, &(mparm->exp_head), &(mparm->exp_tail), FALSE );
-          }
-        }
-        mparm = mparm->next;
-      }
-      funitl = funitl->next;
-    }
-    
-#ifdef OBSOLETE
-    mod_parm_find_expr_and_remove( stmt->exp, curr_funit->param_head );
-#endif
+    /*
+     Remove all pointers to any expressions in this statement from the module and instance
+     parameter structures in the design.
+    */
+    instance_remove_parms_with_expr( instance_root, stmt );
 
     /* Remove expression from current module expression list and delete expressions */
     exp_link_remove( stmt->exp, &(curr_funit->exp_head), &(curr_funit->exp_tail), TRUE );
@@ -1743,6 +1728,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.175.4.1.4.1.4.8  2006/09/11 14:54:28  phase1geo
+ Attempting to fix memory access problems during the db_close function.
+
  Revision 1.175.4.1.4.1.4.7  2006/09/02 20:46:43  phase1geo
  Fixing memory access issues that were found in the development branch.
 

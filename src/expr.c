@@ -3143,13 +3143,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     }
 
-    free_safe( expr->parent );
-
-    /* If name contains data, free it */
-    if( expr->name != NULL ) {
-      free_safe( expr->name );
-    }
-
+    /* Free child expressions */
     if( !exp_only ) {
 
       if( EXPR_RIGHT_DEALLOCABLE( expr ) ) {
@@ -3164,6 +3158,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
   
     }
 
+    /* Free pointer to parent expression */
+    free_safe( expr->parent );
+
+    /* If name contains data, free it */
+    if( expr->name != NULL ) {
+      free_safe( expr->name );
+    }
+
     /* Remove this expression memory */
     free_safe( expr );
 
@@ -3174,6 +3176,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179.4.1.6.1.2.9  2006/09/11 14:54:28  phase1geo
+ Attempting to fix memory access problems during the db_close function.
+
  Revision 1.179.4.1.6.1.2.8  2006/08/27 04:17:39  phase1geo
  Fixing bug 1546059 and also fixes a statement connection problem.  Full IV
  regression passes; however, I am going to attempt to fix the bug in a way that
