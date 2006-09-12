@@ -752,7 +752,7 @@ typedef enum exp_op_type_e {
 #define EXPR_IS_STATIC(x)        exp_op_info[x->op].suppl.is_static
 
 /*!
- Returns a value of true if the specified expression ks considered a combination expression by
+ Returns a value of true if the specified expression is considered a combination expression by
  the combinational logic report generator.
 */
 #define EXPR_IS_COMB(x)          ((exp_op_info[x->op].suppl.is_comb > 0) && \
@@ -2122,6 +2122,12 @@ struct enum_item_s {
 
 /*
  $Log$
+ Revision 1.230  2006/09/12 22:24:42  phase1geo
+ Added first attempt at collecting bitwise coverage information during simulation.
+ Updated regressions for this change; however, we currently do not report on this
+ information currently.  Also added missing keywords to GUI Verilog highlighter.
+ Checkpointing.
+
  Revision 1.229  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

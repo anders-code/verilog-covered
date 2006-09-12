@@ -3055,6 +3055,7 @@ bool expression_operate( expression* expr, thread* thr ) {
   vector   vec;             /* Used for logical reduction */ 
   vec_data bit;             /* Bit holder for some ops */
   control  lf, lt, rf, rt;  /* Specify left and right WAS_TRUE/WAS_FALSE values */
+  int      i;               /* Loop iterator */
 
   if( expr != NULL ) {
 
@@ -3087,6 +3088,65 @@ bool expression_operate( expression* expr, thread* thr ) {
           case 0 :  expr->suppl.part.false = 1;  expr->suppl.part.eval_f = 1;  break;
           case 1 :  expr->suppl.part.true  = 1;  expr->suppl.part.eval_t = 1;  break;
           default:  break;
+        }
+
+      }
+
+      /* Calculate bitwise coverage if we own our vector -- TBD -- I think this code can be optimized somewhat */
+      if( ESUPPL_OWNS_VEC( expr->suppl ) == 1 ) {
+
+        nibble lval, rval;
+
+        switch( exp_op_info[expr->op].suppl.is_comb ) {
+          case NOT_COMB :
+            if( exp_op_info[expr->op].suppl.is_unary ) {
+              for( i=0; i<expr->value->width; i++ ) {
+                lval = expr->value->value[i].part.exp.value;
+                if( lval < 2 ) {
+                  if( lval == 0 ) {
+                    expr->value->value[i].part.exp.eval_a = 1;
+                  } else {
+                    expr->value->value[i].part.exp.eval_b = 1;
+                  }
+                }
+              }
+            }
+            break;
+          case AND_COMB :
+            for( i=0; i<expr->value->width; i++ ) {
+              lval = expr->left->value->value[i].part.exp.value;
+              rval = expr->right->value->value[i].part.exp.value;
+              if( (lval < 2) || (rval < 2) ) {
+                expr->value->value[i].part.exp.eval_a |= (lval == 0) ? 1 : 0;
+                expr->value->value[i].part.exp.eval_b |= (rval == 0) ? 1 : 0;
+                expr->value->value[i].part.exp.eval_c |= ((lval == 1) && (rval == 1)) ? 1 : 0;
+              }
+            }
+            break;
+          case OR_COMB :
+            for( i=0; i<expr->value->width; i++ ) {
+              lval = expr->left->value->value[i].part.exp.value;
+              rval = expr->right->value->value[i].part.exp.value;
+              if( (lval < 2) || (rval < 2) ) {
+                expr->value->value[i].part.exp.eval_a |= (lval == 1) ? 1 : 0;
+                expr->value->value[i].part.exp.eval_b |= (rval == 1) ? 1 : 0;
+                expr->value->value[i].part.exp.eval_c |= ((lval == 0) && (rval == 0)) ? 1 : 0;
+              }
+            }
+            break;
+          case OTHER_COMB :
+            for( i=0; i<expr->value->width; i++ ) {
+              lval = expr->left->value->value[i].part.exp.value;
+              rval = expr->right->value->value[i].part.exp.value;
+              if( (lval < 2) && (rval < 2) ) {
+                expr->value->value[i].part.exp.eval_a |= ((lval == 0) && (rval == 0)) ? 1 : 0;
+                expr->value->value[i].part.exp.eval_b |= ((lval == 0) && (rval == 1)) ? 1 : 0;
+                expr->value->value[i].part.exp.eval_c |= ((lval == 1) && (rval == 0)) ? 1 : 0;
+                expr->value->value[i].part.exp.eval_d |= ((lval == 1) && (rval == 1)) ? 1 : 0;
+              }
+            }
+            break;
+          default : break;
         }
 
       }
@@ -3567,6 +3627,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.208  2006/09/12 22:24:42  phase1geo
+ Added first attempt at collecting bitwise coverage information during simulation.
+ Updated regressions for this change; however, we currently do not report on this
+ information currently.  Also added missing keywords to GUI Verilog highlighter.
+ Checkpointing.
+
  Revision 1.207  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes
