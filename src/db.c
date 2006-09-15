@@ -1511,7 +1511,7 @@ statement* db_parallelize_statement( statement* stmt ) {
     exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
 
     /* Bind the FORK expression to this statement */
-    exp->stmt = stmt;
+    exp->elem.stmt = stmt;
     bind_add_stmt( stmt->exp->id, exp, curr_funit );
 
     /* Reduce fork and block depth for the new statement */
@@ -2139,6 +2139,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.223  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.222  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

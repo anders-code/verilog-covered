@@ -52,6 +52,9 @@ expression* expression_get_first_line_expr( expression* expr );
 /*! \brief Returns last line in this expression tree. */
 expression* expression_get_last_line_expr( expression* expr );
 
+/*! \brief Returns the current dimension of the given expression. */
+int expression_get_curr_dimension( expression* expr );
+
 /*! \brief Finds all RHS signals in given expression tree */
 void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tail );
 
@@ -121,6 +124,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.50  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.49  2006/09/08 22:39:50  phase1geo
  Fixes for memory problems.
 

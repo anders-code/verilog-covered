@@ -458,9 +458,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( (expr->op == EXP_OP_FUNC_CALL) || (expr->op == EXP_OP_TASK_CALL) ) {
 
-      assert( expr->stmt != NULL );
+      assert( expr->elem.stmt != NULL );
 
-      if( (tfunit = funit_find_by_id( expr->stmt->exp->id )) != NULL ) {
+      if( (tfunit = funit_find_by_id( expr->elem.stmt->exp->id )) != NULL ) {
         after = (char*)malloc_safe( (strlen( tfunit->name ) + 1), __FILE__, __LINE__ );
         scope_extract_back( tfunit->name, after, user_msg );
         pname = scope_gen_printable( after );
@@ -478,7 +478,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         free_safe( pname );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find statement %d in module %s's task/function list",
-                  expr->stmt->exp->id, obf_funit( funit->name ) );
+                  expr->elem.stmt->exp->id, obf_funit( funit->name ) );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
@@ -860,6 +860,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.76  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.75  2006/08/28 22:28:28  phase1geo
  Fixing bug 1546059 to match stable branch.  Adding support for repeated delay
  expressions (i.e., a = repeat(2) @(b) c).  Fixing support for event delayed

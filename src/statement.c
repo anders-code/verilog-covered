@@ -674,7 +674,7 @@ void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail 
 
     if( (stmt->exp->op == EXP_OP_NB_CALL) || (stmt->exp->op == EXP_OP_FORK) ) {
 
-      statement_find_rhs_sigs( stmt->exp->stmt, head, tail );
+      statement_find_rhs_sigs( stmt->exp->elem.stmt, head, tail );
 
     } else {
 
@@ -879,6 +879,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.94  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.93  2006/09/08 14:56:05  phase1geo
  Somehow a return from the statement_find_statement function was missing that
  caused problems with removing statement blocks.

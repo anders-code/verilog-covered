@@ -670,8 +670,8 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
 
     /* For constant functions, resolve parameters and resize the functional unit first */
     if( expr->op == EXP_OP_FUNC_CALL ) {
-      assert( expr->stmt != NULL );
-      funit = funit_find_by_id( expr->stmt->exp->id );
+      assert( expr->elem.stmt != NULL );
+      funit = funit_find_by_id( expr->elem.stmt->exp->id );
       assert( funit != NULL );
       funiti = instance_find_by_funit( inst, funit, &ignore );
       assert( funiti != NULL );
@@ -1051,6 +1051,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.75  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.74  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

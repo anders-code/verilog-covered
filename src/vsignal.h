@@ -67,12 +67,22 @@ void vsignal_display( vsignal* sig );
 /*! \brief Converts a string to a vsignal. */
 vsignal* vsignal_from_string( char** str );
 
+/*! \brief Calculates width of the specified signal's vector value based on the given expression */
+int vsignal_calc_width_for_expr( expression* expr, vsignal* sig );
+
+/*! \brief Calculates LSB of the specified signal's vector value based on the given expression */
+int vsignal_calc_lsb_for_expr( expression* expr, vsignal* sig, int lsb_val );
+
 /*! \brief Deallocates the memory used for this vsignal. */
 void vsignal_dealloc( vsignal* sig );
 
 
 /*
  $Log$
+ Revision 1.16  2006/09/15 22:14:54  phase1geo
+ Working on adding arrayed signals.  This is currently in progress and doesn't
+ even compile at this point, much less work.  Checkpointing work.
+
  Revision 1.15  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly
