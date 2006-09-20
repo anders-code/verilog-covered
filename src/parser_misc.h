@@ -60,22 +60,27 @@ extern unsigned error_count, warn_count;
 void parser_dealloc_curr_range();
 
 /*! \brief Creates a copy of the curr_range variable */
-vector_width* parser_copy_curr_range();
+sig_range* parser_copy_curr_range();
 
 /*! \brief Copies specifies static expressions to the current range */
-void parser_copy_se_to_curr_range( static_expr* left, static_expr* right );
+void parser_copy_range_to_curr_range( sig_range* range );
 
 /*! \brief Deallocates and sets the curr_range variable from explicitly set values */
-void parser_explicitly_set_curr_range( static_expr* left, static_expr* right );
+void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bool packed );
 
 /*! \brief Deallocates and sets the curr_range variable from implicitly set values */
-void parser_implicitly_set_curr_range( int left_num, int right_num );
+void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed );
 
 /*! \brief Checks the specified generation value to see if it holds in the specified module */
 bool parser_check_generation( int gen );
 
 /*
  $Log$
+ Revision 1.10  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.9  2006/08/31 22:32:18  phase1geo
  Things are in a state of flux at the moment.  I have added proper parsing support
  for assertions, properties and sequences.  Also added partial support for the $root

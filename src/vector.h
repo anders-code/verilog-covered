@@ -46,9 +46,6 @@ bool vector_db_read( vector** vec, char** line );
 /*! \brief Reads and merges two vectors, placing the result into base vector. */
 bool vector_db_merge( vector* base, char** line, bool same );
 
-/*! \brief Reads and replaces original vector with newly read vector. */
-bool vector_db_replace( vector* base, char** line );
-
 /*! \brief Returns string containing toggle 0 -> 1 information in binary format */
 char* vector_get_toggle01( vec_data* nib, int width );
 
@@ -157,6 +154,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.37  2006/09/20 22:38:10  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.36  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes
