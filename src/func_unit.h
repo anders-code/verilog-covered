@@ -65,9 +65,6 @@ bool funit_db_read( func_unit* funit, char* scope, char** line );
 /*! \brief Reads and merges two functional units into base functional unit. */
 bool funit_db_merge( func_unit* base, FILE* file, bool same );
 
-/*! \brief Reads and replaces original functional unit with contents of new functional unit. */
-bool funit_db_replace( func_unit* base, FILE* file );
-
 /*! \brief Finds the functional unit that contains the given statement/expression ID */
 func_unit* funit_find_by_id( int id );
 
@@ -86,6 +83,11 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.14  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.13  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.

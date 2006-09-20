@@ -10,6 +10,7 @@
 
 
 #include <stdio.h>
+
 #include "defines.h"
 
 
@@ -50,8 +51,8 @@ gen_item* gen_item_create_tfn( funit_inst* inst );
 /*! \brief Creates a generate item for a binding */
 gen_item* gen_item_create_bind( char* name, expression* expr );
 
-/*! \brief Resizes all expressions in the given generate item block */
-void gen_item_resize_exprs( gen_item* gi );
+/*! \brief Resizes all statements and signals in the given generate item block */
+void gen_item_resize_stmts_and_sigs( gen_item* gi );
 
 /*! \brief Assigns unique expression IDs to all expressions for specified statement block */
 void gen_item_assign_expr_ids( gen_item* gi );
@@ -82,6 +83,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.17  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.16  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.
