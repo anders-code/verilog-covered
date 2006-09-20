@@ -326,54 +326,6 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
 }
 
 /*!
- \param base  Pointer to FSM structure to be replaced.
- \param line  Pointer to read in line from CDD file.
-
- \return Returns TRUE if parsing successful; otherwise, returns FALSE.
-
- Parses specified line for FSM information and performs replacement of the 
- original FSM with the contents of the new FSM.  If the FSMs are found to
- be unalike (names are different), an error message is displayed to the user.
-*/
-bool fsm_db_replace( fsm* base, char** line ) {
-
-  bool   retval = TRUE;  /* Return value of this function */
-  int    iid;            /* Input state variable expression ID */
-  int    oid;            /* Output state variable expression ID */
-  int    chars_read;     /* Number of characters read from line */
-  int    is_table;       /* Holds value of is_table signifier */
-
-  assert( base != NULL );
-  assert( base->from_state != NULL );
-  assert( base->to_state != NULL );
-
-  if( sscanf( *line, "%d %d %d%n", &iid, &oid, &is_table, &chars_read ) == 3 ) {
-
-    *line = *line + chars_read + 1;
-
-    if( (base->from_state->id != iid) || (base->to_state->id != oid) ) {
-
-      print_output( "Attempting to replace a database derived from a different design.  Unable to replace",
-                    FATAL, __FILE__, __LINE__ );
-      exit( 1 );
-
-    } else if( is_table == 1 ) {
-
-      arc_db_replace( &(base->table), line );
-
-    }
-
-  } else {
-
-    retval = FALSE;
-
-  }
-
-  return( retval );
-
-}
-
-/*!
  \param table  Pointer to FSM structure to set a state in.
 
  Taking the from and to state signal values, a new table entry is added
@@ -1180,6 +1132,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.61  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.60  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 

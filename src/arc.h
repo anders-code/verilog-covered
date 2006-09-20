@@ -58,9 +58,6 @@ bool arc_db_read( char** arcs, char** line );
 /*! \brief Merges contents of arc table from line to specified base array. */
 bool arc_db_merge( char** arcs, char** line, bool same );
 
-/*! \brief Replaces contents of arc table from line to specified base array. */
-bool arc_db_replace( char** arcs, char** line );
-
 /*! \brief Stores arc array state values to specified string array. */
 void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit, bool any );
 
@@ -75,6 +72,11 @@ void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.16  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.15  2006/06/29 04:26:02  phase1geo
  More updates for FSM coverage.  We are getting close but are just not to fully
  working order yet.
