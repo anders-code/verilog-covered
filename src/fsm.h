@@ -45,9 +45,6 @@ bool fsm_db_read( char** line, func_unit* funit );
 /*! \brief Reads and merges two FSMs, placing result into base FSM. */
 bool fsm_db_merge( fsm* base, char** line, bool same );
 
-/*! \brief Reads and replaces original FSM with new FSM. */
-bool fsm_db_replace( fsm* base, char** line );
-
 /*! \brief Sets the bit in set table based on the values of last and curr. */
 void fsm_table_set( fsm* table );
 
@@ -77,6 +74,11 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.20  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.19  2006/06/29 04:26:02  phase1geo
  More updates for FSM coverage.  We are getting close but are just not to fully
  working order yet.
