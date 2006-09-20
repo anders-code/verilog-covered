@@ -57,11 +57,8 @@ void defparam_add( char* scope, vector* expr );
 /*! \brief Deallocates all memory associated with defparam storage from command-line */
 void defparam_dealloc();
 
-/*! \brief Sets the specified expression value to the instance parameter value. */
-void param_set_expr_size( expression* expr, inst_parm* icurr );
-
-/*! \brief Sets the specified signal size according to the specified instance parameter and resizes attached expressions. */
-bool param_set_sig_size( vsignal* sig, inst_parm* icurr );
+/*! \brief Sets the specified signal size according to the specified instance parameter */
+void param_set_sig_size( vsignal* sig, inst_parm* icurr );
 
 /*! \brief Evaluates parameter expression for the given instance. */
 void param_expr_eval( expression* expr, funit_inst* inst );
@@ -87,6 +84,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.26  2006/09/20 22:38:09  phase1geo
+ Lots of changes to support memories and multi-dimensional arrays.  We still have
+ issues with endianness and VCS regressions have not been run, but this is a significant
+ amount of work that needs to be checkpointed.
+
  Revision 1.25  2006/07/25 21:35:54  phase1geo
  Fixing nested namespace problem with generate blocks.  Also adding support
  for using generate values in expressions.  Still not quite working correctly
