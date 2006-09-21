@@ -221,7 +221,6 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
     );
 
     /* Display dimension information */
-    vsignal_display( sig );
     for( i=0; i<(sig->pdim_num + sig->udim_num); i++ ) {
       fprintf( file, " %d %d", sig->dim[i].msb, sig->dim[i].lsb );
     }
@@ -681,6 +680,11 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.36  2006/09/21 22:44:20  phase1geo
+ More updates to regressions for latest changes to support memories/multi-dimensional
+ arrays.  We still have a handful of VCS diagnostics that are failing.  Checkpointing
+ for now.
+
  Revision 1.35  2006/09/21 04:20:59  phase1geo
  Fixing endianness diagnostics.  Still getting memory error with some diagnostics
  in regressions (ovl1 is one of them).  Updated regression.
