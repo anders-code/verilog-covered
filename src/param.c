@@ -408,8 +408,8 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
   iparm->sig = vsignal_create( name, SSUPPL_TYPE_PARAM, sig_width, 0, 0 );
   iparm->sig->pdim_num   = 1;
   iparm->sig->dim        = (dim_range*)malloc_safe( (sizeof( dim_range ) * 1), __FILE__, __LINE__ );
-  iparm->sig->dim[0].lsb = sig_lsb;
-  iparm->sig->dim[0].msb = (sig_lsb + sig_width) - 1;
+  iparm->sig->dim[0].lsb = right_val;
+  iparm->sig->dim[0].msb = left_val;
   iparm->sig->suppl.part.big_endian = sig_be;
 
   /* Store signed attribute for this vector */
@@ -1014,6 +1014,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.77  2006/09/21 04:20:59  phase1geo
+ Fixing endianness diagnostics.  Still getting memory error with some diagnostics
+ in regressions (ovl1 is one of them).  Updated regression.
+
  Revision 1.76  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant
