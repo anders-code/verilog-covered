@@ -312,6 +312,8 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   assert( funit != NULL );
   assert( inst != NULL );
 
+  printf( "*** Sizing elements for functional unit %s ***\n", funit->name );
+
   /*
    First, traverse through current instance's parameter list and resolve
    any unresolved parameters created via generate statements.
@@ -926,6 +928,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.45  2006/09/22 04:23:04  phase1geo
+ More fixes to support new signal range structure.  Still don't have full
+ regressions passing at the moment.
+
  Revision 1.44  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

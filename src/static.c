@@ -372,6 +372,7 @@ void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right,
   /* If the left static expression contains an expression, get its integer value and place it in the num field */
   if( left->exp != NULL ) {
     left->num = vector_to_int( left->exp->value );
+    expression_display( left->exp );
   }
   
   /* Get initial value for LSB */
@@ -415,6 +416,10 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.24  2006/09/22 04:23:04  phase1geo
+ More fixes to support new signal range structure.  Still don't have full
+ regressions passing at the moment.
+
  Revision 1.23  2006/09/11 22:27:55  phase1geo
  Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
  fields to allow this to work.  Full regression has been updated for the current changes

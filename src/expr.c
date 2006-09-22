@@ -3209,6 +3209,8 @@ bool expression_operate( expression* expr, thread* thr ) {
   /* Specify that we have executed this expression */
   (expr->exec_num)++;
 
+  expression_display( expr );
+
   return( retval );
 
 }
@@ -3645,6 +3647,8 @@ void expression_dealloc( expression* expr, bool exp_only ) {
   exp_link*  tmp_expl;  /* Temporary pointer to expression list */
   statement* tmp_stmt;  /* Temporary pointer to statement */
 
+  printf( "Deallocating expression: %s\n", expression_string( expr ) );
+
   if( expr != NULL ) {
 
     op = expr->op;
@@ -3754,6 +3758,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.213  2006/09/22 04:23:04  phase1geo
+ More fixes to support new signal range structure.  Still don't have full
+ regressions passing at the moment.
+
  Revision 1.212  2006/09/21 04:20:59  phase1geo
  Fixing endianness diagnostics.  Still getting memory error with some diagnostics
  in regressions (ovl1 is one of them).  Updated regression.

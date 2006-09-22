@@ -650,6 +650,7 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
       assert( funiti != NULL );
       param_resolve( funiti );
       funit_size_elements( funit, funiti );
+      expression_set_value( expr, expr->sig );
     }
 
     /* Evaluate children first */
@@ -1014,6 +1015,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.79  2006/09/22 04:23:04  phase1geo
+ More fixes to support new signal range structure.  Still don't have full
+ regressions passing at the moment.
+
  Revision 1.78  2006/09/21 22:44:20  phase1geo
  More updates to regressions for latest changes to support memories/multi-dimensional
  arrays.  We still have a handful of VCS diagnostics that are failing.  Checkpointing
