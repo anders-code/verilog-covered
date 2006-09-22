@@ -867,6 +867,25 @@ bool vector_is_unknown( vector* vec ) {
 }
 
 /*!
+ \param vec  Pointer to vector to check for set bits
+
+ \return Returns TRUE if the specified vector has been previously set (simulated); otherwise,
+         returns FALSE.
+*/
+bool vector_is_set( vector* vec ) {
+
+  int i = 0;  /* Loop iterator */
+
+  assert( vec != NULL );
+  assert( vec->value != NULL );
+
+  while( (i < vec->width) && (vec->value[i].part.sig.set == 0) ) i++;
+
+  return( i < vec->width );
+
+}
+
+/*!
  \param vec  Pointer to vector to convert into integer.
 
  \return Returns integer value of specified vector.
@@ -1995,6 +2014,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.82  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.81  2006/09/20 22:38:10  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant

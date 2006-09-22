@@ -142,15 +142,14 @@ statement* statement_create( expression* exp ) {
 
   statement* stmt;  /* Pointer to newly created statement */
 
-  stmt                       = (statement*)malloc_safe( sizeof( statement ), __FILE__, __LINE__ );
-  stmt->exp                  = exp;
-  stmt->exp->parent->stmt    = stmt;
-  stmt->exp->suppl.part.root = 1;
-  stmt->next_true            = NULL;
-  stmt->next_false           = NULL;
-  stmt->conn_id              = 0;
-  stmt->thr                  = NULL;
-  stmt->static_thr           = NULL;
+  stmt                    = (statement*)malloc_safe( sizeof( statement ), __FILE__, __LINE__ );
+  stmt->exp               = exp;
+  stmt->exp->parent->stmt = stmt;
+  stmt->next_true         = NULL;
+  stmt->next_false        = NULL;
+  stmt->conn_id           = 0;
+  stmt->thr               = NULL;
+  stmt->static_thr        = NULL;
 
   return( stmt );
 
@@ -879,6 +878,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.95  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.94  2006/09/15 22:14:54  phase1geo
  Working on adding arrayed signals.  This is currently in progress and doesn't
  even compile at this point, much less work.  Checkpointing work.
