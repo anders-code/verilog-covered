@@ -519,6 +519,8 @@ void expression_set_value( expression* exp, vector* vec ) {
         if( exp->op == EXP_OP_PARAM_MBIT ) {
           exp->value->value = vec->value + ((vec->width - exp->value->width) - lbit);
         } else {
+          printf( "vec->width: %d, exp->value->width: %d, lbit: %d, exp->sig->lsb: %d\n",
+                  vec->width, exp->value->width, lbit, exp->sig->lsb );
           exp->value->value = vec->value + (((vec->width - exp->value->width) - lbit) - exp->sig->lsb);
         }
       } else {
@@ -3176,6 +3178,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179.4.1.6.1.2.10  2006/09/22 03:31:57  phase1geo
+ Preparing some files for the 0.4.8 stable release.
+
  Revision 1.179.4.1.6.1.2.9  2006/09/11 14:54:28  phase1geo
  Attempting to fix memory access problems during the db_close function.
 

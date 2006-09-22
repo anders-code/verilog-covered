@@ -1,4 +1,4 @@
-%define version 0.4.7
+%define version 0.4.8
 
 Summary: Verilog code coverage analyzer
 Name: covered
