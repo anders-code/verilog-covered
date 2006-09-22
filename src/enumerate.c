@@ -30,11 +30,6 @@ void enumerate_add_item( vsignal* enum_sig, static_expr* value, func_unit* funit
   ei->last  = FALSE;
   ei->next  = NULL;
 
-  /* Set the root bit on the static expression, if necessary */
-  if( (value != NULL) && (value->exp != NULL) ) {
-    value->exp->suppl.part.root = 1;
-  }
-
   /* Add it to the current functional unit's enumeration list */
   if( funit->ei_head == NULL ) {
     funit->ei_head = funit->ei_tail = ei;
@@ -152,6 +147,10 @@ void enumerate_dealloc_list( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.4  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.3  2006/09/21 22:44:20  phase1geo
  More updates to regressions for latest changes to support memories/multi-dimensional
  arrays.  We still have a handful of VCS diagnostics that are failing.  Checkpointing

@@ -810,11 +810,8 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
           /* Set expression to point at signal */
           exp->sig = sigl->sig;
 
-          printf( "BINDING FUNC_CALL %s to signal %s in functional unit %s\n", expression_string( exp ), sigl->sig->name, found_funit->name );
           /* Attach the signal's value to our expression value */
           expression_set_value( exp, sigl->sig );
-          vsignal_display( sigl->sig );
-          printf( "  expression width: %d\n", exp->value->width );
 
         }
 
@@ -1033,6 +1030,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.97  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.96  2006/09/22 04:23:04  phase1geo
  More fixes to support new signal range structure.  Still don't have full
  regressions passing at the moment.
