@@ -22,19 +22,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "defines.h"
-#include "parse.h"
-#include "link.h"
-#include "util.h"
-#include "db.h"
 #include "binding.h"
-#include "vcd.h"
-#include "lxt.h"
+#include "db.h"
+#include "defines.h"
 #include "fsm_var.h"
 #include "info.h"
-#include "sim.h"
-#include "race.h"
+#include "link.h"
+#include "lxt.h"
+#include "parse.h"
 #include "parser_misc.h"
+#include "race.h"
+#include "sim.h"
+#include "util.h"
+#include "vcd.h"
 
 
 extern void reset_lexer( str_link* file_list_head );
@@ -46,6 +46,8 @@ extern str_link* modlist_tail;
 extern char      user_msg[USER_MSG_LENGTH];
 extern isuppl    info_suppl;
 extern bool      flag_check_races;
+extern sig_range curr_prange;
+extern sig_range curr_urange;
 
 /*!
  \param file  Pointer to file to read
@@ -106,7 +108,8 @@ bool parse_design( char* top, char* output_db ) {
     }
 
     /* Deallocate any memory in curr_range variable */
-    parser_dealloc_curr_range();
+    parser_dealloc_sig_range( &curr_urange, FALSE );
+    parser_dealloc_sig_range( &curr_prange, FALSE );
 
 #ifdef DEBUG_MODE
     print_output( "========  Completed design parsing  ========\n", DEBUG, __FILE__, __LINE__ );
@@ -231,6 +234,10 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.45  2006/09/22 19:56:45  phase1geo
+ Final set of fixes and regression updates per recent changes.  Full regression
+ now passes.
+
  Revision 1.44  2006/08/06 05:02:59  phase1geo
  Documenting and adding warning message to parse.c for the -rI option.
 
