@@ -106,6 +106,9 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb );
 /*! \brief Counts toggle01 and toggle10 information from specifed vector. */
 void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
 
+/*! \brief Counts memory write and read information from specified vector. */
+void vector_mem_rw_count( vector* vec, int* wr_cnt, int* rd_cnt );
+
 /*! \brief Sets all assigned bits in vector bit value array within specified range. */
 bool vector_set_assigned( vector* vec, int msb, int lsb );
 
@@ -157,6 +160,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.39  2006/09/25 22:22:29  phase1geo
+ Adding more support for memory reporting to both score and report commands.
+ We are getting closer; however, regressions are currently broken.  Checkpointing.
+
  Revision 1.38  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

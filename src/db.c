@@ -856,7 +856,7 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
   int      j = 0;   /* Loop iterator */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, line: %d, col: %d", obf_sig( name ), line, col );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, type: %d, line: %d, col: %d", obf_sig( name ), type, line, col );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -2124,6 +2124,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.226  2006/09/25 22:22:28  phase1geo
+ Adding more support for memory reporting to both score and report commands.
+ We are getting closer; however, regressions are currently broken.  Checkpointing.
+
  Revision 1.225  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.

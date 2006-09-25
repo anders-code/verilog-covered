@@ -689,6 +689,10 @@ void report_generate( FILE* ofile ) {
     toggle_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
   }
 
+  if( report_memory ) {
+    memory_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+  }
+
   if( report_combination ) {
     combination_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
   }
@@ -699,10 +703,6 @@ void report_generate( FILE* ofile ) {
 
   if( report_assertion ) {
     assertion_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
-  }
-
-  if( report_memory ) {
-    memory_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
   }
 
   if( report_race ) {
@@ -910,6 +910,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.75  2006/09/25 22:22:28  phase1geo
+ Adding more support for memory reporting to both score and report commands.
+ We are getting closer; however, regressions are currently broken.  Checkpointing.
+
  Revision 1.74  2006/09/25 04:15:04  phase1geo
  Starting to add support for new memory coverage metric.  This includes changes
  for the report command only at this point.
