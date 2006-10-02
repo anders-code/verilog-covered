@@ -14,7 +14,8 @@
 
 
 /*! \brief Calculates the memory coverage numbers for a given memory signal */
-void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit );
+void memory_get_stat( vsignal* sig, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit,
+                      bool ignore_excl );
 
 /*! \brief Calculates memory coverage numbers for the specified signal list. */
 void memory_get_stats( sig_link* sigl, float* ae_total, int* wr_hit, int* rd_hit, float* tog_total, int* tog01_hit, int* tog10_hit );
@@ -35,6 +36,11 @@ void memory_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.5  2006/10/02 22:41:00  phase1geo
+ Lots of bug fixes to memory coverage functionality for GUI.  Memory coverage
+ should now be working correctly.  We just need to update the GUI documentation
+ as well as other images for the new feature add.
+
  Revision 1.4  2006/09/27 21:38:35  phase1geo
  Adding code to interract with data in memory coverage verbose window.  Majority
  of code is in place; however, this has not been thoroughly debugged at this point.
