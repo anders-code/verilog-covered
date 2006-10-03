@@ -866,7 +866,11 @@ void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, char* pr
 
       /* Initialize the vector */
       vector_init( &vec, NULL, dim_width, VTYPE_MEM );
-      vec.value = value;
+      if( be ) {
+        vec.value = value + (dim_width * ((msb - lsb) - i));
+      } else {
+        vec.value = value + (dim_width * i);
+      }
 
       /* Get toggle information */
       tog01 = 0;
@@ -1167,6 +1171,12 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.6  2006/10/03 22:47:00  phase1geo
+ Adding support for read coverage to memories.  Also added memory coverage as
+ a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
+ left in code from array changes and updated regressions for these changes.
+ At this point, all IV diagnostics pass regressions.
+
  Revision 1.5  2006/10/02 22:41:00  phase1geo
  Lots of bug fixes to memory coverage functionality for GUI.  Memory coverage
  should now be working correctly.  We just need to update the GUI documentation

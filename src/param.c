@@ -409,7 +409,7 @@ inst_parm* inst_parm_add( char* name, char* inst_name, static_expr* msb, static_
   iparm->sig->value->suppl.part.is_signed = is_signed;
   
   /* Copy the contents of the specified vector value to the signal */
-  vector_set_value( iparm->sig->value, value->value, value->width, 0, 0 );
+  vector_set_value( iparm->sig->value, value->value, value->suppl.part.type, value->width, 0, 0 );
 
   iparm->mparm = mparm;
   iparm->next  = NULL;
@@ -642,7 +642,7 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
       funiti = instance_find_by_funit( inst, funit, &ignore );
       assert( funiti != NULL );
       param_resolve( funiti );
-      funit_size_elements( funit, funiti );
+      funit_size_elements( funit, funiti, FALSE );
       expression_set_value( expr, expr->sig );
     }
 
@@ -1008,6 +1008,12 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.82  2006/10/03 22:47:00  phase1geo
+ Adding support for read coverage to memories.  Also added memory coverage as
+ a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
+ left in code from array changes and updated regressions for these changes.
+ At this point, all IV diagnostics pass regressions.
+
  Revision 1.81  2006/09/25 22:22:28  phase1geo
  Adding more support for memory reporting to both score and report commands.
  We are getting closer; however, regressions are currently broken.  Checkpointing.
