@@ -216,14 +216,13 @@ void statement_queue_compare( statement* stmt ) {
       }
        
       /* Remove this element from the list */
-      if( stmt_loop_head == sll ) {
-        if( stmt_loop_tail == sll ) {
-          stmt_loop_head = stmt_loop_tail = NULL;
-        } else {
-          stmt_loop_head = sll->next;
-        }
+      if( (stmt_loop_head == sll) && (stmt_loop_tail == sll) ) {
+        stmt_loop_head = stmt_loop_tail = NULL;
+      } else if( stmt_loop_head == sll ) {
+        stmt_loop_head = sll->next;
       } else if( stmt_loop_tail == sll ) {
-        stmt_loop_tail = last_sll;
+        stmt_loop_tail       = last_sll;
+        stmt_loop_tail->next = NULL;
       } else {
         last_sll->next = sll->next;
       }
@@ -705,6 +704,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.76.4.1.8.3  2006/10/04 22:07:57  phase1geo
+ Fixing bug found in development branch and fixing missing document links in
+ user documentation.
+
  Revision 1.76.4.1.8.2  2006/08/27 04:17:39  phase1geo
  Fixing bug 1546059 and also fixes a statement connection problem.  Full IV
  regression passes; however, I am going to attempt to fix the bug in a way that
