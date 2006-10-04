@@ -874,10 +874,12 @@ bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, in
     default : break;
   }
 
+#ifdef OBSOLETE
   /* If the value being assigned from is a memory, set the read bit on the first read bit */
   if( val_type == VTYPE_MEM ) {
     value[from_idx].part.mem.rd = 1;
   }
+#endif
 
   return( retval );
 
@@ -2097,6 +2099,14 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.86  2006/10/04 22:04:16  phase1geo
+ Updating rest of regressions.  Modified the way we are setting the memory rd
+ vector data bit (should optimize the score command just a bit).  Also updated
+ quite a bit of memory coverage documentation though I still need to finish
+ documenting how to understand the report file for this metric.  Cleaning up
+ other things and fixing a few more software bugs from regressions.  Added
+ marray2* diagnostics to verify endianness in the unpacked dimension list.
+
  Revision 1.85  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
