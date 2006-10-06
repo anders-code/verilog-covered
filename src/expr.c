@@ -519,8 +519,6 @@ void expression_set_value( expression* exp, vector* vec ) {
         if( exp->op == EXP_OP_PARAM_MBIT ) {
           exp->value->value = vec->value + ((vec->width - exp->value->width) - lbit);
         } else {
-          printf( "vec->width: %d, exp->value->width: %d, lbit: %d, exp->sig->lsb: %d\n",
-                  vec->width, exp->value->width, lbit, exp->sig->lsb );
           exp->value->value = vec->value + (((vec->width - exp->value->width) - lbit) - exp->sig->lsb);
         }
       } else {
@@ -3178,6 +3176,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179.4.1.6.1.2.11  2006/10/06 18:36:08  phase1geo
+ Updating regression runs and removing unnecessary output from expr.c.  Also
+ added check_failures script to diagnostic verilog directory for future use.
+
  Revision 1.179.4.1.6.1.2.10  2006/09/22 03:31:57  phase1geo
  Preparing some files for the 0.4.8 stable release.
 
