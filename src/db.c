@@ -2112,6 +2112,11 @@ void db_do_timestep( int time ) {
   /* Simulate the current timestep */
   sim_simulate();
 
+  /* If this is the last timestep, add the final list and do one more simulate */
+  if( time == -1 ) {
+    sim_simulate_final();
+  }
+
 #ifdef DEBUG_MODE
   print_output( "Assigning postsimulation signals...", DEBUG, __FILE__, __LINE__ );
 #endif
@@ -2124,6 +2129,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.227  2006/10/06 17:18:12  phase1geo
+ Adding support for the final block type.  Added final1 diagnostic to regression
+ suite.  Full regression passes.
+
  Revision 1.226  2006/09/25 22:22:28  phase1geo
  Adding more support for memory reporting to both score and report commands.
  We are getting closer; however, regressions are currently broken.  Checkpointing.

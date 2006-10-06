@@ -53,9 +53,15 @@ void sim_thread( thread* thr );
 /*! \brief Simulates current timestep. */
 void sim_simulate();
 
+/*! \brief Simulates the final timestep. */
+void sim_simulate_final();
 
 /*
  $Log$
+ Revision 1.17  2006/10/06 17:18:13  phase1geo
+ Adding support for the final block type.  Added final1 diagnostic to regression
+ suite.  Full regression passes.
+
  Revision 1.16  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
