@@ -730,6 +730,7 @@ typedef enum exp_op_type_e {
   EXP_OP_DLY_OP,          /*!< 86:0x56.  Child expression of DLY_ASSIGN, points to the delay expr and the op expr */
   EXP_OP_RPT_DLY,         /*!< 87:0x57.  Child expression of DLY_OP, points to the delay expr and the repeat expr */
   EXP_OP_DIM,             /*!< 88:0x58.  Specifies a selection dimension (right expression points to a selection expr) */
+  EXP_OP_WAIT,            /*!< 89:0x59.  Specifies a wait statement */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -2200,6 +2201,11 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.238  2006/10/06 22:45:57  phase1geo
+ Added support for the wait() statement.  Added wait1 diagnostic to regression
+ suite to verify its behavior.  Also added missing GPL license note at the top
+ of several *.h and *.c files that are somewhat new.
+
  Revision 1.237  2006/10/06 17:18:13  phase1geo
  Adding support for the final block type.  Added final1 diagnostic to regression
  suite.  Full regression passes.

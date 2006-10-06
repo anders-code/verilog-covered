@@ -1053,6 +1053,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
               case EXP_OP_REPEAT   :  *size = r_size + 10;          strcpy( code_fmt, "        %s  " );      break;
               case EXP_OP_WHILE    :  *size = r_size + 9;           strcpy( code_fmt, "       %s  " );       break;
+              case EXP_OP_WAIT     :  *size = r_size + 8;           strcpy( code_fmt, "      %s  " );        break;
               case EXP_OP_DLY_OP   :
               case EXP_OP_RPT_DLY  :  *size = l_size + r_size + 1;  strcpy( code_fmt, "%s %s" );             break;
               case EXP_OP_TASK_CALL :
@@ -2667,6 +2668,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.161  2006/10/06 22:45:57  phase1geo
+ Added support for the wait() statement.  Added wait1 diagnostic to regression
+ suite to verify its behavior.  Also added missing GPL license note at the top
+ of several *.h and *.c files that are somewhat new.
+
  Revision 1.160  2006/10/05 21:43:17  phase1geo
  Added support for increment and decrement operators in expressions.  Also added
  proper parsing and handling support for immediate and postponed increment/decrement.

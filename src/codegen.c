@@ -851,6 +851,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           codegen_create_expr( code, code_depth, expr->line, "while( ", right_code, right_code_depth, expr->right, " )",
                                NULL, 0, NULL, NULL );
           break;
+        case EXP_OP_WAIT     :
+          codegen_create_expr( code, code_depth, expr->line, "wait( ", right_code, right_code_depth, expr->right, " )",
+                               NULL, 0, NULL, NULL );
+          break;
         case EXP_OP_NEGATE   :
           codegen_create_expr( code, code_depth, expr->line, "-", right_code, right_code_depth, expr->right, NULL,
                                NULL, 0, NULL, NULL );
@@ -900,6 +904,11 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.79  2006/10/06 22:45:57  phase1geo
+ Added support for the wait() statement.  Added wait1 diagnostic to regression
+ suite to verify its behavior.  Also added missing GPL license note at the top
+ of several *.h and *.c files that are somewhat new.
+
  Revision 1.78  2006/10/05 21:43:17  phase1geo
  Added support for increment and decrement operators in expressions.  Also added
  proper parsing and handling support for immediate and postponed increment/decrement.
