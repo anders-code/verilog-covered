@@ -2343,7 +2343,9 @@ bool expression_op_func__pedge( expression* expr, thread* thr ) {
   value1a.part.exp.value = expr->right->value->value[0].part.exp.value;
   value1b.all            = expr->left->value->value[0].all;
 
-  if( (value1a.part.exp.value != value1b.part.exp.value) && (value1a.part.exp.value == 1) && thr->exec_first ) {
+  if( (value1a.part.exp.value != value1b.part.exp.value) &&
+      ((value1b.part.exp.value == 0) || (value1a.part.exp.value == 1)) &&
+      thr->exec_first ) {
     expr->suppl.part.true   = 1;
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
@@ -2377,7 +2379,9 @@ bool expression_op_func__nedge( expression* expr, thread* thr ) {
   value1a.part.exp.value = expr->right->value->value[0].part.exp.value;
   value1b.all            = expr->left->value->value[0].all;
 
-  if( (value1a.part.exp.value != value1b.part.exp.value) && (value1a.part.exp.value == 0) && thr->exec_first ) {
+  if( (value1a.part.exp.value != value1b.part.exp.value) &&
+      ((value1b.part.exp.value == 1) || (value1a.part.exp.value == 0)) &&
+      thr->exec_first ) {
     expr->suppl.part.true   = 1;
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
@@ -3910,6 +3914,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.222  2006/10/07 02:16:22  phase1geo
+ Fixing bug in PEDGE and NEDGE expressions to make them completely compliant
+ to the Verilog LRM.
+
  Revision 1.221  2006/10/07 02:06:57  phase1geo
  Fixing bug in report command in that wait events were not being considered "covered"
  when they successfully passed in simulation.  Added wait1.1 diagnostic which found this
