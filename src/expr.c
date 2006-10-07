@@ -3197,6 +3197,7 @@ bool expression_op_func__wait( expression* expr, thread* thr ) {
   /* If the right expression evaluates to TRUE, continue; otherwise, do a context switch */
   if( vec.value[0].part.val.value == 1 ) {
     expr->suppl.part.eval_t = 1;
+    expr->suppl.part.true   = 1;
     retval                  = TRUE;
   } else {
     expr->suppl.part.eval_t = 0;
@@ -3909,6 +3910,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.221  2006/10/07 02:06:57  phase1geo
+ Fixing bug in report command in that wait events were not being considered "covered"
+ when they successfully passed in simulation.  Added wait1.1 diagnostic which found this
+ bug.  Also added feature in VPI mode that will only get signals from simulator that it
+ needs (rather than all of the signals).  This should improve performance when running
+ in this mode.
+
  Revision 1.220  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top
