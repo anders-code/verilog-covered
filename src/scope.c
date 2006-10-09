@@ -171,8 +171,6 @@ bool scope_find_param( char* name, func_unit* curr_funit, mod_parm** found_parm,
 */
 bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line ) {
 
-  vsignal   sig;       /* Temporary holder for signal */
-  sig_link* sigl;      /* Pointer to current signal link */
   char*     sig_name;  /* Signal basename holder */
   char*     scope;     /* Signal scope holder */
 
@@ -181,8 +179,7 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
   *found_funit = curr_funit;
   *found_sig   = NULL;
 
-  sig_name     = strdup_safe( name, __FILE__, __LINE__ );
-  sig.name     = sig_name;
+  sig_name = strdup_safe( name, __FILE__, __LINE__ );
 
   /* If there is a hierarchical reference being made, adjust the signal name and current functional unit */
   if( !scope_local( name ) ) {
@@ -345,6 +342,10 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.30  2006/10/09 20:27:07  phase1geo
+ Fixing simulator issue and adding parsing support for typedef'ed instantiations
+ within modules.
+
  Revision 1.29  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.
