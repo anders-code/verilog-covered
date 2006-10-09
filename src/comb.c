@@ -2627,8 +2627,8 @@ void combination_report( FILE* ofile, bool verbose ) {
       strcpy( tmp, leading_hierarchies[0] );
     }
 
-    fprintf( ofile, "Instance                                                                    Logic Combinations\n" );
-    fprintf( ofile, "                                                                      Hit/Miss/Total    Percent hit\n" );
+    fprintf( ofile, "                                                                            Logic Combinations\n" );
+    fprintf( ofile, "Instance                                                              Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     instl = inst_head;
@@ -2648,8 +2648,8 @@ void combination_report( FILE* ofile, bool verbose ) {
 
   } else {
 
-    fprintf( ofile, "Module/Task/Function                Filename                                Logic Combinations\n" );
-    fprintf( ofile, "                                                                      Hit/Miss/Total    Percent hit\n" );
+    fprintf( ofile, "                                                                            Logic Combinations\n" );
+    fprintf( ofile, "Module/Task/Function                Filename                          Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     missed_found = combination_funit_summary( ofile, funit_head );
@@ -2668,6 +2668,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.162  2006/10/09 17:54:18  phase1geo
+ Fixing support for VPI to allow it to properly get linked to the simulator.
+ Also fixed inconsistency in generate reports and updated appropriately in
+ regressions for this change.  Full regression now passes.
+
  Revision 1.161  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top

@@ -476,6 +476,7 @@ bool db_read( char* file, int read_mode ) {
 
 }
 
+#ifndef VPI_ONLY
 /*!
  \param scope  Name of functional unit instance being added.
  \param name   Name of functional unit being instantiated.
@@ -1592,6 +1593,7 @@ void db_add_statement( statement* stmt, statement* start ) {
   }
 
 }
+#endif
 
 /*!
  \param stmt  Pointer to statement to remove from memory.
@@ -1631,6 +1633,7 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
 
 }
 
+#ifndef VPI_ONLY
 /*!
  \param stmt  Pointer to statement to remove from memory.
 
@@ -1880,6 +1883,7 @@ void db_parse_attribute( attr_param* ap ) {
   attribute_dealloc( ap );
 
 }
+#endif /* VPI_ONLY */
 
 /*!
  \param stmt  Pointer to statement to compare with all expressions
@@ -2129,6 +2133,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.228  2006/10/09 17:54:19  phase1geo
+ Fixing support for VPI to allow it to properly get linked to the simulator.
+ Also fixed inconsistency in generate reports and updated appropriately in
+ regressions for this change.  Full regression now passes.
+
  Revision 1.227  2006/10/06 17:18:12  phase1geo
  Adding support for the final block type.  Added final1 diagnostic to regression
  suite.  Full regression passes.

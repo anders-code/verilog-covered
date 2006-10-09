@@ -959,6 +959,7 @@ void bind_perform( bool cdd_reading, int pass ) {
 
     }
 
+#ifndef VPI_ONLY
     /* If we are in parse mode, resolve all parameters and arrays of instances now */
     if( !cdd_reading && (pass == 0) ) {
       inst_link* instl;
@@ -993,6 +994,7 @@ void bind_perform( bool cdd_reading, int pass ) {
         instl = instl->next;
       }
     }
+#endif
 
   }
 
@@ -1027,6 +1029,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.101  2006/10/09 17:54:18  phase1geo
+ Fixing support for VPI to allow it to properly get linked to the simulator.
+ Also fixed inconsistency in generate reports and updated appropriately in
+ regressions for this change.  Full regression now passes.
+
  Revision 1.100  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
