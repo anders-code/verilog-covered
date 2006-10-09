@@ -29,6 +29,7 @@
 #include "obfuscate.h"
 
 
+#ifndef VPI_ONLY
 extern char       user_msg[USER_MSG_LENGTH];
 extern sig_range  curr_prange;
 extern sig_range  curr_urange;
@@ -87,6 +88,7 @@ int VLwrap() {
   return -1;
 
 }
+#endif /* VPI_ONLY */
 
 /*!
  \param range   Pointer to signal range to deallocate
@@ -120,6 +122,7 @@ void parser_dealloc_sig_range( sig_range* range, bool rm_ptr ) {
 
 }
 
+#ifndef VPI_ONLY
 /*!
  \param packed  Specifies if curr_prange (TRUE) or curr_urange (FALSE) should be copied.
 
@@ -275,10 +278,16 @@ bool parser_check_generation( int gen ) {
   return( retval );
 
 }
+#endif /* VPI_ONLY */
 
 
 /*
  $Log$
+ Revision 1.14  2006/10/09 17:54:19  phase1geo
+ Fixing support for VPI to allow it to properly get linked to the simulator.
+ Also fixed inconsistency in generate reports and updated appropriately in
+ regressions for this change.  Full regression now passes.
+
  Revision 1.13  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.
