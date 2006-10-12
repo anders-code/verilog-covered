@@ -73,6 +73,9 @@ nibble vector_bit_val( nibble* value, int pos );
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
 bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, int from_idx, int to_idx );
 
+/*! \brief Bit fills the given vector with the appropriate value given the specified msb and lsb */
+bool vector_bit_fill( vector* vec, int msb, int lsb );
+
 /*! \brief Performs a zero-fill of all bits starting at lsb and continuing to the vector's msb */
 bool vector_zero_fill( vector* vec, int msb, int lsb );
 
@@ -160,6 +163,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.41  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.40  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
