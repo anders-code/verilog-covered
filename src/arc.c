@@ -1149,9 +1149,8 @@ bool arc_db_merge( char** base, char** line, bool same ) {
 */
 void arc_get_states( char*** states, int* state_size, const char* arcs, bool hit, bool any ) {
 
-  char* str;  /* Holder for string value of current state */
-  int   i;    /* Loop iterator */
-  int   j;    /* Loop iterator */
+  int i;  /* Loop iterator */
+  int j;  /* Loop iterator */
 
   /* Initialize states array to NULL */
   *states     = NULL;
@@ -1289,6 +1288,9 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.39  2006/10/12 22:48:45  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.38  2006/09/20 22:38:09  phase1geo
  Lots of changes to support memories and multi-dimensional arrays.  We still have
  issues with endianness and VCS regressions have not been run, but this is a significant
