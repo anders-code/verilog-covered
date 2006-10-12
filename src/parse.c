@@ -33,6 +33,7 @@
 #include "parser_misc.h"
 #include "race.h"
 #include "sim.h"
+#include "stmt_blk.h"
 #include "util.h"
 #include "vcd.h"
 
@@ -234,6 +235,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.46  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.45  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.
