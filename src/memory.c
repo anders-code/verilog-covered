@@ -27,6 +27,7 @@
 #include "link.h"
 #include "memory.h"
 #include "obfuscate.h"
+#include "ovl.h"
 #include "vector.h"
 #include "vsignal.h"
 #include "util.h"
@@ -1186,6 +1187,9 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.8  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.7  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top
