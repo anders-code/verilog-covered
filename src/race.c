@@ -663,7 +663,6 @@ void race_check_modules() {
   stmt_iter   si;        /* Statement iterator */
   funit_link* modl;      /* Pointer to current module link */
   int         i;         /* Loop iterator */
-  funit_link* tfl;       /* Pointer to current task/function/named block link */
   int         ignore;    /* Placeholder */
   funit_inst* inst;      /* Instance of this functional unit */
 
@@ -972,7 +971,6 @@ bool race_collect_lines( char* funit_name, int funit_type, int** slines, int** e
   func_unit   mod;               /* Temporary module used to search for module name */
   funit_link* modl;              /* Pointer to found module link containing specified module */
   race_blk*   curr_race = NULL;  /* Pointer to current race condition block */
-  int         i;                 /* Loop iterator */
   int         line_size = 20;    /* Current number of lines allocated in lines array */
 
   mod.name = strdup_safe( funit_name, __FILE__, __LINE__ );
@@ -1034,6 +1032,9 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.51  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.50  2006/10/04 22:04:16  phase1geo
  Updating rest of regressions.  Modified the way we are setting the memory rd
  vector data bit (should optimize the score command just a bit).  Also updated
