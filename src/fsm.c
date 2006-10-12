@@ -44,6 +44,7 @@
 #include "fsm.h"
 #include "link.h"
 #include "obfuscate.h"
+#include "ovl.h"
 #include "util.h"
 #include "vector.h"
 
@@ -1133,6 +1134,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.63  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.62  2006/10/03 22:47:00  phase1geo
  Adding support for read coverage to memories.  Also added memory coverage as
  a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
