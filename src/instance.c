@@ -31,8 +31,11 @@
 #include <assert.h>
 
 #include "defines.h"
+#include "expr.h"
 #include "func_unit.h"
+#include "gen_item.h"
 #include "instance.h"
+#include "link.h"
 #include "param.h"
 #include "static.h"
 #include "util.h"
@@ -870,6 +873,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.63  2006/10/12 22:48:46  phase1geo
+ Updates to remove compiler warnings.  Still some work left to go here.
+
  Revision 1.62  2006/10/09 17:54:19  phase1geo
  Fixing support for VPI to allow it to properly get linked to the simulator.
  Also fixed inconsistency in generate reports and updated appropriately in
