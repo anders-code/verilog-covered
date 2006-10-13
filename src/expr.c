@@ -3830,6 +3830,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
           bind_rm_stmt( expr->id );
         }
 
+      /* If this is a task call, remove the bind */
+      } else if( expr->op == EXP_OP_TASK_CALL ) {
+         
+        bind_remove( expr->id, FALSE );
+
       }
 
     } else {
@@ -3916,6 +3921,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.224  2006/10/13 22:46:31  phase1geo
+ Things are a bit of a mess at this point.  Adding generate12 diagnostic that
+ shows a failure in properly handling generates of instances.
+
  Revision 1.223  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 
