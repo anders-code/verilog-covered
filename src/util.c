@@ -49,6 +49,7 @@
 #include "util.h"
 #include "link.h"
 #include "obfuscate.h"
+#include "vpi.h"
 
 extern bool        report_gui;
 #ifndef VPI_ONLY
@@ -131,7 +132,7 @@ void print_output( char* msg, int type, char* file, int line ) {
     case DEBUG:
       if( debug_mode ) {
 #ifdef VPI_ONLY
-        vpi_printf( "covered VPI: %s\n", msg );
+        vpi_print_output( msg );
 #else
         printf( "%s\n", msg );
 #endif
@@ -140,7 +141,7 @@ void print_output( char* msg, int type, char* file, int line ) {
     case NORMAL:
       if( !output_suppressed || debug_mode ) {
 #ifdef VPI_ONLY
-        vpi_printf( "covered VPI: %s\n", msg );
+        vpi_print_output( msg );
 #else
         printf( "%s\n", msg );
 #endif
@@ -1122,6 +1123,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.56  2006/10/13 22:46:31  phase1geo
+ Things are a bit of a mess at this point.  Adding generate12 diagnostic that
+ shows a failure in properly handling generates of instances.
+
  Revision 1.55  2006/08/31 22:32:18  phase1geo
  Things are in a state of flux at the moment.  I have added proper parsing support
  for assertions, properties and sequences.  Also added partial support for the $root
