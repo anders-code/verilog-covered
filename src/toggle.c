@@ -93,7 +93,6 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_h
   sig_link*   curr_sig;       /* Pointer to current signal link being evaluated */
   int         hit01;          /* Number of bits that toggled from 0 to 1 */
   int         hit10;          /* Number of bits that toggled from 1 to 0 */
-  exp_link*   expl;           /* Pointer to expression linked list */
      
   /* First, find functional unit in functional unit array */
   funit.name = funit_name;
@@ -605,6 +604,9 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.35.8.1.4.2  2006/10/13 16:11:38  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.35.8.1.4.1  2006/08/18 04:50:51  phase1geo
  First swag at integrating name obfuscation for all output (with the exception
  of CDD output).

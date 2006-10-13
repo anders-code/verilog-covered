@@ -253,8 +253,6 @@ void statement_queue_compare( statement* stmt ) {
 */
 void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) {
 
-  exp_link* expl;  /* Pointer to current element in expression list */
-
   assert( stmt != NULL );
 
 #ifdef EFFICIENCY_CODE
@@ -300,7 +298,6 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
   int        id;             /* ID of root expression that is associated with this statement */
   int        true_id;        /* ID of root expression that is associated with the next_true statement */
   int        false_id;       /* ID of root expression that is associated with the next_false statement */
-  int        tf_call_id;     /* ID of task/function call expression that points to this statement */
   expression tmpexp;         /* Temporary expression used for expression search */
   statement* stmt;           /* Pointer to newly created statement */
   exp_link*  expl;           /* Pointer to found expression link */
@@ -606,9 +603,7 @@ void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail 
 */
 statement* statement_find_head_statement( statement* stmt, stmt_link* head ) {
 
-  stmt_iter  si;     /* Statement iterator used to find head statement */
-  stmt_link* stmtl;  /* Pointer to current statement in stmt_link list */
-  func_unit* tmp_funit;
+  stmt_iter si;  /* Statement iterator used to find head statement */
 
   assert( stmt != NULL );
 
@@ -704,6 +699,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.76.4.1.8.4  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.76.4.1.8.3  2006/10/04 22:07:57  phase1geo
  Fixing bug found in development branch and fixing missing document links in
  user documentation.

@@ -617,7 +617,6 @@ void race_check_modules() {
   stmt_iter   si;        /* Statement iterator */
   funit_link* modl;      /* Pointer to current module link */
   int         i;         /* Loop iterator */
-  funit_link* tfl;       /* Pointer to current task/function/named block link */
 
   modl = funit_head;
 
@@ -914,7 +913,6 @@ bool race_collect_lines( char* funit_name, int funit_type, int** slines, int** e
   func_unit   mod;               /* Temporary module used to search for module name */
   funit_link* modl;              /* Pointer to found module link containing specified module */
   race_blk*   curr_race = NULL;  /* Pointer to current race condition block */
-  int         i;                 /* Loop iterator */
   int         line_size = 20;    /* Current number of lines allocated in lines array */
 
   mod.name = strdup_safe( funit_name, __FILE__, __LINE__ );
@@ -976,6 +974,9 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.39.12.2  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.39.12.1  2006/08/18 04:50:51  phase1geo
  First swag at integrating name obfuscation for all output (with the exception
  of CDD output).

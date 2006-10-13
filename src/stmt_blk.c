@@ -29,6 +29,7 @@
 #include "statement.h"
 #include "db.h"
 #include "expr.h"
+#include "util.h"
 
 
 /*! Pointer to head of statement block list to remove */
@@ -130,6 +131,9 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.3.12.3  2006/10/13 16:11:38  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.3.12.2  2006/08/27 04:17:39  phase1geo
  Fixing bug 1546059 and also fixes a statement connection problem.  Full IV
  regression passes; however, I am going to attempt to fix the bug in a way that

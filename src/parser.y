@@ -3430,7 +3430,6 @@ register_variable
   | IDENTIFIER '[' ignore_more static_expr ':' static_expr ignore_less ']'
     {
       /* We don't support memory coverage */
-      char* name;
       if( $1 != NULL ) {
         db_add_signal( $1, curr_sig_type, curr_range->left, curr_range->right, curr_signed, curr_mba, @1.first_line, @1.first_column, FALSE );
         free_safe( $1 );
@@ -3731,7 +3730,6 @@ dr_strength1
 event_control
   : '@' IDENTIFIER
     {
-      vsignal*    sig;
       expression* tmp;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );

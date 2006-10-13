@@ -35,6 +35,9 @@
 #include "func_unit.h"
 #include "util.h"
 #include "param.h"
+#include "static.h"
+#include "expr.h"
+#include "link.h"
 
 
 extern int curr_expr_id;
@@ -688,6 +691,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.40.4.1.8.5  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.40.4.1.8.4  2006/09/11 14:54:28  phase1geo
  Attempting to fix memory access problems during the db_close function.
 

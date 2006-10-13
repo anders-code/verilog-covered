@@ -51,6 +51,8 @@
 #include "race.h"
 #include "scope.h"
 #include "obfuscate.h"
+#include "tree.h"
+#include "vector.h"
 
 
 extern char*       top_module;
@@ -921,13 +923,11 @@ int db_curr_signal_count() {
 */
 expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name ) {
 
-  expression* expr;                 /* Temporary pointer to newly created expression */
-  mod_parm*   mparm       = NULL;   /* Module parameter matching signal of current module */
-  bool        sig_is_parm = FALSE;  /* Specifies if current signal is a module parameter */
-  func_unit*  func_funit;           /* Pointer to function, if we are nested in one */
+  expression* expr;        /* Temporary pointer to newly created expression */
+  func_unit*  func_funit;  /* Pointer to function, if we are nested in one */
 #ifdef DEBUG_MODE
-  int         right_id;             /* ID of right expression */
-  int         left_id;              /* ID of left expression */
+  int         right_id;    /* ID of right expression */
+  int         left_id;     /* ID of left expression */
 
   if( right == NULL ) {
     right_id = 0;
@@ -1246,11 +1246,6 @@ void db_add_statement( statement* stmt, statement* start ) {
  statement.c in its deallocation algorithm.
 */
 void db_remove_statement_from_current_funit( statement* stmt ) {
-
-  funit_link* funitl;  /* Pointer to current functional unit link */
-  mod_parm*   mparm;   /* Pointer to current module parameter */
-  exp_link*   expl;    /* Pointer to current expression link */
-  exp_link*   texpl;   /* Temporary pointer to current expression link */
 
   if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
@@ -1728,6 +1723,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.175.4.1.4.1.4.9  2006/10/13 16:11:36  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.175.4.1.4.1.4.8  2006/09/11 14:54:28  phase1geo
  Attempting to fix memory access problems during the db_close function.
 

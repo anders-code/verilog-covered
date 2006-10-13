@@ -86,6 +86,7 @@
 #include "iter.h"
 #include "link.h"
 #include "vsignal.h"
+#include "util.h"
 
 
 extern nibble   or_optab[OPTAB_SIZE];
@@ -360,9 +361,8 @@ void sim_expr_changed( expression* expr ) {
 */
 thread* sim_add_thread( thread* parent, statement* stmt ) {
 
-  sig_link* sigl;                 /* Pointer to current signal in signal list */
-  thread*   thr         = NULL;   /* Pointer to new thread to create */
-  bool      first_child = FALSE;  /* Specifies if this is the first child to be added to the parent */
+  thread* thr         = NULL;   /* Pointer to new thread to create */
+  bool    first_child = FALSE;  /* Specifies if this is the first child to be added to the parent */
 
   assert( stmt != NULL );
 
@@ -548,10 +548,7 @@ void sim_kill_thread( thread* thr ) {
 */
 void sim_kill_thread_with_stmt( statement* stmt ) {
 
-  thread* curr  = NULL;   /* Pointer to current thread being examined */
-  thread* parent;         /* Pointer to current parent thread being examined */
-  thread* child;          /* Pointer to current child being examined */
-  bool    found = FALSE;  /* Specifies if matching statement has been found yet */
+  thread* child;  /* Pointer to current child being examined */
 
   assert( stmt != NULL );
   assert( stmt->static_thr != NULL );
@@ -687,7 +684,6 @@ bool sim_expression( expression* expr, thread* thr ) {
 void sim_thread( thread* thr ) {
 
   statement* stmt;                  /* Pointer to current statement to evaluate */
-  sig_link*  sigl;                  /* Pointer to current signal in signal list */
   bool       expr_changed = FALSE;  /* Specifies if expression tree was modified in any way */
 
   /* Set the value of stmt with the head_stmt */
@@ -795,6 +791,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.68.12.3  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.68.12.2  2006/08/17 22:41:36  phase1geo
  Fixing bug 1538920, correcting the calculation of the AEDGE operator.  Also
  fixed this calculation when it is examining events -- always passes when it

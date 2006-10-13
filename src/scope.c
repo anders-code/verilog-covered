@@ -51,7 +51,6 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
 
   funit_inst* curr_inst;      /* Pointer to current instance */
   funit_inst* funiti = NULL;  /* Pointer to functional unit instance found */
-  func_unit*  funit;          /* Pointer to parent functional unit */
   int         ignore = 0;     /* Used for functional unit instance search */
   char        tscope[4096];   /* Temporary scope value */
 
@@ -364,6 +363,9 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.12.8.1.4.5  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.12.8.1.4.4  2006/08/18 04:50:51  phase1geo
  First swag at integrating name obfuscation for all output (with the exception
  of CDD output).

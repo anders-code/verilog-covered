@@ -20,6 +20,7 @@
 #include "util.h"
 #include "info.h"
 #include "binding.h"
+#include "sim.h"
 
 
 extern int merged_code;
@@ -90,7 +91,7 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
     
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( merged_file != NULL ) {
           print_output( "Only one -o option is allowed on the merge command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -202,6 +203,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.22.12.3  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.22.12.2  2006/08/18 17:56:39  phase1geo
  Fixing bug 1542454 and fixing hole in event triggering/detection logic that
  was created when fixing bug 1538920.

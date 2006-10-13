@@ -257,7 +257,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
     
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         report_parse_metrics( argv[i] );
       }
@@ -283,7 +283,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-d", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( argv[i][0] == 's' ) {
           report_comb_depth = REPORT_SUMMARY;
@@ -300,7 +300,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( output_file != NULL ) {
           print_output( "Only one -o option is allowed on the report command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -647,11 +647,13 @@ int command_report( int argc, int last_arg, char** argv ) {
 
   int   retval = 0;       /* Return value of this function */
   FILE* ofile;            /* Pointer to output stream */
+#ifdef HAVE_TCLTK
   char* covered_home;     /* Pathname to Covered's home installation directory */
   char* covered_browser;  /* Name of browser to use for GUI help pages */
   char* covered_version;  /* String version of current Covered version */
   char* main_file;        /* Name of main TCL file to interpret */ 
   char* user_home;        /* HOME environment variable */
+#endif
 
   /* Parse score command-line */
   if( report_parse_args( argc, last_arg, argv ) ) {
@@ -776,6 +778,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.57.12.3  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.57.12.2  2006/08/18 17:56:39  phase1geo
  Fixing bug 1542454 and fixing hole in event triggering/detection logic that
  was created when fixing bug 1538920.

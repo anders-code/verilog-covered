@@ -133,6 +133,7 @@
 #include "fsm.h"
 #include "func_unit.h"
 #include "vsignal.h"
+#include "stmt_blk.h"
 
 
 extern nibble xor_optab[OPTAB_SIZE];
@@ -949,8 +950,6 @@ statement* expression_get_root_statement( expression* exp ) {
 */
 void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
 
-  func_unit* funit;  /* Pointer to functional unit containing the statement attached to this expression */
-
   fprintf( file, "%d %d %d %x %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
     expression_get_id( expr, parse_mode ),
@@ -1010,7 +1009,6 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
   vector*     vec;            /* Holders vector value of this expression */
   expression  texp;           /* Temporary expression link holder for searching */
   exp_link*   expl;           /* Pointer to found expression in functional unit */
-  char        tmpname[1024];  /* Name of signal/functional unit that the current expression is bound to */
   int         tmpid;          /* ID of statement that the current expression is bound to */
 
   if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
@@ -1298,8 +1296,7 @@ const char* expression_string_op( int op ) {
 void expression_display( expression* expr ) {
 
   int right_id;  /* Value of right expression ID */
-  int left_id;   /* Value of left expression ID  */
-  char op[20];   /* String representation of expression operation */    
+  int left_id;   /* Value of left expression ID */
 
   assert( expr != NULL );
 
@@ -2553,6 +2550,8 @@ bool expression_op_func__exponent( expression* expr, thread* thr ) {
 
   }
 
+  return( retval );
+
 }
 
 /*!
@@ -2565,13 +2564,14 @@ bool expression_op_func__exponent( expression* expr, thread* thr ) {
 */
 bool expression_op_func__passign( expression* expr, thread* thr ) {
 
-  int intval = 0;  /* Integer value */
+  bool retval;      /* Return value for this function */
+  int  intval = 0;  /* Integer value */
 
   switch( expr->sig->suppl.part.type ) {
 
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
-      vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+      retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
       vsignal_propagate( expr->sig );
       break;
 
@@ -2581,6 +2581,7 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
     */
     case SSUPPL_TYPE_OUTPUT :
       expression_assign( expr->right, expr, &intval );
+      retval = TRUE;
       break;
 
     /* We don't currently support INOUT as these are not used in tasks or functions */
@@ -2590,6 +2591,8 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
       break;
 
   }
+
+  return( retval );
 
 }
 
@@ -2923,7 +2926,6 @@ void expression_set_assigned( expression* expr ) {
 void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 
   int intval1;  /* Integer value to use */
-  int intval2;  /* Integer value to use */
 
   if( lhs != NULL ) {
 
@@ -3176,6 +3178,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179.4.1.6.1.2.12  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.179.4.1.6.1.2.11  2006/10/06 18:36:08  phase1geo
  Updating regression runs and removing unnecessary output from expr.c.  Also
  added check_failures script to diagnostic verilog directory for future use.

@@ -45,6 +45,9 @@ void db_add_module( char* name, char* file, int start_line );
 /*! \brief Adds specified task/function to functional unit list.  Called by parser. */
 bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line );
 
+/*! \brief Ends a function, task or namedblock description.  Called by parser. */
+void db_end_function_task_namedblock( int end_line );
+
 /*! \brief Adds specified declared parameter to parameter list.  Called by parser. */
 void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, char* name, expression* expr, bool local );
 
@@ -140,6 +143,9 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.57.12.2  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.57.12.1  2006/08/11 04:13:11  phase1geo
  Fixing another issue related to bug 1535412 dealing with implicit event
  expressions and embedded memories.  I have altered the way that memories

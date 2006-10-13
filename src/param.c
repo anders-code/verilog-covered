@@ -74,6 +74,8 @@
 #include "func_unit.h"
 #include "instance.h"
 #include "obfuscate.h"
+#include "func_unit.h"
+#include "static.h"
 
 
 /*!
@@ -905,8 +907,6 @@ void param_resolve( funit_inst* inst ) {
 */
 void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode ) {
 
-  exp_link* curr;  /* Pointer to current expression link element */
-
   /*
    If the parameter does not have a name, it will not be used in expressions;
    therefore, there is no reason to output this parameter to the CDD file.
@@ -1008,6 +1008,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.60.4.2.4.1.2.1.2.4  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.60.4.2.4.1.2.1.2.3  2006/09/04 05:13:48  phase1geo
  Final fix for bug 1546059.
 

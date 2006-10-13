@@ -41,6 +41,8 @@
 #include "iter.h"
 #include "fsm.h"
 #include "race.h"
+#include "obfuscate.h"
+#include "stat.h"
 
 
 extern char        user_msg[USER_MSG_LENGTH];
@@ -845,6 +847,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.18.12.3  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.18.12.2  2006/09/02 20:46:44  phase1geo
  Fixing memory access issues that were found in the development branch.
 

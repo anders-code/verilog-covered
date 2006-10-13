@@ -114,8 +114,6 @@ vsignal* vsignal_create( char* name, int type, int width, int lsb, int line, int
 */
 void vsignal_db_write( vsignal* sig, FILE* file ) {
 
-  exp_link* curr;  /* Pointer to current expression link element */
-
   /* Don't write this vsignal if it isn't usable by Covered */
   if( (sig->suppl.part.not_handled == 0) && (sig->value->width != -1) ) {
 
@@ -149,18 +147,14 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
 */
 bool vsignal_db_read( char** line, func_unit* curr_funit ) {
 
-  bool       retval = TRUE;  /* Return value for this function */
-  char       name[256];      /* Name of current vsignal */
-  vsignal*   sig;            /* Pointer to the newly created vsignal */
-  vector*    vec;            /* Vector value for this vsignal */
-  int        lsb;            /* Least-significant bit of this vsignal */
-  int        sline;          /* Declared line number */
-  ssuppl     suppl;          /* Supplemental field */
-  int        exp_id;         /* Expression ID */
-  int        chars_read;     /* Number of characters read from line */
-  expression texp;           /* Temporary expression link for searching purposes */
-  exp_link*  expl;           /* Temporary expression link for storage */
-  func_unit* parent_mod;     /* Pointer to parent module */
+  bool     retval = TRUE;  /* Return value for this function */
+  char     name[256];      /* Name of current vsignal */
+  vsignal* sig;            /* Pointer to the newly created vsignal */
+  vector*  vec;            /* Vector value for this vsignal */
+  int      lsb;            /* Least-significant bit of this vsignal */
+  int      sline;          /* Declared line number */
+  ssuppl   suppl;          /* Supplemental field */
+  int      chars_read;     /* Number of characters read from line */
 
   /* Get name values. */
   if( sscanf( *line, "%s %d %d %x %n", name, &lsb, &sline, &(suppl.all), &chars_read ) == 4 ) {
@@ -362,8 +356,7 @@ void vsignal_propagate( vsignal* sig ) {
 */
 void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
 
-  bool      vec_changed;  /* Specifies if assigned value differed from original value */
-  exp_link* curr_expr;    /* Pointer to current expression link under evaluation */
+  bool vec_changed;  /* Specifies if assigned value differed from original value */
 
   assert( sig->value != NULL );
 
@@ -513,6 +506,9 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.22.4.1.4.1.4.3  2006/10/13 16:11:38  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.22.4.1.4.1.4.2  2006/08/18 04:50:51  phase1geo
  First swag at integrating name obfuscation for all output (with the exception
  of CDD output).

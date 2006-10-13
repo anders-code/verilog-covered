@@ -81,6 +81,7 @@
 #include "vsignal.h"
 #include "expr.h"
 #include "instance.h"
+#include "iter.h"
 #include "link.h"
 #include "util.h"
 #include "vector.h"
@@ -480,7 +481,6 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
                   bool clear_assigned, int exp_line, bool bind_locally ) {
 
   bool       retval = TRUE;  /* Return value for this function */
-  char*      tmpname;        /* Temporary name containing unused signal character */
   vsignal*   found_sig;      /* Pointer to found signal in design for the given name */
   func_unit* found_funit;    /* Pointer to found functional unit containing given signal */
   statement* stmt;           /* Pointer to root statement for the given expression */
@@ -759,7 +759,6 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
   vsignal    sig;            /* Temporary signal for comparison purposes */
   sig_link*  sigl;           /* Temporary signal link holder */
   func_unit* found_funit;    /* Pointer to found task/function functional unit */
-  statement* stmt;           /* Pointer to root statement for expression calling a function */
   char       rest[4096];     /* Temporary string */
   char       back[4096];     /* Temporary string */
   int        port_order;     /* Port order value */
@@ -859,21 +858,11 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 */
 void bind( bool cdd_reading ) {
   
-  funit_inst* funiti;        /* Pointer to found functional unit instance */
-  exp_bind*   curr_eb;       /* Pointer to current expression binding */
-  int         id;            /* Current expression id -- used for removal */
-  mod_parm*   mparm;         /* Newly created module parameter */
-  int         i;             /* Loop iterator */
-  int         ignore;        /* Number of instances to ignore */
-  funit_inst* inst;          /* Pointer to current instance to modify */
-  inst_parm*  curr_iparm;    /* Pointer to current instance parameter */
-  bool        done = FALSE;  /* Specifies if the current signal is completed */
-  int         orig_width;    /* Original width of found signal */
-  int         orig_lsb;      /* Original lsb of found signal */
-  bool        bound;         /* Specifies if the current expression was successfully bound or not */
-  statement*  tmp_stmt;      /* Pointer to temporary statement */
-  exp_link*   tmp_expl;      /* Pointer to current expression link in signal's expression list */
-  int         pass;          /* Loop iterator */
+  exp_bind*  curr_eb;   /* Pointer to current expression binding */
+  int        id;        /* Current expression id -- used for removal */
+  bool       bound;     /* Specifies if the current expression was successfully bound or not */
+  statement* tmp_stmt;  /* Pointer to temporary statement */
+  int        pass;      /* Loop iterator */
     
   /* Make three passes through binding list, 0=local signal/param bindings, 1=remote signal/param bindings */
   for( pass=0; pass<2; pass++ ) {
@@ -1007,6 +996,9 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.71.4.1.4.3.4.4  2006/10/13 16:11:36  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.71.4.1.4.3.4.3  2006/08/18 04:50:44  phase1geo
  First swag at integrating name obfuscation for all output (with the exception
  of CDD output).

@@ -42,6 +42,7 @@
 #include "fsm_var.h"
 #include "info.h"
 #include "perf.h"
+#include "db.h"
 
 
 char* top_module             = NULL;                /*!< Name of top-level module to score */
@@ -241,7 +242,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( instance_specified ) {
           print_output( "Only one -i option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -253,7 +254,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( output_db != NULL ) {
           print_output( "Only one -o option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -270,7 +271,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-ts", argv[i], 3 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( timestep_update != 0 ) {
           print_output( "Only one -ts option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -281,7 +282,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-t", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( top_module != NULL ) {
           print_output( "Only one -t option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -298,28 +299,28 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-I", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         retval = search_add_include_path( argv[i] );
       }
 
     } else if( strncmp( "-y", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         retval = search_add_directory_path( argv[i] );
       }
 
     } else if( strncmp( "-F", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         retval = fsm_arg_parse( argv[i] );
       }
       
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( file_exists( argv[i] ) ) {
           read_command_file( argv[i], &arg_list, &arg_num );
@@ -349,14 +350,14 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-e", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         retval = search_add_no_score_funit( argv[i] );
       }
 
     } else if( strncmp( "-vcd", argv[i], 4 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         switch( dump_mode ) {
           case DUMP_FMT_NONE :
@@ -385,7 +386,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-lxt", argv[i], 4 ) == 0 ) {
  
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++; 
         switch( dump_mode ) {
           case DUMP_FMT_NONE :
@@ -431,7 +432,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-v", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         retval = search_add_file( argv[i] );
       }
@@ -442,7 +443,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-D", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         ptr = argv[i];
         while( (*ptr != '\0') && (*ptr != '=') ) {
@@ -459,7 +460,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-p", argv[i], 2 ) == 0 ) {
       
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( ppfilename != NULL ) {
           print_output( "Only one -p option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -476,7 +477,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         
     } else if( strncmp( "-P", argv[i], 2 ) == 0 ) {
 
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         ptr = argv[i];
         while( (*ptr != '\0') && (*ptr != '=') ) {
@@ -495,7 +496,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       
     } else if( strncmp( "-T", argv[i], 2 ) == 0 ) {
       
-      if( retval = check_option_value( argc, argv, i ) ) {
+      if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
         if( delay_expr_type != DELAY_EXPR_DEFAULT ) {
           print_output( "Only one -T option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
@@ -644,6 +645,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.64.12.5  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.64.12.4  2006/08/18 17:56:39  phase1geo
  Fixing bug 1542454 and fixing hole in event triggering/detection logic that
  was created when fixing bug 1538920.

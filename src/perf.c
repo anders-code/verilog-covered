@@ -131,8 +131,6 @@ void perf_output_inst_report_helper( FILE* ofile, funit_inst* root ) {
 */
 void perf_output_inst_report( FILE* ofile ) {
 
-  funit_inst* curr;  /* Pointer to current functional unit instance */
-
   fprintf( ofile, "\nSIMULATION PERFORMANCE STATISTICS:\n\n" );
 
   perf_output_inst_report_helper( ofile, instance_root );
@@ -141,6 +139,9 @@ void perf_output_inst_report( FILE* ofile ) {
 
 /*
  $Log$
+ Revision 1.3.12.2  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.3.12.1  2006/08/18 04:50:51  phase1geo
  First swag at integrating name obfuscation for all output (with the exception
  of CDD output).

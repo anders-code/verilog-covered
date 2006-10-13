@@ -97,6 +97,9 @@ bool expression_is_assigned( expression* expr );
 /*! \brief Returns TRUE if specifies expression is a part of an bit select expression tree. */
 bool expression_is_bit_select( expression* expr );
 
+/*! \brief Sets the expression's signal assigned bit if it is on the RHS of a BASSIGN */
+void expression_set_assigned( expression* expr );
+
 /*! \brief Performs blocking assignment assignment to variables. */
 void expression_assign( expression* lhs, expression* rhs, int* lsb );
 
@@ -106,6 +109,9 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.43.12.2  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.43.12.1  2006/08/27 04:17:39  phase1geo
  Fixing bug 1546059 and also fixes a statement connection problem.  Full IV
  regression passes; however, I am going to attempt to fix the bug in a way that

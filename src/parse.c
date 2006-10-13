@@ -35,6 +35,7 @@
 #include "sim.h"
 #include "race.h"
 #include "parser_misc.h"
+#include "stmt_blk.h"
 
 
 extern void reset_lexer( str_link* file_list_head );
@@ -232,6 +233,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.38.12.2  2006/10/13 16:11:37  phase1geo
+ Cleaned up compiler warnings.
+
  Revision 1.38.12.1  2006/08/14 01:56:23  phase1geo
  Adding -rI option to allow the user to completely skip the race condition
  checking phase of scoring.
