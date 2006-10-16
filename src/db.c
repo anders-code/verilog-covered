@@ -299,21 +299,25 @@ bool db_read( char* file, int read_mode ) {
           /* Finish handling last functional unit read from CDD file */
           if( curr_funit != NULL ) {
               
-            if( instance_root == NULL ) {
-                
-              instance_read_add( &instance_root, NULL, curr_funit, funit_scope );
-                
-            } else {
-                
-              /* Add functional unit to instance tree and functional unit list */
-              scope_extract_back( funit_scope, back, parent_scope );
+            if( read_mode != READ_MODE_MERGE_INST_MERGE ) {
 
-              /* Make sure that functional unit in database was not written before its parent functional unit */
-              assert( instance_find_scope( instance_root, parent_scope ) != NULL );
-
-              /* Add functional unit to instance tree and functional unit list */
-              instance_read_add( &instance_root, parent_scope, curr_funit, back );
+              if( instance_root == NULL ) {
                 
+                instance_read_add( &instance_root, NULL, curr_funit, funit_scope );
+                
+              } else {
+                
+                /* Add functional unit to instance tree and functional unit list */
+                scope_extract_back( funit_scope, back, parent_scope );
+
+                /* Make sure that functional unit in database was not written before its parent functional unit */
+                assert( instance_find_scope( instance_root, parent_scope ) != NULL );
+
+                /* Add functional unit to instance tree and functional unit list */
+                instance_read_add( &instance_root, parent_scope, curr_funit, back );
+                
+              }
+
             }
               
             /* If the current functional unit is a merged unit, don't add it to the funit list again */
@@ -404,26 +408,30 @@ bool db_read( char* file, int read_mode ) {
   /* If the last functional unit was being read, add it now */
   if( curr_funit != NULL ) {
 
-    if( instance_root == NULL ) {
-      
-      instance_read_add( &instance_root, NULL, curr_funit, funit_scope );
-      
-    } else {
-      
-      /* Add functional unit to instance tree and functional unit list */
-      scope_extract_back( funit_scope, back, parent_scope );
-    
-      /* Make sure that functional unit in database not written before its parent functional unit */
-      if( instance_find_scope( instance_root, parent_scope ) != NULL ) {
+    if( read_mode != READ_MODE_MERGE_INST_MERGE ) {
 
-        /* Add functional unit to instance tree and functional unit list */
-        instance_read_add( &instance_root, parent_scope, curr_funit, back );
-
+      if( instance_root == NULL ) {
+      
+        instance_read_add( &instance_root, NULL, curr_funit, funit_scope );
+      
       } else {
+      
+        /* Add functional unit to instance tree and functional unit list */
+        scope_extract_back( funit_scope, back, parent_scope );
+    
+        /* Make sure that functional unit in database not written before its parent functional unit */
+        if( instance_find_scope( instance_root, parent_scope ) != NULL ) {
 
-        print_output( "CDD file is not related to currently opened CDD file", FATAL, __FILE__, __LINE__ );
-        retval = FALSE;
+          /* Add functional unit to instance tree and functional unit list */
+          instance_read_add( &instance_root, parent_scope, curr_funit, back );
+
+        } else {
+
+          print_output( "CDD file is not related to currently opened CDD file", FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
  
+        }
+
       }
       
     }
@@ -1723,6 +1731,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.175.4.1.4.1.4.10  2006/10/16 16:12:49  phase1geo
+ Fixing bug 1578251 and adding merge3 diagnostic to regression suite to verify
+ it.
+
  Revision 1.175.4.1.4.1.4.9  2006/10/13 16:11:36  phase1geo
  Cleaned up compiler warnings.
 

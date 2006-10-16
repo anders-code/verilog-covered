@@ -82,7 +82,7 @@ DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
 
-MERGE1        = merge1          fsm2
+MERGE1        = merge1          merge3          fsm2
 
 RACELIST      = race1           race1.1         race1.2         race2.1         race2.2 \
                 race2.3         race2.4         race4
