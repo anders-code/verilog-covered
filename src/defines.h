@@ -900,7 +900,7 @@ typedef enum exp_op_type_e {
  @{
 */
 
-#define MAX_BIT_WIDTH           1024    /*!< Maximum number of bits that a vector can hold */
+#define MAX_BIT_WIDTH           65536   /*!< Maximum number of bits that a vector can hold */
 #define DECIMAL			0	/*!< String in format [dD][0-9]+ */
 #define BINARY			1	/*!< String in format [bB][01xXzZ_\?]+ */
 #define OCTAL			2	/*!< String in format [oO][0-7xXzZ_\?]+ */
@@ -2201,6 +2201,16 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.239  2006/10/16 21:34:46  phase1geo
+ Increased max bit width from 1024 to 65536 to allow for more room for memories.
+ Fixed issue with enumerated values being explicitly assigned unknown values and
+ created error output message when an implicitly assigned enum followed an explicitly
+ assign unknown enum value.  Fixed problem with generate blocks in different
+ instantiations of the same module.  Fixed bug in parser related to setting the
+ curr_packed global variable correctly.  Added enum2 and enum2.1 diagnostics to test
+ suite to verify correct enumerate behavior for the changes made in this checkin.
+ Full regression now passes.
+
  Revision 1.238  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top
