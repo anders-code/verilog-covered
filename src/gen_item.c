@@ -873,7 +873,6 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
           char       inst_name[4096];
           vsignal*   genvar;
           func_unit* found_funit;
-          inst_link* instl = inst_head;
           if( !scope_find_signal( gi->varname, inst->funit, &genvar, &found_funit, 0 ) ) {
             snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s",
                       obf_sig( gi->varname ), obf_funit( inst->funit->name ) );
@@ -881,25 +880,17 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
             exit( 1 );
           }
           snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
-          while( (instl != NULL) && !instance_parse_add( &(instl->inst), inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE ) ) {
-            instl = instl->next;
-          }
-          assert( instl != NULL );
+          instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE );
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
           if( (child = instance_find_scope( inst, inst_name )) != NULL ) {
             inst_parm_add_genvar( genvar, child );
           }
         } else {
-          char       inst_name[4096];
-          inst_link* instl = inst_head;
-          while( (instl != NULL) && !instance_parse_add( &(instl->inst), inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE ) ) {
-            instl = instl->next;
-          }
-          assert( instl != NULL );
+          char inst_name[4096];
+          instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE );
           snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
           child = instance_find_scope( inst, inst_name );
         }
-        // child->generated = TRUE;
         gen_item_resolve( gi->next_true, child, TRUE );
         gen_item_resolve( gi->next_false, inst, FALSE );
         break;
@@ -986,9 +977,6 @@ void generate_resolve( funit_inst* root ) {
   funit_inst* curr_child;  /* Pointer to current child to resolve for */
 
   if( root != NULL ) {
-
-    printf( "**********  RESOLVING instance %s  ***********\n", root->name );
-    gitem_link_display( root->funit->gitem_head );
 
     /* Resolve ourself */
     curr_gi = root->funit->gitem_head;
@@ -1125,6 +1113,16 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.42  2006/10/16 21:34:46  phase1geo
+ Increased max bit width from 1024 to 65536 to allow for more room for memories.
+ Fixed issue with enumerated values being explicitly assigned unknown values and
+ created error output message when an implicitly assigned enum followed an explicitly
+ assign unknown enum value.  Fixed problem with generate blocks in different
+ instantiations of the same module.  Fixed bug in parser related to setting the
+ curr_packed global variable correctly.  Added enum2 and enum2.1 diagnostics to test
+ suite to verify correct enumerate behavior for the changes made in this checkin.
+ Full regression now passes.
+
  Revision 1.41  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.

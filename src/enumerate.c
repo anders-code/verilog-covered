@@ -19,12 +19,18 @@
  \date     8/29/2006
 */
 
+#include <stdlib.h>
+
 #include "defines.h"
 #include "enumerate.h"
-#include "util.h"
-#include "vector.h"
+#include "obfuscate.h"
 #include "param.h"
 #include "static.h"
+#include "util.h"
+#include "vector.h"
+
+
+extern char user_msg[USER_MSG_LENGTH];
 
 
 /*!
@@ -99,6 +105,11 @@ void enumerate_resolve( funit_inst* inst ) {
 
       if( first ) {
         vector_from_int( ei->sig->value, 0 );
+      } else if( last_value == -1 ) {
+        print_output( "Implicit enumerate assignment cannot follow an X or Z value", FATAL, __FILE__, __LINE__ );
+        snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d", obf_file( inst->funit->filename ), ei->sig->line );
+        print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
+        exit( 1 );
       } else {
         vector_from_int( ei->sig->value, (last_value + 1) );
       }
@@ -110,7 +121,7 @@ void enumerate_resolve( funit_inst* inst ) {
         vector_from_int( ei->sig->value, ei->value->num );
       } else {
         param_expr_eval( ei->value->exp, inst );
-        vector_set_value( ei->sig->value, ei->value->exp->value->value, VTYPE_VAL, ei->sig->value, 0, 0 );
+        vector_set_value( ei->sig->value, ei->value->exp->value->value, VTYPE_VAL, ei->sig->value->width, 0, 0 );
       }
 
     }
@@ -122,7 +133,11 @@ void enumerate_resolve( funit_inst* inst ) {
     first = ei->last;
 
     /* Set last_value to that of this this signal value */
-    last_value = vector_to_int( ei->sig->value );
+    if( !vector_is_unknown( ei->sig->value ) ) {
+      last_value = vector_to_int( ei->sig->value );
+    } else {
+      last_value = -1;
+    }
 
     ei = ei->next;
 
@@ -162,6 +177,16 @@ void enumerate_dealloc_list( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.7  2006/10/16 21:34:46  phase1geo
+ Increased max bit width from 1024 to 65536 to allow for more room for memories.
+ Fixed issue with enumerated values being explicitly assigned unknown values and
+ created error output message when an implicitly assigned enum followed an explicitly
+ assign unknown enum value.  Fixed problem with generate blocks in different
+ instantiations of the same module.  Fixed bug in parser related to setting the
+ curr_packed global variable correctly.  Added enum2 and enum2.1 diagnostics to test
+ suite to verify correct enumerate behavior for the changes made in this checkin.
+ Full regression now passes.
+
  Revision 1.6  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.
