@@ -56,11 +56,13 @@ unsigned warn_count  = 0;
 */
 void VLerror( char* msg ) {
 
-  error_count += 1;
+  error_count++;
   
-  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d, col: %d",
-            msg, obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
+  snprintf( user_msg, USER_MSG_LENGTH, "%s,", msg );
   print_output( user_msg, FATAL, __FILE__, __LINE__ );
+  snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d, Column: %d",
+            obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
+  print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
 
 }
 
@@ -72,11 +74,13 @@ void VLerror( char* msg ) {
 */
 void VLwarn( char* msg ) {
 
-  warn_count += 1;
+  warn_count++;
   
-  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d, col: %d",
-            msg, obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
+  snprintf( user_msg, USER_MSG_LENGTH, "%s,", msg );
   print_output( user_msg, WARNING, __FILE__, __LINE__ );
+  snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d, Column: %d",
+            obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
+  print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
 
 }
 
@@ -283,6 +287,12 @@ bool parser_check_generation( int gen ) {
 
 /*
  $Log$
+ Revision 1.15  2006/10/25 22:35:41  phase1geo
+ Starting to update testsuite to verify VPI mode as well.  Fixing runtime
+ issues with vpi.c.  Also updated VL_error output format for easier readability.
+ Fixing bug in parser for statement blocks that do not contain RHS signals for
+ implicit event expressions.  Updating regressions for these changes.
+
  Revision 1.14  2006/10/09 17:54:19  phase1geo
  Fixing support for VPI to allow it to properly get linked to the simulator.
  Also fixed inconsistency in generate reports and updated appropriately in
