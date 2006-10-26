@@ -2460,16 +2460,21 @@ statement
       expression* expr;
       statement*  stmt;
       if( (ignore_mode == 0) && ($4 != NULL) ) {
-        expr = db_create_sensitivity_list( $4 );
-        expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL ); 
-        stmt = db_create_statement( expr );
-        db_add_expression( expr );
-        if( !db_statement_connect( stmt, $4 ) ) {
-          db_remove_statement( stmt );
+        if( (expr = db_create_sensitivity_list( $4 )) == NULL ) {
+          VLerror( "Empty implicit event expression for the specified always_comb statement" );
           db_remove_statement( $4 );
-          stmt = NULL;
+          $$ = NULL;
+        } else {
+          expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL ); 
+          stmt = db_create_statement( expr );
+          db_add_expression( expr );
+          if( !db_statement_connect( stmt, $4 ) ) {
+            db_remove_statement( stmt );
+            db_remove_statement( $4 );
+            stmt = NULL;
+          }
+          $$ = stmt;
         }
-        $$ = stmt;
       } else {
         db_remove_statement( $4 );
         $$ = NULL;
