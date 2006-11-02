@@ -4069,9 +4069,10 @@ parameter_assign
     {
       /* If the size was not set by the user, the left number will be set to 0 but we need to change this to 31 */
       if( curr_range->implicit ) {
-        curr_range->left->num = 31;
+        db_add_declared_param( curr_signed, NULL, NULL, $1, $3, FALSE );
+      } else {
+        db_add_declared_param( curr_signed, curr_range->left, curr_range->right, $1, $3, FALSE );
       }
-      db_add_declared_param( curr_signed, curr_range->left, curr_range->right, $1, $3, FALSE );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' expression
@@ -4091,9 +4092,10 @@ localparam_assign
     {
       /* If the size was not set by the user, the left number will be set to 0 but we need to change this to 31 */
       if( curr_range->implicit ) {
-        curr_range->left->num = 31;
+        db_add_declared_param( curr_signed, NULL, NULL, $1, $3, TRUE );
+      } else {
+        db_add_declared_param( curr_signed, curr_range->left, curr_range->right, $1, $3, TRUE );
       }
-      db_add_declared_param( curr_signed, curr_range->left, curr_range->right, $1, $3, TRUE );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' expression
