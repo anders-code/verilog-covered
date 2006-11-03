@@ -70,7 +70,7 @@ DIAGS1        = add1            always1         always2         always3         
                 param10.3       param10.4       param10.5       param11         param13 \
                 param13.1       param14         param15         port1           port2           port3 \
                 pulldown1       pullup1         rassign1        repeat1         repeat2 \
-                sbit_sel1       sbit_sel1.1     signed1         signed3         signed3.1 \
+                report1         sbit_sel1       sbit_sel1.1     signed1         signed3         signed3.1 \
                 signed3.2       signed3.3       signed3.4       signed3.5       signed3.6 \
                 slist1          slist1.1        slist1.2        slist1.3        slist2 \
                 slist3          slist3.2        slist4          static1         string1 \

@@ -1065,6 +1065,10 @@ char* combination_prep_line( char* line, int start, int len ) {
   }
 
   if( line_ip ) {
+    /* If our pointer exceeded the alloted size, resize the str to fit */
+    if( i > (start + len) ) {
+      str = (char*)realloc( str, (len + 2 + (i - (start + len))) );
+    }
     if( start_ul >= start ) {
       combination_draw_centered_line( (str + curr_index), ((i - start_ul) + 1), exp_id, TRUE,  FALSE );
       curr_index += (i - start_ul) + 1;
@@ -2231,6 +2235,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.137.8.1.4.4  2006/11/03 21:28:13  phase1geo
+ Fix for bug 1545442.  A corner case issue in the combination_prep_line function
+ was causes a memory buffer overrun reported by valgrind.  Added report1 diagnostic
+ to regressions to verify this fix.  Full regression passes.
+
  Revision 1.137.8.1.4.3  2006/08/22 03:57:36  phase1geo
  Fixing bug 1544325.  Updated regressions.  Full IV regressions now pass.
 
