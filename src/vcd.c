@@ -241,7 +241,7 @@ void vcd_parse_def( FILE* vcd ) {
     print_output( "No instances were found in specified VCD file that matched design", FATAL, __FILE__, __LINE__ );
 
     /* If the -i option was not specified, let the user know */
-    if( instance_specified ) {
+    if( !instance_specified ) {
       print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
                     FATAL, __FILE__, __LINE__ );
     } else {
@@ -417,6 +417,10 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.25  2006/11/03 19:00:01  phase1geo
+ Fixing bug 1589831.  Also added err3 and err3.1 diagnostics to verify its
+ correct behavior.
+
  Revision 1.24  2006/08/30 12:02:48  phase1geo
  Changing assertion in vcd.c that fails when the VCD file is improperly formatted
  to a user error message with a bit more meaning.  Fixing problem with signedness
