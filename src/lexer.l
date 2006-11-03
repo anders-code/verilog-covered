@@ -328,7 +328,7 @@ WSPACE [ \t\b\f]+
            tree_add( yytext, yylloc.text, FALSE, &found_modules );
            rc = IGNORE;
          } else {
-           if( filelist_curr != filelist_head ) {
+           if( (filelist_curr != filelist_head) && (error_count == 0) ) {
              /* The module has been found, recirculate filelist */
              snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", obfuscate_name( yylloc.text, 'v' ) );
              print_output( user_msg, NORMAL, __FILE__, __LINE__ );
@@ -686,6 +686,11 @@ static int yywrap() {
   if( modlist_head == NULL ) {
     assert( unlink( ppfilename ) == 0 );
     tree_dealloc( found_modules );
+    return( 1 );
+  }
+
+  /* If we have encountered errors with the given file, stop parsing now */
+  if( error_count > 0 ) {
     return( 1 );
   }
     
