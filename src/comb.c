@@ -1280,6 +1280,10 @@ char* combination_prep_line( char* line, int start, int len ) {
   }
 
   if( line_ip ) {
+    /* If our pointer exceeded the alloted size, resize the str to fit */
+    if( i > (start + len) ) {
+      str = (char*)realloc( str, (len + 2 + (i - (start + len))) );
+    }
     if( start_ul >= start ) {
       combination_draw_centered_line( (str + curr_index), ((i - start_ul) + 1), exp_id, TRUE,  FALSE );
       curr_index += (i - start_ul) + 1;
@@ -2667,6 +2671,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.164  2006/11/03 22:23:58  phase1geo
+ Fixing bug 1545442.  Added report1 diagnostic to regression suite to verify
+ this fix.
+
  Revision 1.163  2006/10/12 22:48:45  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 
