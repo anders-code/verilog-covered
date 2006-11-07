@@ -67,6 +67,9 @@ statement* expression_get_root_statement( expression* exp );
 /*! \brief Writes this expression to the specified database file. */
 void expression_db_write( expression* expr, FILE* file, bool parse_mode );
 
+/*! \brief Recursively writes the given expression to the given CDD file */
+void expression_db_write_recursive( expression* expr, FILE* file );
+
 /*! \brief Reads current line of specified file and parses for expression information. */
 bool expression_db_read( char** line, func_unit* curr_mod, bool eval );
 
@@ -109,6 +112,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.43.12.3  2006/11/07 17:17:36  phase1geo
+ Fixing bug 1569819.  Also added code to help debug problems like this in the future.  I will
+ need to enhance this debugging feature to not exist when the --enable-debug option is not
+ specified to the configure script.
+
  Revision 1.43.12.2  2006/10/13 16:11:37  phase1geo
  Cleaned up compiler warnings.
 

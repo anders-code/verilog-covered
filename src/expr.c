@@ -979,6 +979,21 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
 
 }
 
+void expression_db_write_recursive( expression* expr, FILE* file ) {
+
+  if( expr != NULL ) {
+
+    /* Write children first */
+    expression_db_write_recursive( expr->left, file );
+    expression_db_write_recursive( expr->right, file );
+
+    /* Then write ourselves */
+    expression_db_write( expr, file, FALSE );
+
+  }
+
+}
+
 /*!
  \param line        String containing database line to read information from.
  \param curr_funit  Pointer to current functional unit that instantiates this expression.
@@ -3178,6 +3193,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.179.4.1.6.1.2.13  2006/11/07 17:17:36  phase1geo
+ Fixing bug 1569819.  Also added code to help debug problems like this in the future.  I will
+ need to enhance this debugging feature to not exist when the --enable-debug option is not
+ specified to the configure script.
+
  Revision 1.179.4.1.6.1.2.12  2006/10/13 16:11:37  phase1geo
  Cleaned up compiler warnings.
 
