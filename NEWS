@@ -1,6 +1,32 @@
 Covered-Related NEWS
 ====================
 
+    * 11/12/2006
+
+Stable release covered-0.4.8 made.  This is a bug fix release only.  The following are
+changes made in this release:
+
+  - Fixed memory access issues from using the Valgrind utility
+  - Fixed bug 1546059.  Statement blocks containing parameters no longer cause memory errors.  Also
+    fixed problem with the removal of parameters when closing the database.
+  - Fixed missing User Guide documentation links.
+  - Fixed bug 1578251.  When two CDD files are derived from an entire design, Covered no longer
+    reports errors when attempting to merge these CDD files.
+  - Fixed bug 1581973.  When an implicit event expression (i.e., always @*) is found which does not
+    contain any RHS variables, Covered emits a user error message and exits immediately instead of
+    segmentation faulting.
+  - Fixed bug 1588689.  Covered was incorrectly sizing all parameters that did not explicitly contain
+    a size to 32 bits instead of taking its size from the size of its assigned value.  This has now
+    been corrected.  Also the VCD parser now properly ignores parameter values if they exist in the
+    VCD file.
+  - Fixed bug 1589522.  When a comment is found to be inside a comment, Covered emits a user error
+    message and immediately exits instead of infinitely attempting to read the bad file.
+  - Fixed bug 1589831.  Minor fix to output correct error message in the VCD reader when no instances
+    were found that matched the CDD design.
+  - Fixed bug 1545442.  Memory overrun issue was occurring at times when report command was occurring
+    which could potentially have caused other errors to occur.
+  - Fixed bug 1569819.  Fixed code that lead to an assertion error during the report command.
+
     * 08/30/2006
 
 Stable release covered-0.4.7 made.  This release is mostly a bug fix release with two feature
