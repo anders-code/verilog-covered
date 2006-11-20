@@ -526,6 +526,21 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       free_safe( tmpstr );
       free_safe( pname );
 
+    } else if( expr->op == EXP_OP_DISABLE ) {
+
+      assert( expr->elem.stmt != NULL );
+
+      pname  = scope_gen_printable( expr->name );
+      tmpstr = (char*)malloc_safe( (strlen( pname ) + 9), __FILE__, __LINE__ );
+      snprintf( tmpstr, (strlen( pname ) + 9), "disable %s", pname );
+
+      *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+      (*code)[0]  = strdup_safe( tmpstr, __FILE__, __LINE__ );
+      *code_depth = 1;
+
+      free_safe( tmpstr );
+      free_safe( pname );
+
     } else if( expr->op == EXP_OP_DEFAULT ) {
 
       *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
@@ -904,6 +919,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.80  2006/11/20 21:36:21  phase1geo
+ Fixing bug 1599869.  When a disable statement is found to not be covered, the
+ codegen_gen_expr function returns the proper output (instead of unitialized output).
+
  Revision 1.79  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top
