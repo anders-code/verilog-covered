@@ -58,7 +58,7 @@ char*     vpi_file               = NULL;                /*!< Name of VPI output 
 int       delay_expr_type        = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
 char*     ppfilename             = NULL;                /*!< Name of preprocessor filename to use */
 bool      instance_specified     = FALSE;               /*!< Specifies if -i option was specified */
-int       timestep_update        = 0;                   /*!< Specifies timestep increment to display current time */
+uint64    timestep_update        = 0;                   /*!< Specifies timestep increment to display current time */
 int       flag_race_check        = WARNING;             /*!< Specifies how race conditions should be handled */
 bool      flag_check_races       = TRUE;                /*!< Specifies if race condition checking should occur */
 bool      flag_display_sim_stats = FALSE;               /*!< Specifies if simulation performance information should be output */
@@ -423,7 +423,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         if( timestep_update != 0 ) {
           print_output( "Only one -ts option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
-          timestep_update = atol( argv[i] );
+          timestep_update = ato64( argv[i] );
           score_add_arg( argv[i-1] );
           score_add_arg( argv[i] );
         }
@@ -899,6 +899,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.88  2006/11/21 19:54:13  phase1geo
+ Making modifications to defines.h to help in creating appropriately sized types.
+ Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
+
  Revision 1.87  2006/11/17 23:17:12  phase1geo
  Fixing bug in score command where parameter override values were not being saved
  off properly in the CDD file.  Also fixing bug when a parameter is found in a VCD
