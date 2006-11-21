@@ -1333,7 +1333,7 @@ vector* vector_from_string( char** str, bool quoted ) {
       vec = vector_create( size, VTYPE_VAL, TRUE );
       vec->suppl.part.base = type;
       if( type == DECIMAL ) {
-        vector_from_int( vec, atol( value ) );
+        vector_from_int( vec, ato32( value ) );
       } else {
         vector_set_static( vec, value, bits_per_char ); 
       }
@@ -2099,6 +2099,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.87  2006/11/21 19:54:13  phase1geo
+ Making modifications to defines.h to help in creating appropriately sized types.
+ Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
+
  Revision 1.86  2006/10/04 22:04:16  phase1geo
  Updating rest of regressions.  Modified the way we are setting the memory rd
  vector data bit (should optimize the score command just a bit).  Also updated
