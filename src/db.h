@@ -175,11 +175,15 @@ void db_set_symbol_char( char* sym, char value );
 void db_set_symbol_string( char* sym, char* value );
 
 /*! \brief Performs a timestep for all signal changes during this timestep. */
-void db_do_timestep( int time ); 
+void db_do_timestep( uint64 time, bool final ); 
 
 
 /*
  $Log$
+ Revision 1.74  2006/11/21 19:54:13  phase1geo
+ Making modifications to defines.h to help in creating appropriately sized types.
+ Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
+
  Revision 1.73  2006/11/03 23:36:36  phase1geo
  Fixing bug 1590104.  Updating regressions per this change.
 
