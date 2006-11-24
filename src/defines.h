@@ -2154,7 +2154,8 @@ struct thread_s {
   bool       kill;                   /*!< Set to TRUE if this thread should be killed */
   bool       queued;                 /*!< Set to TRUE when thread exists in the thread queue */
   bool       exec_first;             /*!< Set to TRUE when the first statement is being executed */
-  bool       resim_needed;           /*!< Set to TRUE if this thread needs to be simulated again in the same sim_simulate call */
+  bool       resim_needed;           /*!< Set to TRUE if this thread will need to be resimulated */
+  uint64     curr_time;              /*!< Set to the current simulation time for this thread */
   thread*    child_head;             /*!< Pointer to head element in child thread list for this thread */
   thread*    child_tail;             /*!< Pointer to tail element in child thread list for this thread */
   thread*    prev_sib;               /*!< Pointer to previous sibling thread */
@@ -2268,6 +2269,10 @@ struct dim_range_s {
 
 /*
  $Log$
+ Revision 1.242  2006/11/24 05:30:15  phase1geo
+ Checking in fix for proper handling of delays.  This does not include the use
+ of timescales (which will be fixed next).  Full IV regression now passes.
+
  Revision 1.241  2006/11/22 20:20:01  phase1geo
  Updates to properly support 64-bit time.  Also starting to make changes to
  simulator to support "back simulation" for when the current simulation time
