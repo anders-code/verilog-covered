@@ -84,6 +84,7 @@ void search_init() {
     global_funit->name     = strdup_safe( "$root", __FILE__, __LINE__ );
     global_funit->type     = FUNIT_MODULE;
     global_funit->filename = strdup_safe( "NA", __FILE__, __LINE__ );
+    global_funit->ts_unit  = 0;
     funit_link_add( global_funit, &funit_head, &funit_tail );
     curr_funit = global_funit;
 
@@ -291,6 +292,10 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.29  2006/11/25 21:29:01  phase1geo
+ Adding timescale diagnostics to regression suite and fixing bugs in core associated
+ with this code.  Full regression now passes for IV and Cver (not in VPI mode).
+
  Revision 1.28  2006/09/01 04:06:37  phase1geo
  Added code to support more than one instance tree.  Currently, I am seeing
  quite a few memory errors that are causing some major problems at the moment.
