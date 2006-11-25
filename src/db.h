@@ -39,6 +39,12 @@ bool db_write( char* file, bool parse_mode, bool report_save );
 /*! \brief Reads contents of database file and stores into internal lists. */
 bool db_read( char* file, int read_mode );
 
+/*! \brief Returns a scaled version of the given value to the timescale for the given functional unit. */
+uint64 db_scale_to_precision( uint64 value, func_unit* funit );
+
+/*! \brief Sets the global timescale unit and precision variables. */
+void db_set_timescale( int unit, int precision );
+
 /*! \brief Adds specified functional unit node to functional unit tree.  Called by parser. */
 func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range );
 
@@ -180,6 +186,13 @@ void db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.75  2006/11/25 04:24:39  phase1geo
+ Adding initial code to fully support the timescale directive and its usage.
+ Added -vpi_ts score option to allow the user to specify a top-level timescale
+ value for the generated VPI file (this code has not been tested at this point,
+ however).  Also updated diagnostic Makefile to get the VPI shared object files
+ from the current lib directory (instead of the checked in one).
+
  Revision 1.74  2006/11/21 19:54:13  phase1geo
  Making modifications to defines.h to help in creating appropriately sized types.
  Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
