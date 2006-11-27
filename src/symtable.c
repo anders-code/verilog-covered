@@ -305,10 +305,12 @@ void symtable_set_value( char* sym, char* value ) {
 }
 
 /*!
+ \param sim_time  Current simulation time.
+
  Traverses simulation symentry array, assigning stored string value to the
  stored signal.
 */
-void symtable_assign() {
+void symtable_assign( uint64 sim_time ) {
 
   symtable* curr;  /* Pointer to current symtable entry */
   sym_sig*  sig;   /* Pointer to current sym_sig in list */
@@ -318,7 +320,7 @@ void symtable_assign() {
     curr = timestep_tab[i];
     sig = curr->sig_head;
     while( sig != NULL ) {
-      vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb );
+      vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb, sim_time );
       sig = sig->next;
     }
     curr->value[0] = '\0';
@@ -364,6 +366,10 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.27  2006/11/27 04:11:42  phase1geo
+ Adding more changes to properly support thread time.  This is a work in progress
+ and regression is currently broken for the moment.  Checkpointing.
+
  Revision 1.26  2006/10/13 15:56:02  phase1geo
  Updating rest of source files for compiler warnings.
 

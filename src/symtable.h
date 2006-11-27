@@ -36,7 +36,7 @@ void symtable_add( char* sym, vsignal* sig, int msb, int lsb );
 void symtable_set_value( char* sym, char* value );
 
 /*! \brief Assigns stored values to all associated signals stored in specified symbol table. */
-void symtable_assign();
+void symtable_assign( uint64 sim_time );
 
 /*! \brief Deallocates all symtable entries for specified symbol table. */
 void symtable_dealloc( symtable* symtab );
@@ -44,6 +44,10 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.16  2006/11/27 04:11:42  phase1geo
+ Adding more changes to properly support thread time.  This is a work in progress
+ and regression is currently broken for the moment.  Checkpointing.
+
  Revision 1.15  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
