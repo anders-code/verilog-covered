@@ -2224,13 +2224,17 @@ void db_do_timestep( uint64 time, bool final ) {
 #endif
 
   /* Assign all stored values in current post-timestep to stored signals */
-  symtable_assign();
+  symtable_assign( time );
 
 }
 
 
 /*
  $Log$
+ Revision 1.237  2006/11/27 04:11:41  phase1geo
+ Adding more changes to properly support thread time.  This is a work in progress
+ and regression is currently broken for the moment.  Checkpointing.
+
  Revision 1.236  2006/11/25 21:29:01  phase1geo
  Adding timescale diagnostics to regression suite and fixing bugs in core associated
  with this code.  Full regression now passes for IV and Cver (not in VPI mode).
