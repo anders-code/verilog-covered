@@ -122,7 +122,7 @@ bool expression_is_last_select( expression* expr );
 void expression_set_assigned( expression* expr );
 
 /*! \brief Performs blocking assignment assignment to variables. */
-void expression_assign( expression* lhs, expression* rhs, int* lsb );
+void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_time );
 
 /*! \brief Deallocates memory used for expression. */
 void expression_dealloc( expression* expr, bool exp_only );
@@ -130,6 +130,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.53  2006/11/27 04:11:41  phase1geo
+ Adding more changes to properly support thread time.  This is a work in progress
+ and regression is currently broken for the moment.  Checkpointing.
+
  Revision 1.52  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 
