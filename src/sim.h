@@ -28,7 +28,7 @@
 
 
 /*! \brief Adds specified expression's statement to pre-simulation statement queue. */
-void sim_expr_changed( expression* expr );
+void sim_expr_changed( expression* expr, uint64 sim_time );
 
 /*! \brief Creates a thread for the given statement and adds it to the thread simulation queue. */
 thread* sim_add_thread( thread* parent, statement* stmt );
@@ -58,6 +58,10 @@ void sim_simulate_final();
 
 /*
  $Log$
+ Revision 1.18  2006/11/27 04:11:42  phase1geo
+ Adding more changes to properly support thread time.  This is a work in progress
+ and regression is currently broken for the moment.  Checkpointing.
+
  Revision 1.17  2006/10/06 17:18:13  phase1geo
  Adding support for the final block type.  Added final1 diagnostic to regression
  suite.  Full regression passes.
