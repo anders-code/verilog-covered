@@ -27,6 +27,9 @@
 #include "defines.h"
 
 
+/*! \brief Inserts the given thread into the delay queue at the given time slot */
+void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time );
+
 /*! \brief Adds specified expression's statement to pre-simulation statement queue. */
 void sim_expr_changed( expression* expr, uint64 sim_time );
 
@@ -51,13 +54,16 @@ void sim_add_statics();
 void sim_thread( thread* thr );
 
 /*! \brief Simulates current timestep. */
-void sim_simulate();
+void sim_simulate( uint64 sim_time );
 
-/*! \brief Simulates the final timestep. */
-void sim_simulate_final();
 
 /*
  $Log$
+ Revision 1.19  2006/11/29 23:15:46  phase1geo
+ Major overhaul to simulation engine by including an appropriate delay queue
+ mechanism to handle simulation timing for delay operations.  Regression not
+ fully passing at this moment but enough is working to checkpoint this work.
+
  Revision 1.18  2006/11/27 04:11:42  phase1geo
  Adding more changes to properly support thread time.  This is a work in progress
  and regression is currently broken for the moment.  Checkpointing.
