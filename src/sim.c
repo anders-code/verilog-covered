@@ -509,7 +509,7 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     } else {
 
       /* We are the first statement */
-      thr->suppl.part.exec_first = 1;
+      // thr->suppl.part.exec_first = 1;
 
       /*
        If this statement is an always_comb or always_latch, add it to the delay list and change its right
@@ -527,7 +527,7 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
 
         /* If the statement block is specified as a final block, add it to the end of the delay queue */
         if( ESUPPL_STMT_FINAL( stmt->exp->suppl ) == 1 ) {
-          sim_thread_insert_into_delay_queue( thr, 0xffffffffffffffff );
+          sim_thread_insert_into_delay_queue( thr, (uint64)0xffffffffffffffff );
 
         /* Otherwise, add it to the normal thread list */
         } else {
@@ -891,6 +891,10 @@ void sim_simulate( uint64 sim_time ) {
 
 /*
  $Log$
+ Revision 1.80  2006/11/30 05:04:23  phase1geo
+ More fixes to new simulation algorithm.  Still have a couple of failures that
+ need to be looked at.  Checkpointing.
+
  Revision 1.79  2006/11/29 23:15:46  phase1geo
  Major overhaul to simulation engine by including an appropriate delay queue
  mechanism to handle simulation timing for delay operations.  Regression not
