@@ -89,7 +89,7 @@ char user_msg[USER_MSG_LENGTH];
 /*!
  Array of functional unit names used for output purposes.
 */
-const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "UNKNOWN" };
+const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "no_score", "afunction", "atask", "UNKNOWN" };
 
 
 /*!
@@ -1123,6 +1123,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.57  2006/12/11 23:29:17  phase1geo
+ Starting to add support for re-entrant tasks and functions.  Currently, compiling
+ fails.  Checkpointing.
+
  Revision 1.56  2006/10/13 22:46:31  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.
