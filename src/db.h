@@ -48,6 +48,12 @@ void db_set_timescale( int unit, int precision );
 /*! \brief Returns a pointer to the current functional unit. */
 func_unit* db_get_curr_funit();
 
+/*! \brief Creates a scope name for an unnamed scope.  Called only during parsing. */
+char* db_create_unnamed_scope();
+
+/*! Returns TRUE if the given scope is an unnamed scope name; otherwise, returns FALSE. */
+bool db_is_unnamed_scope( char* scope );
+
 /*! \brief Adds specified functional unit node to functional unit tree.  Called by parser. */
 func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range );
 
@@ -189,6 +195,11 @@ void db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.77  2006/12/14 23:46:57  phase1geo
+ Fixing remaining compile issues with support for functional unit pointers in
+ expressions and unnamed scope handling.  Starting to debug run-time issues now.
+ Added atask1 diagnostic to begin this verification process.  Checkpointing.
+
  Revision 1.76  2006/12/11 23:29:16  phase1geo
  Starting to add support for re-entrant tasks and functions.  Currently, compiling
  fails.  Checkpointing.
