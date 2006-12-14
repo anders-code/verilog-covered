@@ -698,7 +698,7 @@ void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail 
 
     if( (stmt->exp->op == EXP_OP_NB_CALL) || (stmt->exp->op == EXP_OP_FORK) ) {
 
-      statement_find_rhs_sigs( stmt->exp->elem.stmt, head, tail );
+      statement_find_rhs_sigs( stmt->exp->elem.funit->first_stmt, head, tail );
 
     } else {
 
@@ -901,6 +901,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.98  2006/12/14 04:19:35  phase1geo
+ More updates to parser and associated code to handle unnamed scopes and
+ fixing more code to use functional unit pointers in expressions instead of
+ statement pointers.  Still not fully compiling at this point.  Checkpointing.
+
  Revision 1.97  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 
