@@ -700,6 +700,7 @@ void instance_flatten( funit_inst* root ) {
 
   funit_inst* child;              /* Pointer to current child instance */
   funit_inst* last_child = NULL;  /* Pointer to the last child instance */
+  funit_inst* tmp;                /* Temporary pointer to functional unit instance */
 
   if( root != NULL ) {
 
@@ -735,11 +736,11 @@ void instance_flatten( funit_inst* root ) {
           }
         }
 
-        last_child = child;
+        tmp   = child;
         child = child->next;
 
         /* Deallocate child instance */
-        instance_dealloc_tree( last_child );
+        instance_dealloc_tree( tmp );
       
       } else {
 
@@ -950,6 +951,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.67  2006/12/19 06:06:05  phase1geo
+ Shortening unnamed scope name from $unnamed_%d to $u%d.  Also fixed a few
+ bugs in the instance_flatten function (still more debug work to go here).
+ Checkpointing.
+
  Revision 1.66  2006/12/19 05:23:39  phase1geo
  Added initial code for handling instance flattening for unnamed scopes.  This
  is partially working at this point but still needs some debugging.  Checkpointing.

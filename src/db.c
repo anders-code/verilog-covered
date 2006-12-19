@@ -587,7 +587,7 @@ char* db_create_unnamed_scope() {
   char* name = (char*)malloc_safe( 30, __FILE__, __LINE__ );
 
   /* Create unnamed scope name */
-  snprintf( name, 30, "$unnamed_%d", unique_id );
+  snprintf( name, 30, "$u%d", unique_id );
   unique_id++;
 
   return( name );
@@ -2283,6 +2283,11 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.245  2006/12/19 06:06:05  phase1geo
+ Shortening unnamed scope name from $unnamed_%d to $u%d.  Also fixed a few
+ bugs in the instance_flatten function (still more debug work to go here).
+ Checkpointing.
+
  Revision 1.244  2006/12/18 23:58:34  phase1geo
  Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
  Other fixes to parser for blocks.  We need to add code to properly handle unnamed
