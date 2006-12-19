@@ -818,6 +818,9 @@ int command_report( int argc, int last_arg, char** argv ) {
           /* Perform binding */
           bind_perform( TRUE, 0 );
 
+          /* Collapse the design to remove unnamed scopes */
+          inst_link_flatten( inst_head );
+
           /* Open output stream */
           if( output_file != NULL ) {
             if( (ofile = fopen( output_file, "w" )) == NULL ) {
@@ -915,6 +918,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.78  2006/12/19 05:23:39  phase1geo
+ Added initial code for handling instance flattening for unnamed scopes.  This
+ is partially working at this point but still needs some debugging.  Checkpointing.
+
  Revision 1.77  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

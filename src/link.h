@@ -35,6 +35,9 @@ void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail );
 /*! \brief Adds specified statement to stmt_link element at the end of the list. */
 void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail );
 
+/*! \brief Joins two statement links together. */
+void stmt_link_join( stmt_link* tail, stmt_link* head );
+
 /*! \brief Adds specified expression to exp_link element at the end of the list. */
 void exp_link_add( expression* expr, exp_link** head, exp_link** tail );
 
@@ -127,6 +130,9 @@ void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail );
 /*! \brief Searches for and removes specified functional unit link from list. */
 void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, bool rm_funit );
 
+/*! \brief Converges the unnamed scopes into their parent instances. */
+void inst_link_flatten( inst_link* head );
+
 /*********************************************************************************/
 
 /*! \brief Deletes entire list specified by head pointer. */
@@ -161,6 +167,10 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.25  2006/12/19 05:23:39  phase1geo
+ Added initial code for handling instance flattening for unnamed scopes.  This
+ is partially working at this point but still needs some debugging.  Checkpointing.
+
  Revision 1.24  2006/10/09 17:54:19  phase1geo
  Fixing support for VPI to allow it to properly get linked to the simulator.
  Also fixed inconsistency in generate reports and updated appropriately in

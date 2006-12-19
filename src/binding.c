@@ -781,7 +781,6 @@ void bind_perform( bool cdd_reading, int pass ) {
 
       /* If we have bound successfully, copy the name of this exp_bind to the expression */
       if( bound && (curr_eb->exp != NULL) ) {
-        printf( "Setting expression %s to name %s\n", expression_string( curr_eb->exp ), curr_eb->name );
         curr_eb->exp->name = strdup_safe( curr_eb->name, __FILE__, __LINE__ );
       }
 
@@ -879,6 +878,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.106  2006/12/19 05:23:38  phase1geo
+ Added initial code for handling instance flattening for unnamed scopes.  This
+ is partially working at this point but still needs some debugging.  Checkpointing.
+
  Revision 1.105  2006/12/19 02:36:18  phase1geo
  Fixing error in parser when parsing begin..end blocks.  Still need to properly
  handle unnamed scopes.  Checkpointing.
