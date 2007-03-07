@@ -2689,7 +2689,6 @@ bool expression_op_func__task_call( expression* expr, thread* thr ) {
     sim_add_thread( thr, expr->elem.stmt );
     expr->suppl.part.prev_called         = 1;
     expr->value->value[0].part.exp.value = 0;
-    retval = TRUE;
 
   } else if( thr->child_head == NULL ) {
 
@@ -2726,7 +2725,6 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
       sim_add_thread( thr, expr->elem.stmt );
       expr->suppl.part.prev_called         = 1;
       expr->value->value[0].part.exp.value = 0;
-      retval = TRUE;
     } else if( thr->child_head == NULL ) {
       expr->suppl.part.prev_called         = 0;
       expr->value->value[0].part.exp.value = 1;
@@ -3935,6 +3933,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.231.2.2  2007/03/07 22:17:07  phase1geo
+ Fixing regression errors which now completely pass again.  There were two
+ problems with NB_CALL and TASK_CALL expression functions where we were
+ returning a value of TRUE on the first call to both of these functions.
+
  Revision 1.231.2.1  2006/12/23 04:43:24  phase1geo
  Fixing bug related to named block calls.  Regression does not fully pass
  at this point.  Checkpointing.
