@@ -1618,17 +1618,20 @@ statement* db_parallelize_statement( statement* stmt ) {
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-    /* Create a thread block for this statement block */
-    stmt->exp->suppl.part.stmt_head      = 1;
-    stmt->exp->suppl.part.stmt_is_called = 1;
-    db_add_statement( stmt, stmt );
-
     /* Create FORK expression */
     exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
 
     /* Create unnamed scope */
     scope = db_create_unnamed_scope();
     if( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, curr_funit->filename, stmt->exp->line ) ) {
+
+      /* Add the expression to this functional unit */
+      db_add_expression( stmt->exp );
+
+      /* Create a thread block for this statement block */
+      stmt->exp->suppl.part.stmt_head      = 1;
+      stmt->exp->suppl.part.stmt_is_called = 1;
+      db_add_statement( stmt, stmt );
 
       /* Restore the original functional unit */
       db_end_function_task_namedblock( stmt->exp->line );
@@ -1650,6 +1653,11 @@ statement* db_parallelize_statement( statement* stmt ) {
     /* Restore fork and block depth values for parser */
     fork_depth++;
     block_depth++;
+
+  } else {
+
+    /* Add the expression to the current functional unit */
+    db_add_expression( stmt->exp );
 
   }
 
@@ -2283,6 +2291,9 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.247  2007/03/08 05:17:29  phase1geo
+ Various code fixes.  Full regression does not yet pass.
+
  Revision 1.246  2006/12/23 04:44:45  phase1geo
  Fixing build problems on cygwin.  Fixing compile errors with VPI and fixing
  segmentation fault in the funit_converge function.  Regression is far from

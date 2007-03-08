@@ -2684,7 +2684,6 @@ bool expression_op_func__task_call( expression* expr, thread* thr ) {
 
     expr->suppl.part.prev_called         = 1;
     expr->value->value[0].part.exp.value = 0;
-    retval = TRUE;
 
   } else if( thr->child_head == NULL ) {
 
@@ -2721,7 +2720,6 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
       sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
       expr->suppl.part.prev_called         = 1;
       expr->value->value[0].part.exp.value = 0;
-      retval = TRUE;
     } else if( thr->child_head == NULL ) {
       expr->suppl.part.prev_called         = 0;
       expr->value->value[0].part.exp.value = 1;
@@ -3930,6 +3928,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.237  2007/03/08 05:17:30  phase1geo
+ Various code fixes.  Full regression does not yet pass.
+
  Revision 1.236  2006/12/22 23:39:08  phase1geo
  Fixing problem with NB_CALL in infinite loop.
 

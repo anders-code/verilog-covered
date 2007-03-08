@@ -117,7 +117,6 @@
 
 extern char     user_msg[USER_MSG_LENGTH];
 extern exp_info exp_op_info[EXP_OP_NUM];
-extern func_unit* curr_funit;
 
 /*!
  Pointer to head of statement loop list.
@@ -901,6 +900,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.101  2007/03/08 05:17:30  phase1geo
+ Various code fixes.  Full regression does not yet pass.
+
  Revision 1.100  2006/12/18 23:58:34  phase1geo
  Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
  Other fixes to parser for blocks.  We need to add code to properly handle unnamed
