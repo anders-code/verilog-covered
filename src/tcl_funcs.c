@@ -58,7 +58,7 @@ extern const char* race_msgs[RACE_TYPE_NUM];
 extern char        score_run_path[4096];
 extern char**      score_args;
 extern int         score_arg_num;
-extern void        reset_pplexer( const char* filename, FILE* out );
+extern void        reset_pplexer( const char* filename, FILE* out, bool display );
 extern int         PPVLlex( void );
 extern char**      merge_in;
 extern int         merge_in_num;
@@ -1703,7 +1703,7 @@ int tcl_func_preprocess_verilog( ClientData d, Tcl_Interp* tcl, int argc, const 
   }
 
   /* Now the preprocessor on this file first */
-  reset_pplexer( argv[1], out );
+  reset_pplexer( argv[1], out, FALSE );
   PPVLlex();
 
   fclose( out );
@@ -2255,6 +2255,15 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.63.2.2  2007/03/09 17:37:58  phase1geo
+ Fixing a couple of GUI bugs.  First, the preprocessor was emitting incorrect
+ information for GUI purposes.  Now, included files are not output by the
+ preprocessor when readying information for GUI display.  Also fixed bug
+ pertaining to line exclusion/inclusion -- when multiple root expressions
+ existed on the same line, the line summary information in the GUI was being
+ incremented/decremented by that amount instead of incrementing/decrementing
+ by one.
+
  Revision 1.63.2.1  2007/03/08 23:21:19  phase1geo
  Fixing problem with included files in outputting the Verilog via the GUI
  that was causing the GUI to improperly exit when selecting a file.
