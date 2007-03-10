@@ -477,8 +477,6 @@ proc help::tag_img {params} {
  variable curfilename
  variable _images
 
- puts "In help::tag_img"
-
  set p_src ""
  set p_align ""
  set p_border ""
@@ -486,9 +484,7 @@ proc help::tag_img {params} {
  foreach {param value} $params {
   set p_$param $value
  }
- puts "  p_src: $p_src"
  if {[info exists data($p_src,image)]} {
-  puts "  HERE!!!!!!"
   catch {set imind [$w.text image create end -image $data($p_src,image)]}
  } else {
 #sch i think you mean [catch {...}] == 0
@@ -1243,10 +1239,9 @@ proc help::_load {filename} {
                  }
                  set imdata [string trim [join [lrange $str $i end]]]
                  switch -- $imtype {
-                  file {catch {puts HERE ; set data($imname,image) [image create photo -file [file join [file dirname $filename] $imdata]]}}
+                  file {catch {set data($imname,image) [image create photo -file [file join [file dirname $filename] $imdata]]}}
                   data {catch {set data($imname,image) [image create photo -data $imdata]}}
                  }
-                 puts "Found image in help file, imname: $imname, imtype: $imtype, imdata: $imdata, data($imname,image): $data($imname,image)"
                 }
    .include*    {variable inclstr
                  set inclstr [string trim [join [lrange [split $str] 1 end]] "\t\" "]
@@ -1305,7 +1300,6 @@ proc help::load {filename} {
  variable data
  variable curfilename
 
- puts "In help::load!!!"
  if {$filename==$curfilename} {
   return 1
  }
@@ -1347,7 +1341,6 @@ proc help::load {filename} {
  array set settings "back {$backcolor} fore {$forecolor} link {$linkcolor} alink {$alinkcolor}"
 
  foreach imn [array names data *,image] {
-  puts "Deleting image $data($imn)!!!!!"
   catch {image delete $data($imn)}
  }
  catch {unset data}
@@ -3112,3 +3105,4 @@ switch -- $tcl_platform(platform) {
 
 help::add_ext [file join [file dirname [info script]] "help_chk.tcl"]
 help::add_ext [file join [file dirname [info script]] "help_2htm.tcl"]
+help::add_ext [file join [file dirname [info script]] "help_tbl.tcl"]
