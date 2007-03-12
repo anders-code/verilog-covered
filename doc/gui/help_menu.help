@@ -14,16 +14,14 @@ information for application problems, suggestions, etc. can be found in this men
 <p align=center><b>Figure 1.  The Help Menu</b></p>
 <p align=center><img src=help_menu id="The Help Menu"></p>
 
-<p><ul>
-  <li><b>Manual</b>
-    <p>
-    Selecting this menu item causes Covered to show the report viewer's user manual 
-    in a browser window.</p>
-    <p></p></li>
+<h4>Manual</h4>
 
-  <li><b>About Covered</b>
-    <p>
-    Selecting this menu item causes Covered to bring up a window showing the current 
-    release number and contact information.</p>
-    <p></p></li>
-</ul></p>
+  <p>
+  Selecting this menu item causes Covered to display the report viewer's user manual
+  via HelpSystem (c).</p>
+
+<h4>About Covered</h4>
+
+  <p>
+  Selecting this menu item causes Covered to bring up a window showing the current 
+  release number, developer contact information and credits.</p>

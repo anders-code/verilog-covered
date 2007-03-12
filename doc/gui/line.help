@@ -37,7 +37,7 @@ following:</p>
 
 <p><ol>
   <li>
-    Make sure that the "Show Uncovered" menu item in the 
+    Make sure that the <b>Show Uncovered</b> menu item in the 
     <a href="report_menu.help?internal_1">Report menu</a> is selected.</li>
   <li>
     Select the line coverage metric in the <a href="cov_bar.help?internal_1">Coverage
@@ -82,7 +82,7 @@ statement on that line will also be implicitly excluded from coverage (though th
 of the statement will not change).</p>
 
 <p>
-If the user excludes any line in the design, the "Save CDD..." option in the
+If the user excludes any line in the design, the <b>Save CDD...</b> option in the
 <a href="file_menu.help?internal_1">File Menu</a> will be enabled.  This allows the
 user to save the excluded property either back to the CDD file (or to a newly named CDD file).
 Doing so will allow the user to load the CDD file at a different time and retain the knowledge
@@ -98,7 +98,7 @@ following:</p>
 
 <p><ol>
   <li>
-    Make sure that the "Show Covered" menu item in the 
+    Make sure that the <b>Show Covered</b> menu item in the 
     <a href="report_menu.help?internal_1">Report menu</a> is selected.</li>
   <li>
     Select the line coverage metric in the <a href="cov_bar.help?internal_1">
@@ -121,7 +121,7 @@ this module/instance.</p>
 
 <p>
 You may see both the covered and uncovered line coverage simultaneously by selecting 
-both the "Show Uncovered" and "Show Covered" items in the Report menu.  This is sometimes 
+both the <b>Show Uncovered</b> and <b>Show Covered</b> items in the Report menu.  This is sometimes 
 useful to see what logic Covered was not able to provide coverage support for (all 
 lines which contain code that are not highlighted in either the uncovered or covered 
 color schemes).</p>

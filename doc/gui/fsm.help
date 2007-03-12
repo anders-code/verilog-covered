@@ -15,7 +15,7 @@ FSM information loaded.  Figure 1 below shows an example of this window.</p>
 <p align=center><b>Figure 1.  Verbose FSM Coverage Window</b></p>
 <p align=center><img src=fsm_window id="Covered - Verbose FSM Coverage Window"></p>
 
-<h2>Navigating the FSM Window</h2>
+<h4>Navigating the FSM Window</h4>
 
 <p>
 The Verbose FSM window is split into two main frames.  The top frame contains the
@@ -72,6 +72,10 @@ transitions (if all state transitions were specified in the Verilog source code)
 are unknown in their coverage (either not hit or impossible transition if all state
 transitions were not specified in the Verilog source code).</p>
 
+<p>
+To exit this window, simply click on <b>Close</b> button.  To see this help page for the
+FSM window, click on the <b>Help</b> button.</p>
+
 <h2>Excluding/Including a State Transition</h2>
 
 <p>
@@ -99,7 +103,7 @@ remain under the variable to allow the user to still examine the verbose FSM inf
 state machine.</p>
 
 <p>
-If the user excludes any state transition in the design, the "Save CDD..." option in the
+If the user excludes any state transition in the design, the <b>Save CDD...</b> option in the
 <a href="file_menu.help?internal_1">File Menu</a> will be enabled.  This allows the user to save the excluded property
 either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the
 CDD file at a different time and retain the knowledge of which state transitions have been excluded/included
@@ -117,20 +121,7 @@ one after the other without having to create/destroy a new window for each.</p>
 
 <p>
 The user may also see the previous or next uncovered FSM in the main viewer by 
-clicking either the "&lt;--" button (for previous signal viewing) or the "--&gt;" button 
-(for next signal viewing).  Note that the "&lt;--" button will be disabled if there is 
-not a signal previous to the current signal in the given module and the "--&gt;" button 
+clicking either the <b>&lt;--</b> button (for previous signal viewing) or the <b>--&gt;</b> button 
+(for next signal viewing).  Note that the <b>&lt;--</b> button will be disabled if there is 
+not a signal previous to the current signal in the given module and the <b>--&gt;</b> button 
 will be disabled if there is not a signal after the current signal in the given module.</p>
-
-<h4>Close Button</h4>
-
-<p>
-Clicking the <b>Close</b> button will cause the Verbose FSM Coverage window
-to close and the current selection identifier to be removed from the Coverage Viewer
-in the main window.</p>
-
-<h4>Help Button</h4>
-
-<p>
-Clicking the <b>Help</b> button will cause this help page to be displayed in a web
-brower.</p>

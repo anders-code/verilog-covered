@@ -12,7 +12,7 @@ goals for each coverage metric.
 <p align=center><b>Figure 1.  The Coverage Goals Window</b></p>
 <p align=center><img src=pref_goals id="Covered - Coverage Goals Preferences Pane"></p>
 
-<h3>Set Acceptable Coverage Goals Frame</h3>
+<h4>Set Acceptable Coverage Goals Frame</h4>
 
 <p>
 This frame contains four spinner boxes that contains values between 0 and 100.  These

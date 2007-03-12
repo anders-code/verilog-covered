@@ -13,18 +13,18 @@ this window.</p>
 <p align=center><b>Figure 1.  The ASCII Report Generate Window</b></p>
 <p align=center><img src=report_gen id="ASCII Report Generate Window"></p>
 
-<h2>Navigating the Window</h2>
+<h4>Navigating the Window</h4>
 
 <p>
 The "Create ASCII report" window contains three frames which are described below.</p>
 
-<h3>Selected ASCII Report Options Frame</h3>
+<h5>Selected ASCII Report Options Frame</h5>
 
 <p>
 The upper portion of the window shows the current options that will be passed to the report
 generator.  These options can be modified in the <a href="pref_report.help?internal_1">Preferences</a> window.
 The window provides a short-cut way to get to the ASCII report option pane in the Preferences window
-by simply clicking on the "Edit Options..." button in the upper right corner of this window.  The
+by simply clicking on the <b>Edit Options...</b> button in the upper right corner of this window.  The
 various options to the report generator are the following:</p>
 
 <p><ul>
@@ -74,21 +74,21 @@ various options to the report generator are the following:</p>
     <p></p></li>
 </ul></p>
 
-<h3>Save To File Frame</h3>
+<h5>Save To File Frame</h5>
 
 <p>
 The middle frame of the ASCII Report window allows the user to specify a filename/location for the
 generated output file.  By default, the report name is the same as the first CDD file loaded, substituting
 the .cdd extension for a .rpt extension.  By default, the directory location to store the generated
 report is the same directory that the first CDD file exists in.  To change this name/location, the user
-may either enter a value in the entry field or click on the 'Browse...' button to display a "Save As"
+may either enter a value in the entry field or click on the <b>Browse...</b> button to display a "Save As"
 type window.</p>
 
-<h3>Bottom Button Frame</h3>
+<h5>Bottom Button Frame</h5>
 
 <p>
-The button bar on the bottom of the window contains three buttons.  Clicking the 'Create' button will
+The button bar on the bottom of the window contains three buttons.  Clicking the <b>Create</b> button will
 generate a report file using the specified options and filename specified in the upper two frames of this
 window.  After the report has been created, the window will automatically close and the generated file
-can be viewed with any text viewer.  Clicking the 'Cancel' button will not generate a report and will
-cause the window to close.  Clicking the 'Help' button will display this help page.</p>
+can be viewed with any text viewer.  Clicking the <b>Cancel</b> button will not generate a report and will
+cause the window to close.  Clicking the <b>Help</b> button will display this help page.</p>

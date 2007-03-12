@@ -10,10 +10,10 @@ ASCII report generator.</p>
 <p align=center><img src=pref_report id="Covered - ASCII Report Preferences Pane"></p>
 </div>
 
-<h3>Navigating the Set ASCII Report Generation Options pane</h3>
+<h4>Navigating the Set ASCII Report Generation Options pane</h4>
 
 <p>
-This pane contains five categories of options that can be modified for report generation
+This pane contains six categories of options that can be modified for report generation
 purposes.  These categories are described below:</p>
 
 <p><ul>
@@ -80,6 +80,6 @@ purposes.  These categories are described below:</p>
 </ul></p>
 
 <p>
-When the 'Apply' or 'OK' button is clicked at the bottom of the preferences window, the ASCII
+When the <b>Apply</b> or <b>OK</b> button is clicked at the bottom of the preferences window, the ASCII
 reporting options will be updated in the <a href="report_gen.help?internal_1">ASCII Report Generator Window</a>
 if that window is currently being displayed.</p>

@@ -17,7 +17,7 @@ from a 0-&gt;1.</p>
 <p align=center><b>Figure 1.  Verbose Toggle Window</b></p>
 <p align=center><img src=toggle_full id="Verbose Toggle Window"></p>
 
-<h2>Understanding the Layout</h2>
+<h4>Understanding the Layout</h4>
 
 <p>
 The bit vector displayed is a binary bit vector, each value (0 or 1) represents whether
@@ -34,31 +34,31 @@ exceeds the given space for the toggle window, a scrollbar will be allowed to sl
 left and right to view the rest of the toggle information.</p>
 
 <p>
-To exit this window, simply click on "Close" button.  To see this help page from the
-toggle window, click on the "Help" button.</p>
+To exit this window, simply click on <b>Close</b> button.  To see this help page from the
+toggle window, click on the <b>Help</b> button.</p>
 
 <h2>Excluding/Including a Signal for Toggle Coverage</h2>
 
 <p>
 The user may exclude/include any uncovered signal in the design for toggle coverage by simply clicking
-on the "Excluded" checkbutton.  If this checkbutton is checked, the summary coverage information
+on the <b>Excluded</b> checkbutton.  If this checkbutton is checked, the summary coverage information
 will automatically be recalculated and redisplayed in the <a href="summary_bar.help?internal_1">Main Window
 Summary Bar</a> and the background color of the underlined signal in the
 <a href="cov_view.help?internal_1">Main Window File Viewer</a> will change from the uncovered background color to the
 covered background color.  However, the signal will still remain underlined, allowing the user to see
-the verbose toggle coverage information, if necessary.  If the "Excluded" checkbutton is unchecked,
+the verbose toggle coverage information, if necessary.  If the <b>Excluded</b> checkbutton is unchecked,
 the summary coverage information and background colors will be readjusted to include the coverage information
 for this signal.</p>
 
 <p>
-If the user excludes any signal for toggle coverage in the design, the "Save CDD..." option in the
+If the user excludes any signal for toggle coverage in the design, the <b>Save CDD...</b> option in the
 <a href="file_menu.help?internal_1">File Menu</a> will be enabled.  This allows the user to save the excluded property
 either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the
 CDD file at a different time and retain the knowledge of which signals have been excluded/included
 for toggle coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file,
 the excluded signal information is preserved for the resulting merged CDD file.</p>
 
-<h2>Displaying a New Signal</h2>
+<h2>Displaying a New Signal for Toggle Coverage</h2>
 
 <p>
 If the Verbose Toggle Coverage window is currently displayed with a signal, the user may
@@ -69,7 +69,7 @@ after the other without having to create/destroy a new window for each signal.</
 
 <p>
 The user may also see the previous or next uncovered signal in the main viewer by clicking
-either the "&lt;--" button (for previous signal viewing) or the "--&gt;" button (for next signal
-viewing).  Note that the "&lt;--" button will be disabled if there is not a signal previous
-to the current signal in the given module and the "--&gt;" button will be disabled if there is
+either the <b>&lt;--</b> button (for previous signal viewing) or the <b>--&gt;</b> button (for next signal
+viewing).  Note that the <b>&lt;--</b> button will be disabled if there is not a signal previous
+to the current signal in the given module and the <b>--&gt;</b> button will be disabled if there is
 not a signal after the current signal in the given module.</p>

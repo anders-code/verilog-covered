@@ -10,7 +10,7 @@ colors for all code that is considered covered, uncovered or in a race condition
 <p align=center><b>Figure 1.  The Color Preferences Pane</b></p>
 <p align=center><img src=pref_color id="Covered - Color Preferences Pane"></p>
 
-<h3>Set Highlight Color</h3>
+<h4>Set Highlight Color</h4>
 
 <p>
 This frame contains six buttons that affect the foreground and background colors

@@ -9,7 +9,7 @@ mode and colors for any displayed Verilog source code.</p>
 <p align=center><b>Figure 1.  The Syntax Highlighting Preferences Pane</b></p>
 <p align=center><img src=pref_syntax id="Covered - Syntax Highlighting Preferences Pane"></p>
 
-<h3>Set Syntax Highlighting Options</h3>
+<h4>Set Syntax Highlighting Options</h4>
 
 <p>
 This frame allows the user to specify if syntax highlighting should be performed in all

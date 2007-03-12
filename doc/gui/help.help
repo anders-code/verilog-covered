@@ -3,7 +3,7 @@
 .forecolor black
 .backcolor white
 .linkcolor #006800
-.buttons "back forw sep prev up next sep stop sep find search sep cont ind"
+.buttons "back forw sep prev up next sep stop sep find search sep cont"
 .controls "back forw sep prev up next sep cont"
 
 ; do not append list of subtopics to topic page
@@ -13,7 +13,7 @@
 ;add any header to contents
 .h_contents .*
 ; ignore any header level 5
-.h_ignore <h[45].*
+.h_ignore <h[456].*
 
 .include intro.help
 .include main.help
