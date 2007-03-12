@@ -9,4 +9,4 @@ All information is state and context sensitive.  If you are in doubt of what to 
 next, first see the information bar.</p>
 
 <p align=center><b>Figure 1.  Covered Main Window Highlighting the Information Bar</b></p>
-<p align=center><img src="images/main_info.png" id="Covered Main Information Bar"></p>
+<p align=center><img src=main_info id="Covered Main Information Bar"></p>

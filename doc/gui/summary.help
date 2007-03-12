@@ -66,12 +66,12 @@ increasing order (the lowest percentage will be displayed at the top of the wind
 by selecting the "Increasing Order" button.  The user may switch back to decreasing
 ordered display by selecting the "Decreasing Order" button.</p>
 
-<h2>Close Button</h2>
+<h4>Close Button</h4>
 
 <p>
 Click on this button to close the summary window.</p>
 
-<h2>Help Button</h2>
+<h4>Help Button</h4>
 
 <p>
 Click on this button to display this help page in a browser.</p>

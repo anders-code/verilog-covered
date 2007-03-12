@@ -35,11 +35,11 @@ proc help_show_manual {section} {
   set curr_path [pwd]
   cd [file join $HOME doc gui]
 
-#  if {$section!="contents"} {
-#    help::init $fpath "$section.html"
-#  } else {
-    help::init help.help $section
-#  }
+  if {$section=="contents"} {
+    help::init help.help contents {} 500
+  } else {
+    help::init help.help $section.html?internal_1 {} 500
+  }
 
   cd $curr_path
 

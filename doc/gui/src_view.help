@@ -28,12 +28,12 @@ cause the current source code to be replaced with its "parent" source code.</p>
 Note that the <b>Back</b> button will be disabled when the top-level assertion file is
 currently displayed.</p>
 
-<h2>Close Button</h2>
+<h4>Close Button</h4>
 
 <p>
 Clicking the <b>Close</b> button will cause only this window to be closed.</p>
 
-<h2>Help Button</h2>
+<h4>Help Button</h4>
 
 <p>
 Clicking the <b>Help</b> button will cause this help page to be displayed in a web

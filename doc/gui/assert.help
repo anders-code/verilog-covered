@@ -92,7 +92,7 @@ clicking either the "&lt;--" button (for previous signal viewing) or the "--&gt;
 not a signal previous to the current signal in the given module and the "--&gt;" button 
 will be disabled if there is not a signal after the current signal in the given module.</p>
 
-<h2>Close Button</h2>
+<h4>Close Button</h4>
 
 <p>
 Clicking the <b>Close</b> button will cause the Verbose Assertion Coverage window (and
@@ -100,7 +100,7 @@ the <a href="src_view.help?internal_1">Assertion Source Viewer window</a> if it 
 to close and the current selection identifier to be removed from the Coverage Viewer
 in the main window.</p>
 
-<h2>Help Button</h2>
+<h4>Help Button</h4>
 
 <p>
 Clicking the <b>Help</b> button will cause this help page to be displayed in a web

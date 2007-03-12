@@ -13,7 +13,7 @@
 ;add any header to contents
 .h_contents .*
 ; ignore any header level 5
-.h_ignore <h5.*
+.h_ignore <h[45].*
 
 .include intro.help
 .include main.help
