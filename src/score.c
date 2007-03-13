@@ -417,12 +417,12 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         if( output_db != NULL ) {
           print_output( "Only one -o option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
-          if( is_directory( argv[i] ) ) {
+          if( is_legal_filename( argv[i] ) ) {
             output_db = strdup_safe( argv[i], __FILE__, __LINE__ );
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
           } else {
-            snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
+            snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             retval = FALSE;
           }
@@ -933,6 +933,12 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.92  2007/03/13 22:12:59  phase1geo
+ Merging changes to covered-0_5-branch to fix bug 1678931.
+
+ Revision 1.91.2.1  2007/03/13 22:05:10  phase1geo
+ Fixing bug 1678931.  Updated regression.
+
  Revision 1.91  2006/12/01 19:05:11  phase1geo
  Fixing the usage of -vpi_ts option.  Updating its -h usage information as well.
 

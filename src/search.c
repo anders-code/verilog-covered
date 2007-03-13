@@ -141,7 +141,7 @@ bool search_add_include_path( char* path ) {
   bool  retval = TRUE;   /* Return value for this function */
   char* tmp;             /* Temporary directory name */
 
-  if( is_directory( path ) ) {
+  if( directory_exists( path ) ) {
     tmp = strdup_safe( path, __FILE__, __LINE__ );
     str_link_add( tmp, &inc_paths_head, &inc_paths_tail );
   } else {
@@ -162,7 +162,7 @@ bool search_add_directory_path( char* path ) {
 
   bool retval = TRUE;  /* Return value for this function */
 
-  if( is_directory( path ) && directory_exists( path ) ) {
+  if( directory_exists( path ) ) {
     /* If no library extensions have been specified, assume *.v */
     if( extensions_head == NULL ) {
       str_link_add( strdup_safe( "v", __FILE__, __LINE__ ), &(extensions_head), &(extensions_tail) );
@@ -292,6 +292,12 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.30  2007/03/13 22:12:59  phase1geo
+ Merging changes to covered-0_5-branch to fix bug 1678931.
+
+ Revision 1.29.2.1  2007/03/13 22:05:11  phase1geo
+ Fixing bug 1678931.  Updated regression.
+
  Revision 1.29  2006/11/25 21:29:01  phase1geo
  Adding timescale diagnostics to regression suite and fixing bugs in core associated
  with this code.  Full regression now passes for IV and Cver (not in VPI mode).

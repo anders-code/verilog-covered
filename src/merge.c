@@ -92,10 +92,10 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
     
       if( (retval = check_option_value( argc, argv, i )) ) {
         i++;
-        if( is_directory( argv[i] ) ) {
+        if( is_legal_filename( argv[i] ) ) {
           merged_file = strdup_safe( argv[i], __FILE__, __LINE__ );
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output file specified \"%s\"", argv[i] );
+          snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           retval = FALSE;
         }
@@ -206,6 +206,12 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.30  2007/03/13 22:12:59  phase1geo
+ Merging changes to covered-0_5-branch to fix bug 1678931.
+
+ Revision 1.29.2.1  2007/03/13 22:05:10  phase1geo
+ Fixing bug 1678931.  Updated regression.
+
  Revision 1.29  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 
