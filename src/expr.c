@@ -2720,6 +2720,8 @@ bool expression_op_func__nb_call( expression* expr, thread* thr ) {
       sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
       expr->suppl.part.prev_called         = 1;
       expr->value->value[0].part.exp.value = 0;
+      expr->suppl.part.eval_t              = 0;
+      expr->suppl.part.eval_f              = 1;
     } else if( thr->child_head == NULL ) {
       expr->suppl.part.prev_called         = 0;
       expr->value->value[0].part.exp.value = 1;
@@ -3928,6 +3930,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.238  2007/03/14 22:26:52  phase1geo
+ Fixing bug in nb_call operation (need to set eval_t and eval_f in the case
+ where we are considering the named block call to not be changed).
+
  Revision 1.237  2007/03/08 05:17:30  phase1geo
  Various code fixes.  Full regression does not yet pass.
 
