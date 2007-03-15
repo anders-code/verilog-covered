@@ -654,7 +654,7 @@ funit_inst* inst_link_find_by_scope( char* scope, inst_link* head ) {
   funit_inst* inst;  /* Pointer to found instance */
 
   curr = head;
-  while( (curr != NULL) && ((inst = instance_find_scope( curr->inst, scope )) == NULL) ) {
+  while( (curr != NULL) && ((inst = instance_find_scope( curr->inst, scope, TRUE )) == NULL) ) {
     curr = curr->next;
   }
 
@@ -1172,6 +1172,9 @@ void inst_link_delete_list( inst_link* head ) {
 
 /*
  $Log$
+ Revision 1.59  2007/03/15 22:39:05  phase1geo
+ Fixing bug in unnamed scope binding.
+
  Revision 1.58  2006/12/19 05:23:39  phase1geo
  Added initial code for handling instance flattening for unnamed scopes.  This
  is partially working at this point but still needs some debugging.  Checkpointing.

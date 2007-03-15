@@ -882,14 +882,14 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
           snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
           instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE );
           snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
-          if( (child = instance_find_scope( inst, inst_name )) != NULL ) {
+          if( (child = instance_find_scope( inst, inst_name, TRUE )) != NULL ) {
             inst_parm_add_genvar( genvar, child );
           }
         } else {
           char inst_name[4096];
           instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE );
           snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
-          child = instance_find_scope( inst, inst_name );
+          child = instance_find_scope( inst, inst_name, TRUE );
         }
         gen_item_resolve( gi->next_true, child, TRUE );
         gen_item_resolve( gi->next_false, inst, FALSE );
@@ -1113,6 +1113,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.43  2007/03/15 22:39:05  phase1geo
+ Fixing bug in unnamed scope binding.
+
  Revision 1.42  2006/10/16 21:34:46  phase1geo
  Increased max bit width from 1024 to 65536 to allow for more room for memories.
  Fixed issue with enumerated values being explicitly assigned unknown values and
