@@ -1044,11 +1044,14 @@ typedef enum exp_op_type_e {
  @{
 */
 
-/*! Functional unit */
-#define ETYPE_FUNIT     0
+/*! Specifies that the element pointer is not valid */
+#define ETYPE_NONE      0
 
-/*! Delay */
-#define ETYPE_DELAY     1
+/*! Specifies that the element pointer points to a functional unit */
+#define ETYPE_FUNIT     1
+
+/*! Specifies that the element pointer points to a delay */
+#define ETYPE_DELAY     2
 
 /*! @} */
 
@@ -2294,6 +2297,10 @@ struct reentrant_s {
 
 /*
  $Log$
+ Revision 1.251  2007/03/16 21:41:08  phase1geo
+ Checkpointing some work in fixing regressions for unnamed scope additions.
+ Getting closer but still need to properly handle the removal of functional units.
+
  Revision 1.250  2006/12/18 23:58:34  phase1geo
  Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
  Other fixes to parser for blocks.  We need to add code to properly handle unnamed
