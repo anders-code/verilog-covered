@@ -69,7 +69,7 @@ bool funit_db_read( func_unit* funit, char* scope, char** line );
 bool funit_db_merge( func_unit* base, FILE* file, bool same );
 
 /*! \brief Converges the contents of the other functional unit into the base functional unit */
-void funit_converge( func_unit* base, func_unit* other, funit_inst* other_inst );
+void funit_converge( func_unit* base, func_unit* other );
 
 /*! \brief Flattens the functional unit name by removing the last unnamed scope portion */
 void funit_flatten_name( func_unit* funit, char* unnamed_scope );
@@ -98,6 +98,11 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.21  2007/03/19 20:30:31  phase1geo
+ More fixes to report command for instance flattening.  This seems to be
+ working now as far as I can tell.  Regressions still have about 8 diagnostics
+ failing with report errors.  Checkpointing.
+
  Revision 1.20  2007/03/19 03:30:16  phase1geo
  More fixes to instance flattening algorithm.  Still much more work to do here.
  Checkpointing.
