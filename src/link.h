@@ -36,7 +36,7 @@ void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail );
 void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail );
 
 /*! \brief Joins two statement links together. */
-void stmt_link_join( stmt_link* tail, stmt_link* head );
+void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* other_head, stmt_link* other_tail );
 
 /*! \brief Adds specified expression to exp_link element at the end of the list. */
 void exp_link_add( expression* expr, exp_link** head, exp_link** tail );
@@ -167,6 +167,12 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.26  2007/03/19 22:52:50  phase1geo
+ Attempting to fix problem with line ordering for a named block that is
+ in the middle of another statement block.  Also fixed a problem with FORK
+ expressions not being bound early enough.  Run currently segfaults but
+ I need to checkpoint at the moment.
+
  Revision 1.25  2006/12/19 05:23:39  phase1geo
  Added initial code for handling instance flattening for unnamed scopes.  This
  is partially working at this point but still needs some debugging.  Checkpointing.

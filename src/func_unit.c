@@ -803,9 +803,8 @@ void funit_converge( func_unit* base, func_unit* other ) {
     if( base->stmt_head == NULL ) {
       base->stmt_head = other->stmt_head;
       base->stmt_tail = other->stmt_tail;
-    } else if( other->stmt_tail != NULL ) {
-      stmt_link_join( other->stmt_tail, base->stmt_head );
-      base->stmt_head = other->stmt_head;
+    } else {
+      stmt_link_merge( &(base->stmt_head), &(base->stmt_tail), other->stmt_head, other->stmt_tail );
     }
     other->stmt_head = other->stmt_tail = NULL;
   }
@@ -1103,6 +1102,12 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.61  2007/03/19 22:52:50  phase1geo
+ Attempting to fix problem with line ordering for a named block that is
+ in the middle of another statement block.  Also fixed a problem with FORK
+ expressions not being bound early enough.  Run currently segfaults but
+ I need to checkpoint at the moment.
+
  Revision 1.60  2007/03/19 20:30:31  phase1geo
  More fixes to report command for instance flattening.  This seems to be
  working now as far as I can tell.  Regressions still have about 8 diagnostics
