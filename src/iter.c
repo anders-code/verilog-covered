@@ -168,22 +168,38 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) {
 
 }
 
+/*!
+ \param si    Pointer to statement iterator to search
+ \param lnum  Line number to compare against
+
+ Searches the given statement iterator for the statement whose line number comes just
+ before the given line number.  Places curr on this statement and places last on the
+ statement whose line number is either equal to or less than curr.
+*/
 void stmt_iter_get_line_before( stmt_iter* si, int lnum ) {
 
   if( si->curr != NULL ) {
 
     if( si->curr->stmt->exp->line < lnum ) {
+      //printf( "HERE A\n" );
       while( (si->curr != NULL) && (si->curr->stmt->exp->line < lnum) ) {
+        //printf( "si->curr: %d, lnum: %d\n", si->curr->stmt->exp->line, lnum );
         stmt_iter_next( si );
       }
-      stmt_iter_reverse( si );
-      stmt_iter_next( si );
-      stmt_iter_reverse( si );
     } else {
+      //printf( "HERE B\n" );
       while( (si->curr != NULL) && (si->curr->stmt->exp->line > lnum) ) {
+        //printf( "si->curr: %d, lnum: %d\n", si->curr->stmt->exp->line, lnum );
         stmt_iter_next( si );
       }
     }
+
+/*
+    printf( "Found line # prior to %d (curr: %d, last: %d)\n", 
+            lnum, 
+            ((si->curr == NULL) ? -1 : si->curr->stmt->exp->line),
+            ((si->last == NULL) ? -1 : si->last->stmt->exp->line) );
+*/
 
   }
 
@@ -191,6 +207,10 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum ) {
 
 /*
  $Log$
+ Revision 1.14  2007/03/20 04:29:32  phase1geo
+ Fixing bugs in new stmt_link_merge function.  Updated regressions (only 11
+ diagnostics are currently failing in IV regression).  Checkpointing.
+
  Revision 1.13  2007/03/19 22:52:50  phase1geo
  Attempting to fix problem with line ordering for a named block that is
  in the middle of another statement block.  Also fixed a problem with FORK
