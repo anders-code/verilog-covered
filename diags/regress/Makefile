@@ -25,7 +25,7 @@ CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
 
-DIAGS1        = add1            always1         always2         always3         always3.1.11A \
+DIAGS1       := add1            always1         always2         always3         always3.1.11A \
                 always4         always5         always6         always7         always7.1 \
                 always8         always9         always10        always11        always11.1 \
                 always11.2      always12        always13        ashift1         ashift2 \
@@ -85,24 +85,24 @@ DIAGS1        = add1            always1         always2         always3         
                 tri             tri0            tri1            triand          trior \
                 wait1           wait1.1         wand            while1          while1.1 \
                 wor
-DIAGS2        = delay1.1
-DIAGS3        = delay1.2
-DIAGS4        = delay1.3
+DIAGS2       := delay1.1
+DIAGS3       := delay1.2
+DIAGS4       := delay1.3
 
-MERGE1        = merge1          merge3          fsm2
-MERGE3        = merge2
+MERGE1       := merge1          merge3          fsm2
+MERGE3       := merge2
 
-RACELIST      = race1           race1.1         race1.2         race2.1         race2.2 \
+RACELIST     := race1           race1.1         race1.2         race2.1         race2.2 \
                 race2.3         race2.4         race4
 
-ERRSCORE      = err1.0          err2.0          err3            err3.1          func3 \
+ERRSCORE     := err1.0          err2.0          err3            err3.1          func3 \
                 func3.1         func3.2         func3.3         func3.4         func3.5 \
                 func3.6         func4           func4.1         func4.2         func4.3 \
                 func4.4         func4.5         func4.6         task5
-ERRMERGE      =
-ERRREPORT     = err2.1
+ERRMERGE     :=
+ERRREPORT    := err2.1
 
-NOSIMLIST     = gen1            gen1.1          gen1.3          gen2.1          gen3.1 \
+NOSIMLIST    := gen1            gen1.1          gen1.3          gen2.1          gen3.1 \
                 gen4.1          gen5.1          gen6.1          gen7.1          gen8.1 \
                 gen9.1          gen10.1         gen11.1         gen12.1         gen13.1 \
                 gen14.1         gen15.1         gen16.1         gen17.1         gen18.1 \
@@ -113,7 +113,7 @@ NOSIMLIST     = gen1            gen1.1          gen1.3          gen2.1          
                 gen33.2         gen34.2         gen35.2         gen36.2         gen37.2 \
                 gen38.2         gen39.2         gen40.2
 
-NOSIMERRLIST  = comment1        enum2           err4            err4.1          gen1.2 \
+NOSIMERRLIST := comment1        enum2           err4            err4.1          gen1.2 \
                 gen1.4          gen1.5          gen2            gen3 \
                 gen4            gen5            gen6            gen7            gen8 \
                 gen9            gen10           gen11           gen12           gen13 \
@@ -130,7 +130,7 @@ NOSIMERRLIST  = comment1        enum2           err4            err4.1          
                 timescale3.7    timescale3.8    timescale3.9    timescale3.10   timescale3.11 \
                 timescale3.12   timescale3.13   timescale3.14
            
-IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         fsm1 \
+IVONLYDIAGS1 := always5.1       assign1         assign2.8       example         fsm1 \
                 fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
                 fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
                 fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
@@ -138,11 +138,11 @@ IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         
                 fsm10.2         generate1       hier2           ifdef1.1        implicit1 \
                 implicit2       real1.1         static2         static2.1       static2.2 \
                 unary1
-IVONLYDIAGS2  = 
-IVONLYDIAGS3  = 
-IVONLYDIAGS4  = 
+IVONLYDIAGS2 := 
+IVONLYDIAGS3 := 
+IVONLYDIAGS4 := 
 
-VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   assert1         bit1 \
+VCSONLYDIAGS1:= always_comb1    always_ff1      always_latch1   assert1         bit1 \
                 byte1           char1           dec1            dec1.1          dec2 \
                 dec3            dec3.1          dly_assign1.1   dly_assign1.2   dly_assign1.3 \
                 dly_assign1.4   dly_assign2     dly_assign2.1   do_while1       do_while1.1 \
@@ -164,21 +164,21 @@ VCSONLYDIAGS1 = always_comb1    always_ff1      always_latch1   assert1         
                 param8.2        param12         param12.1       shortint1       signed4.1 \
                 slist3.1        slist3.3        static_func1    static_func1.1  static_func2 \
                 static_func2.1  static_func2.2  static_func2.3  trireg
-VCSONLYDIAGS2 = 
-VCSONLYDIAGS3 = 
-VCSONLYDIAGS4 = 
+VCSONLYDIAGS2:= 
+VCSONLYDIAGS3:= 
+VCSONLYDIAGS4:= 
 
-CVERONLYDIAGS1 =
-CVERONLYDIAGS2 =
-CVERONLYDIAGS3 =
-CVERONLYDIAGS4 =
+CVERONLYDIAGS1:=
+CVERONLYDIAGS2:=
+CVERONLYDIAGS3:=
+CVERONLYDIAGS4:=
 
-IVCVERDIAGS1  =
-IVCVERDIAGS2  =
-IVCVERDIAGS3  =
-IVCVERDIAGS4  =
+IVCVERDIAGS1 :=
+IVCVERDIAGS2 :=
+IVCVERDIAGS3 :=
+IVCVERDIAGS4 :=
 
-IVVCSDIAGS1   = define3         hier3           localparam1 \
+IVVCSDIAGS1  := define3         hier3           localparam1 \
                 localparam1.1   localparam1.2   localparam1.3   localparam2     localparam3 \
                 mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel6 \
                 mbit_sel6.1     mbit_sel6.2     mbit_sel6.3     ovl1            ovl1.1 \
@@ -186,14 +186,56 @@ IVVCSDIAGS1   = define3         hier3           localparam1 \
                 timescale1.1    timescale1.2    timescale1.3    timescale1.4    timescale1.5 \
                 timescale1.7    timescale1.8    timescale1.10   timescale1.11   timescale1.13 \
                 timescale1.14   timescale1.19   timescale2.1
-IVVCSDIAGS2   =
-IVVCSDIAGS3   =
-IVVCSDIAGS4   =
+IVVCSDIAGS2  :=
+IVVCSDIAGS3  :=
+IVVCSDIAGS4  :=
 
-CVERVCSDIAGS1 = timescale1.20   timescale2.6    timescale2.7
-CVERVCSDIAGS2 =
-CVERVCSDIAGS3 =
-CVERVCSDIAGS4 =
+CVERVCSDIAGS1:= timescale1.20   timescale2.6    timescale2.7
+CVERVCSDIAGS2:=
+CVERVCSDIAGS3:=
+CVERVCSDIAGS4:=
+
+# List of all diagnostics to be excluded from running if LXT regression is being run
+ifdef LXT
+LXTEXCLUDES :=  always11.2      concat6         define5         disable1
+
+DIAGS1         := $(filter-out $(LXTEXCLUDES), $(DIAGS1))
+DIAGS2         := $(filter-out $(LXTEXCLUDES), $(DIAGS2))
+DIAGS3         := $(filter-out $(LXTEXCLUDES), $(DIAGS3))
+DIAGS4         := $(filter-out $(LXTEXCLUDES), $(DIAGS4))
+MERGE1         := $(filter-out $(LXTEXCLUDES), $(MERGE1))
+MERGE3         := $(filter-out $(LXTEXCLUDES), $(MERGE3))
+RACELIST       := $(filter-out $(LXTEXCLUDES), $(RACELIST))
+ERRSCORE       := $(filter-out $(LXTEXCLUDES), $(ERRSCORE))
+ERRMERGE       := $(filter-out $(LXTEXCLUDES), $(ERRMERGE))
+ERRREPORT      := $(filter-out $(LXTEXCLUDES), $(ERRREPORT))
+NOSIMLIST      := $(filter-out $(LXTEXCLUDES), $(NOSIMLIST))
+NOSIMERRLIST   := $(filter-out $(LXTEXCLUDES), $(NOSIMERRLIST))
+IVONLYDIAGS1   := $(filter-out $(LXTEXCLUDES), $(IVONLYDIAGS1))
+IVONLYDIAGS2   := $(filter-out $(LXTEXCLUDES), $(IVONLYDIAGS2))
+IVONLYDIAGS3   := $(filter-out $(LXTEXCLUDES), $(IVONLYDIAGS3))
+IVONLYDIAGS4   := $(filter-out $(LXTEXCLUDES), $(IVONLYDIAGS4))
+VCSONLYDIAGS1  := $(filter-out $(LXTEXCLUDES), $(VCSONLYDIAGS1))
+VCSONLYDIAGS2  := $(filter-out $(LXTEXCLUDES), $(VCSONLYDIAGS2))
+VCSONLYDIAGS3  := $(filter-out $(LXTEXCLUDES), $(VCSONLYDIAGS3))
+VCSONLYDIAGS4  := $(filter-out $(LXTEXCLUDES), $(VCSONLYDIAGS4))
+CVERONLYDIAGS1 := $(filter-out $(LXTEXCLUDES), $(CVERONLYDIAGS1))
+CVERONLYDIAGS2 := $(filter-out $(LXTEXCLUDES), $(CVERONLYDIAGS2))
+CVERONLYDIAGS3 := $(filter-out $(LXTEXCLUDES), $(CVERONLYDIAGS3))
+CVERONLYDIAGS4 := $(filter-out $(LXTEXCLUDES), $(CVERONLYDIAGS4))
+IVCVERDIAGS1   := $(filter-out $(LXTEXCLUDES), $(IVCVERDIAGS1))
+IVCVERDIAGS2   := $(filter-out $(LXTEXCLUDES), $(IVCVERDIAGS2))
+IVCVERDIAGS3   := $(filter-out $(LXTEXCLUDES), $(IVCVERDIAGS3))
+IVCVERDIAGS4   := $(filter-out $(LXTEXCLUDES), $(IVCVERDIAGS4))
+IVVCSDIAGS1    := $(filter-out $(LXTEXCLUDES), $(IVVCSDIAGS1))
+IVVCSDIAGS2    := $(filter-out $(LXTEXCLUDES), $(IVVCSDIAGS2))
+IVVCSDIAGS3    := $(filter-out $(LXTEXCLUDES), $(IVVCSDIAGS3))
+IVVCSDIAGS4    := $(filter-out $(LXTEXCLUDES), $(IVVCSDIAGS4))
+CVERVCSDIAGS1  := $(filter-out $(LXTEXCLUDES), $(CVERVCSDIAGS1))
+CVERVCSDIAGS2  := $(filter-out $(LXTEXCLUDES), $(CVERVCSDIAGS2))
+CVERVCSDIAGS3  := $(filter-out $(LXTEXCLUDES), $(CVERVCSDIAGS3))
+CVERVCSDIAGS4  := $(filter-out $(LXTEXCLUDES), $(CVERVCSDIAGS4))
+endif
 
 iverilog:
 	@cd ../verilog; \
