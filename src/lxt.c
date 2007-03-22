@@ -145,7 +145,7 @@ void lxt_parse( char* lxt_file ) {
     curr_inst_scope = (char*)malloc_safe( 4096, __FILE__, __LINE__ );
 
     /* Only get dumpfile information if the dumpfile was not empty */
-    if( lt->vcd_empty == 0 )  {
+    if( lt->vcd_empty == 0 ) {
 
       /* Get symbol information */
       for( i=0; i<numfacs; i++ ) {
@@ -184,10 +184,10 @@ void lxt_parse( char* lxt_file ) {
       /* Check to see that at least one instance was found */
       if( !one_instance_found ) {
 
-        print_output( "No instances were found in specified VCD file that matched design", FATAL, __FILE__, __LINE__ );
+        print_output( "No instances were found in specified LXT file that matched design", FATAL, __FILE__, __LINE__ );
 
         /* If the -i option was not specified, let the user know */
-        if( instance_specified ) {
+        if( !instance_specified ) {
           print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
                         FATAL, __FILE__, __LINE__ );
         } else {
@@ -237,6 +237,9 @@ void lxt_parse( char* lxt_file ) {
 
 /*
  $Log$
+ Revision 1.10.2.2  2007/03/22 22:13:57  phase1geo
+ Bug fixes and makefile changes to allow LXT regressions to fully pass.
+
  Revision 1.10.2.1  2007/03/19 14:11:06  phase1geo
  LXT updates.
 

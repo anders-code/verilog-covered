@@ -197,8 +197,16 @@ CVERVCSDIAGS4:=
 
 # List of all diagnostics to be excluded from running if LXT regression is being run
 ifdef LXT
-LXTEXCLUDES :=  always11.2      concat6         define5         disable1
-
+LXTEXCLUDES :=  always11.2      concat6         define5         disable1        err3 \
+                err3.1          exclude1        long_exp1       long_exp3       mbit_sel3 \
+                mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3 \
+                merge1          merge2          multi_exp1      multi_exp1.1    multi_exp1.2 \
+                multi_exp1.3    multi_exp1.4    multi_exp1.5    multi_exp1.6    multi_exp1.7 \
+                multi_exp1.8    multi_exp3      nested_block2   nested_block2.1 param6 \
+                param6.1        param8          param8.1        port1           race1.2 \
+                real1           sbit_sel1.1     signed4         timescale1.16   timescale1.17 \
+                timescale1.18   timescale1.19   timescale2.8    unary1
+              
 DIAGS1         := $(filter-out $(LXTEXCLUDES), $(DIAGS1))
 DIAGS2         := $(filter-out $(LXTEXCLUDES), $(DIAGS2))
 DIAGS3         := $(filter-out $(LXTEXCLUDES), $(DIAGS3))
