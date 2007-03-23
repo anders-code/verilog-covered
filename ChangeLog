@@ -1,0 +1,86 @@
+2007-03-22 17:13  phase1geo
+
+	Bug fixes and makefile changes to allow LXT regressions to fully
+	pass.
+
+2007-03-19 23:30  phase1geo
+
+	Upgrading regression Makefile to exclude certain diagnostics when
+	performing LXT regression testing.  Still more diagnostics to add
+	to this list.
+
+2007-03-19 09:11  phase1geo
+
+	LXT updates.
+
+2007-03-13 17:05  phase1geo
+
+	Fixing bug 1678931.  Updated regression.
+
+2007-03-12 16:14  phase1geo
+
+	Final round of GUI user guide updates.	Fixed issues with
+	context-sensitive help viewing.
+
+2007-03-12 00:05  phase1geo
+
+	Next round of changes for on-line GUI help.  Reduced image sizes by
+	50% for easier viewing.  Fixing context-sensitive help caller. 
+	Fixed some other issues with documentation.  Still need to make one
+	more pass before this should be considered complete for now.
+
+2007-03-10 14:32  phase1geo
+
+	First pass of converting GUI doc HTML to HELP format.  Updated
+	covered.spec.  Also added help_tbl.tcl to allow the use of tables
+	in the HELP documentation.
+
+2007-03-09 17:21  phase1geo
+
+	Starting to update/modify GUI documentation to be used with the
+	HelpSystem utility.
+
+2007-03-09 11:37  phase1geo
+
+	Fixing a couple of GUI bugs.  First, the preprocessor was emitting
+	incorrect information for GUI purposes.  Now, included files are
+	not output by the preprocessor when readying information for GUI
+	display.  Also fixed bug pertaining to line exclusion/inclusion --
+	when multiple root expressions existed on the same line, the line
+	summary information in the GUI was being incremented/decremented by
+	that amount instead of incrementing/decrementing by one.
+
+2007-03-08 17:21  phase1geo
+
+	Fixing problem with included files in outputting the Verilog via
+	the GUI that was causing the GUI to improperly exit when selecting
+	a file.
+
+2007-03-07 16:17  phase1geo
+
+	Fixing regression errors which now completely pass again.  There
+	were two problems with NB_CALL and TASK_CALL expression functions
+	where we were returning a value of TRUE on the first call to both
+	of these functions.
+
+2007-01-05 09:55  phase1geo
+
+	Fixing bug 1628356 and fixing problem with VCS generated VCD file
+	parsing for multi-dimensional packed arrays.
+
+2006-12-22 22:43  phase1geo
+
+	Fixing bug related to named block calls.  Regression does not fully
+	pass at this point.  Checkpointing.
+
+2006-12-20 22:53  phase1geo
+
+	Fixing configure scripts to properly build a DLL for Cver usage in
+	Cygwin environments.  Hopefully, I have not broke the normal
+	builds.  Need to update the user documentation for Cver runs in a
+	Cygwin environment.
+
+2006-12-18 17:48  phase1geo
+
+	Fixing bug 1618467.  Added task6 diagnostic to verify the fix.
+
