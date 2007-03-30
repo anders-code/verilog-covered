@@ -42,7 +42,7 @@ void statement_db_write_tree( statement* stmt, FILE* ofile );
 void statement_db_write_expr_tree( statement* stmt, FILE* ofile );
 
 /*! \brief Reads in statement line from specified string and stores statement in specified functional unit. */
-bool statement_db_read( char** line, func_unit* curr_funit, int read_mode );
+bool statement_db_read( char** line, /*@null@*/func_unit* curr_funit, int read_mode );
 
 /*! \brief Assigns unique expression IDs to each expression in the given statement block. */
 void statement_assign_expr_ids( statement* stmt );
@@ -74,6 +74,9 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.30  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.29  2006/09/07 21:59:24  phase1geo
  Fixing some bugs related to statement block removal.  Also made some significant
  optimizations to this code.

@@ -343,7 +343,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     }
 
-    if( (expr->op == EXP_OP_LAST) || (expr->op == EXP_OP_NB_CALL) ) {
+    if( (expr->op == EXP_OP_LAST) || (expr->op == EXP_OP_NB_CALL) || (expr->op == EXP_OP_JOIN) || (expr->op == EXP_OP_FORK) ) {
 
       /* Do nothing. */
       *code_depth = 0;
@@ -913,6 +913,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.82  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.81  2006/12/12 06:20:22  phase1geo
  More updates to support re-entrant tasks/functions.  Still working through
  compiler errors.  Checkpointing.

@@ -736,6 +736,7 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
 
     if( (retval = db_read( ifile, read_mode )) ) {
       bind_perform( TRUE, 0 );
+      /*TBD*/inst_link_flatten( inst_head );
       report_gather_funit_stats( funit_head );
     }
 
@@ -918,6 +919,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.80  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.79  2007/03/13 22:12:59  phase1geo
  Merging changes to covered-0_5-branch to fix bug 1678931.
 

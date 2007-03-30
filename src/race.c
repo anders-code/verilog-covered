@@ -809,15 +809,24 @@ bool race_db_read( char** line, func_unit* curr_mod ) {
 
     *line = *line + chars_read;
 
-    /* Create the new race condition block */
-    rb = race_blk_create( reason, start_line, end_line );
+    if( curr_mod == NULL ) {
 
-    /* Add the new race condition block to the current module */
-    if( curr_mod->race_head == NULL ) {
-      curr_mod->race_head = curr_mod->race_tail = rb;
+      print_output( "Internal error:  race condition in database written before its functional unit", FATAL, __FILE__, __LINE__ );
+      retval = FALSE;
+
     } else {
-      curr_mod->race_tail->next = rb;
-      curr_mod->race_tail       = rb;
+
+      /* Create the new race condition block */
+      rb = race_blk_create( reason, start_line, end_line );
+
+      /* Add the new race condition block to the current module */
+      if( curr_mod->race_head == NULL ) {
+        curr_mod->race_head = curr_mod->race_tail = rb;
+      } else {
+        curr_mod->race_tail->next = rb;
+        curr_mod->race_tail       = rb;
+      }
+
     }
 
   } else {
@@ -1043,6 +1052,9 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.55  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.54  2006/12/18 23:58:34  phase1geo
  Fixes for automatic tasks.  Added atask1 diagnostic to regression suite to verify.
  Other fixes to parser for blocks.  We need to add code to properly handle unnamed

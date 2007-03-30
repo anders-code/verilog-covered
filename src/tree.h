@@ -35,10 +35,13 @@ tnode* tree_find( const char* key, tnode* root );
 void tree_remove( const char* key, tnode** root );
 
 /*! \brief Deallocates entire tree from memory. */
-void tree_dealloc( tnode* root );
+void tree_dealloc( /*@null@*/tnode* root );
 
 /*
  $Log$
+ Revision 1.3  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.2  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

@@ -39,7 +39,7 @@ void race_check_modules();
 bool race_db_write( race_blk* head, FILE* file );
 
 /*! \brief Reads contents from specified line for a race condition block and assigns the new block to the curr_mod */
-bool race_db_read( char** line, func_unit* curr_mod );
+bool race_db_read( char** line, /*@null@*/func_unit* curr_mod );
 
 /*! \brief Get statistic information for the specified race condition block list */
 void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE_NUM] );
@@ -56,6 +56,9 @@ void race_blk_delete_list( race_blk* rb );
 
 /*
  $Log$
+ Revision 1.18  2007/03/30 22:43:13  phase1geo
+ Regression fixes.  Still have a ways to go but we are getting close.
+
  Revision 1.17  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
