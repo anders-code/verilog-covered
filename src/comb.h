@@ -38,7 +38,7 @@ void combination_reset_counted_expr_tree( expression* exp );
 void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_depth, bool excluded, float* total, int* hit );
 
 /*! \brief Calculates combination logic statistics for summary output */
-void combination_get_stats( exp_link* expl, float* total, int* hit );
+void combination_get_stats( func_unit* funit, float* total, int* hit );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
 bool combination_collect( char* funit_name, int funit_type, expression*** covs, int* cov_cnt,
@@ -60,6 +60,10 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.20  2007/04/02 04:50:04  phase1geo
+ Adding func_iter files to iterate through a functional unit for reporting
+ purposes.  Updated affected files.
+
  Revision 1.19  2006/06/28 04:35:47  phase1geo
  Adding support for line coverage and fixing toggle and combinational coverage
  to redisplay main textbox to reflect exclusion changes.  Also added messageBox

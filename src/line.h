@@ -28,7 +28,7 @@
 #include "defines.h"
 
 /*! \brief Calculates line coverage numbers for the specified expression list. */
-void line_get_stats( stmt_link* stmtl, float* total, int* hit );
+void line_get_stats( func_unit* funit, float* total, int* hit );
 
 /*! \brief Gathers line numbers from specified functional unit that were not hit during simulation. */
 bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt );
@@ -39,6 +39,10 @@ void line_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.15  2007/04/02 04:50:04  phase1geo
+ Adding func_iter files to iterate through a functional unit for reporting
+ purposes.  Updated affected files.
+
  Revision 1.14  2006/06/26 04:12:55  phase1geo
  More updates for supporting coverage exclusion.  Still a bit more to go
  before this is working properly.
