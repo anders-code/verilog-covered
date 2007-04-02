@@ -29,7 +29,7 @@
 
 
 /*! \brief Resets combination counted bits in expression list */
-void combination_reset_counted_exprs( exp_link* expl );
+void combination_reset_counted_exprs( func_unit* funit );
 
 /*! \brief Resets combination counted bits in expression tree */
 void combination_reset_counted_expr_tree( expression* exp );
@@ -60,6 +60,10 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.21  2007/04/02 20:19:36  phase1geo
+ Checkpointing more work on use of functional iterators.  Not working correctly
+ yet.
+
  Revision 1.20  2007/04/02 04:50:04  phase1geo
  Adding func_iter files to iterate through a functional unit for reporting
  purposes.  Updated affected files.

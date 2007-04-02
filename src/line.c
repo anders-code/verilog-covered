@@ -73,12 +73,15 @@ void line_get_stats( func_unit* funit, float* total, int* hit ) {
 
   if( !db_is_unnamed_scope( funit->name ) ) {
 
+    printf( "Gathering line statistics for functional unit %s\n", funit->name );
+
     /* Initialize the functional unit iterator */
     func_iter_init( &fi, funit );
 
     stmt = func_iter_get_next_statement( &fi );
     while( stmt != NULL ) {
 
+      printf( "  statement: %s\n", expression_string( stmt->exp ) );
       if( (stmt->exp->op != EXP_OP_DELAY)   &&
           (stmt->exp->op != EXP_OP_CASE)    &&
           (stmt->exp->op != EXP_OP_CASEX)   &&
@@ -99,6 +102,10 @@ void line_get_stats( func_unit* funit, float* total, int* hit ) {
     }
 
     func_iter_dealloc( &fi );
+
+  } else {
+
+    printf( "In line_get_stats, funit %s is considered to be an unnamed scope\n", funit->name );
 
   }
 
@@ -551,8 +558,6 @@ void line_report( FILE* ofile, bool verbose ) {
   char       tmp[4096];             /* Temporary string value */
   inst_link* instl;                 /* Pointer to current instance link */
 
-  printf( "In line_report\n" );
-
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   LINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
@@ -604,6 +609,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.71  2007/04/02 20:19:36  phase1geo
+ Checkpointing more work on use of functional iterators.  Not working correctly
+ yet.
+
  Revision 1.70  2007/04/02 04:50:04  phase1geo
  Adding func_iter files to iterate through a functional unit for reporting
  purposes.  Updated affected files.
