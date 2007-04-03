@@ -434,7 +434,11 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
        set the curr_funit->first_stmt pointer to this statement.
       */
       if( (ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1) &&
-          ((curr_funit->type == FUNIT_TASK) || (curr_funit->type == FUNIT_FUNCTION) || (curr_funit->type == FUNIT_NAMED_BLOCK)) ) {
+          ((curr_funit->type == FUNIT_TASK)      ||
+           (curr_funit->type == FUNIT_ATASK)     ||
+           (curr_funit->type == FUNIT_FUNCTION)  ||
+           (curr_funit->type == FUNIT_AFUNCTION) ||
+           (curr_funit->type == FUNIT_NAMED_BLOCK)) ) {
         assert( curr_funit->first_stmt == NULL );
         curr_funit->first_stmt = stmt;
       }
@@ -920,6 +924,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.105  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.104  2007/03/16 22:33:46  phase1geo
  One more fix that helps diagnostics like always1 and still fixes exclude3.
  Regressions are still not working correctly yet, though.

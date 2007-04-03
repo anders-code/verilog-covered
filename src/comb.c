@@ -600,15 +600,23 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent )
   float       percent;        /* Percentage of lines hit */
   float       miss = 0;       /* Number of lines missed */
   char        tmpname[4096];  /* Temporary name holder of instance */
+  char*       pname;          /* Printable version of instance name */
 
   assert( root != NULL );
   assert( root->stat != NULL );
 
-  if( strcmp( parent, "*" ) == 0 ) {
-    strcpy( tmpname, root->name );
+  /* Generate printable version of instance name */
+  pname = scope_gen_printable( root->name );
+
+  if( db_is_unnamed_scope( pname ) ) {
+    strcpy( tmpname, parent );
+  } else if( strcmp( parent, "*" ) == 0 ) {
+    strcpy( tmpname, pname );
   } else {
-    snprintf( tmpname, 4096, "%s.%s", parent, obf_inst( root->name ) );
+    snprintf( tmpname, 4096, "%s.%s", parent, obf_inst( pname ) );
   }
+
+  free_safe( pname );
 
   if( root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
@@ -2294,7 +2302,9 @@ void combination_instance_verbose( FILE* ofile, funit_inst* root, char* parent )
   /* Get printable version of instance name */
   pname = scope_gen_printable( root->name );
 
-  if( strcmp( parent, "*" ) == 0 ) {
+  if( db_is_unnamed_scope( pname ) ) {
+    strcpy( tmpname, parent );
+  } else if( strcmp( parent, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
     snprintf( tmpname, 4096, "%s.%s", parent, pname );
@@ -2732,6 +2742,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.170  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.169  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly

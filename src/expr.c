@@ -2679,6 +2679,8 @@ bool expression_op_func__task_call( expression* expr, thread* thr ) {
 
   if( !expr->suppl.part.prev_called ) {
 
+    printf( "In expression_op_func__task_call, expr->elem.funit: %s\n", expr->elem.funit->name );
+
     /* Add a new thread */
     sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit );
 
@@ -3930,6 +3932,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.239  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.238  2007/03/14 22:26:52  phase1geo
  Fixing bug in nb_call operation (need to set eval_t and eval_f in the case
  where we are considering the named block call to not be changed).

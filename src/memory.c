@@ -563,7 +563,9 @@ bool memory_toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent
 
   /* Get printable version of this instance */
   pname = scope_gen_printable( root->name );
-  if( strcmp( parent_inst, "*" ) == 0 ) {
+  if( db_is_unnamed_scope( pname ) ) {
+    strcpy( tmpname, parent_inst );
+  } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
     snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
@@ -643,8 +645,11 @@ bool memory_ae_instance_summary( FILE* ofile, funit_inst* root, char* parent_ins
   assert( root != NULL );
   assert( root->stat != NULL );
 
-  /* Get printable version of this instance */   pname = scope_gen_printable( root->name );
-   if( strcmp( parent_inst, "*" ) == 0 ) {
+  /* Get printable version of this instance */
+  pname = scope_gen_printable( root->name );
+  if( db_is_unnamed_scope( pname ) ) {
+    strcpy( tmpname, parent_inst );
+  } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
     snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
@@ -1033,7 +1038,9 @@ void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst )
   /* Get printable version of the signal */
   pname = scope_gen_printable( root->name );
 
-  if( strcmp( parent_inst, "*" ) == 0 ) {
+  if( db_is_unnamed_scope( pname ) ) {
+    strcpy( tmpname, parent_inst );
+  } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
   } else {
     snprintf( tmpname, 4096, "%s.%s", parent_inst, pname );
@@ -1195,6 +1202,10 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.11  2007/04/03 18:55:57  phase1geo
+ Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
+ regression updates per these changes.  Checkpointing.
+
  Revision 1.10  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly
