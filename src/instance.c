@@ -760,7 +760,7 @@ void instance_flatten_helper( funit_inst* root, funit_link** rm_head, funit_link
         if( grandchild != NULL ) {
           while( grandchild != NULL ) {
             grandchild->parent = root;
-            funit_flatten_name( grandchild->funit, back );
+            //funit_flatten_name( grandchild->funit, back );
             grandchild = grandchild->next;
           }
           if( root->child_head == NULL ) {
@@ -1034,6 +1034,12 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.73  2007/04/03 04:15:17  phase1geo
+ Fixing bugs in func_iter functionality.  Modified functional unit name
+ flattening function (though this does not appear to be working correctly
+ at this time).  Added calls to funit_flatten_name in all of the reporting
+ files.  Checkpointing.
+
  Revision 1.72  2007/04/02 20:19:36  phase1geo
  Checkpointing more work on use of functional iterators.  Not working correctly
  yet.
