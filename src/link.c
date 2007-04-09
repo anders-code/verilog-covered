@@ -391,6 +391,21 @@ inst_link* inst_link_add( funit_inst* inst, inst_link** head, inst_link** tail )
 
 }
 
+unsigned inst_link_create_threads( inst_link* head, thread** thread_head, thread** thread_tail ) {
+
+  inst_link* curr;      /* Pointer to current inst_link to display */
+  unsigned   size = 0;  /* Number of threads added to the thr_list */
+
+  curr = head;
+  while( curr != NULL ) {
+    size += instance_create_threads( curr->inst, thread_head, thread_tail );
+    curr = curr->next;
+  }
+
+  return( size );
+
+}
+
 /**************************************************************************************/
 
 /*!
@@ -1234,6 +1249,10 @@ void inst_link_delete_list( inst_link* head ) {
 
 /*
  $Log$
+ Revision 1.62  2007/04/09 22:47:53  phase1geo
+ Starting to modify the simulation engine for performance purposes.  Code is
+ not complete and is untested at this point.
+
  Revision 1.61  2007/03/20 04:29:32  phase1geo
  Fixing bugs in new stmt_link_merge function.  Updated regressions (only 11
  diagnostics are currently failing in IV regression).  Checkpointing.

@@ -116,6 +116,16 @@ func_unit* funit_create() {
 
 }
 
+unsigned funit_create_threads( func_unit* funit, thread* parent, thread** thread_head, thread** thread_tail ) {
+
+  unsigned size = 0;
+
+  /* TBD */
+
+  return( size );
+
+}
+
 /*!
  \param funit  Pointer to functional unit to get its module from
 
@@ -1062,6 +1072,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.67  2007/04/09 22:47:53  phase1geo
+ Starting to modify the simulation engine for performance purposes.  Code is
+ not complete and is untested at this point.
+
  Revision 1.66  2007/04/03 18:55:57  phase1geo
  Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
  regression updates per these changes.  Checkpointing.
