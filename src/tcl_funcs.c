@@ -153,7 +153,7 @@ int tcl_func_get_instances( Tcl_Interp* tcl, funit_inst* root ) {
 
   /* Generate the name of this child */
   scope[0] = '\0';
-  instance_gen_scope( scope, root );
+  instance_gen_scope( scope, root, FALSE );
   Tcl_SetVar( tcl, "inst_list",   scope,             (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
   Tcl_SetVar( tcl, "funit_names", root->funit->name, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
   snprintf( tmpstr, 10, "%d", root->funit->type );
@@ -2255,6 +2255,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.64  2007/04/11 22:29:49  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.63  2006/10/02 22:41:00  phase1geo
  Lots of bug fixes to memory coverage functionality for GUI.  Memory coverage
  should now be working correctly.  We just need to update the GUI documentation

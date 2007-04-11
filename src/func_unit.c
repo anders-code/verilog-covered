@@ -805,11 +805,9 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 }
 
 /*!
- \param flattened_scope  Storage array for the flattened scope name
- \param funit            Pointer to functional unit to flatten name
+ \param funit Pointer to functional unit to flatten name
 
- Flattens the functional unit name and stores the result name in the flattened_scope
- array.
+ \return Returns the flattened name of the given functional unit
 */
 char* funit_flatten_name( func_unit* funit ) {
 
@@ -1097,6 +1095,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.70  2007/04/11 22:29:48  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.69  2007/04/10 22:10:11  phase1geo
  Fixing some more simulation issues.
 

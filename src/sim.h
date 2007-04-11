@@ -27,6 +27,18 @@
 #include "defines.h"
 
 
+/*! \brief Displays the current state of the active queue (for debug purposes only). */
+void sim_display_active_queue();
+
+/*! \brief Displays the current state of the delay queue (for debug purposes only). */
+void sim_display_delay_queue();
+
+/*! \brief Displays the current scope of the thread at the head of the active queue. */
+void sim_display_current();
+
+/*! \brief Displays the current statement. */
+void sim_display_current_stmt();
+
 /*! \brief Inserts the given thread into the delay queue at the given time slot */
 void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time );
 
@@ -66,6 +78,10 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.24  2007/04/11 22:29:49  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.23  2007/04/10 03:56:18  phase1geo
  Completing majority of code to support new simulation core.  Starting to debug
  this though we still have quite a ways to go here.  Checkpointing.

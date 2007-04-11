@@ -771,7 +771,7 @@ inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) {
 
     /* Get scope of this instance */
     scope[0] = '\0';
-    instance_gen_scope( scope, inst );
+    instance_gen_scope( scope, inst, FALSE );
 
     assert( leading_hier_num > 0 );
 
@@ -1007,6 +1007,10 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.86  2007/04/11 22:29:48  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.85  2006/12/12 06:20:23  phase1geo
  More updates to support re-entrant tasks/functions.  Still working through
  compiler errors.  Checkpointing.

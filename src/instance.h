@@ -36,7 +36,7 @@ unsigned instance_create_threads( funit_inst* root, thread** thread_head, thread
 void instance_display_tree( funit_inst* root );
 
 /*! \brief Builds full hierarchy from leaf node to root. */
-void instance_gen_scope( char* scope, funit_inst* leaf );
+void instance_gen_scope( char* scope, funit_inst* leaf, bool flatten );
 
 /*! \brief Finds specified scope in functional unit instance tree. */
 funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed );
@@ -81,6 +81,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.28  2007/04/11 22:29:48  phase1geo
+ Adding support for CLI to score command.  Still some work to go to get history
+ stuff right.  Otherwise, it seems to be working.
+
  Revision 1.27  2007/04/09 22:47:53  phase1geo
  Starting to modify the simulation engine for performance purposes.  Code is
  not complete and is untested at this point.
