@@ -417,7 +417,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         if( output_db != NULL ) {
           print_output( "Only one -o option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
-          if( is_legal_filename( argv[i] ) ) {
+          if( file_exists( argv[i] ) || is_legal_filename( argv[i] ) ) {
             output_db = strdup_safe( argv[i], __FILE__, __LINE__ );
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
@@ -933,6 +933,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.91.2.2  2007/04/11 03:03:03  phase1geo
+ Fixing writability check to -o option in the score command.  Fixes bug 1688487.
+
  Revision 1.91.2.1  2007/03/13 22:05:10  phase1geo
  Fixing bug 1678931.  Updated regression.
 
