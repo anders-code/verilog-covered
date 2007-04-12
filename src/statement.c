@@ -175,7 +175,7 @@ unsigned statement_create_threads( statement* stmt, func_unit* funit, thread* cu
 
     /* Create a new thread if necessary */
     if( curr == NULL ) {
-      // printf( "Adding statement %s to thread list\n", expression_string( stmt->exp ) );
+      assert( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 );
       curr              = sim_create_thread( parent, stmt, funit );
       curr->active_next = NULL;
       if( *thread_head == NULL ) {
@@ -982,6 +982,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.109  2007/04/12 20:54:55  phase1geo
+ Adding cli > output when replaying and adding back all of the functions (since
+ the cli > prompt helps give it context.  Fixing bugs in simulation core.
+ Checkpointing.
+
  Revision 1.108  2007/04/11 22:29:49  phase1geo
  Adding support for CLI to score command.  Still some work to go to get history
  stuff right.  Otherwise, it seems to be working.

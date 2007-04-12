@@ -33,14 +33,8 @@ void sim_display_active_queue();
 /*! \brief Displays the current state of the delay queue (for debug purposes only). */
 void sim_display_delay_queue();
 
-/*! \brief Displays the current scope of the thread at the head of the active queue. */
-void sim_display_current();
-
-/*! \brief Displays file lines starting at current position. */
-void sim_display_lines( unsigned num );
-
-/*! \brief Displays the current statement. */
-void sim_display_current_stmt();
+/*! \brief Returns a pointer to the current thread at the head of the active queue. */
+thread* sim_current_thread();
 
 /*! \brief Inserts the given thread into the delay queue at the given time slot */
 void sim_thread_insert_into_delay_queue( thread* thr, uint64 sim_time );
@@ -81,6 +75,11 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.26  2007/04/12 20:54:55  phase1geo
+ Adding cli > output when replaying and adding back all of the functions (since
+ the cli > prompt helps give it context.  Fixing bugs in simulation core.
+ Checkpointing.
+
  Revision 1.25  2007/04/12 04:15:40  phase1geo
  Adding history all command, added list command and updated the display current
  command to include statement output.
