@@ -33,6 +33,9 @@ void sim_display_active_queue();
 /*! \brief Displays the current state of the delay queue (for debug purposes only). */
 void sim_display_delay_queue();
 
+/*! \brief Displays the state of all threads */
+void sim_display_all_list();
+
 /*! \brief Returns a pointer to the current thread at the head of the active queue. */
 thread* sim_current_thread();
 
@@ -75,6 +78,11 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.27  2007/04/13 21:47:12  phase1geo
+ More simulation debugging.  Added 'display all_list' command to CLI to output
+ the list of all threads.  Updated regressions though we are not fully passing
+ at the moment.  Checkpointing.
+
  Revision 1.26  2007/04/12 20:54:55  phase1geo
  Adding cli > output when replaying and adding back all of the functions (since
  the cli > prompt helps give it context.  Fixing bugs in simulation core.

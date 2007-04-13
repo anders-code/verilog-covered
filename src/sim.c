@@ -860,14 +860,6 @@ void sim_thread( thread* thr, uint64 sim_time ) {
 
   while( (stmt != NULL) && !thr->suppl.part.kill ) {
 
-#ifdef OBSOLETE
-    /* Remove the pointer to the current thread from the last statement */
-    thr->curr->thr = NULL;
-
-    /* Set current statement thread pointer to current thread */
-    stmt->thr = thr;
-#endif
-
 #ifdef DEBUG_MODE
     cli_execute();
 #endif
@@ -1097,6 +1089,11 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.92  2007/04/13 21:47:12  phase1geo
+ More simulation debugging.  Added 'display all_list' command to CLI to output
+ the list of all threads.  Updated regressions though we are not fully passing
+ at the moment.  Checkpointing.
+
  Revision 1.91  2007/04/12 21:35:20  phase1geo
  More bug fixes to simulation core.  Checkpointing.
 

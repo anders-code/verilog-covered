@@ -1747,6 +1747,7 @@ struct expression_s {
   fsm*         table;              /*!< Pointer to FSM table associated with this expression */
   union {
     func_unit* funit;              /*!< Pointer to task/function to be called by this expression */
+    thread*    thr;                /*!< Pointer to next thread to be called */
     uint64*    scale;              /*!< Pointer to parent functional unit's timescale value */
   } elem;
 };
@@ -2296,6 +2297,11 @@ struct reentrant_s {
 
 /*
  $Log$
+ Revision 1.254  2007/04/13 21:47:12  phase1geo
+ More simulation debugging.  Added 'display all_list' command to CLI to output
+ the list of all threads.  Updated regressions though we are not fully passing
+ at the moment.  Checkpointing.
+
  Revision 1.253  2007/04/09 22:47:52  phase1geo
  Starting to modify the simulation engine for performance purposes.  Code is
  not complete and is untested at this point.
