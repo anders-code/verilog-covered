@@ -29,9 +29,6 @@
 /*! \brief Creates a new instance with the given information */
 funit_inst* instance_create( func_unit* funit, char* inst_name, /*@null@*/vector_width* range );
 
-/*! \brief Creates all of the threads for the given instance tree and adds them to the thread list */
-unsigned instance_create_threads( funit_inst* root, thread** thread_head, thread** thread_tail );
-
 /*! \brief Displays the current state of the instance tree */
 void instance_display_tree( funit_inst* root );
 
@@ -81,6 +78,9 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.29  2007/04/18 22:35:02  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.28  2007/04/11 22:29:48  phase1geo
  Adding support for CLI to score command.  Still some work to go to get history
  stuff right.  Otherwise, it seems to be working.

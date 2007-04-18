@@ -58,9 +58,6 @@ void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail );
 /*! \brief Adds specified functional unit instance to inst_link element at the end of the list. */
 inst_link* inst_link_add( funit_inst* inst, inst_link** head, inst_link** tail );
 
-/*! \brief Iterates through all instances, creating needed thread list */
-unsigned inst_link_create_threads( inst_link* head, thread** thread_head, thread** thread_tail );
-
 /*********************************************************************************/
 
 /*! \brief Displays specified string list to standard output. */
@@ -170,6 +167,9 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.28  2007/04/18 22:35:02  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.27  2007/04/09 22:47:53  phase1geo
  Starting to modify the simulation engine for performance purposes.  Code is
  not complete and is untested at this point.

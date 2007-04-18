@@ -29,9 +29,6 @@
 /*! \brief Creates new statement structure. */
 statement* statement_create( expression* exp );
 
-/*! \brief Iterates through the given statement block, creating, counting and adding simulation threads to the given list. */
-unsigned statement_create_threads( statement* stmt, func_unit* funit, thread* curr, thread* parent, thread** thread_head, thread** thread_tail );
-
 /*! \brief Sizes all expressions for the given statement block */
 void statement_size_elements( statement* stmt );
 
@@ -77,6 +74,9 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.32  2007/04/18 22:35:02  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.31  2007/04/10 03:56:18  phase1geo
  Completing majority of code to support new simulation core.  Starting to debug
  this though we still have quite a ways to go here.  Checkpointing.

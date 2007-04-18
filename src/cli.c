@@ -112,6 +112,8 @@ void cli_usage() {
   printf( "                          simulation queue.\n" );
   printf( "        delayed_queue     Displays the current state of the delayed\n" );
   printf( "                          simulation queue.\n" );
+  printf( "        waiting_queue     Displays the current state of the waiting\n" );
+  printf( "                          simulation queue.\n" );
   printf( "        all_list          Displays the list of all threads.\n" );
   printf( "        current           Displays the current scope, block, filename\n" );
   printf( "                          and line number.\n" );
@@ -399,6 +401,10 @@ bool cli_parse_input( char* line, bool perform, bool replaying ) {
           if( perform ) {
             sim_display_delay_queue();
           }
+        } else if( strncmp( "waiting_queue", arg, 13 ) == 0 ) {
+          if( perform ) {
+            sim_display_wait_queue();
+          }
         } else if( strncmp( "all_list", arg, 8 ) == 0 ) {
           if( perform ) {
             sim_display_all_list();
@@ -666,6 +672,9 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.7  2007/04/18 22:34:58  phase1geo
+ Revamping simulator core again.  Checkpointing.
+
  Revision 1.6  2007/04/13 21:47:12  phase1geo
  More simulation debugging.  Added 'display all_list' command to CLI to output
  the list of all threads.  Updated regressions though we are not fully passing
