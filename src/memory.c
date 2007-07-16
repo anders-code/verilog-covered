@@ -774,7 +774,7 @@ bool memory_toggle_funit_summary( FILE* ofile, funit_link* head, int* hits01, in
 
 }
 
-bool memory_display_ae_funit_summary( FILE* ofile, char* name, char* fname, int wr_hits, int rd_hits, int total ) {
+bool memory_display_ae_funit_summary( FILE* ofile, char* name, char* fname, int wr_hits, int rd_hits, float total ) {
 
   float wr_percent;  /* Percentage of addressable elements that were written */
   float rd_percent;  /* Percentage of addressable elements that were read */
@@ -1212,6 +1212,10 @@ void memory_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.14  2007/07/16 22:24:38  phase1geo
+ Fixed bugs in accumulated coverage output and updated regression files for this
+ change.  VCS simulated results are not contained here, however.
+
  Revision 1.13  2007/07/16 18:39:59  phase1geo
  Finishing adding accumulated coverage output to report files.  Also fixed
  compiler warnings with static values in C code that are inputs to 64-bit
