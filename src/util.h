@@ -120,9 +120,18 @@ void timer_stop( timer** tm );
 /*! \brief Returns string representation of the specified functional unit type */
 const char* get_funit_type( int type );
 
+/*! \brief Calculates miss and percent information from given hit and total information */
+void calc_miss_percent( int hits, float total, float* misses, float* percent );
+
 
 /*
  $Log$
+ Revision 1.27  2007/07/16 18:39:59  phase1geo
+ Finishing adding accumulated coverage output to report files.  Also fixed
+ compiler warnings with static values in C code that are inputs to 64-bit
+ variables.  Full regression was not run with these changes due to pre-existing
+ simulator problems in core code.
+
  Revision 1.26  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

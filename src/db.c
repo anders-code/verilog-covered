@@ -2293,7 +2293,7 @@ void db_do_timestep( uint64 time, bool final ) {
 
   /* If this is the last timestep, add the final list and do one more simulate */
   if( final ) {
-    sim_simulate( (uint64)0xffffffffffffffff );
+    sim_simulate( 0xffffffffffffffffLL );
   }
 
 #ifdef DEBUG_MODE
@@ -2308,6 +2308,12 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.253  2007/07/16 18:39:59  phase1geo
+ Finishing adding accumulated coverage output to report files.  Also fixed
+ compiler warnings with static values in C code that are inputs to 64-bit
+ variables.  Full regression was not run with these changes due to pre-existing
+ simulator problems in core code.
+
  Revision 1.252  2007/04/03 04:15:17  phase1geo
  Fixing bugs in func_iter functionality.  Modified functional unit name
  flattening function (though this does not appear to be working correctly

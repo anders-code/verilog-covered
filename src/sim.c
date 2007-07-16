@@ -723,7 +723,7 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit ) {
 
         /* If the statement block is specified as a final block, add it to the end of the delay queue */
         if( ESUPPL_STMT_FINAL( thr->curr->exp->suppl ) == 1 ) {
-          sim_thread_insert_into_delay_queue( thr, (uint64)0xffffffffffffffff );
+          sim_thread_insert_into_delay_queue( thr, 0xffffffffffffffffLL );
 
         /* Otherwise, add it to the active thread list */
         } else {
@@ -1158,6 +1158,12 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.95  2007/07/16 18:39:59  phase1geo
+ Finishing adding accumulated coverage output to report files.  Also fixed
+ compiler warnings with static values in C code that are inputs to 64-bit
+ variables.  Full regression was not run with these changes due to pre-existing
+ simulator problems in core code.
+
  Revision 1.94  2007/04/20 22:56:46  phase1geo
  More regression updates and simulator core fixes.  Still a ways to go.
 

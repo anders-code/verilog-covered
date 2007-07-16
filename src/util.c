@@ -1098,8 +1098,38 @@ const char* get_funit_type( int type ) {
 
 }
 
+/*!
+ \param hits     Number of items hit during simulation
+ \param total    Number of total items
+ \param misses   Pointer to a storage element which will contain the calculated number of items missed during simulation
+ \param percent  Pointer to a storage element which will contain the calculated hit percent information
+
+ Calculates the number of misses and hit percentage information from the given hit and total information, storing
+ the results in the misses and percent storage elements.
+
+ \note
+ If the total number of items is 0, the hit percentage will be calculated as 100% covered.
+*/
+void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
+
+  if( total == 0 ) {
+    *percent = 100;
+  } else {
+    *percent = ((hits / total) * 100);
+  }
+  *misses = (total - hits);
+
+}
+
+
 /*
  $Log$
+ Revision 1.60  2007/07/16 18:39:59  phase1geo
+ Finishing adding accumulated coverage output to report files.  Also fixed
+ compiler warnings with static values in C code that are inputs to 64-bit
+ variables.  Full regression was not run with these changes due to pre-existing
+ simulator problems in core code.
+
  Revision 1.59  2007/04/11 22:29:49  phase1geo
  Adding support for CLI to score command.  Still some work to go to get history
  stuff right.  Otherwise, it seems to be working.
