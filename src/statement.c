@@ -436,7 +436,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
            (curr_funit->type == FUNIT_FUNCTION)  ||
            (curr_funit->type == FUNIT_AFUNCTION) ||
            (curr_funit->type == FUNIT_NAMED_BLOCK)) ) {
-        assert( curr_funit->first_stmt == NULL );
+        //assert( curr_funit->first_stmt == NULL );
         curr_funit->first_stmt = stmt;
       }
 
@@ -918,6 +918,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.111  2007/07/18 02:15:04  phase1geo
+ Attempts to fix a problem with generating instances with hierarchy.  Also fixing
+ an issue with named blocks in generate statements.  Still some work to go before
+ regressions are passing again, however.
+
  Revision 1.110  2007/04/18 22:35:02  phase1geo
  Revamping simulator core again.  Checkpointing.
 
