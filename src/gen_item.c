@@ -864,7 +864,8 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
         break;
 
       case GI_TYPE_INST :
-        instance_attach_child( inst, gi->elem.inst );
+        //instance_attach_child( inst, gi->elem.inst );
+        instance_copy( gi->elem.inst, inst, gi->elem.inst->name, gi->elem.inst->range, FALSE );
         gen_item_resolve( gi->next_true, inst, FALSE );
         break;
 
@@ -1113,6 +1114,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.45  2007/07/18 22:39:17  phase1geo
+ Checkpointing generate work though we are at a fairly broken state at the moment.
+
  Revision 1.44  2007/07/18 02:15:04  phase1geo
  Attempts to fix a problem with generating instances with hierarchy.  Also fixing
  an issue with named blocks in generate statements.  Still some work to go before

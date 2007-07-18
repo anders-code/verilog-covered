@@ -713,8 +713,6 @@ func_unit* db_add_instance( char* scope, char* name, int type, vector_width* ran
       
   }
 
-  inst_link_display( inst_head );
-
   return( score ? funit : NULL );
 
 }
@@ -2314,6 +2312,9 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.255  2007/07/18 22:39:17  phase1geo
+ Checkpointing generate work though we are at a fairly broken state at the moment.
+
  Revision 1.254  2007/07/18 02:15:04  phase1geo
  Attempts to fix a problem with generating instances with hierarchy.  Also fixing
  an issue with named blocks in generate statements.  Still some work to go before
