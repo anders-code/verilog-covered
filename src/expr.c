@@ -2660,7 +2660,7 @@ bool expression_op_func__bassign( expression* expr, thread* thr ) {
 */
 bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
-  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), thr->curr_time );
+  sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit ), ((thr == NULL) ? 0 : thr->curr_time) );
 
   return( TRUE );
 
@@ -3905,6 +3905,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.244  2007/07/26 05:03:42  phase1geo
+ Starting to work on fix for static function support.  Fixing issue if
+ func_call is called with NULL thr parameter (to avoid segmentation fault).
+ IV regression fully passes.
+
  Revision 1.243  2007/04/18 22:34:58  phase1geo
  Revamping simulator core again.  Checkpointing.
 
