@@ -324,8 +324,9 @@ void sim_thread_pop_head() {
   }
 
   /* If the thread is running for an automatic function/task, push the data */
-  if( (thr->funit->type == FUNIT_ATASK) || (thr->funit->type == FUNIT_AFUNCTION) ) {
+  if( (thr->funit->type == FUNIT_ATASK) || (thr->funit->type == FUNIT_AFUNCTION) || (thr->funit->type == FUNIT_ANAMED_BLOCK) ) {
     assert( thr->ren == NULL );
+    printf( "CREATING REENTRANT for thread %p\n", thr );
     thr->ren = reentrant_create( thr->funit, thr->curr );
   }
 
@@ -984,6 +985,7 @@ void sim_thread( thread* thr, uint64 sim_time ) {
 
   /* If the thread has a reentrant structure assigned to it, pop it */
   if( thr->ren != NULL ) {
+    printf( "DEALLOCATING REENTRANT for thread %p\n", thr );
     reentrant_dealloc( thr->ren, thr->funit, thr->curr, sim_time );
     thr->ren = NULL;
   }
@@ -1173,6 +1175,10 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.98  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.97  2007/07/24 22:52:26  phase1geo
  More clean-up for VCS regressions.  Still not fully passing yet.
 

@@ -91,7 +91,7 @@ char user_msg[USER_MSG_LENGTH];
 /*!
  Array of functional unit names used for output purposes.
 */
-const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "no_score", "afunction", "atask", "UNKNOWN" };
+const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "no_score", "afunction", "atask", "named block", "UNKNOWN" };
 
 
 /*!
@@ -1124,6 +1124,10 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.61  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.60  2007/07/16 18:39:59  phase1geo
  Finishing adding accumulated coverage output to report files.  Also fixed
  compiler warnings with static values in C code that are inputs to 64-bit

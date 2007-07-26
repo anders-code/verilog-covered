@@ -252,7 +252,8 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
 */
 bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line, bool must_find, bool rm_unnamed ) {
 
-  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
+  assert( (type == FUNIT_FUNCTION)  || (type == FUNIT_TASK)  || (type == FUNIT_NAMED_BLOCK) ||
+          (type == FUNIT_AFUNCTION) || (type == FUNIT_ATASK) || (type == FUNIT_ANAMED_BLOCK) );
   assert( curr_funit != NULL );
 
   /*
@@ -385,6 +386,10 @@ char* scope_flatten( char* scope ) {
 
 /*
  $Log$
+ Revision 1.35  2007/07/26 22:23:00  phase1geo
+ Starting to work on the functionality for automatic tasks/functions.  Just
+ checkpointing some work.
+
  Revision 1.34  2007/07/18 22:39:18  phase1geo
  Checkpointing generate work though we are at a fairly broken state at the moment.
 
