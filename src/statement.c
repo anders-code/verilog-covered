@@ -283,7 +283,7 @@ void statement_size_elements( statement* stmt ) {
   if( stmt != NULL ) {
 
     /* Size the current statement */
-    expression_resize( stmt->exp, TRUE );
+    expression_resize( stmt->exp, TRUE, FALSE );
 
     /* Iterate to the next statement */
     if( stmt->next_true == stmt->next_false ) {
@@ -918,6 +918,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.112  2007/07/26 17:05:15  phase1geo
+ Fixing problem with static functions (vector data associated with expressions
+ were not being allocated).  Regressions have been run.  Only two failures
+ in total still to be fixed.
+
  Revision 1.111  2007/07/18 02:15:04  phase1geo
  Attempts to fix a problem with generating instances with hierarchy.  Also fixing
  an issue with named blocks in generate statements.  Still some work to go before

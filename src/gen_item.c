@@ -843,7 +843,7 @@ void gen_item_resolve( gen_item* gi, funit_inst* inst, bool add ) {
       case GI_TYPE_EXPR :
         /* Recursively resize the expression tree if we have not already done this */
         if( gi->elem.expr->exec_num == 0 ) {
-          expression_resize( gi->elem.expr, TRUE );
+          expression_resize( gi->elem.expr, TRUE, FALSE );
         }
         expression_operate_recursively( gi->elem.expr, FALSE );
         if( ESUPPL_IS_TRUE( gi->elem.expr->suppl ) ) {
@@ -1114,6 +1114,11 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem ) {
 
 /*
  $Log$
+ Revision 1.46  2007/07/26 17:05:15  phase1geo
+ Fixing problem with static functions (vector data associated with expressions
+ were not being allocated).  Regressions have been run.  Only two failures
+ in total still to be fixed.
+
  Revision 1.45  2007/07/18 22:39:17  phase1geo
  Checkpointing generate work though we are at a fairly broken state at the moment.
 

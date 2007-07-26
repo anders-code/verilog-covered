@@ -690,7 +690,7 @@ void race_check_modules() {
         ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( modl->funit )) ) {
 
       /* Size elements for the current module */
-      funit_size_elements( modl->funit, inst, FALSE );
+      funit_size_elements( modl->funit, inst, FALSE, FALSE );
 
       /* Clear statement block array size */
       sb_size = 0;
@@ -1052,6 +1052,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.57  2007/07/26 17:05:15  phase1geo
+ Fixing problem with static functions (vector data associated with expressions
+ were not being allocated).  Regressions have been run.  Only two failures
+ in total still to be fixed.
+
  Revision 1.56  2007/04/03 18:55:57  phase1geo
  Fixing more bugs in reporting mechanisms for unnamed scopes.  Checking in more
  regression updates per these changes.  Checkpointing.

@@ -41,7 +41,7 @@ void expression_set_value( expression* exp, vsignal* sig );
 void expression_set_signed( expression* exp );
 
 /*! \brief Recursively resizes specified expression tree leaf node. */
-void expression_resize( expression* expr, bool recursive );
+void expression_resize( expression* expr, bool recursive, bool alloc );
 
 /*! \brief Returns expression ID of this expression. */
 int expression_get_id( expression* expr, bool parse_mode );
@@ -130,6 +130,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.55  2007/07/26 17:05:15  phase1geo
+ Fixing problem with static functions (vector data associated with expressions
+ were not being allocated).  Regressions have been run.  Only two failures
+ in total still to be fixed.
+
  Revision 1.54  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

@@ -56,7 +56,7 @@ void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt );
 char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* parent );
 
 /*! \brief Sizes all elements for the current functional unit from the given instance */
-void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all );
+void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool alloc_exprs );
 
 /*! \brief Writes contents of provided functional unit to specified output. */
 bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save );
@@ -101,6 +101,11 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.27  2007/07/26 17:05:15  phase1geo
+ Fixing problem with static functions (vector data associated with expressions
+ were not being allocated).  Regressions have been run.  Only two failures
+ in total still to be fixed.
+
  Revision 1.26  2007/04/18 22:35:02  phase1geo
  Revamping simulator core again.  Checkpointing.
 
