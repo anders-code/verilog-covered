@@ -689,10 +689,7 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
       assert( funit != NULL );
       funiti = instance_find_by_funit( inst, funit, &ignore );
       assert( funiti != NULL );
-      //param_resolve( funiti );
-      //funit_size_elements( funit, funiti, FALSE );
       param_size_function( funiti, funit );
-      expression_set_value( expr, expr->sig );
     }
 
     /* Evaluate children first */
@@ -700,9 +697,8 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
     param_expr_eval( expr->right, inst );
 
     switch( expr->op ) {
-      case EXP_OP_STATIC    :
-      case EXP_OP_FUNC_CALL :
-      case EXP_OP_PASSIGN   :
+      case EXP_OP_STATIC  :
+      case EXP_OP_PASSIGN :
         break;
       case EXP_OP_PARAM          :
       case EXP_OP_PARAM_SBIT     :
@@ -1057,6 +1053,11 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.90  2007/07/30 20:36:14  phase1geo
+ Fixing rest of issues pertaining to new implementation of function calls.
+ Full regression passes (with the exception of afunc1 which we do not expect
+ to pass with these changes as of yet).
+
  Revision 1.89  2007/07/26 17:05:15  phase1geo
  Fixing problem with static functions (vector data associated with expressions
  were not being allocated).  Regressions have been run.  Only two failures
