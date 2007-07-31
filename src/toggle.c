@@ -592,11 +592,14 @@ void toggle_funit_verbose( FILE* ofile, funit_link* head ) {
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
-        case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
-        case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
-        case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
-        case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
-        default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+        case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
+        case FUNIT_ANAMED_BLOCK :
+        case FUNIT_NAMED_BLOCK  :  fprintf( ofile, "    Named Block: " );  break;
+        case FUNIT_AFUNCTION    :
+        case FUNIT_FUNCTION     :  fprintf( ofile, "    Function: " );     break;
+        case FUNIT_ATASK        :
+        case FUNIT_TASK         :  fprintf( ofile, "    Task: " );         break;
+        default                 :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
       fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
@@ -686,6 +689,11 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.60  2007/07/31 03:36:10  phase1geo
+ Fixing last known issue with automatic functions.  Also fixing issue with
+ toggle report output (still a problem with the toggle calculation for the
+ return value of the function).
+
  Revision 1.59  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.
