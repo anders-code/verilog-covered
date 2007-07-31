@@ -644,9 +644,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
   int        port_order;      /* Port order value */
   int        port_cnt;        /* Number of ports in the found function/task's port list */
 
-  assert( (type == FUNIT_FUNCTION)    || (type == FUNIT_AFUNCTION) ||
-          (type == FUNIT_TASK)        || (type == FUNIT_ATASK)     ||
-          (type == FUNIT_NAMED_BLOCK) || (type == FUNIT_ANAMED_BLOCK) );
+  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) || (type == FUNIT_ANAMED_BLOCK) );
 
   /* Don't continue if the name is not local and we are told to bind locally */
   if( scope_local( name ) || !bind_locally ) {
@@ -868,6 +866,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.112  2007/07/31 22:17:44  phase1geo
+ Attempting to debug issue with automatic static functions.  Updated regressions
+ per last change.
+
  Revision 1.111  2007/07/30 22:42:02  phase1geo
  Making some progress on automatic function support.  Things currently don't compile
  but I need to checkpoint for now.
