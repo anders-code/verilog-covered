@@ -2685,6 +2685,12 @@ bool expression_op_func__func_call( expression* expr, thread* thr ) {
 
   /* Then copy the function variable to this expression */
   retval = vector_set_value( expr->value, expr->sig->value->value, VTYPE_VAL, expr->value->width, 0, 0 );
+  
+  /* Deallocate the reentrant structure of the current thread (if it exists) */
+  if( (thr != NULL) && (thr->ren != NULL) ) {
+    reentrant_dealloc( thr->ren, thr->funit, thr->curr_time, expr );
+    thr->ren = NULL;
+  }
 
   return( retval );
 
@@ -3362,12 +3368,6 @@ bool expression_operate( expression* expr, thread* thr ) {
         }
       }
 
-      /* If the expression was a FUNC_CALL, deallocate the reentrant structure of the current thread (if it exists) */
-      if( (expr->op == EXP_OP_FUNC_CALL) && (thr != NULL) && (thr->ren != NULL) ) {
-        reentrant_dealloc( thr->ren, thr->funit, thr->curr_time, expr );
-        thr->ren = NULL;
-      }
-
     }
 
   }
@@ -3943,6 +3943,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.252  2007/07/31 20:07:06  phase1geo
+ Finished work on automatic function support and added new static_afunc1 diagnostic
+ to verify static use of automatic functions (this diagnostic is currently not
+ passing).
+
  Revision 1.251  2007/07/31 03:36:10  phase1geo
  Fixing last known issue with automatic functions.  Also fixing issue with
  toggle report output (still a problem with the toggle calculation for the
