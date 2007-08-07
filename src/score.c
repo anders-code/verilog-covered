@@ -929,10 +929,10 @@ int command_score( int argc, int last_arg, char** argv ) {
     if( dump_mode != DUMP_FMT_NONE ) {
       print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
     }
-    snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %ld bytes", largest_malloc_size );
+    snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %lld bytes", largest_malloc_size );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %ld bytes", curr_malloc_size );
+    snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %lld bytes", curr_malloc_size );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
     print_output( "", NORMAL, __FILE__, __LINE__ );
@@ -970,6 +970,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.96  2007/08/07 02:23:32  phase1geo
+ Fixing bug 1687409.
+
  Revision 1.95  2007/04/12 03:46:30  phase1geo
  Fixing bugs with CLI.  History and history file saving/loading is implemented
  and working as desired.
