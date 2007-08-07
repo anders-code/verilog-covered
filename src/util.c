@@ -72,12 +72,12 @@ bool debug_mode;
  Contains the total number of bytes malloc'ed during the simulation run.  This
  information is output to the user after simulation as a performance indicator.
 */
-unsigned long curr_malloc_size = 0;
+uint64 curr_malloc_size = 0;
 
 /*!
  Holds the largest number of bytes in allocation at one period of time.
 */
-unsigned long largest_malloc_size = 0;
+uint64 largest_malloc_size = 0;
 
 /*!
  Holds some output that will be displayed via the print_output command.  This is
@@ -1098,6 +1098,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.56.2.2  2007/08/07 02:17:56  phase1geo
+ Fixing bug dealing with not being able to read in files greater than 2GB in
+ size.  Also fixing bug with output of maximum amount of memory used.
+
  Revision 1.56.2.1  2007/03/13 22:05:11  phase1geo
  Fixing bug 1678931.  Updated regression.
 
