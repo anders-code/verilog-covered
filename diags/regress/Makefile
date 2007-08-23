@@ -44,7 +44,7 @@ DIAGS1       := add1            always1         always2         always3         
                 disable2        disable2.1      disable3        dly_assign1     endian1 \
                 endian2         endian3         event1          event1.1        exclude1 \
                 exclude2        exclude3        exclude4        exclude5        exclude5.1 \
-                exclude5.2      expand1         expand2         expand3         expand4 \
+                exclude5.2      exclude7        expand1         expand2         expand3         expand4 \
                 expand4.1       expand4.2       expand4.3       expand4.4       for1 \
                 for2            forever1        fork1           fork2           fsm3 \
                 fsm4            fsm4.1          fsm5            fsm5.1          fsm5.2 \
