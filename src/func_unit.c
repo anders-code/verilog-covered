@@ -54,6 +54,7 @@
 extern char        user_msg[USER_MSG_LENGTH];
 extern funit_link* funit_head;
 extern func_unit*  curr_funit;
+extern inst_link*  inst_head;
 
 
 /*!
@@ -318,6 +319,9 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all ) {
 #endif
   sig_link*   curr_sig;         /* Pointer to current signal link to evaluate */
   bool        resolve = FALSE;  /* If set to TRUE, perform one more parameter resolution */
+  func_unit*  tmp_funit;        /* Pointer to temporary functional unit */
+  funit_inst* tmp_inst;         /* Pointer to temporary instance */
+  int         ignore = 0;       /* Number of instances to ignore when searching */
   
   assert( funit != NULL );
   assert( inst != NULL );
@@ -404,6 +408,14 @@ void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all ) {
       expression_resize( curr_exp->exp, TRUE );
     }
     if( curr_exp->exp->sig != NULL ) {
+      if( curr_exp->exp->op == EXP_OP_FUNC_CALL ) {
+        assert( curr_exp->exp->elem.stmt != NULL );
+        tmp_funit = funit_find_by_id( curr_exp->exp->elem.stmt->exp->id );
+        assert( tmp_funit != NULL );
+        tmp_inst = inst_link_find_by_funit( tmp_funit, inst_head, &ignore );
+        assert( tmp_inst != NULL );
+        funit_size_elements( tmp_funit, tmp_inst, FALSE );
+      }
       expression_set_value( curr_exp->exp, curr_exp->exp->sig );
       assert( curr_exp->exp->value->value != NULL );
     }
@@ -982,6 +994,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.53.2.2  2007/08/28 05:02:07  phase1geo
+ Bug fix for #1703593.  Also fixes output of memory allocation at the end of
+ a score command call.  IV and CVER regressions pass with this fix.
+
  Revision 1.53.2.1  2007/04/17 16:31:53  phase1geo
  Fixing bug 1698806 by rebinding a parameter signal to its list of expressions
  prior to writing the initial CDD file (elaboration phase).  Added param16

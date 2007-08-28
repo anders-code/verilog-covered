@@ -67,16 +67,16 @@ str_link* gen_mod_head           = NULL;                /*!< Pointer to the head
 str_link* gen_mod_tail           = NULL;                /*!< Pointer to the tail of the generation module list */
 char*     vpi_timescale          = NULL;                /*!< Specifies the user-supplied timescale information for VPI */
 
-extern unsigned long largest_malloc_size;
-extern unsigned long curr_malloc_size;
-extern str_link*     use_files_head;
-extern char          user_msg[USER_MSG_LENGTH];
-extern char*         directive_filename;
-extern bool          debug_mode;
-extern isuppl        info_suppl;
-extern char          score_run_path[4096];
-extern char**        score_args;
-extern int           score_arg_num;
+extern uint64    largest_malloc_size;
+extern uint64    curr_malloc_size;
+extern str_link* use_files_head;
+extern char      user_msg[USER_MSG_LENGTH];
+extern char*     directive_filename;
+extern bool      debug_mode;
+extern isuppl    info_suppl;
+extern char      score_run_path[4096];
+extern char**    score_args;
+extern int       score_arg_num;
 
 
 bool process_timescale( const char* txt, bool report );
@@ -933,6 +933,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.91.2.4  2007/08/28 05:02:07  phase1geo
+ Bug fix for #1703593.  Also fixes output of memory allocation at the end of
+ a score command call.  IV and CVER regressions pass with this fix.
+
  Revision 1.91.2.3  2007/08/07 02:17:56  phase1geo
  Fixing bug dealing with not being able to read in files greater than 2GB in
  size.  Also fixing bug with output of maximum amount of memory used.
