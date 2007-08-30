@@ -155,7 +155,7 @@ VCSONLYDIAGS1:= always_comb1    always_ff1      always_latch1   assert1         
                 generate8.4     generate8.5     generate8.6     generate8.7     generate8.8 \
                 generate9       generate9.1     generate9.2     generate9.3     generate10 \
                 generate10.1    generate10.2    generate11      generate11.1    generate11.2 \
-                generate11.3    generate11.4    hier1.1         inc1            inc1.1 \
+                generate11.3    generate11.4    generate13      hier1.1         inc1            inc1.1 \
                 inc2            inc3            inc3.1          int1            line1 \
                 logic1          longint1        long_sig        marray1         marray1.1 \
                 marray1.2       marray1.3       marray2         marray2.1       marray2.2 \
@@ -282,3 +282,8 @@ clean:
 
 reset:
 	@cd ../verilog;  $(MAKE) reset
+
+all:
+	$(MAKE) LEAVE=1
+	$(MAKE) cver LEAVE=1
+	$(MAKE) vcs
