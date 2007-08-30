@@ -83,7 +83,12 @@ extern int         generate_expr_mode;
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
 */
-char* curr_inst_scope = NULL;
+char** curr_inst_scope = NULL;
+
+/*!
+ Current size of curr_inst_scope array
+*/
+int curr_inst_scope_size = 0;
 
 /*!
  Pointer to the current instance selected by the VCD parser.  If this value is
@@ -175,6 +180,8 @@ int global_timescale_precision  = 0;
 */
 void db_close() {
   
+  int i;  /* Loop iterator */
+  
   if( inst_head != NULL ) {
 
     /* Remove memory allocated for inst_head */
@@ -197,6 +204,9 @@ void db_close() {
     info_dealloc();
 
     /* Free memory associated with current instance scope */
+    for( i=0; i<curr_inst_scope_size; i++ ) {
+      free_safe( curr_inst_scope[i] );
+    }
     free_safe( curr_inst_scope );
 
   }
@@ -2005,28 +2015,71 @@ void db_remove_stmt_blks_calling_statement( statement* stmt ) {
 }
 
 /*!
+ \return Returns the string version of the current instance scope (memory allocated).
+*/
+char* db_gen_curr_inst_scope() {
+
+  char* scope      = NULL;  /* Pointer to current scope */
+  int   scope_size = 0;     /* Calculated size of current instance scope */
+  int   i;                  /* Loop iterator */
+
+  if( curr_inst_scope_size > 0 ) {
+
+    /* Calculate the total number of characters in the given scope (include . and newline chars) */
+    for( i=0; i<curr_inst_scope_size; i++ ) {
+      scope_size += strlen( curr_inst_scope[i] ) + 1;
+    }
+
+    /* Allocate memory for the generated current instance scope */
+    scope = (char*)malloc_safe( scope_size, __FILE__, __LINE__ );
+
+    /* Now populate the scope with the current instance scope information */
+    strcpy( scope, curr_inst_scope[0] );
+    for( i=1; i<curr_inst_scope_size; i++ ) {
+      strcat( scope, "." );
+      strcat( scope, curr_inst_scope[i] );
+    }
+
+  }
+
+  return scope;
+
+}
+
+/*!
  Synchronizes the curr_instance pointer to match the curr_inst_scope hierarchy.
 */
 void db_sync_curr_instance() {
  
-  char stripped_scope[4096];  /* Temporary string */
+  char  stripped_scope[4096];  /* Temporary string */
+  char* scope;                 /* Current instance scope string */
 
   assert( leading_hier_num > 0 );
 
-  if( strcmp( leading_hierarchies[0], "*" ) != 0 ) {
-    scope_extract_scope( curr_inst_scope, leading_hierarchies[0], stripped_scope );
-  } else {
-    strcpy( stripped_scope, curr_inst_scope );
-  }
+  if( (scope = db_gen_curr_inst_scope()) != NULL ) {
 
-  if( stripped_scope[0] != '\0' ) {
-
-    curr_instance = inst_link_find_by_scope( stripped_scope, inst_head );
-
-    /* If we have found at least one matching instance, set the one_instance_found flag */
-    if( curr_instance != NULL ) {
-      one_instance_found = TRUE;
+    if( strcmp( leading_hierarchies[0], "*" ) != 0 ) {
+      scope_extract_scope( scope, leading_hierarchies[0], stripped_scope );
+    } else {
+      strcpy( stripped_scope, scope );
     }
+
+    free_safe( scope );
+
+    if( stripped_scope[0] != '\0' ) {
+
+      curr_instance = inst_link_find_by_scope( stripped_scope, inst_head );
+
+      /* If we have found at least one matching instance, set the one_instance_found flag */
+      if( curr_instance != NULL ) {
+        one_instance_found = TRUE;
+      }
+
+    }
+
+  } else {
+
+    curr_instance = NULL;
 
   }
 
@@ -2046,17 +2099,10 @@ void db_set_vcd_scope( char* scope ) {
 
   assert( scope != NULL );
 
-  if( curr_inst_scope == NULL ) {
-    
-    curr_inst_scope = (char*)malloc_safe( 4096, __FILE__, __LINE__ );
-    strcpy( curr_inst_scope, scope );
-
-  } else {
-    
-    strcat( curr_inst_scope, "." );
-    strcat( curr_inst_scope, scope );
-
-  }
+  /* Create a new scope item */
+  curr_inst_scope = (char**)realloc( curr_inst_scope, (sizeof( char* ) * (curr_inst_scope_size + 1)) );
+  curr_inst_scope[curr_inst_scope_size] = strdup_safe( scope, __FILE__, __LINE__ );
+  curr_inst_scope_size++;
 
   /* Synchronize the current instance to the value of curr_inst_scope */
   db_sync_curr_instance();
@@ -2073,21 +2119,19 @@ void db_vcd_upscope() {
   char rest[4096];   /* Hierarchy up one level */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_vcd_upscope, curr_inst_scope: %s", obf_inst( curr_inst_scope ) );
+  char* scope = db_gen_curr_inst_scope();
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_vcd_upscope, curr_inst_scope: %s", obf_inst( scope ) );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );  
+  free_safe( scope );
 #endif
 
-  if( curr_inst_scope != NULL ) {
+  /* Deallocate the last scope item */
+  if( curr_inst_scope_size > 0 ) {
 
-    scope_extract_back( curr_inst_scope, back, rest );
+    curr_inst_scope_size--;
+    free_safe( curr_inst_scope[curr_inst_scope_size] );
 
-    if( rest[0] != '\0' ) {
-      strcpy( curr_inst_scope, rest );
-      db_sync_curr_instance();
-    } else {
-      free_safe( curr_inst_scope );
-      curr_inst_scope = NULL;
-    }
+    db_sync_curr_instance();
 
   }
 
@@ -2107,9 +2151,11 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
   vsignal   tmpsig;  /* Temporary signal to search for */
 
 #ifdef DEBUG_MODE
+  char* scope = db_gen_curr_inst_scope();
   snprintf( user_msg, USER_MSG_LENGTH, "In db_assign_symbol, name: %s, symbol: %s, curr_inst_scope: %s, msb: %d, lsb: %d",
-            obf_sig( name ), symbol, obf_inst( curr_inst_scope ), msb, lsb );
+            obf_sig( name ), symbol, obf_inst( scope ), msb, lsb );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  free_safe( scope );
 #endif
 
   assert( name != NULL );
@@ -2237,6 +2283,10 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.239.2.3  2007/08/30 22:49:30  phase1geo
+ Fixing bug 1628185.  Full regression passes though I have not verified that the
+ bug fix fixes the actual bug at this point.
+
  Revision 1.239.2.2  2007/08/30 17:14:32  phase1geo
  Fixing bug 1704625.  Added generate13 diagnostic to verify this bug fix.  Full
  regressions pass.
