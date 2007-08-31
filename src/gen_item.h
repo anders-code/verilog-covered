@@ -67,10 +67,10 @@ gen_item* gen_item_create_tfn( funit_inst* inst );
 gen_item* gen_item_create_bind( char* name, expression* expr );
 
 /*! \brief Resizes all statements and signals in the given generate item block */
-void gen_item_resize_stmts_and_sigs( gen_item* gi );
+void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit );
 
 /*! \brief Assigns unique expression IDs to all expressions for specified statement block */
-void gen_item_assign_expr_ids( gen_item* gi );
+void gen_item_assign_expr_ids( gen_item* gi, func_unit* funit );
 
 /*! \brief Outputs the current generate item to the given output file if it matches the type specified */
 void gen_item_db_write( gen_item* gi, control type, FILE* file );
@@ -98,6 +98,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.19  2007/08/31 22:46:36  phase1geo
+ Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
+ of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
+
  Revision 1.18  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top

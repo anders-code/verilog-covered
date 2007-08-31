@@ -727,7 +727,7 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
     /* Then issue IDs to any generated expressions */
     gil = root->gitem_head;
     while( gil != NULL ) {
-      gen_item_assign_expr_ids( gil->gi );
+      gen_item_assign_expr_ids( gil->gi, root->funit );
       gil = gil->next;
     }
 #endif
@@ -1081,6 +1081,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.79  2007/08/31 22:46:36  phase1geo
+ Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
+ of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
+
  Revision 1.78  2007/07/18 22:39:17  phase1geo
  Checkpointing generate work though we are at a fairly broken state at the moment.
 
