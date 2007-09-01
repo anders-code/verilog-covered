@@ -856,14 +856,12 @@ int command_report( int argc, int last_arg, char** argv ) {
       assert( interp );
 
       if( Tcl_Init( interp ) == TCL_ERROR ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "%s", interp->result );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "ERROR: %s\n", interp->result );
         exit( 1 );
       }
 
       if( Tk_SafeInit( interp ) == TCL_ERROR ) {
-        snprintf( user_msg, USER_MSG_LENGTH, "%s", interp->result );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "ERROR: %s\n", interp->result );
         exit( 1 );
       }
 
@@ -919,6 +917,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.82  2007/09/01 05:33:38  phase1geo
+ Fixing error output in report.c when Tcl/Tk initialization routines return
+ in error.  Also removing extra K_EG from static_parser.y file.
+
  Revision 1.81  2007/04/02 04:50:04  phase1geo
  Adding func_iter files to iterate through a functional unit for reporting
  purposes.  Updated affected files.
