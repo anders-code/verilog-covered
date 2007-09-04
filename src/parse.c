@@ -170,6 +170,9 @@ bool parse_design( char* top, char* output_db ) {
     exit( 1 );
   }
 
+  /* Deallocate simulator stuff */
+  sim_dealloc();
+
   /* Close database */
   db_close();
 
@@ -258,6 +261,10 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) {
 
 /*
  $Log$
+ Revision 1.50  2007/09/04 22:50:50  phase1geo
+ Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
+ Also working on debugging one remaining issue with mem1.v (not solved yet).
+
  Revision 1.49  2007/04/10 03:56:18  phase1geo
  Completing majority of code to support new simulation core.  Starting to debug
  this though we still have quite a ways to go here.  Checkpointing.

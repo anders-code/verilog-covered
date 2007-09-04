@@ -1152,6 +1152,8 @@ void sim_dealloc() {
     free_safe( tmp );
   }
 
+  all_head = all_tail = all_next = NULL;
+
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY
   /* Clear CLI debug mode */
@@ -1164,6 +1166,10 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.102  2007/09/04 22:50:50  phase1geo
+ Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
+ Also working on debugging one remaining issue with mem1.v (not solved yet).
+
  Revision 1.101  2007/07/30 22:42:02  phase1geo
  Making some progress on automatic function support.  Things currently don't compile
  but I need to checkpoint for now.
