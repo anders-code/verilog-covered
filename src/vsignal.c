@@ -148,7 +148,6 @@ void vsignal_create_vec( vsignal* sig ) {
     /* Iterate through expression list, setting the expression to this signal */
     expl = sig->exp_head;
     while( expl != NULL ) {
-      printf( "B Expression: %p (signal: %s)\n", expl->exp, sig->name );  fflush( stdout );
       if( expl->exp->op != EXP_OP_FUNC_CALL ) {
         expression_set_value( expl->exp, sig, NULL );
       }
@@ -697,6 +696,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.44  2007/09/05 21:07:37  phase1geo
+ Fixing bug 1788991.  Full regression passes.  Removed excess output used for
+ debugging.  May want to create a new development release with these changes.
+
  Revision 1.43  2007/09/04 22:50:50  phase1geo
  Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
  Also working on debugging one remaining issue with mem1.v (not solved yet).
