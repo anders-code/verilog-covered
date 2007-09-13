@@ -80,7 +80,7 @@ attr_param* attribute_create( const char* name, expression* expr ) {
  should parse.  If this attribute is identified by Covered as one of its own, it
  calls the appropriate function to handle the entire attribute parameter list.
 */
-void attribute_parse( attr_param* ap, func_unit* funit ) {
+void attribute_parse( attr_param* ap, const func_unit* funit ) {
 
   if( ap != NULL ) {
 
@@ -125,6 +125,10 @@ void attribute_dealloc( attr_param* ap ) {
 
 /*
  $Log$
+ Revision 1.7  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.6  2006/04/05 15:19:18  phase1geo
  Adding support for FSM coverage output in the GUI.  Started adding components
  for assertion coverage to GUI and report functions though there is no functional

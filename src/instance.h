@@ -39,7 +39,7 @@ void instance_gen_scope( char* scope, funit_inst* leaf, bool flatten );
 funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed );
 
 /*! \brief Returns instance that points to specified functional unit for each instance. */
-funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ignore );
+funit_inst* instance_find_by_funit( funit_inst* root, const func_unit* funit, int* ignore );
 
 /*! \brief Adds an instance to the specified parent instance */
 funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name, vector_width* range, bool resolve );
@@ -84,6 +84,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.32  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.31  2007/07/18 22:39:17  phase1geo
  Checkpointing generate work though we are at a fairly broken state at the moment.
 

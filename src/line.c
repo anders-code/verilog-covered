@@ -324,7 +324,7 @@ bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, in
  Calculates the percentage and miss information for the given hit and total coverage info and
  outputs this information in human-readable format to the given output file.
 */
-bool line_display_funit_summary( FILE* ofile, char* name, char* fname, int hits, float total ) {
+bool line_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) {
 
   float percent;  /* Percentage of lines hits */
   float miss;     /* Number of lines missed */
@@ -637,6 +637,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.77  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.76  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.

@@ -659,7 +659,18 @@ bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent, 
 
 }
 
-bool combination_display_funit_summary( FILE* ofile, char* name, char* fname, int hits, float total ) {
+/*!
+ \param ofile  Pointer to file to output functional unit summary information to
+ \param name   Name of functional unit being reported
+ \param fname  Filename that contains the functional unit being reported
+ \param hits   Number of logic combinations that were hit during simulation
+ \param total  Number of total logic combinations that exist in the given functional unit
+
+ \return Returns TRUE if at least one logic combination was found to not be hit; otherwise, returns FALSE.
+
+ Outputs the summary combinational logic information for the specified functional unit to the given output stream.
+*/
+bool combination_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits, float total ) {
 
   float percent;  /* Percentage of lines hit */
   float miss;     /* Number of lines missed */
@@ -2762,6 +2773,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.173  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.172  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.

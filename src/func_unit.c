@@ -136,6 +136,26 @@ func_unit* funit_get_curr_module( func_unit* funit ) {
 }
 
 /*!
+ \param funit  Pointer to functional unit to get its module from
+
+ \return Returns a const pointer to the module that contains the specified functional unit.
+
+ Traverses up parent list until the FUNIT_MODULE is found (parent should be NULL).  Does this
+ in a way that guarantees that the found functional unit will not be modified.
+*/
+const func_unit* funit_get_curr_module_safe( const func_unit* funit ) {
+
+  assert( funit != NULL );
+
+  while( funit->parent != NULL ) {
+    funit = funit->parent;
+  }
+
+  return( funit );
+
+}
+
+/*!
  \param funit  Functional unit that may be nested in a function
 
  \return Returns a pointer to the function that contains the specified functional unit if
@@ -1099,6 +1119,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.79  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.78  2007/09/04 22:50:50  phase1geo
  Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
  Also working on debugging one remaining issue with mem1.v (not solved yet).

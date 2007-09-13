@@ -376,7 +376,7 @@ bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst, 
  Displays the toggle functional unit summary information to the given output file, calculating the miss and
  percentage information.
 */
-bool toggle_display_funit_summary( FILE* ofile, char* name, char* fname, int hits01, int hits10, float total ) {
+bool toggle_display_funit_summary( FILE* ofile, const char* name, const char* fname, int hits01, int hits10, float total ) {
 
   float percent01;  /* Percentage of bits that toggled from 0 to 1 */
   float percent10;  /* Percentage of bits that toggled from 1 to 0 */
@@ -689,6 +689,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.61  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.60  2007/07/31 03:36:10  phase1geo
  Fixing last known issue with automatic functions.  Also fixing issue with
  toggle report output (still a problem with the toggle calculation for the

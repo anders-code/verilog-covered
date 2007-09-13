@@ -30,11 +30,15 @@
 bool fsm_arg_parse( char* arg );
 
 /*! \brief Parses specified attribute argument for FSM information. */
-void fsm_arg_parse_attr( attr_param* ap, func_unit* funit );
+void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit );
 
 
 /*
  $Log$
+ Revision 1.5  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.4  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

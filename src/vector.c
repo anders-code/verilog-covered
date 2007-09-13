@@ -930,7 +930,7 @@ bool vector_bit_fill( vector* vec, int msb, int lsb ) {
  Checks specified vector for any X or Z values and returns TRUE if any are found; otherwise,
  returns a value of false.  This function is useful to be called before vector_to_int is called.
 */
-bool vector_is_unknown( vector* vec ) {
+bool vector_is_unknown( const vector* vec ) {
 
   bool unknown = FALSE;  /* Specifies if vector contains unknown values */
   int  i;                /* Loop iterator */
@@ -2164,6 +2164,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.89  2007/09/13 17:03:30  phase1geo
+ Cleaning up some const-ness corrections -- still more to go but it's a good
+ start.
+
  Revision 1.88  2006/11/22 20:20:01  phase1geo
  Updates to properly support 64-bit time.  Also starting to make changes to
  simulator to support "back simulation" for when the current simulation time
