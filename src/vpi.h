@@ -24,10 +24,13 @@
 */
 
 /*! \brief Displays the given message to standard output */
-void vpi_print_output( char* msg );
+void vpi_print_output( const char* msg );
 
 /*
  $Log$
+ Revision 1.3  2007/09/14 21:22:46  phase1geo
+ Fixing compile issues.
+
  Revision 1.2  2006/10/13 22:46:32  phase1geo
  Things are a bit of a mess at this point.  Adding generate12 diagnostic that
  shows a failure in properly handling generates of instances.
