@@ -35,12 +35,19 @@ void enumerate_end_list( func_unit* funit );
 /*! \brief Resolves all enumerations within the given functional unit instance */
 void enumerate_resolve( funit_inst* inst );
 
+/*! \brief Deallocates all memory associated with the given enumeration. */
+void enumerate_dealloc( enum_item* ei );
+
 /*! \brief Deallocates enumeration list from given functional unit */
 void enumerate_dealloc_list( func_unit* funit );
 
 
 /*
  $Log$
+ Revision 1.3  2007/09/14 06:22:12  phase1geo
+ Filling in existing functions in struct_union.  Completed parser code for handling
+ struct/union declarations.  Code compiles thus far.
+
  Revision 1.2  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top
