@@ -119,6 +119,7 @@ vector* vector_create( int width, int type, bool data ) {
 
   if( data == TRUE ) {
     value = (vec_data*)malloc_safe( (sizeof( vec_data ) * width), __FILE__, __LINE__ );
+    new_vec->suppl.part.owns_data = 1;
   }
 
   vector_init( new_vec, value, width, type );
@@ -2145,7 +2146,7 @@ void vector_dealloc( vector* vec ) {
   if( vec != NULL ) {
 
     /* Deallocate all vector values */
-    if( vec->value != NULL ) {
+    if( (vec->value != NULL) && (vec->suppl.part.owns_data == 1) ) {
       free_safe( vec->value );
       vec->value = NULL;
     }
@@ -2164,6 +2165,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.90  2007/09/18 21:41:54  phase1geo
+ Removing inport indicator bit in vector and replacing with owns_data bit
+ indicator.  Full regression passes.
+
  Revision 1.89  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.
