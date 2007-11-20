@@ -18,7 +18,7 @@
 
 /*!
  \file     statement.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     5/1/2002
  \brief    Contains functions to create, manipulate and deallocate statements.
 */
@@ -74,6 +74,9 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.34  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.33  2007/08/31 22:46:36  phase1geo
  Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
  of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
