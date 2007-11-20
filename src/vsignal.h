@@ -18,7 +18,7 @@
 
 /*!
  \file     vsignal.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/1/2001
  \brief    Contains functions for handling Verilog signals.
 */
@@ -76,6 +76,9 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.20  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.19  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 
