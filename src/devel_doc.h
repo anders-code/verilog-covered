@@ -18,7 +18,7 @@
 
 /*
  \file     devel_doc.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     6/11/2002
  \brief    Contains development documentation for project
 */
@@ -1214,7 +1214,7 @@
  \par Section 9.1.  Development Team
  
  \par
- - Trevor Williams  (trevorw@charter.net)
+ - Trevor Williams  (phase1geo@gmail.com)
 
 <HR>
 
@@ -1231,6 +1231,9 @@
 
 /*
  $Log$
+ Revision 1.11  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.10  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
