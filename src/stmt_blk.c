@@ -15,7 +15,7 @@
 
 /*!
  \file     stmt_blk.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/23/2005
 */
 
@@ -113,6 +113,9 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.13  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.12  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.
