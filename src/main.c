@@ -15,7 +15,7 @@
 
 /*!
  \file     main.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/26/2001
 */
 
@@ -195,6 +195,9 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.18  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.17  2006/08/18 22:19:54  phase1geo
  Fully integrated obfuscation into the development release.
 

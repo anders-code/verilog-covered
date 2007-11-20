@@ -18,7 +18,7 @@
 
 /*!
  \file     memory.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     9/24/2006
  \brief    Contains functions for generating memory coverage reports
 */
@@ -51,6 +51,9 @@ void memory_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.7  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.6  2006/10/06 22:45:57  phase1geo
  Added support for the wait() statement.  Added wait1 diagnostic to regression
  suite to verify its behavior.  Also added missing GPL license note at the top

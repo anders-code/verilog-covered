@@ -18,7 +18,7 @@
 
 /*!
  \file     param.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     8/22/2002
  \brief    Contains functions and structures necessary to handle parameters.
 */
@@ -87,6 +87,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.28  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.27  2007/04/18 22:35:02  phase1geo
  Revamping simulator core again.  Checkpointing.
 

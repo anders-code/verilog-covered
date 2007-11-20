@@ -18,7 +18,7 @@
 
 /*!
  \file     parse.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/27/2001
  \brief    Contains functions for parsing Verilog modules
 */
@@ -35,6 +35,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode );
 
 /*
  $Log$
+ Revision 1.9  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.8  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
