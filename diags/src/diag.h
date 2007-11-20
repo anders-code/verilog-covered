@@ -3,7 +3,7 @@
 
 /*!
  \file     diag.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     2/27/2006
  \brief    Contains functions for reading in and running a single diagnostic.
 */
@@ -56,6 +56,9 @@ void diag_dealloc_list();
 
 /*
  $Log$
+ Revision 1.3  2007/11/20 05:28:56  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.2  2006/03/03 23:24:53  phase1geo
  Fixing C-based run script.  This is now working for all but one diagnostic to this
  point.  There is still some work to do here, however.
