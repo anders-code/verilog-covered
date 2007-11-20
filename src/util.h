@@ -18,7 +18,7 @@
 
 /*!
  \file     util.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/27/2001
  \brief    Contains miscellaneous global functions used by many functions.
 */
@@ -126,6 +126,9 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent );
 
 /*
  $Log$
+ Revision 1.29  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.28  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.
