@@ -18,7 +18,7 @@
 
 /*!
  \file     iter.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     10/24/2002
  \brief    Contains functions for dealing with iterators.
 */
@@ -49,6 +49,9 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum );
 
 /*
  $Log$
+ Revision 1.10  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.9  2007/03/19 22:52:50  phase1geo
  Attempting to fix problem with line ordering for a named block that is
  in the middle of another statement block.  Also fixed a problem with FORK
