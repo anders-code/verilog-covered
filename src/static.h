@@ -18,7 +18,7 @@
 
 /*!
  \file     static.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     10/02/2002
  \brief    Contains functions for handling creation of static expressions.
 */
@@ -44,6 +44,9 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp );
 
 /*
  $Log$
+ Revision 1.13  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.12  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.
