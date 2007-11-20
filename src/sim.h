@@ -18,7 +18,7 @@
 
 /*!
  \file     sim.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     6/20/2002
  \brief    Contains functions for simulation engine.
 */
@@ -75,6 +75,9 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.29  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.28  2007/04/18 22:35:02  phase1geo
  Revamping simulator core again.  Checkpointing.
 

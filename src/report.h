@@ -18,7 +18,7 @@
 
 /*!
  \file     report.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/29/2001
  \brief    Contains functions for report command.
 */
@@ -39,6 +39,9 @@ bool report_save_cdd( char* filename );
 
 /*
  $Log$
+ Revision 1.11  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.10  2006/06/20 22:14:32  phase1geo
  Adding support for saving CDD files (needed for file merging and saving exclusion
  information for a CDD file) in the GUI.  Still have a bit to go as I am getting core

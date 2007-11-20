@@ -15,7 +15,7 @@
 
 /*!
  \file     score.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/29/2001
 */
 
@@ -970,6 +970,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.98  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.97  2007/08/31 22:46:36  phase1geo
  Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
  of working on static_afunc1 failure (still not quite there yet).  Checkpointing.

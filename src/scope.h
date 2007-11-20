@@ -18,7 +18,7 @@
 
 /*!
  \file     scope.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/10/2005
  \brief    Contains functions for looking up structures for the given scope
 */
@@ -49,6 +49,9 @@ func_unit* scope_get_parent_module( const char* scope );
 
 /*
  $Log$
+ Revision 1.12  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.11  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

@@ -15,7 +15,7 @@
 
 /*!
  \file     reentrant.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/11/2006
 */
 
@@ -285,6 +285,9 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expre
 
 /*
  $Log$
+ Revision 1.11  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.10  2007/09/04 22:50:50  phase1geo
  Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
  Also working on debugging one remaining issue with mem1.v (not solved yet).

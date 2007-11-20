@@ -18,7 +18,7 @@
 
 /*!
  \file     score.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/29/2001
  \brief    Contains functions for score command.
 */
@@ -33,6 +33,9 @@ int command_score( int argc, int last_arg, char** argv );
 
 /*
  $Log$
+ Revision 1.10  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.9  2006/05/03 22:49:42  phase1geo
  Causing all files to be preprocessed when written to the file viewer.  I'm sure that
  I am breaking all kinds of things at this point, but things do work properly on a few

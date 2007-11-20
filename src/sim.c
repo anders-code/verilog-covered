@@ -15,7 +15,7 @@
 
 /*!
  \file     sim.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     6/20/2002
 
  \par
@@ -1166,6 +1166,9 @@ void sim_dealloc() {
 
 /*
  $Log$
+ Revision 1.103  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.102  2007/09/04 22:50:50  phase1geo
  Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
  Also working on debugging one remaining issue with mem1.v (not solved yet).

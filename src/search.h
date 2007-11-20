@@ -18,7 +18,7 @@
 
 /*!
  \file     search.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/27/2001
  \brief    Contains functions used for finding Verilog files in the search information
            provided on the command line.
@@ -51,6 +51,9 @@ void search_free_lists();
 
 /*
  $Log$
+ Revision 1.8  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.7  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

@@ -15,7 +15,7 @@
 
 /*!
  \file     search.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/27/2001
 */
 
@@ -292,6 +292,9 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.32  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.31  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 

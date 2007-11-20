@@ -15,7 +15,7 @@
 
 /*!
  \file     race.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/15/2004
 
  \par
@@ -1055,6 +1055,9 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.59  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.58  2007/07/26 22:23:00  phase1geo
  Starting to work on the functionality for automatic tasks/functions.  Just
  checkpointing some work.
