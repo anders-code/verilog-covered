@@ -18,7 +18,7 @@
 
 /*!
  \file     lxt.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     1/25/2006
  \brief    Contains functions for LXT parsing/simulation
 */
@@ -30,6 +30,9 @@ void lxt_parse( char* lxt_file );
 
 /*
  $Log$
+ Revision 1.3  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.2  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
