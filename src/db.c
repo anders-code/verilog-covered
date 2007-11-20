@@ -15,7 +15,7 @@
 
 /*!
  \file     db.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/7/2001
 */
 
@@ -2368,6 +2368,9 @@ void db_do_timestep( uint64 time, bool final ) {
 
 /*
  $Log$
+ Revision 1.262  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.261  2007/09/12 05:40:11  phase1geo
  Adding support for bool and char types in FOR loop initialization blocks.  Adding
  a plethora of new diagnostics to completely verify this new functionality.  These

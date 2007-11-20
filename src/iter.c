@@ -15,7 +15,7 @@
 
 /*!
  \file     iter.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     10/24/2002
 */
 
@@ -207,6 +207,9 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum ) {
 
 /*
  $Log$
+ Revision 1.15  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.14  2007/03/20 04:29:32  phase1geo
  Fixing bugs in new stmt_link_merge function.  Updated regressions (only 11
  diagnostics are currently failing in IV regression).  Checkpointing.
