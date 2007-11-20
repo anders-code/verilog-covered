@@ -18,7 +18,7 @@
 
 /*!
  \file     enumerate.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     8/29/2006
  \brief    Contains functions for handling enumerations.
 */
@@ -44,6 +44,9 @@ void enumerate_dealloc_list( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.4  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.3  2007/09/14 06:22:12  phase1geo
  Filling in existing functions in struct_union.  Completed parser code for handling
  struct/union declarations.  Code compiles thus far.
