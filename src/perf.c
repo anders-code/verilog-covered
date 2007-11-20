@@ -15,7 +15,7 @@
 
 /*!
  \file     perf.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     1/1/2006
 */
 
@@ -144,6 +144,9 @@ void perf_output_inst_report( FILE* ofile ) {
 
 /*
  $Log$
+ Revision 1.6  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.5  2006/10/13 15:56:02  phase1geo
  Updating rest of source files for compiler warnings.
 

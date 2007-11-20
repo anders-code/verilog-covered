@@ -18,7 +18,7 @@
 
 /*!
  \file     parser_misc.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/19/2001
  \brief    Contains miscellaneous functions declarations and defines used by parser.
 */
@@ -76,6 +76,9 @@ bool parser_check_generation( int gen );
 
 /*
  $Log$
+ Revision 1.12  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.11  2006/09/22 19:56:45  phase1geo
  Final set of fixes and regression updates per recent changes.  Full regression
  now passes.
