@@ -18,7 +18,7 @@
 
 /*!
  \file     perf.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     1/1/2006
  \brief    Contains functions for calculating and outputting simulation performance metrics.
 */
@@ -35,6 +35,9 @@ void perf_output_inst_report( FILE* ofile );
 
 /*
  $Log$
+ Revision 1.3  2007/11/20 05:28:59  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.2  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
