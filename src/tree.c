@@ -15,7 +15,7 @@
 
 /*!
  \file     tree.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     1/4/2003
 */
 
@@ -287,6 +287,9 @@ void tree_dealloc( tnode* root ) {
 
 /*
  $Log$
+ Revision 1.6  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.5  2006/11/03 18:16:38  phase1geo
  Removing unnecessary spaces in comments.
 
