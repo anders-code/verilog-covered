@@ -15,7 +15,7 @@
 
 /*!
  \file     fsm_arg.c
- \author   Trevor Williams  (trevorw@sgi.com)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     10/02/2003
 */
 
@@ -601,6 +601,9 @@ void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.32  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.31  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

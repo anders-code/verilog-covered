@@ -15,7 +15,7 @@
 
 /*!
  \file     expr.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/1/2001
  
  \par Expressions
@@ -3957,6 +3957,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.257  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.256  2007/09/05 21:07:37  phase1geo
  Fixing bug 1788991.  Full regression passes.  Removed excess output used for
  debugging.  May want to create a new development release with these changes.

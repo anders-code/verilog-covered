@@ -18,7 +18,7 @@
 
 /*!
  \file     fsm.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     3/31/2002
  \brief    Contains functions for determining/reporting FSM coverage.
 */
@@ -74,6 +74,9 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.22  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.21  2007/03/30 22:43:13  phase1geo
  Regression fixes.  Still have a ways to go but we are getting close.
 
