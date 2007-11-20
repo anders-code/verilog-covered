@@ -18,7 +18,7 @@
 
 /*!
  \file     arc.h
- \author   Trevor Williams  (trevorw@sgi.com)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     8/25/2003
  \brief    Contains functions for handling FSM arc arrays.
 */
@@ -75,6 +75,9 @@ void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.19  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.18  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.

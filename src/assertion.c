@@ -15,7 +15,7 @@
 
 /*!
  \file     assertion.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     4/4/2006
 */
 
@@ -577,6 +577,9 @@ bool assertion_get_coverage( const char* funit_name, int funit_type, const char*
 
 /*
  $Log$
+ Revision 1.22  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.21  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.
