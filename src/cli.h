@@ -18,7 +18,7 @@
 
 /*!
  \file     cli.h
- \author   Trevor Williams  (trevorw@sgi.com)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     4/11/2007
  \brief    Contains functions for handling the score command CLI debugger.
 */
@@ -35,6 +35,9 @@ bool cli_read_hist_file( char* fname );
 
 /*
  $Log$
+ Revision 1.3  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.2  2007/04/12 03:46:30  phase1geo
  Fixing bugs with CLI.  History and history file saving/loading is implemented
  and working as desired.

@@ -17,7 +17,7 @@
 
 /*!
  \file     cli.c
- \author   Trevor Williams  (trevorw@sgi.com)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     4/11/2007
 */
 
@@ -672,6 +672,9 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.8  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.7  2007/04/18 22:34:58  phase1geo
  Revamping simulator core again.  Checkpointing.
 
