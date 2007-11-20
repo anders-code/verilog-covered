@@ -329,7 +329,7 @@ void vcd_parse_sim( FILE* vcd ) {
 
         vcd_parse_sim_vector( vcd, (token + 1) );
 
-      } else if( (token[0] == 'r') || (token[0] == 'B') || carry_over ) {
+      } else if( (token[0] == 'r') || (token[0] == 'R') || carry_over ) {
 
         vcd_parse_sim_ignore( vcd );
         carry_over = FALSE;
@@ -419,6 +419,9 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.28  2007/11/20 05:31:14  phase1geo
+ Fixing syntax error in VCD parser per bug 1832592.
+
  Revision 1.27  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
