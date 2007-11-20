@@ -15,7 +15,7 @@
 
 /*!
  \file     vector.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/1/2001
  
  \par
@@ -2165,6 +2165,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.91  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.90  2007/09/18 21:41:54  phase1geo
  Removing inport indicator bit in vector and replacing with owns_data bit
  indicator.  Full regression passes.
