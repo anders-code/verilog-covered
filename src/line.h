@@ -18,7 +18,7 @@
 
 /*!
  \file     line.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     3/31/2002
  \brief    Contains functions for determining/reporting line coverage.
 */
@@ -39,6 +39,9 @@ void line_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.16  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.15  2007/04/02 04:50:04  phase1geo
  Adding func_iter files to iterate through a functional unit for reporting
  purposes.  Updated affected files.

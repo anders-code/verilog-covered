@@ -15,7 +15,7 @@
 
 /*!
  \param    lxt.c
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     1/25/2006
  \note     This file is based on the lxt2vcd utility that comes with GtkWave-1.3.82
 */
@@ -230,6 +230,9 @@ void lxt_parse( char* lxt_file ) {
 
 /*
  $Log$
+ Revision 1.11  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.10  2006/11/21 19:54:13  phase1geo
  Making modifications to defines.h to help in creating appropriately sized types.
  Other changes to VPI code (but this is still broken at the moment).  Checkpointing.

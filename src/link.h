@@ -18,7 +18,7 @@
 
 /*!
  \file     link.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     11/28/2001
  \brief    Contains functions to manipulate a linked lists.
 */
@@ -167,6 +167,9 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.30  2007/11/20 05:28:58  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.29  2007/09/13 17:03:30  phase1geo
  Cleaning up some const-ness corrections -- still more to go but it's a good
  start.
