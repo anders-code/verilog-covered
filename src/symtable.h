@@ -18,7 +18,7 @@
 
 /*!
  \file     symtable.h
- \author   Trevor Williams  (trevorw@charter.net)
+ \author   Trevor Williams  (phase1geo@gmail.com)
  \date     1/3/2002
  \brief    Contains functions for manipulating a symtable structure.
 */
@@ -44,6 +44,9 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.17  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.16  2006/11/27 04:11:42  phase1geo
  Adding more changes to properly support thread time.  This is a work in progress
  and regression is currently broken for the moment.  Checkpointing.
