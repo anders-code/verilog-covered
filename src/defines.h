@@ -1537,6 +1537,7 @@ struct reentrant_s;
 struct rstack_entry_s;
 struct struct_union_s;
 struct su_member_s;
+struct profiler_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -1792,6 +1793,11 @@ typedef struct struct_union_s struct_union;
  Renaming su_member_s structure for convenience.
 */
 typedef struct su_member_s su_member;
+
+/*!
+ Renaming profiler_s structure for convenience.
+*/
+typedef struct profiler_s profiler;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
@@ -2463,9 +2469,26 @@ struct su_member_s {
   su_member*      next;              /*!< Pointer to next struct/union member */
 };
 
+/*!
+ Represents a profiling entry for a given function.
+*/
+struct profiler_s {
+  char*  func_name;                  /*!< Name of function that this profiler is associated with */
+#ifdef HAVE_SYS_TIMES_H
+  timer* time_in;                    /*!< Time spent running this function */
+#endif
+  int    calls;                      /*!< Number of times this function has been called */
+  int    mallocs;                    /*!< Number of malloc calls made in this function */
+  int    frees;                      /*!< Number of free calls made in this function */
+};
+
 
 /*
  $Log$
+ Revision 1.267  2007/12/10 23:16:21  phase1geo
+ Working on adding profiler for use in finding performance issues.  Things don't compile
+ at the moment.
+
  Revision 1.266  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
