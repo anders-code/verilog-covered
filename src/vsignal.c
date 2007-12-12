@@ -641,6 +641,8 @@ int vsignal_calc_width_for_expr( expression* expr, vsignal* sig ) { PROFILE(VSIG
     }
   }
 
+  PROFILE_END;
+
   return( width );
 
 }
@@ -700,6 +702,9 @@ void vsignal_dealloc( vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.48  2007/12/12 08:04:18  phase1geo
+ Adding more timed functions for profiling purposes.
+
  Revision 1.47  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.
