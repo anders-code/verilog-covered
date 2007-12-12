@@ -356,6 +356,8 @@ void sim_thread_pop_head() { PROFILE(SIM_THREAD_POP_HEAD);
   }
 #endif
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -512,6 +514,8 @@ void sim_thread_push( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD_PUSH);
   }
 #endif
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -597,6 +601,8 @@ void sim_expr_changed( expression* expr, uint64 sim_time ) { PROFILE(SIM_EXPR_CH
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -955,6 +961,8 @@ bool sim_expression( expression* expr, thread* thr ) { PROFILE(SIM_EXPRESSION);
     retval = expression_operate( expr, thr );
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -1049,6 +1057,8 @@ void sim_thread( thread* thr, uint64 sim_time ) { PROFILE(SIM_THREAD);
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -1166,6 +1176,10 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.105  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.104  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

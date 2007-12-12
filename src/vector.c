@@ -97,6 +97,8 @@ void vector_init( vector* vec, vec_data* value, int width, int type ) { PROFILE(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -882,6 +884,8 @@ bool vector_set_value( vector* vec, vec_data* value, int val_type, int width, in
   }
 #endif
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -1476,6 +1480,8 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) { PROFILE(V
     if( vval.all == 1 ) { vval.all = 0; }
     retval |= vector_set_value( vec, &vval, VTYPE_VAL, 1, 0, i );
   }
+
+  PROFILE_END;
 
   return( retval );
 
@@ -2111,6 +2117,8 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) { PROFILE(VECTOR
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -2165,6 +2173,10 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.93  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.92  2007/12/11 23:19:14  phase1geo
  Fixed compile issues and completed first pass injection of profiling calls.
  Working on ordering the calls from most to least.

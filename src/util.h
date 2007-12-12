@@ -120,7 +120,7 @@ char* strdup_safe1( const char* str, const char* file, int line, unsigned int pr
 /*! \brief Creates a string containing space characters. */
 void gen_space( char* spaces, int num_spaces );
 
-#ifdef HAVE_SYS_TIMES_H
+#ifdef HAVE_SYS_TIME_H
 /*! \brief Clears the specified timer structure. */
 void timer_clear( timer** tm );
 
@@ -141,6 +141,10 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent );
 
 /*
  $Log$
+ Revision 1.31  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.30  2007/12/10 23:16:22  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.

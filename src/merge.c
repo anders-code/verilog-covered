@@ -151,7 +151,7 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
 
  Performs merge command functionality.
 */
-int command_merge( int argc, int last_arg, char** argv ) {
+int command_merge( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_MERGE);
 
   int retval = 0;  /* Return value of this function */
   int i;           /* Loop iterator */
@@ -200,12 +200,18 @@ int command_merge( int argc, int last_arg, char** argv ) {
   }
   free_safe( merge_in );
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.34  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.33  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

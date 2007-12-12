@@ -158,7 +158,6 @@ int main( int argc, char** argv ) {
             curr_arg++;
             profiler_set_filename( argv[curr_arg] );
           } else {
-            printf( "Setting profiler output file name to %s\n", PROFILING_OUTPUT_NAME );
             profiler_set_filename( PROFILING_OUTPUT_NAME );
           }
 #else
@@ -219,6 +218,10 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.21  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.20  2007/12/11 23:19:14  phase1geo
  Fixed compile issues and completed first pass injection of profiling calls.
  Working on ordering the calls from most to least.

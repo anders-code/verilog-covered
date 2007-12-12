@@ -248,6 +248,8 @@ void exp_link_add( expression* expr, exp_link** head, exp_link** tail ) { PROFIL
     *tail         = tmp;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1234,6 +1236,10 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.70  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.69  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

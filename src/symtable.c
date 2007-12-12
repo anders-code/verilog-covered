@@ -302,6 +302,8 @@ void symtable_set_value( char* sym, char* value ) { PROFILE(SYMTABLE_SET_VALUE);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -362,10 +364,16 @@ void symtable_dealloc( symtable* symtab ) { PROFILE(SYMTABLE_DEALLOC);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.30  2007/12/12 07:23:19  phase1geo
+ More work on profiling.  I have now included the ability to get function runtimes.
+ Still more work to do but everything is currently working at the moment.
+
  Revision 1.29  2007/12/11 23:19:14  phase1geo
  Fixed compile issues and completed first pass injection of profiling calls.
  Working on ordering the calls from most to least.
