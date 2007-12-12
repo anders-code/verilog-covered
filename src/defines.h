@@ -901,7 +901,6 @@ typedef enum exp_op_type_e {
 #define NAND_OP_TABLE     1,  1,  1,  1,  1,  0,  2,  2,  1,  2,  2,  2,  1,  2,  2,  2,  1
 #define NOR_OP_TABLE      1,  0,  2,  2,  0,  0,  0,  0,  2,  0,  2,  2,  2,  0,  2,  2,  1
 #define NXOR_OP_TABLE     1,  0,  2,  2,  0,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,  2,  1
-#define ADD_OP_TABLE      0,  1,  10, 10, 1,  4,  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 0
 
 /*! @} */
 
@@ -2491,6 +2490,12 @@ struct profiler_s {
 
 /*
  $Log$
+ Revision 1.270  2007/12/12 23:36:57  phase1geo
+ Optimized vector_op_add function significantly.  Other improvements made to
+ profiler output.  Attempted to optimize the sim_simulation function although
+ it hasn't had the intended effect and delay1.3 is currently failing.  Checkpointing
+ for now.
+
  Revision 1.269  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.
