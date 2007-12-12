@@ -63,7 +63,6 @@ nibble or_optab[OPTAB_SIZE]   = { OR_OP_TABLE   };  /*!< OR operation table */
 nibble nand_optab[OPTAB_SIZE] = { NAND_OP_TABLE };  /*!< NAND operation table */
 nibble nor_optab[OPTAB_SIZE]  = { NOR_OP_TABLE  };  /*!< NOR operation table */
 nibble nxor_optab[OPTAB_SIZE] = { NXOR_OP_TABLE };  /*!< NXOR operation table */
-nibble add_optab[OPTAB_SIZE]  = { ADD_OP_TABLE  };  /*!< ADD operation table */
 
 extern char user_msg[USER_MSG_LENGTH];
 
@@ -1814,40 +1813,29 @@ bool vector_op_arshift( vector* tgt, vector* left, vector* right ) { PROFILE(VEC
 */
 bool vector_op_add( vector* tgt, vector* left, vector* right ) { PROFILE(VECTOR_OP_ADD);
 
-  bool     retval = FALSE;  /* Return value for this function */
-  nibble   lbit;            /* Current left expression bit */
-  nibble   rbit;            /* Current right expression bit */
-  nibble   carry  = 0;      /* Carry bit */
-  vec_data value;           /* Current value */
-  int      i;               /* Loop iterator */
+  int    i;               /* Loop iterator */
+  int    tgt_width = tgt->width;
+  nibble v2st      = tgt->suppl.part.is_2state;
+  nibble carry     = 0;
 
-  for( i=0; i<tgt->width; i++ ) {
+  for( i=0; i<tgt_width; i++ ) {
     
-    if( i < left->width ) {
-      lbit = left->value[i].part.val.value;
+    nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
+    nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
+
+    if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
+      tgt->value[i].part.val.value = v2st ? 0 : 2;
+      carry                        = v2st ? 0 : 2;
     } else {
-      lbit = 0;
+      tgt->value[i].part.val.value = (carry + lbit + rbit) & 0x1;
+      carry                        = (carry + lbit + rbit) >> 1;
     }
-
-    if( i < right->width ) {
-      rbit = right->value[i].part.val.value;
-    } else {
-      rbit = 0;
-    }
-
-    value.all =  add_optab[ (((add_optab[((carry << 2) | lbit)] & 0x3) << 2) | rbit) ] & 0x3;
-    carry     = (((add_optab[ ((carry << 2) | lbit) ] >> 2) & 0x3) |
-                 ((add_optab[ ((carry << 2) | rbit) ] >> 2) & 0x3) |
-                 ((add_optab[ ((lbit  << 2) | rbit) ] >> 2) & 0x3));
-    
-
-    retval |= vector_set_value( tgt, &value, VTYPE_VAL, 1, 0, i );
 
   }
 
   PROFILE_END;
 
-  return( retval );
+  return( tgt_width > 0 );
 
 }
 
@@ -2185,6 +2173,12 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.95  2007/12/12 23:36:57  phase1geo
+ Optimized vector_op_add function significantly.  Other improvements made to
+ profiler output.  Attempted to optimize the sim_simulation function although
+ it hasn't had the intended effect and delay1.3 is currently failing.  Checkpointing
+ for now.
+
  Revision 1.94  2007/12/12 08:04:16  phase1geo
  Adding more timed functions for profiling purposes.
 
