@@ -141,12 +141,11 @@ void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit )
  \param funit     Pointer to current functional unit to restore
  \param ren       Pointer to reentrant structure containing bits to restore
  \param curr_bit  Current bit in reentrant structure to restore
- \param sim_time  Current simulation time
  \param expr      Pointer to expression to exclude from updating
 
  Recursively restores the signal and expression values of the functional units in a reentrant task/function.
 */
-void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit, uint64 sim_time, expression* expr ) { PROFILE(REENTRANT_RESTORE_DATA_BITS);
+void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit, expression* expr ) { PROFILE(REENTRANT_RESTORE_DATA_BITS);
 
   sig_link* sigl;  /* Pointer to current signal link */
   exp_link* expl;  /* Pointer to current expression link */
@@ -161,7 +160,6 @@ void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit
         sigl->sig->value->value[i].part.val.value = (ren->data[curr_bit/8] >> (curr_bit % 8));
         curr_bit += 2;
       }
-      //vsignal_propagate( sigl->sig, sim_time );
       sigl = sigl->next;
     }
 
@@ -196,7 +194,7 @@ void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit
      in this reentrant task/function.
     */
     if( funit->type == FUNIT_ANAMED_BLOCK ) {
-      reentrant_restore_data_bits( funit->parent, ren, curr_bit, sim_time, expr );
+      reentrant_restore_data_bits( funit->parent, ren, curr_bit, time, expr );
     }
 
   }
@@ -249,15 +247,14 @@ reentrant* reentrant_create( func_unit* funit ) { PROFILE(REENTRANT_CREATE);
 }
 
 /*!
- \param ren       Pointer to the reentrant structure to deallocate from memory.
- \param funit     Pointer to functional unit associated with this reentrant structure.
- \param sim_time  Current timestep being simulated.
- \param expr      Pointer of expression to exclude from updating (optional)
+ \param ren    Pointer to the reentrant structure to deallocate from memory.
+ \param funit  Pointer to functional unit associated with this reentrant structure.
+ \param expr   Pointer of expression to exclude from updating (optional)
 
  Pops data back into the given functional unit and deallocates all memory associated
  with the given reentrant structure.
 */
-void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expression* expr ) { PROFILE(REENTRANT_DEALLOC);
+void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { PROFILE(REENTRANT_DEALLOC);
 
   sig_link* sigl;     /* Pointer to current signal link in list */
   int       i;        /* Loop iterator */
@@ -269,7 +266,7 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expre
     if( ren->data_size > 0 ) {
 
       /* Walk through each bit in the compressed data array and assign it back to its signal */
-      reentrant_restore_data_bits( funit, ren, 0, sim_time, expr );
+      reentrant_restore_data_bits( funit, ren, 0, time, expr );
 
       /* Deallocate the data nibble array */
       free_safe( ren->data );
@@ -285,6 +282,12 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, uint64 sim_time, expre
 
 /*
  $Log$
+ Revision 1.13  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.12  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission
