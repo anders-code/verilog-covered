@@ -137,10 +137,19 @@ const char* get_funit_type( int type );
 /*! \brief Calculates miss and percent information from given hit and total information */
 void calc_miss_percent( int hits, float total, float* misses, float* percent );
 
+/*! \brief Sets the given timestep to the correct value from VCD simulation file */
+void set_timestep( sim_time* st, char* value );
+
 
 
 /*
  $Log$
+ Revision 1.32  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.31  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.

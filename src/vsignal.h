@@ -50,10 +50,10 @@ bool vsignal_db_read( char** line, /*@null@*/func_unit* curr_funit );
 bool vsignal_db_merge( vsignal* base, char** line, bool same );
 
 /*! \brief Propagates specified signal information to rest of design. */
-void vsignal_propagate( vsignal* sig, uint64 sim_time );
+void vsignal_propagate( vsignal* sig, const sim_time* time );
 
 /*! \brief Assigns specified VCD value to specified vsignal. */
-void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, uint64 sim_time );
+void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb, const sim_time* time );
 
 /*! \brief Adds an expression to the vsignal list. */
 void vsignal_add_expression( vsignal* sig, expression* expr );
@@ -76,6 +76,12 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.21  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.20  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
