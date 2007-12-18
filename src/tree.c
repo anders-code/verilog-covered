@@ -106,6 +106,8 @@ tnode* tree_add( const char* key, const char* value, bool override, tnode** root
     }
   }
 
+  PROFILE_END;
+
   return( node );
 
 }
@@ -131,6 +133,8 @@ tnode* tree_find( const char* key, tnode* root ) { PROFILE(TREE_FIND);
       root = root->right;
     }
   }
+
+  PROFILE_END;
 
   return( root );
 
@@ -256,6 +260,8 @@ void tree_remove( const char* key, tnode** root ) { PROFILE(TREE_REMOVE);
     free_safe(node);
 
   }
+
+  PROFILE_END;
   
 }
 
@@ -282,11 +288,19 @@ void tree_dealloc( tnode* root ) { PROFILE(TREE_DEALLOC);
     free_safe( root );
     
   }
+
+  PROFILE_END;
   
 }
 
 /*
  $Log$
+ Revision 1.8  2007/12/18 23:55:21  phase1geo
+ Starting to remove 64-bit time and replacing it with a sim_time structure
+ for performance enhancement purposes.  Also removing global variables for time-related
+ information and passing this information around by reference for performance
+ enhancement purposes.
+
  Revision 1.7  2007/12/11 23:19:14  phase1geo
  Fixed compile issues and completed first pass injection of profiling calls.
  Working on ordering the calls from most to least.
