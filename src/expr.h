@@ -98,7 +98,7 @@ char* expression_string( expression* exp );
 void expression_display( expression* expr );
 
 /*! \brief Performs operation specified by parameter expression. */
-bool expression_operate( expression* expr, thread* thr );
+bool expression_operate( expression* expr, thread* thr, const sim_time* time );
 
 /*! \brief Performs recursive expression operation (parse mode only). */
 void expression_operate_recursively( expression* expr, func_unit* funit, bool sizing );
@@ -122,7 +122,7 @@ bool expression_is_last_select( expression* expr );
 void expression_set_assigned( expression* expr );
 
 /*! \brief Performs blocking assignment assignment to variables. */
-void expression_assign( expression* lhs, expression* rhs, int* lsb, uint64 sim_time );
+void expression_assign( expression* lhs, expression* rhs, int* lsb, const sim_time* time );
 
 /*! \brief Deallocates memory used for expression. */
 void expression_dealloc( expression* expr, bool exp_only );
@@ -130,6 +130,9 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.60  2007/12/19 04:27:52  phase1geo
+ More fixes for compiler errors (still more to go).  Checkpointing.
+
  Revision 1.59  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
