@@ -194,7 +194,7 @@ void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit
      in this reentrant task/function.
     */
     if( funit->type == FUNIT_ANAMED_BLOCK ) {
-      reentrant_restore_data_bits( funit->parent, ren, curr_bit, time, expr );
+      reentrant_restore_data_bits( funit->parent, ren, curr_bit, expr );
     }
 
   }
@@ -266,7 +266,7 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
     if( ren->data_size > 0 ) {
 
       /* Walk through each bit in the compressed data array and assign it back to its signal */
-      reentrant_restore_data_bits( funit, ren, 0, time, expr );
+      reentrant_restore_data_bits( funit, ren, 0, expr );
 
       /* Deallocate the data nibble array */
       free_safe( ren->data );
@@ -282,6 +282,9 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
 
 /*
  $Log$
+ Revision 1.14  2007/12/19 14:37:29  phase1geo
+ More compiler fixes (still more to go).  Checkpointing.
+
  Revision 1.13  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

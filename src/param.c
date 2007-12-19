@@ -731,8 +731,16 @@ void param_expr_eval( expression* expr, funit_inst* inst ) { PROFILE(PARAM_EXPR_
         break;
     }
 
+    /* Initialize the current time */
+    sim_time time;
+
+    time.lo    = 0;
+    time.hi    = 0;
+    time.full  = 0;
+    time.final = FALSE;
+
     /* Perform the operation */
-    expression_operate( expr, NULL );
+    expression_operate( expr, NULL, &time );
 
   }
   
@@ -1053,6 +1061,9 @@ void inst_parm_dealloc( inst_parm* iparm, bool recursive ) { PROFILE(INST_PARM_D
 
 /*
  $Log$
+ Revision 1.95  2007/12/19 14:37:29  phase1geo
+ More compiler fixes (still more to go).  Checkpointing.
+
  Revision 1.94  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission
