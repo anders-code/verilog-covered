@@ -494,7 +494,12 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) { PR
          is called.
         */
         if( ESUPPL_STMT_IS_CALLED( stmt->exp->suppl ) == 0 ) {
-          sim_add_thread( NULL, stmt, curr_funit );
+          sim_time tmp_time;
+          tmp_time.lo    = 0;
+          tmp_time.hi    = 0;
+          tmp_time.full  = 0;
+          tmp_time.final = FALSE;
+          sim_add_thread( NULL, stmt, curr_funit, &tmp_time );
         }
 
       } else {
@@ -959,6 +964,9 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.118  2007/12/19 22:54:35  phase1geo
+ More compiler fixes (almost there now).  Checkpointing.
+
  Revision 1.117  2007/12/17 23:47:48  phase1geo
  Adding more profiling information.
 
