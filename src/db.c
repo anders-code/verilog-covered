@@ -851,10 +851,6 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
     curr_funit->start_line = start_line;
     curr_funit->ts_unit    = current_timescale_unit;
     
-  } else {
-
-    printf( "Unable to add instance %s (%s)\n", name, full_name );
-
   }
 
   free_safe( full_name );
@@ -2474,6 +2470,10 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.268  2007/12/20 04:47:50  phase1geo
+ Fixing the last of the regression failures from previous changes.  Removing unnecessary
+ output used for debugging.
+
  Revision 1.267  2007/12/19 22:54:34  phase1geo
  More compiler fixes (almost there now).  Checkpointing.
 

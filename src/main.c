@@ -161,13 +161,15 @@ int main( int argc, char** argv ) {
 
 #ifdef PROFILER
           profiler_set_mode( TRUE );
-          if( check_option_value( argc, argv, curr_arg )      &&
-              (strncmp( "score",  argv[curr_arg+1], 5 ) != 0) &&
-              (strncmp( "merge",  argv[curr_arg+1], 5 ) != 0) &&
-              (strncmp( "report", argv[curr_arg+1], 6 ) != 0)) {
+          curr_arg++;
+          if( (curr_arg < argc) && (argv[curr_arg][0] != '-') &&
+              (strncmp( "score",  argv[curr_arg], 5 ) != 0) &&
+              (strncmp( "merge",  argv[curr_arg], 5 ) != 0) &&
+              (strncmp( "report", argv[curr_arg], 6 ) != 0)) {
             curr_arg++;
             profiler_set_filename( argv[curr_arg] );
           } else {
+            curr_arg--;
             profiler_set_filename( PROFILING_OUTPUT_NAME );
           }
 #else
@@ -228,6 +230,10 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.23  2007/12/20 04:47:50  phase1geo
+ Fixing the last of the regression failures from previous changes.  Removing unnecessary
+ output used for debugging.
+
  Revision 1.22  2007/12/12 07:53:00  phase1geo
  Separating debugging and profiling so that we can do profiling without all
  of the debug overhead.

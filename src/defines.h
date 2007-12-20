@@ -1154,9 +1154,8 @@ typedef enum exp_op_type_e {
 
 /*! Performs time comparison with the sim_time structure */
 #define TIME_CMP_LE(x,y)         ((((x).lo <= (y).lo) && ((x).hi <= (y).hi)) || ((x).hi < (y).hi))
-
 #define TIME_CMP_GT(x,y)         (((x).lo > (y).lo) || ((x).hi > (y).hi))
-#define TIME_CMP_NE(x,y)         (((x).lo != (y).lo) && ((x).hi != (y).hi))
+#define TIME_CMP_NE(x,y)         (((x).lo ^ (y).lo) && ((x).hi ^ (y).hi))
 
 /*! Performs time increment where x is the sim_time structure to increment and y is a 64-bit value to increment to */
 #define TIME_INC(x,y)           (x).hi+=((0xffffffff-(x).lo)<(y).lo)?((y).hi+1):(y).hi; (x).lo+=(y).lo;
@@ -2515,6 +2514,10 @@ struct profiler_s {
 
 /*
  $Log$
+ Revision 1.274  2007/12/20 04:47:50  phase1geo
+ Fixing the last of the regression failures from previous changes.  Removing unnecessary
+ output used for debugging.
+
  Revision 1.273  2007/12/19 22:54:35  phase1geo
  More compiler fixes (almost there now).  Checkpointing.
 
