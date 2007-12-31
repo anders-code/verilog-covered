@@ -1444,6 +1444,7 @@ union ssuppl_u {
     control assigned       :1;  /*!< Specifies that this signal will be assigned from simulated results (instead of dumpfile) */
     control mba            :1;  /*!< Specifies that this signal MUST be assigned from simulated results because this information
                                      is NOT provided in the dumpfile */
+    control implicit_size  :1;  /*!< Specifies that this signal has not been given a specified size by the user at the current time */
   } part;
 };
 
@@ -2514,6 +2515,9 @@ struct profiler_s {
 
 /*
  $Log$
+ Revision 1.275  2007/12/31 23:43:36  phase1geo
+ Fixing bug 1858408.  Also fixing issues with vector_op_add functionality.
+
  Revision 1.274  2007/12/20 04:47:50  phase1geo
  Fixing the last of the regression failures from previous changes.  Removing unnecessary
  output used for debugging.
