@@ -736,7 +736,6 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) { PROFILE(REPORT_RE
 
     if( (retval = db_read( ifile, read_mode )) ) {
       bind_perform( TRUE, 0 );
-      ///*TBD*/inst_link_flatten( inst_head );
       report_gather_funit_stats( funit_head );
     }
 
@@ -919,6 +918,9 @@ int command_report( int argc, int last_arg, char** argv ) { PROFILE(COMMAND_REPO
 
 /*
  $Log$
+ Revision 1.86  2008/01/04 23:01:42  phase1geo
+ Adding initial form of splint run script.  Started cleaning up splint errors/warnings.
+
  Revision 1.85  2007/12/12 07:23:19  phase1geo
  More work on profiling.  I have now included the ability to get function runtimes.
  Still more work to do but everything is currently working at the moment.
