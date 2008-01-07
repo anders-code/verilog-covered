@@ -485,7 +485,7 @@ void directory_load( const char* dir, const str_link* ext_head, str_link** file_
 
     snprintf( user_msg, USER_MSG_LENGTH, "Unable to read directory %s", dir );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   } else {
 
@@ -629,7 +629,7 @@ char* substitute_env_vars( const char* value ) { PROFILE(SUBSTITUTE_ENV_VARS);
         } else {
           snprintf( user_msg, USER_MSG_LENGTH, "Unknown environment variable $%s in string \"%s\"", env_var, value );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( 1 );
+          exit( EXIT_FAILURE );
         }
       }
     } else if( *ptr == '$' ) {
@@ -977,7 +977,7 @@ void* malloc_safe1( size_t size, const char* file, int line, unsigned int profil
 
   if( obj == NULL ) {
     print_output( "Out of heap memory", FATAL, file, line );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
 
   /* Profile the malloc */
@@ -1018,7 +1018,7 @@ void* malloc_safe_nolimit1( size_t size, const char* file, int line, unsigned in
 
   if( obj == NULL ) {
     print_output( "Out of heap memory", FATAL, file, line );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
 
   /* Profile the malloc */
@@ -1062,10 +1062,15 @@ char* strdup_safe1( const char* str, const char* file, int line, unsigned int pr
 
   if( strlen( str ) > 10000 ) {
     print_output( "Attempting to call strdup for a string exceeding 10000 chars", FATAL, file, line );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
 
   new_str = strdup( str );
+
+  if( new_str == NULL ) {
+    print_output( "Out of heap memory", FATAL, file, line );
+    exit( EXIT_FAILURE );
+  }
 
   /* Profile the malloc */
   MALLOC_CALL(profile_index);
@@ -1195,6 +1200,9 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.72  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.71  2007/12/17 23:47:48  phase1geo
  Adding more profiling information.
 
