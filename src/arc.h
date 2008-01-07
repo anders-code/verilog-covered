@@ -38,13 +38,13 @@ char* arc_create( int width );
 void arc_add( char** arcs, const vector* fr_st, const vector* to_st, int hit );
 
 /*! \brief Gets supplemental field value from specified arc entry table. */
-int arc_get_suppl( const char* arcs, int type );
+unsigned int arc_get_suppl( const char* arcs, unsigned int type );
 
 /*! \brief Sets supplemental field value to specified arc entry. */
-void arc_set_entry_suppl( char* arcs, int curr, int type, char val );
+void arc_set_entry_suppl( char* arcs, int curr, unsigned int type, char val );
 
 /*! \brief Gets supplemental field value from specified arc entry. */
-int arc_get_entry_suppl( const char* arcs, int curr, int type );
+int arc_get_entry_suppl( const char* arcs, int curr, unsigned int type );
 
 /*! \brief Finds the specified state transition in the given arc array */
 int arc_find( const char* arcs, const vector* from_st, const vector* to_st, int* ptr );
@@ -75,6 +75,9 @@ void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.21  2008/01/07 05:01:57  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.20  2008/01/04 23:07:58  phase1geo
  More splint updates.
 

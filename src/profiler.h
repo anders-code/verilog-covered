@@ -27,9 +27,9 @@
 #include "util.h"
 
 
-#define PROFILE(index)
+#define PROFILE(index) int foobar
 #define PROFILE_START(index)
-#define PROFILE_END
+#define PROFILE_END    foobar = 0
 #define MALLOC_CALL
 #define FREE_CALL
 
@@ -72,6 +72,9 @@ void profiler_report();
 
 /*
  $Log$
+ Revision 1.6  2008/01/07 05:01:58  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.5  2007/12/12 07:53:00  phase1geo
  Separating debugging and profiling so that we can do profiling without all
  of the debug overhead.

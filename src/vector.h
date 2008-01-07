@@ -29,7 +29,7 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init( vector* vec, vec_data* value, int width, int type );
+void vector_init( /*@out@*/ vector* vec, vec_data* value, int width, int type );
 
 /*! \brief Creates and initializes new vector */
 vector* vector_create( int width, int type, bool data );
@@ -172,6 +172,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.46  2008/01/07 05:01:58  phase1geo
+ Cleaning up more splint errors.
+
  Revision 1.45  2007/12/19 04:27:52  phase1geo
  More fixes for compiler errors (still more to go).  Checkpointing.
 
