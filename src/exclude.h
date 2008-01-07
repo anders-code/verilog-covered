@@ -28,27 +28,30 @@
 
 /*! \brief Sets the excluded bit for all expressions in the given functional unit with the
            specified line number and recalculates the summary coverage information. */
-bool exclude_set_line_exclude( char* funit_name, int funit_type, int line, int value );
+bool exclude_set_line_exclude( const char* funit_name, int funit_type, int line, int value );
 
 /*! \brief Sets the excluded bit for the specified signal in the given functional unit and
            recalculates the summary coverage information. */
-bool exclude_set_toggle_exclude( char* funit_name, int funit_type, char* sig_name, int value );
+bool exclude_set_toggle_exclude( const char* funit_name, int funit_type, const char* sig_name, int value );
 
 /*! \brief Sets the excluded bit for the specified expression in the given functional unit
            and recalculates the summary coverage information. */
-bool exclude_set_comb_exclude( char* funit_name, int funit_type, int expr_id, int uline_id, int value );
+bool exclude_set_comb_exclude( const char* funit_name, int funit_type, int expr_id, int uline_id, int value );
 
 /*! \brief Sets the excluded bit for the specified state transition in the given functional unit
            and recalculates the summary coverage information. */
-bool exclude_set_fsm_exclude( char* funit_name, int funit_type, int expr_id, char* from_state, char* to_state, int value );
+bool exclude_set_fsm_exclude( const char* funit_name, int funit_type, int expr_id, char* from_state, char* to_state, int value );
 
 /*! \brief Sets the excluded bit for the specified expression in the given functional unit
            and recalculates the summary coverage information. */
-bool exclude_set_assert_exclude( char* funit_name, int funit_type, char* inst_name, int expr_id, int value );
+bool exclude_set_assert_exclude( const char* funit_name, int funit_type, char* inst_name, int expr_id, int value );
 
 
 /*
  $Log$
+ Revision 1.8  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.7  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
