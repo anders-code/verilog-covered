@@ -199,7 +199,7 @@ int main( int argc, char** argv ) {
 
           snprintf( user_msg, USER_MSG_LENGTH, "Unknown command/global option \"%s\".  Please see \"covered -h\" for usage.", argv[curr_arg] );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          exit( 1 );
+          exit( EXIT_FAILURE );
 
         }
 
@@ -230,6 +230,9 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.24  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.23  2007/12/20 04:47:50  phase1geo
  Fixing the last of the regression failures from previous changes.  Removing unnecessary
  output used for debugging.

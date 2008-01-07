@@ -75,7 +75,7 @@ bool funit_db_read( func_unit* funit, /*@out@*/char* scope, char** line );
 bool funit_db_merge( func_unit* base, FILE* file, bool same );
 
 /*! \brief Flattens the functional unit name by removing all unnamed scope portions */
-char* funit_flatten_name( func_unit* funit );
+/*@shared@*/ char* funit_flatten_name( func_unit* funit );
 
 /*! \brief Finds the functional unit that contains the given statement/expression ID */
 func_unit* funit_find_by_id( int id );
@@ -107,6 +107,9 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.31  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.30  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

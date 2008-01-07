@@ -193,7 +193,7 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
       }
 
-      exit( 1 );
+      exit( EXIT_FAILURE );
 
     }
 
@@ -222,7 +222,7 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
   } else {
 
     print_output( "Unable to read data from LXT dumpfile.  Exiting without scoring.", FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    exit( EXIT_FAILURE );
 
   }
 
@@ -230,6 +230,9 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
 /*
  $Log$
+ Revision 1.13  2008/01/07 23:59:55  phase1geo
+ More splint updates.
+
  Revision 1.12  2007/12/11 05:48:25  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission
