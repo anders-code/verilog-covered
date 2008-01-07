@@ -440,7 +440,7 @@ bool cli_parse_input( char* line, bool perform, bool replaying, const sim_time* 
     } else if( strncmp( "quit", arg, 4 ) == 0 ) {
 
       if( perform ) {
-        exit( 0 );
+        exit( EXIT_SUCCESS );
       }
  
     } else if( strncmp( "debug", arg, 5 ) == 0 ) {
@@ -675,6 +675,9 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.11  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.10  2007/12/19 22:54:34  phase1geo
  More compiler fixes (almost there now).  Checkpointing.
 

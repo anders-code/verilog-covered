@@ -109,7 +109,7 @@ void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
         print_output( "Implicit enumerate assignment cannot follow an X or Z value", FATAL, __FILE__, __LINE__ );
         snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d", obf_file( inst->funit->filename ), ei->sig->line );
         print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
-        exit( 1 );
+        exit( EXIT_FAILURE );
       } else {
         vector_from_int( ei->sig->value, (last_value + 1) );
       }
@@ -189,6 +189,9 @@ void enumerate_dealloc_list( func_unit* funit ) { PROFILE(ENUMERATE_DEALLOC_LIST
 
 /*
  $Log$
+ Revision 1.11  2008/01/07 23:59:54  phase1geo
+ More splint updates.
+
  Revision 1.10  2007/12/10 23:16:21  phase1geo
  Working on adding profiler for use in finding performance issues.  Things don't compile
  at the moment.
