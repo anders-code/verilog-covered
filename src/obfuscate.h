@@ -53,7 +53,7 @@ extern bool obf_mode;
 void obfuscate_set_mode( bool value );
 
 /*! \brief Gets an obfuscated name for the given actual name */
-char* obfuscate_name( const char* real_name, char prefix );
+/*@shared@*/ char* obfuscate_name( const char* real_name, char prefix );
 
 /*! \brief Deallocates all memory associated with obfuscation */
 void obfuscate_dealloc();
@@ -61,6 +61,9 @@ void obfuscate_dealloc();
 
 /*
  $Log$
+ Revision 1.8  2008/01/08 13:27:46  phase1geo
+ More splint updates.
+
  Revision 1.7  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
