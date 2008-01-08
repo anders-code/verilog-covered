@@ -2452,7 +2452,9 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
   if( (timestep_update > 0) && ((time - last_sim_update) >= timestep_update) && !debug_mode && !final ) {
     last_sim_update = time;
+    /*@-formattype -duplicatequals@*/
     printf( "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bPerforming timestep %10llu", time );
+    /*@=formattype =duplicatequals@*/
     fflush( stdout );
   }
 
@@ -2481,6 +2483,9 @@ void db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.272  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.271  2008/01/08 13:27:46  phase1geo
  More splint updates.
 

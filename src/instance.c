@@ -888,12 +888,13 @@ void instance_flatten( funit_inst* root ) { PROFILE(INSTANCE_FLATTEN);
   funit_link* rm_head = NULL;  /* Pointer to head of functional unit list to remove */
   funit_link* rm_tail = NULL;  /* Pointer to tail of functional unit list to remove */
   func_unit*  parent_mod;      /* Pointer to parent module of list to remove */
+  funit_link* funitl;          /* Pointer to current functional unit link */
 
   /* Flatten the hierarchy */
   instance_flatten_helper( root, &rm_head, &rm_tail );
 
   /* Now deallocate the list of functional units */
-  funit_link* funitl = rm_head;
+  funitl = rm_head;
   while( funitl != NULL ) {
     funit_link_remove( funitl->funit, &funit_head, &funit_tail, FALSE );
     if( funitl->funit->type != FUNIT_MODULE ) {
@@ -1127,6 +1128,9 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.85  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.84  2008/01/07 23:59:54  phase1geo
  More splint updates.
 
