@@ -89,7 +89,7 @@ void perf_output_mod_stats( FILE* ofile, func_unit* funit ) { PROFILE(PERF_OUTPU
   for( i=0; i<EXP_OP_NUM; i++ ) {
     if( pstat->op_exec_cnt[i] > 0 ) {
       avg_exec = pstat->op_exec_cnt[i] / pstat->op_cnt[i]; 
-      fprintf( ofile, "    %-10.10s %-8.0f   %-8d   %-8.1f\n",
+      fprintf( ofile, "    %-10.10s %-8.0f   %-8u   %-8.1f\n",
                expression_string_op( i ), pstat->op_cnt[i], pstat->op_exec_cnt[i], avg_exec );
     }
   }
@@ -144,6 +144,9 @@ void perf_output_inst_report( FILE* ofile ) { PROFILE(PERF_OUTPUT_INST_REPORT);
 
 /*
  $Log$
+ Revision 1.8  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.7  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission

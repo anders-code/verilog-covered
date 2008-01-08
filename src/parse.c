@@ -97,7 +97,7 @@ bool parse_design( char* top, char* output_db ) { PROFILE(PARSE_DESIGN);
 
   bool retval = TRUE;  /* Return value of this function */
 
-  str_link_add( strdup_safe( top ), &modlist_head, &modlist_tail );
+  (void)str_link_add( strdup_safe( top ), &modlist_head, &modlist_tail );
 
   if( use_files_head != NULL ) {
 
@@ -261,6 +261,9 @@ bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode ) { PROF
 
 /*
  $Log$
+ Revision 1.54  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.53  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

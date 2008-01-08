@@ -137,7 +137,7 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
     numfacs = lxt2_rd_get_num_facs( lt );
 
     lxt2_rd_set_fac_process_mask_all( lt );
-    lxt2_rd_set_max_block_mem_usage( lt, 0 ); /* no need to cache blocks */
+    (void)lxt2_rd_set_max_block_mem_usage( lt, 0 ); /* no need to cache blocks */
 
     /* Create initial symbol table */
     vcd_symtab = symtable_create();
@@ -230,6 +230,9 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
 /*
  $Log$
+ Revision 1.14  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.13  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

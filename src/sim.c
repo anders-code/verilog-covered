@@ -189,7 +189,9 @@ void sim_display_thread( thread* thr, bool show_queue, bool endl ) {
     printf( "    " );
   }
 
+  /*@-duplicatequals -formattype@*/
   printf( "time %llu, ", thr->curr_time.full );
+  /*@=duplicatequals =formattype@*/
 
   if( thr->curr == NULL ) {
     printf( "stmt NONE, " );
@@ -1279,6 +1281,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.115  2008/01/08 21:13:08  phase1geo
+ Completed -weak splint run.  Full regressions pass.
+
  Revision 1.114  2007/12/20 04:47:50  phase1geo
  Fixing the last of the regression failures from previous changes.  Removing unnecessary
  output used for debugging.
