@@ -25,7 +25,13 @@
 
 
 /*! \brief Parses command-line for report command and performs report functionality. */
-int command_report( int argc, int last_arg, char** argv );
+int command_report( int argc, int last_arg, const char** argv );
+
+/*! \brief Prints header of report. */
+void report_print_header( FILE* ofile );
+
+/*! \brief Parses arguments on report command command-line. */
+bool report_parse_args( int argc, int last_arg, const char** argv );
 
 /*! \brief Reads the CDD and readies the design for reporting */
 bool report_read_cdd_and_ready( char* ifile, int read_mode );
@@ -39,6 +45,9 @@ bool report_save_cdd( char* filename );
 
 /*
  $Log$
+ Revision 1.12  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.11  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
