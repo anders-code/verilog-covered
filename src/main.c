@@ -110,7 +110,7 @@ void covered_cleanup( void ) {
  Main function for the Covered utility.  Parses command-line arguments and calls
  the appropriate functions.
 */
-int main( int argc, char** argv ) {
+int main( int argc, const char** argv ) {
 
   int  retval    = 0;      /* Return value of this utility */
   int  curr_arg  = 1;      /* Current position in argument list */
@@ -230,6 +230,9 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.25  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.24  2008/01/07 23:59:55  phase1geo
  More splint updates.
 
