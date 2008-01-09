@@ -34,10 +34,10 @@
 
 
 /*! Pointer to head of statement block list to remove */
-stmt_link* rm_stmt_head    = NULL;
+static stmt_link* rm_stmt_head    = NULL;
 
 /*! Pointer to tail of statement block list to remove */
-stmt_link* rm_stmt_tail    = NULL;
+static stmt_link* rm_stmt_tail    = NULL;
 
 extern func_unit* curr_funit;
 
@@ -113,6 +113,9 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.14  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.13  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
