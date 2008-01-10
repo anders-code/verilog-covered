@@ -29,9 +29,6 @@
 #include "defines.h"
 
 
-/*! \brief Calculates the assignment type used in the given statement */
-void race_calc_assignments( statement* stmt, int sb_index );
-
 /*! \brief Checks the current module for race conditions */
 void race_check_modules();
 
@@ -56,6 +53,9 @@ void race_blk_delete_list( race_blk* rb );
 
 /*
  $Log$
+ Revision 1.21  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.20  2008/01/07 23:59:55  phase1geo
  More splint updates.
 
