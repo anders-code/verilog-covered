@@ -28,9 +28,6 @@
 #include "defines.h"
 
 
-/*! \brief Initializes specified vsignal with specified values. */
-void vsignal_init( vsignal* sig, char* name, int type, vector* value, int line, int col );
-
 /*! \brief Creates a new vsignal based on the information passed to this function. */
 vsignal* vsignal_create( const char* name, int type, int width, int line, int col );
 
@@ -76,6 +73,9 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.23  2008/01/10 04:59:05  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.22  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 
