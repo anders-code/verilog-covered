@@ -46,7 +46,7 @@ unsigned error_count = 0;
 /*!
  Counts the number of warnings found during the parsing process.
 */
-unsigned warn_count  = 0;
+static unsigned warn_count = 0;
 
 /*!
  \param msg  String containing error message to display to user.
@@ -287,6 +287,9 @@ bool parser_check_generation( int gen ) { PROFILE(PARSER_CHECK_GENERATION);
 
 /*
  $Log$
+ Revision 1.19  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.18  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 

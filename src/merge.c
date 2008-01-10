@@ -174,7 +174,6 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     db_read( merge_in[0], READ_MODE_MERGE_NO_MERGE );
     bind_perform( TRUE, 0 );
-    //sim_add_statics();
 
     /* Read in databases to merge */
     for( i=1; i<mnum; i++ ) {
@@ -208,6 +207,9 @@ int command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.36  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.35  2008/01/09 23:54:15  phase1geo
  More splint updates.
 

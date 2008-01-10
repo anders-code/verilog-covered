@@ -27,9 +27,6 @@
 #include "defines.h"
 
 
-/*! \brief Returns TRUE if specified name refers to an OVL assertion module. */
-bool ovl_is_assertion_name( const char* name );
-
 /*! \brief Returns TRUE if specified functional unit is an OVL assertion module. */
 bool ovl_is_assertion_module( const func_unit* funit );
 
@@ -54,6 +51,9 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.13  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.12  2008/01/08 13:27:46  phase1geo
  More splint updates.
 
