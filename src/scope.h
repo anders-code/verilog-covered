@@ -27,10 +27,6 @@
 #include "defines.h"
 
 
-/*! \brief  Finds the functional unit that corresponds to the given scope relative to the current
-            functional unit */
-func_unit* scope_find_funit_from_scope( const char* scope, func_unit* curr_funit, bool rm_unnamed );
-
 /*! \brief  Find the given signal in the provided scope */
 bool scope_find_param( const char* name, func_unit* curr_funit, mod_parm** found_parm, func_unit** found_funit, int line );
 
@@ -49,6 +45,9 @@ func_unit* scope_get_parent_module( const char* scope );
 
 /*
  $Log$
+ Revision 1.13  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.12  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
