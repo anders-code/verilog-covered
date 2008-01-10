@@ -28,9 +28,6 @@
 #include "defines.h"
 
 
-/*! \brief Resets combination counted bits in expression list */
-void combination_reset_counted_exprs( func_unit* funit );
-
 /*! \brief Resets combination counted bits in expression tree */
 void combination_reset_counted_expr_tree( expression* exp );
 
@@ -60,6 +57,9 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.24  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.23  2008/01/07 23:59:54  phase1geo
  More splint updates.
 

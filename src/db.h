@@ -72,9 +72,6 @@ void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, 
 /*! \brief Adds specified override parameter to parameter list.  Called by parser. */
 void db_add_override_param( char* inst_name, expression* expr, char* param_name );
 
-/*! \brief Adds vsignal/expression vector parameter to parameter list. */
-void db_add_vector_param( vsignal* sig, expression* parm_exp, int type, int dimension );
-
 /*! \brief Adds specified defparam to parameter override list.  Called by parser. */
 void db_add_defparam( char* name, expression* expr );
 
@@ -195,6 +192,9 @@ void db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.80  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.79  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
