@@ -27,14 +27,18 @@
 
 
 /*! \brief Parses the specified design and generates scoring modules. */
-bool parse_design( char* top, char* output_db );
+void parse_design( char* top, char* output_db );
 
 /*! \brief Parses VCD dumpfile and scores design. */
-bool parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode );
+void parse_and_score_dumpfile( char* db, char* dump_file, int dump_mode );
 
 
 /*
  $Log$
+ Revision 1.10  2008/01/16 23:10:31  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.9  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
