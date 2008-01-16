@@ -29,7 +29,7 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init( /*@out@*/ vector* vec, vec_data* value, int width, int type );
+void vector_init( /*@out@*/ vector* vec, vec_data* value, bool owns_value, int width, int type );
 
 /*! \brief Creates and initializes new vector */
 vector* vector_create( int width, int type, bool data );
@@ -174,6 +174,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.49  2008/01/16 05:01:23  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.48  2008/01/15 23:01:16  phase1geo
  Continuing to make splint updates (not doing any memory checking at this point).
 
