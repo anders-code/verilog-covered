@@ -74,7 +74,7 @@ char score_run_path[4096];
 /*!
  Array containing all of the score arguments.
 */
-char** score_args = NULL;
+/*@null@*/ char** score_args = NULL;
 
 /*!
  Number of valid elements in the score args array.
@@ -283,6 +283,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.23  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.22  2008/01/08 21:13:08  phase1geo
  Completed -weak splint run.  Full regressions pass.
 
