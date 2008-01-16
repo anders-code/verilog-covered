@@ -81,8 +81,10 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
     while( curr != NULL ) {
       if( !funit_is_unnamed( curr->funit ) &&
           ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module( curr->funit ) )) ) {
+        unsigned int rv;
         (*funit_names)[i] = strdup_safe( curr->funit->name );
-        snprintf( tmpstr, 10, "%d", curr->funit->type );
+        rv = snprintf( tmpstr, 10, "%d", curr->funit->type );
+        assert( rv < 10 );
         (*funit_types)[i] = strdup_safe( tmpstr );
         i++;
       }
@@ -153,6 +155,9 @@ bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int*
 
 /*
  $Log$
+ Revision 1.13  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.12  2008/01/07 23:59:54  phase1geo
  More splint updates.
 
