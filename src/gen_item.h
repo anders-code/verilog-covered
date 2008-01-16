@@ -84,7 +84,7 @@ void gen_item_db_write_expr_tree( gen_item* gi, FILE* file );
 bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id );
 
 /*! \brief Checks generate item and if it is a bind, adds it to binding pool and returns TRUE */
-void gen_item_bind( gen_item* gi, func_unit* funit );
+void gen_item_bind( gen_item* gi );
 
 /*! \brief Resolves all generate items in the design */
 void generate_resolve( funit_inst* inst );
@@ -97,6 +97,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.22  2008/01/16 06:40:37  phase1geo
+ More splint updates.
+
  Revision 1.21  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 
