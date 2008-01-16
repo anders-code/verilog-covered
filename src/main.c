@@ -96,7 +96,8 @@ static void covered_cleanup( void ) {
 
   /* Remove temporary pre-processor file (if it still exists) */
   if( ppfilename != NULL ) {
-    unlink( ppfilename );
+    unsigned int rv = unlink( ppfilename );
+    assert( rv == 0 );
     free_safe( ppfilename );
   }
 
@@ -112,9 +113,10 @@ static void covered_cleanup( void ) {
 */
 int main( int argc, const char** argv ) {
 
-  int  retval    = 0;      /* Return value of this utility */
-  int  curr_arg  = 1;      /* Current position in argument list */
-  bool cmd_found = FALSE;  /* Set to TRUE when command found in arg list */
+  int          retval    = 0;      /* Return value of this utility */
+  int          curr_arg  = 1;      /* Current position in argument list */
+  bool         cmd_found = FALSE;  /* Set to TRUE when command found in arg list */
+  unsigned int rv;                 /* Temporary return value from functions */
 
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
@@ -123,7 +125,8 @@ int main( int argc, const char** argv ) {
   profiler_set_mode( FALSE );
 
   /* Setup function to be called at exit */
-  assert( atexit( covered_cleanup ) == 0 );
+  rv = atexit( covered_cleanup );
+  assert( rv == 0 );
 
   if( argc == 1 ) {
 
@@ -197,7 +200,8 @@ int main( int argc, const char** argv ) {
 
         } else {
 
-          snprintf( user_msg, USER_MSG_LENGTH, "Unknown command/global option \"%s\".  Please see \"covered -h\" for usage.", argv[curr_arg] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown command/global option \"%s\".  Please see \"covered -h\" for usage.", argv[curr_arg] );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( EXIT_FAILURE );
 
@@ -230,6 +234,10 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.27  2008/01/16 23:10:31  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.26  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 
