@@ -2504,7 +2504,7 @@ struct su_member_s {
 struct profiler_s {
   char*  func_name;                  /*!< Name of function that this profiler is associated with */
 #ifdef HAVE_SYS_TIME_H
-  timer* time_in;                    /*!< Time spent running this function */
+  /*@null@*/ timer* time_in;         /*!< Time spent running this function */
 #endif
   int    calls;                      /*!< Number of times this function has been called */
   int    mallocs;                    /*!< Number of malloc calls made in this function */
@@ -2515,6 +2515,9 @@ struct profiler_s {
 
 /*
  $Log$
+ Revision 1.278  2008/01/16 06:40:33  phase1geo
+ More splint updates.
+
  Revision 1.277  2008/01/16 05:01:22  phase1geo
  Switched totals over from float types to int types for splint purposes.
 
