@@ -42,7 +42,7 @@ su_member* struct_union_add_member_enum( struct_union* su, enum_item* ei );
 su_member* struct_union_add_member_struct_union( struct_union* su, struct_union* sui );
 
 /*! \brief Allocates, initializes and adds a new enumerated item to the given functional unit */
-struct_union* struct_union_create( const char* name, sig_range* range, int type, bool packed, bool is_signed, func_unit* funit );
+struct_union* struct_union_create( const char* name, /*@unused@*/ sig_range* range, int type, bool packed, bool is_signed, func_unit* funit );
 
 /*! \brief Deallocates given struct/union */
 void struct_union_dealloc( struct_union* su );
@@ -53,6 +53,10 @@ void struct_union_dealloc_list( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.4  2008/01/16 23:10:34  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.3  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
