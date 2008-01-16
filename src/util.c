@@ -1184,13 +1184,19 @@ const char* get_funit_type( int type ) { PROFILE(GET_FUNIT_TYPE);
  \note
  If the total number of items is 0, the hit percentage will be calculated as 100% covered.
 */
-void calc_miss_percent( int hits, float total, float* misses, float* percent ) { PROFILE(CALC_MISS_PERCENT);
+void calc_miss_percent(
+  int    hits,
+  int    total,
+  int*   misses,
+  float* percent
+) { PROFILE(CALC_MISS_PERCENT);
 
   if( total == 0 ) {
     *percent = 100;
   } else {
-    *percent = ((hits / total) * 100);
+    *percent = ((hits / (float)total) * 100);
   }
+
   *misses = (total - hits);
 
   PROFILE_END;
@@ -1200,6 +1206,9 @@ void calc_miss_percent( int hits, float total, float* misses, float* percent ) {
 
 /*
  $Log$
+ Revision 1.76  2008/01/16 05:01:23  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.75  2008/01/10 04:59:05  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 
