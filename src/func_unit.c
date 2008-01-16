@@ -607,7 +607,7 @@ void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
     if( inst != NULL ) {
       curr_parm = inst->param_head;
       while( curr_parm != NULL ) {
-        param_db_write( curr_parm, file, (inst != NULL) );
+        param_db_write( curr_parm, file );
         curr_parm = curr_parm->next;
       }
     }
@@ -1174,6 +1174,10 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.88  2008/01/16 23:10:30  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.87  2008/01/16 06:40:37  phase1geo
  More splint updates.
 
