@@ -82,7 +82,7 @@ static int reentrant_count_afu_bits( func_unit* funit ) { PROFILE(REENTRANT_COUN
  Recursively gathers all signal data bits to store and stores them in the given reentrant
  structure.
 */
-static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int curr_bit ) { PROFILE(REENTRANT_STORE_DATA_BITS);
+static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, unsigned int curr_bit ) { PROFILE(REENTRANT_STORE_DATA_BITS);
 
   sig_link* sigl;  /* Pointer to current signal link in current functional unit */
   exp_link* expl;  /* Pointer to current expression link in current functional unit */
@@ -145,7 +145,7 @@ static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, int cur
 
  Recursively restores the signal and expression values of the functional units in a reentrant task/function.
 */
-static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, int curr_bit, expression* expr ) { PROFILE(REENTRANT_RESTORE_DATA_BITS);
+static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsigned int curr_bit, expression* expr ) { PROFILE(REENTRANT_RESTORE_DATA_BITS);
 
   sig_link* sigl;  /* Pointer to current signal link */
   exp_link* expl;  /* Pointer to current expression link */
@@ -282,6 +282,10 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
 
 /*
  $Log$
+ Revision 1.16  2008/01/16 23:10:33  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.15  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 
