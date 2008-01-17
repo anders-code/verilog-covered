@@ -768,7 +768,7 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
           score_add_arg( argv[i] );
           *ptr = '\0';
           ptr++;
-          defparam_add( argv[i], vector_from_string( &ptr, FALSE ) );
+          defparam_add( tmp, vector_from_string( &ptr, FALSE ) );
         }
         free_safe( tmp );
       }
@@ -1053,6 +1053,9 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.107  2008/01/17 06:03:08  phase1geo
+ Completing regression runs.
+
  Revision 1.106  2008/01/16 23:10:33  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.
