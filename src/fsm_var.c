@@ -417,8 +417,7 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
     while( curr != NULL ) {
 
       /* Bind statement to functional unit */
-      bool rv = fsm_var_bind_stmt( curr->stmt, curr->funit_name );
-      assert( rv );
+      (void)fsm_var_bind_stmt( curr->stmt, curr->funit_name );
 
       tmp = curr->next;
 
@@ -501,6 +500,9 @@ void fsm_var_remove( fsm_var* fv ) { PROFILE(FSM_VAR_REMOVE);
 
 /*
  $Log$
+ Revision 1.35  2008/01/17 04:35:12  phase1geo
+ Updating regression per latest bug fixes and splint updates.
+
  Revision 1.34  2008/01/16 06:40:37  phase1geo
  More splint updates.
 
