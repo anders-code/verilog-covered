@@ -165,14 +165,25 @@ static void cli_print_error( char* msg, bool standard ) {
 /*!
  Erases a previously drawn status bar from the screen.
 */
-static void cli_erase_status_bar() {
+static void cli_erase_status_bar( bool clear ) {
 
   unsigned int i;   /* Loop iterator */
   unsigned int rv;  /* Return value from fflush */
 
+  /* If the user needs the line completely cleared, do so now */
+  if( clear ) {
+    for( i=0; i<(CLI_NUM_DASHES+2); i++ ) {
+      printf( "\b" );
+    }
+    for( i=0; i<(CLI_NUM_DASHES+2); i++ ) {
+      printf( " " );
+    }
+  }
+
   for( i=0; i<(CLI_NUM_DASHES+2); i++ ) {
     printf( "\b" );
   }
+
   rv = fflush( stdout );
   assert( rv == 0 );
 
@@ -194,7 +205,7 @@ static void cli_draw_status_bar(
   /* Only redisplay status bar if it needs to be updated */
   if( last_percent != percent ) {
 
-    cli_erase_status_bar();
+    cli_erase_status_bar( FALSE );
 
     printf( "|" );
 
@@ -701,7 +712,7 @@ void cli_execute( const sim_time* time ) {
     if( (stmts_left == 0) && (timesteps_left == 0) && TIME_CMP_GE(*time, goto_timestep) && !dont_stop ) {
 
       /* Erase the status bar */
-      cli_erase_status_bar();
+      cli_erase_status_bar( TRUE );
 
       /* Display current line that will be executed if we are not replaying */
       if( cli_replay_index == history_index ) {
@@ -774,6 +785,9 @@ bool cli_read_hist_file( char* fname ) {
 
 /*
  $Log$
+ Revision 1.14  2008/01/18 05:19:01  phase1geo
+ Fixing output glitch from status bar.
+
  Revision 1.13  2008/01/18 05:03:14  phase1geo
  Fixing bug in CLI that didn't stop the CLI prompt at the right location.
  Added "goto" command to allow us to simply simulate to a specific timestep.
