@@ -1155,7 +1155,8 @@ typedef enum exp_op_type_e {
 /*! Performs time comparison with the sim_time structure */
 #define TIME_CMP_LE(x,y)         ((((x).lo <= (y).lo) && ((x).hi <= (y).hi)) || ((x).hi < (y).hi))
 #define TIME_CMP_GT(x,y)         (((x).lo > (y).lo) || ((x).hi > (y).hi))
-#define TIME_CMP_NE(x,y)         (((x).lo ^ (y).lo) && ((x).hi ^ (y).hi))
+#define TIME_CMP_GE(x,y)         ((((x).lo >= (y).lo) && ((x).hi >= (y).hi)) || ((x).hi > (y).hi))
+#define TIME_CMP_NE(x,y)         (((x).lo ^ (y).lo) || ((x).hi ^ (y).hi))
 
 /*! Performs time increment where x is the sim_time structure to increment and y is a 64-bit value to increment to */
 #define TIME_INC(x,y)           (x).hi+=((0xffffffff-(x).lo)<(y).lo)?((y).hi+1):(y).hi; (x).lo+=(y).lo;
@@ -2515,6 +2516,12 @@ struct profiler_s {
 
 /*
  $Log$
+ Revision 1.279  2008/01/18 05:03:14  phase1geo
+ Fixing bug in CLI that didn't stop the CLI prompt at the right location.
+ Added "goto" command to allow us to simply simulate to a specific timestep.
+ Added status bar to indicate to the user how much we have gotten to our
+ simulation goal for the CLI.
+
  Revision 1.278  2008/01/16 06:40:33  phase1geo
  More splint updates.
 
