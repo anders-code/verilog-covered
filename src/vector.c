@@ -266,6 +266,9 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) { PROFILE(VECTO
   /* Calculate default value of bit */
   dflt = (vec->suppl.part.is_2state == 1) ? 0x0 : 0x2;
 
+  /* Set owns_data supplemental bit in all cases */
+  vec->suppl.part.owns_data = 1;
+
   /* Output vector information to specified file */
   /*@-formatcode@*/
   fprintf( file, "%d %hhu",
@@ -2404,6 +2407,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.110  2008/01/22 03:53:18  phase1geo
+ Fixing bug 1876417.  Removing obsolete code in expr.c.
+
  Revision 1.109  2008/01/16 23:10:34  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.
