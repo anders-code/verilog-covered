@@ -197,7 +197,7 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
       print_output( "No instances were found in specified VCD file that matched design", FATAL, __FILE__, __LINE__ );
 
       /* If the -i option was not specified, let the user know */
-      if( instance_specified ) {
+      if( !instance_specified ) {
         print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
                       FATAL, __FILE__, __LINE__ );
       } else {
@@ -243,6 +243,12 @@ void lxt_parse( char* lxt_file ) { PROFILE(LXT_PARSE);
 
 /*
  $Log$
+ Revision 1.18  2008/01/23 04:05:19  phase1geo
+ Fixing LXT regressions.  Added code to regression Makefile to remove certain
+ diagnostics from being run in LXT regression due to the apparent inability for
+ LXT files to contain time-0 only information.  Also contains a fix for bug
+ 1877853.  Full regressions now run cleanly.
+
  Revision 1.17  2008/01/22 19:53:22  phase1geo
  First attempt to fix bug 1876681.
 
