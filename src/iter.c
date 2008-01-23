@@ -194,25 +194,14 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum ) { PROFILE(STMT_ITER_GE
   if( si->curr != NULL ) {
 
     if( si->curr->stmt->exp->line < lnum ) {
-      //printf( "HERE A\n" );
       while( (si->curr != NULL) && (si->curr->stmt->exp->line < lnum) ) {
-        //printf( "si->curr: %d, lnum: %d\n", si->curr->stmt->exp->line, lnum );
         stmt_iter_next( si );
       }
     } else {
-      //printf( "HERE B\n" );
       while( (si->curr != NULL) && (si->curr->stmt->exp->line > lnum) ) {
-        //printf( "si->curr: %d, lnum: %d\n", si->curr->stmt->exp->line, lnum );
         stmt_iter_next( si );
       }
     }
-
-/*
-    printf( "Found line # prior to %d (curr: %d, last: %d)\n", 
-            lnum, 
-            ((si->curr == NULL) ? -1 : si->curr->stmt->exp->line),
-            ((si->last == NULL) ? -1 : si->last->stmt->exp->line) );
-*/
 
   }
 
@@ -222,6 +211,10 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum ) { PROFILE(STMT_ITER_GE
 
 /*
  $Log$
+ Revision 1.18  2008/01/23 20:48:03  phase1geo
+ Fixing bug 1878134 and adding new diagnostics to regression suite to verify
+ its behavior.  Full regressions pass.
+
  Revision 1.17  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related
