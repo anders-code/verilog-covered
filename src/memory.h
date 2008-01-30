@@ -53,7 +53,7 @@ void memory_get_stats(
 bool memory_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit );
 
 /*! \brief Gets coverage information for the specified memory */
-bool memory_get_coverage( const char* funit_name, int funit_type, char* signame,
+bool memory_get_coverage( const char* funit_name, int funit_type, const char* signame,
                           char** pdim_str, char** pdim_array, char** udim_str, char** memory_info, int* excluded );
 
 /*! \brief Collects all signals that are memories and match the given coverage metric for the given functional unit */
@@ -65,6 +65,9 @@ void memory_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.10  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.9  2008/01/16 05:01:23  phase1geo
  Switched totals over from float types to int types for splint purposes.
 
