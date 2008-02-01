@@ -76,6 +76,7 @@ void toggle_get_stats( sig_link* sigl, int* total, int* hit01, int* hit10 ) { PR
       *total += curr_sig->sig->value->width;
       if( curr_sig->sig->suppl.part.excluded == 1 ) {
         *hit01 += curr_sig->sig->value->width;
+        *hit10 += curr_sig->sig->value->width;
       } else {
         vector_toggle_count( curr_sig->sig->value, hit01, hit10 );
       }
@@ -704,6 +705,15 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
 /*
  $Log$
+ Revision 1.69  2008/02/01 07:03:21  phase1geo
+ Fixing bugs in pragma exclusion code.  Added diagnostics to regression suite
+ to verify that we correctly exclude/include signals when pragmas are set
+ around a register instantiation and the -ep is present/not present, respectively.
+ Full regression passes at this point.  Fixed bug in vsignal.c where the excluded
+ bit was getting lost when a CDD file was read back in.  Also fixed bug in toggle
+ coverage reporting where a 1 -> 0 bit transition was not getting excluded when
+ the excluded bit was set for a signal.
+
  Revision 1.68  2008/01/30 05:51:51  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

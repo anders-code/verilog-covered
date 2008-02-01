@@ -606,7 +606,7 @@ static bool score_parse_args( int argc, int last_arg, const char** argv ) { PROF
 
       info_suppl.part.excl_pragma = 1;
       score_add_arg( argv[i] );
-      if( ((i+1) < argc) && (argv[i+1] != '-') ) {
+      if( ((i+1) < argc) && (argv[i+1][0] != '-') ) {
         i++;
         pragma_coverage_name = strdup_safe( argv[i] );
         score_add_arg( argv[i] );
@@ -1081,6 +1081,15 @@ int command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND
 
 /*
  $Log$
+ Revision 1.110  2008/02/01 07:03:20  phase1geo
+ Fixing bugs in pragma exclusion code.  Added diagnostics to regression suite
+ to verify that we correctly exclude/include signals when pragmas are set
+ around a register instantiation and the -ep is present/not present, respectively.
+ Full regression passes at this point.  Fixed bug in vsignal.c where the excluded
+ bit was getting lost when a CDD file was read back in.  Also fixed bug in toggle
+ coverage reporting where a 1 -> 0 bit transition was not getting excluded when
+ the excluded bit was set for a signal.
+
  Revision 1.109  2008/02/01 06:37:08  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

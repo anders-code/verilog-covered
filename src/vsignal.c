@@ -323,6 +323,7 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) { PROFILE(VSIGNAL_DB_
         sig->suppl.part.assigned   = suppl.part.assigned;
         sig->suppl.part.mba        = suppl.part.mba;
         sig->suppl.part.big_endian = suppl.part.big_endian;
+        sig->suppl.part.excluded   = suppl.part.excluded;
         sig->pdim_num              = pdim_num;
         sig->udim_num              = udim_num;
         sig->dim                   = dim;
@@ -732,6 +733,15 @@ void vsignal_dealloc( /*@only@*/ vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.56  2008/02/01 07:03:21  phase1geo
+ Fixing bugs in pragma exclusion code.  Added diagnostics to regression suite
+ to verify that we correctly exclude/include signals when pragmas are set
+ around a register instantiation and the -ep is present/not present, respectively.
+ Full regression passes at this point.  Fixed bug in vsignal.c where the excluded
+ bit was getting lost when a CDD file was read back in.  Also fixed bug in toggle
+ coverage reporting where a 1 -> 0 bit transition was not getting excluded when
+ the excluded bit was set for a signal.
+
  Revision 1.55  2008/02/01 06:37:09  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.
