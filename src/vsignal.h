@@ -59,7 +59,7 @@ void vsignal_add_expression( vsignal* sig, expression* expr );
 void vsignal_display( vsignal* sig );
 
 /*! \brief Converts a string to a vsignal. */
-vsignal* vsignal_from_string( const char** str );
+vsignal* vsignal_from_string( char** str );
 
 /*! \brief Calculates width of the specified signal's vector value based on the given expression */
 int vsignal_calc_width_for_expr( expression* expr, vsignal* sig );
@@ -73,6 +73,10 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.24  2008/02/01 06:37:09  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.23  2008/01/10 04:59:05  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

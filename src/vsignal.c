@@ -578,7 +578,7 @@ void vsignal_display( vsignal* sig ) {
  vsignal may be a standard vsignal name, a single bit select vsignal or a
  multi-bit select vsignal.
 */
-vsignal* vsignal_from_string( const char** str ) { PROFILE(VSIGNAL_FROM_STRING);
+vsignal* vsignal_from_string( char** str ) { PROFILE(VSIGNAL_FROM_STRING);
 
   vsignal* sig;             /* Pointer to newly created vsignal */
   char     name[4096];      /* Signal name */
@@ -732,6 +732,10 @@ void vsignal_dealloc( /*@only@*/ vsignal* sig ) { PROFILE(VSIGNAL_DEALLOC);
 
 /*
  $Log$
+ Revision 1.55  2008/02/01 06:37:09  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.54  2008/01/30 05:51:51  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

@@ -619,7 +619,11 @@ void report_print_header( FILE* ofile ) { PROFILE(REPORT_PRINT_HEADER);
     fprintf( ofile, "* Reported by                    : Module\n\n" );
   }
 
-  if( (info_suppl.part.excl_assign == 1) || (info_suppl.part.excl_always == 1) || (info_suppl.part.excl_init == 1) ) {
+  if( (info_suppl.part.excl_assign == 1) ||
+      (info_suppl.part.excl_always == 1) ||
+      (info_suppl.part.excl_init   == 1) ||
+      (info_suppl.part.excl_final  == 1) ||
+      (info_suppl.part.excl_pragma == 1) ) {
     fprintf( ofile, "* CDD file excludes the following block types:\n" );
     if( info_suppl.part.excl_assign == 1 ) {
       fprintf( ofile, "    assign - Continuous Assigments\n" );
@@ -629,6 +633,12 @@ void report_print_header( FILE* ofile ) { PROFILE(REPORT_PRINT_HEADER);
     }
     if( info_suppl.part.excl_init == 1 ) {
       fprintf( ofile, "    initial - Initial Statements\n" );
+    }
+    if( info_suppl.part.excl_final == 1 ) {
+      fprintf( ofile, "    final - Final Statements\n" );
+    }
+    if( info_suppl.part.excl_pragma == 1 ) {
+      fprintf( ofile, "    pragma - Code surrounded by coverage off/on pragmas\n" );
     }
     fprintf( ofile, "\n" );
   }
@@ -947,6 +957,10 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.92  2008/02/01 06:37:08  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.91  2008/01/21 21:39:55  phase1geo
  Bug fix for bug 1876376.
 
