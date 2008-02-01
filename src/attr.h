@@ -30,7 +30,11 @@
 attr_param* attribute_create( const char* name, expression* expr );
 
 /*! \brief Parses and handles specified attribute parameter list. */
-void attribute_parse( attr_param* ap, const func_unit* mod );
+void attribute_parse(
+  attr_param*      ap,
+  const func_unit* mod,
+  bool             exclude
+);
 
 /*! \brief Deallocates entire attribute parameter list. */
 void attribute_dealloc( attr_param* ap );
@@ -38,6 +42,10 @@ void attribute_dealloc( attr_param* ap );
 
 /*
  $Log$
+ Revision 1.9  2008/02/01 06:37:07  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.8  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
