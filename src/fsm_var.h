@@ -27,7 +27,13 @@
 
 
 /*! \brief Allocates, initializes and adds FSM variable to global list. */
-fsm_var* fsm_var_add( const char* funit_name, expression* in_state, expression* out_state, char* name );
+fsm_var* fsm_var_add(
+  const char* funit_name,
+  expression* in_state,
+  expression* out_state,
+  char*       name,
+  bool        exclude
+);
 
 /*! \brief Adds specified signal and expression to binding list. */
 void fsm_var_bind_add( char* sig_name, expression* expr, char* funit_name );
@@ -41,6 +47,10 @@ void fsm_var_bind();
 
 /*
  $Log$
+ Revision 1.10  2008/02/01 06:37:08  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.9  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

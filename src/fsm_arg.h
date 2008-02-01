@@ -30,11 +30,19 @@
 bool fsm_arg_parse( const char* arg );
 
 /*! \brief Parses specified attribute argument for FSM information. */
-void fsm_arg_parse_attr( attr_param* ap, const func_unit* funit );
+void fsm_arg_parse_attr(
+  attr_param*      ap,
+  const func_unit* funit,
+  bool             exclude
+);
 
 
 /*
  $Log$
+ Revision 1.8  2008/02/01 06:37:08  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.7  2008/01/09 05:22:21  phase1geo
  More splint updates using the -standard option.
 
