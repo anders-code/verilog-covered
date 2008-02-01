@@ -33,13 +33,18 @@
 void assertion_parse( const char* arg );
 
 /*! \brief Parses an in-line attribute for assertion coverage information */
-void assertion_parse_attr( attr_param* ap, const func_unit* funit );
+void assertion_parse_attr(
+  attr_param*      ap,
+  const func_unit* funit,
+  bool             exclude
+);
 
 /*! \brief Gather statistics for assertion coverage */
 void assertion_get_stats(
             const func_unit* funit,
   /*@out@*/ int*             total,
-  /*@out@*/ int*             hit );
+  /*@out@*/ int*             hit
+);
 
 /*! \brief Generates report output for assertion coverage */
 void assertion_report( FILE* ofile, bool verbose );
@@ -49,7 +54,8 @@ bool assertion_get_funit_summary(
             const char* funit_name,
             int         funit_type,
   /*@out@*/ int*        total,
-  /*@out@*/ int*        hit );
+  /*@out@*/ int*        hit
+);
 
 /*! \brief Collects uncovered and covered assertion instance names for the given module */
 bool assertion_collect(
@@ -59,7 +65,8 @@ bool assertion_collect(
   int**       excludes,
   int*        uncov_inst_size,
   char***     cov_inst_names,
-  int*        cov_inst_size );
+  int*        cov_inst_size
+);
 
 /*! \brief Gets missed coverage point descriptions for the given assertion module */
 bool assertion_get_coverage(
@@ -68,11 +75,16 @@ bool assertion_get_coverage(
   const char* inst_name,
   char**      assert_mod,
   str_link**  cp_head,
-  str_link**  cp_tail );
+  str_link**  cp_tail
+);
 
 
 /*
  $Log$
+ Revision 1.13  2008/02/01 06:37:07  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.12  2008/01/16 05:01:22  phase1geo
  Switched totals over from float types to int types for splint purposes.
 
