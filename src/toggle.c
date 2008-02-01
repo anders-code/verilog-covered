@@ -490,7 +490,8 @@ static void toggle_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(TOGG
     if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
         (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
         (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
-        (curr_sig->sig->suppl.part.mba == 0) ) {
+        (curr_sig->sig->suppl.part.mba == 0) &&
+        (curr_sig->sig->suppl.part.excluded == 0) ) {
 
       vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
@@ -705,6 +706,11 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
 /*
  $Log$
+ Revision 1.70  2008/02/01 22:10:27  phase1geo
+ Adding more diagnostics to regression suite for exclusion testing.
+ Also fixed bug in toggle reporter to not output excluded signals in
+ verbose output.
+
  Revision 1.69  2008/02/01 07:03:21  phase1geo
  Fixing bugs in pragma exclusion code.  Added diagnostics to regression suite
  to verify that we correctly exclude/include signals when pragmas are set
