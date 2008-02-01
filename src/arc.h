@@ -35,7 +35,13 @@ unsigned int arc_get_width( const char* arcs );
 char* arc_create( int width );
 
 /*! \brief Adds new state transition arc entry to specified table. */
-void arc_add( char** arcs, const vector* fr_st, const vector* to_st, int hit );
+void arc_add(
+  char**        arcs,
+  const vector* fr_st,
+  const vector* to_st,
+  int           hit,
+  bool          exclude
+);
 
 /*! \brief Gets supplemental field value from specified arc entry table. */
 unsigned int arc_get_suppl( const char* arcs, unsigned int type );
@@ -75,6 +81,10 @@ void arc_dealloc( /*@only@*/ char* arcs );
 
 /*
  $Log$
+ Revision 1.25  2008/02/01 06:37:07  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.24  2008/01/16 06:40:33  phase1geo
  More splint updates.
 

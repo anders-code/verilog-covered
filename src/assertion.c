@@ -54,12 +54,17 @@ void assertion_parse( /*@unused@*/const char* arg ) { PROFILE(ASSERTION_PARSE);
 }
 
 /*!
- \param ap     Pointer to attribute to parse
- \param funit  Pointer to current functional unit containing this attribute
+ \param ap       Pointer to attribute to parse
+ \param funit    Pointer to current functional unit containing this attribute
+ \param exclude  If TRUE, excludes this assertion from coverage consideration
 
  Parses the specified assertion attribute for assertion coverage details.
 */
-void assertion_parse_attr( /*@unused@*/attr_param* ap, /*@unused@*/const func_unit* funit ) { PROFILE(ASSERTION_PARSE_ATTR);
+void assertion_parse_attr(
+  /*@unused@*/ attr_param*      ap,
+  /*@unused@*/ const func_unit* funit,
+  /*@unused@*/ bool             exclude
+) { PROFILE(ASSERTION_PARSE_ATTR);
 
 }
 
@@ -606,6 +611,10 @@ bool assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.30  2008/02/01 06:37:07  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.29  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 
