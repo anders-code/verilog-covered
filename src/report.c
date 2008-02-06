@@ -925,7 +925,10 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
       rv = snprintf( main_file, slen, "%s/scripts/main_view.tcl", covered_home );
       assert( rv < slen );
       rv = Tcl_EvalFile( interp, main_file );
-      assert( rv == TCL_OK );
+      if( rv != TCL_OK ) {
+        fprintf( stderr, "TCL/TK ERROR: %s\n", Tcl_ErrnoMsg( Tcl_GetErrno() ) );
+        exit( 1 );
+      }
 
       /* Call the main-loop */
       Tk_MainLoop ();
@@ -957,6 +960,11 @@ int command_report( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.93  2008/02/06 00:06:04  phase1geo
+ Changing metric mode selection from radio buttons to a tk_optionMenu widget.
+ Also attempted to fix issue with bad Tcl/Tk code being read in via report
+ command.  Still some work to do here, I believe.
+
  Revision 1.92  2008/02/01 06:37:08  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.
