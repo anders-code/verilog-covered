@@ -1293,7 +1293,9 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
 
     ifile = strdup_safe( argv[1] );
 
-    if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
+    Try {
+      report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE );
+    } Catch_anonymous {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open CDD \"%s\"", ifile );
       Tcl_AddErrorInfo( tcl, user_msg );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1393,12 +1395,16 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
     merge_in[merge_in_num] = ifile;
     merge_in_num++;
 
-    if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
+    Try {
+      report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE );
+    } Catch_anonymous {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to merge current CDD with \"%s\"", ifile );
       Tcl_AddErrorInfo( tcl, user_msg );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = TCL_ERROR;
     }
+
+    free_safe( ifile );
 
   }
 
@@ -2259,6 +2265,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.69  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.68  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

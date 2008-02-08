@@ -44,7 +44,7 @@ void vector_db_write( vector* vec, FILE* file, bool write_data );
 bool vector_db_read( vector** vec, char** line );
 
 /*! \brief Reads and merges two vectors, placing the result into base vector. */
-bool vector_db_merge( vector* base, char** line, bool same );
+void vector_db_merge( vector* base, char** line, bool same );
 
 /*! \brief Returns string containing toggle 0 -> 1 information in binary format */
 char* vector_get_toggle01( vec_data* nib, int width );
@@ -174,6 +174,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.50  2008/02/08 23:58:07  phase1geo
+ Starting to work on exception handling.  Much work to do here (things don't
+ compile at the moment).
+
  Revision 1.49  2008/01/16 05:01:23  phase1geo
  Switched totals over from float types to int types for splint purposes.
 
