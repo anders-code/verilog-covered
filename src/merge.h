@@ -25,11 +25,15 @@
 
 
 /*! \brief Parses command-line for merge options and performs merge command. */
-int command_merge( int argc, int last_arg, const char** argv );
+void command_merge( int argc, int last_arg, const char** argv );
 
 
 /*
  $Log$
+ Revision 1.10  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.9  2008/01/09 23:54:15  phase1geo
  More splint updates.
 
