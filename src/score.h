@@ -28,11 +28,15 @@
 void score_parse_define( const char* def );
 
 /*! \brief Parses score command-line and performs score. */
-int command_score( int argc, int last_arg, const char** argv );
+void command_score( int argc, int last_arg, const char** argv );
 
 
 /*
  $Log$
+ Revision 1.12  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.11  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 
