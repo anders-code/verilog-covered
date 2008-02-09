@@ -27,7 +27,9 @@
 
 
 /*! \brief Parses specified -F argument for FSM information. */
-bool fsm_arg_parse( const char* arg );
+void fsm_arg_parse(
+  const char* arg
+);
 
 /*! \brief Parses specified attribute argument for FSM information. */
 void fsm_arg_parse_attr(
@@ -39,6 +41,10 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.9  2008/02/09 19:32:44  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.8  2008/02/01 06:37:08  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.
