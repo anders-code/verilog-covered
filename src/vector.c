@@ -127,15 +127,6 @@ vector* vector_create( int width, int type, bool data ) { PROFILE(VECTOR_CREATE)
   new_vec = (vector*)malloc_safe( sizeof( vector ) );
 
   if( data == TRUE ) {
-#ifdef SKIP
-    if( width > MAX_BIT_WIDTH ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found a vector width (%d) that exceeds the maximum currently allowed by Covered (%d)",
-                                  width, MAX_BIT_WIDTH );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( EXIT_FAILURE );
-    }
-#endif
     value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
   }
 
@@ -2420,6 +2411,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.114  2008/02/10 03:33:13  phase1geo
+ More exception handling added and fixed remaining splint errors.
+
  Revision 1.113  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.
