@@ -28,23 +28,50 @@
 
 
 /*! \brief  Find the given signal in the provided scope */
-bool scope_find_param( const char* name, func_unit* curr_funit, mod_parm** found_parm, func_unit** found_funit, int line );
+bool scope_find_param(
+  const char* name,
+  func_unit*  curr_funit,
+  mod_parm**  found_parm,
+  func_unit** found_funit,
+  int         line
+);
 
 /*! \brief  Find the given signal in the provided scope */
-bool scope_find_signal( const char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line );
+bool scope_find_signal(
+  const char* name,
+  func_unit*  curr_funit,
+  vsignal**   found_sig,
+  func_unit** found_funit,
+  int         line
+);
 
 /*! \brief  Finds the given task or function in the provided scope. */
-bool scope_find_task_function_namedblock( const char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line, bool must_find, bool rm_unnamed );
+bool scope_find_task_function_namedblock(
+  const char* name,
+  int         type,
+  func_unit*  curr_funit,
+  func_unit** found_funit,
+  int         line,
+  bool        must_find,
+  bool        rm_unnamed
+);
 
 /*! \brief  Finds the parent functional unit of the functional unit with the given scope */
-func_unit* scope_get_parent_funit( const char* scope );
+func_unit* scope_get_parent_funit(
+  const char* scope
+);
 
 /*! \brief  Finds the parent module of the functional unit with the given scope */
-func_unit* scope_get_parent_module( const char* scope );
+func_unit* scope_get_parent_module(
+  const char* scope
+);
 
 
 /*
  $Log$
+ Revision 1.14  2008/02/22 20:39:22  phase1geo
+ More updates for exception handling.
+
  Revision 1.13  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 
