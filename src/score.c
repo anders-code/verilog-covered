@@ -359,9 +359,17 @@ static void read_command_file( const char* cmd_file, char*** arg_list, int* arg_
 
       unsigned int rv;
 
-      while( fscanf( cmd_handle, "%s", tmp_str ) == 1 ) {
-        (void)str_link_add( substitute_env_vars( tmp_str ), &head, &tail );
-        tmp_num++;
+      Try {
+
+        while( fscanf( cmd_handle, "%s", tmp_str ) == 1 ) {
+          (void)str_link_add( substitute_env_vars( tmp_str ), &head, &tail );
+          tmp_num++;
+        }
+
+      } Catch_anonymous {
+        rv = fclose( cmd_handle );
+        assert( rv == 0 );
+        Throw 0;
       }
 
       rv = fclose( cmd_handle );
@@ -1122,6 +1130,9 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.114  2008/02/22 20:39:22  phase1geo
+ More updates for exception handling.
+
  Revision 1.113  2008/02/10 03:33:13  phase1geo
  More exception handling added and fixed remaining splint errors.
 
