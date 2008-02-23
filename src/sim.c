@@ -857,6 +857,9 @@ static void sim_kill_thread( thread* thr ) { PROFILE(SIM_KILL_THREAD);
 
   }
 
+  /* Check to make sure that the thread is not in the waiting queue */
+  assert( thr->suppl.part.state != THR_ST_WAITING );
+
   /* Finally, park this thread at the end of the all_queue (if its not already there) */
   if( thr != all_tail ) {
     if( thr == all_head ) {
@@ -1219,6 +1222,10 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.118.2.2  2008/02/23 04:44:14  phase1geo
+ Adding func5.v diagnostic to regression suite to verify fix for bug 1899768.
+ Full regression passes.
+
  Revision 1.118.2.1  2008/02/23 04:21:40  phase1geo
  Fixing bugs 1899711, 1899735 and 1899768.
 
