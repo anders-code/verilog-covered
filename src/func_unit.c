@@ -328,7 +328,7 @@ void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt ) { 
   /* Search all of the statement blocks */
   stmt_iter_reset( &si, funit->stmt_head );
   while( si.curr != NULL ) {
-    if( (ESUPPL_IS_STMT_HEAD( si.curr->stmt->exp->suppl ) == 1) && statement_contains_expr_calling_stmt( si.curr->stmt, stmt ) ) {
+    if( (si.curr->stmt->suppl.part.head == 1) && statement_contains_expr_calling_stmt( si.curr->stmt, stmt ) ) {
       stmt_blk_add_to_remove_list( si.curr->stmt );
     }
     stmt_iter_next( &si );
@@ -1204,6 +1204,11 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.91  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.90  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

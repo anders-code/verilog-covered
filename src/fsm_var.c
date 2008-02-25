@@ -281,7 +281,7 @@ static bool fsm_var_bind_stmt(
     fsm_var_add_expr( stmt->exp, funitl->funit );
 
     /* Set ADDED bit of this statement */
-    stmt->exp->suppl.part.stmt_added = 1;
+    stmt->suppl.part.added = 1;
 
     /* Second, add our statement to this functional unit's statement list */
     stmt_link_add_head( stmt, &(funitl->funit->stmt_head), &(funitl->funit->stmt_tail) );
@@ -495,6 +495,11 @@ void fsm_var_remove(
 
 /*
  $Log$
+ Revision 1.38  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.37  2008/02/22 20:39:22  phase1geo
  More updates for exception handling.
 

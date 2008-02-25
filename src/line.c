@@ -90,7 +90,7 @@ void line_get_stats( func_unit* funit, int* total, int* hit ) { PROFILE(LINE_GET
           (stmt->exp->op != EXP_OP_JOIN)    &&
           (stmt->exp->line != 0) ) {
         *total = *total + 1;
-        if( (stmt->exp->exec_num > 0) || (ESUPPL_STMT_EXCLUDED( stmt->exp->suppl ) == 1) ) {
+        if( (stmt->exp->exec_num > 0) || (stmt->suppl.part.excluded == 1) ) {
           (*hit)++;
         }
       }
@@ -451,7 +451,7 @@ static void line_display_verbose(
         (stmt->exp->op != EXP_OP_JOIN)    &&
         (stmt->exp->line != 0) ) {
 
-      if( (((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered) && (ESUPPL_STMT_EXCLUDED( stmt->exp->suppl ) == 0) ) {
+      if( (((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered) && (stmt->suppl.part.excluded == 0) ) {
 
         unexec_exp = stmt->exp;
 
@@ -674,6 +674,11 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.85  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.84  2008/02/22 16:40:00  phase1geo
  Fixing bug 1899735.
 

@@ -118,7 +118,9 @@ static void exclude_expr_assign_and_recalc(
 
   /* Set the exclude bits in the expression supplemental field */
   expr->suppl.part.excluded      = excluded ? 1 : 0;
-  expr->suppl.part.stmt_excluded = (excluded && set_line) ? 1 : 0;
+  if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+    expr->parent->stmt->suppl.part.excluded = (excluded && set_line) ? 1 : 0;
+  }
 
 }
 
@@ -457,6 +459,11 @@ bool exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.20  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.19  2008/01/30 05:51:50  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

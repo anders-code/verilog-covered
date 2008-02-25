@@ -59,7 +59,7 @@ void stmt_blk_add_to_remove_list( statement* stmt ) {
 #endif
 
     /* If this is a head statement, don't bother looking this up again */
-    if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 0 ) {
+    if( stmt->suppl.part.head == 0 ) {
 
       /* Find the functional unit that contains this statement */
       funit = funit_find_by_id( stmt->exp->id );
@@ -113,6 +113,11 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.15  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.14  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 
