@@ -325,7 +325,7 @@ void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) { PROFI
   fprintf( ofile, "%d %d %x %d %d",
     DB_TYPE_STATEMENT,
     expression_get_id( stmt->exp, parse_mode ),
-    (stmt->suppl.all & 0x1ff),
+    (stmt->suppl.all & 0xff),
     ((stmt->next_true   == NULL) ? 0 : expression_get_id( stmt->next_true->exp, parse_mode )),
     ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, parse_mode ))
   );
@@ -956,6 +956,10 @@ void statement_dealloc( statement* stmt ) { PROFILE(STATEMENT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.126  2008/02/28 07:54:09  phase1geo
+ Starting to add functionality for simulation optimization in the sim_expr_changed
+ function (feature request 1897410).
+
  Revision 1.125  2008/02/25 20:43:49  phase1geo
  Checking in code to allow the use of racecheck pragmas.  Added new tests to
  regression suite to verify this functionality.  Still need to document in

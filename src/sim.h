@@ -54,6 +54,12 @@ thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const
 /*! \brief Deallocates thread and removes it from parent and thread queue lists for specified functional unit */
 void sim_kill_thread_with_funit( func_unit* funit );
 
+/*! \brief Pushes given thread onto the active queue from the waiting queue */
+void sim_thread_push(
+  thread*         thr,
+  const sim_time* time
+);
+
 /*! \brief Simulates one thread until it has either completed or enters a context switch */
 void sim_thread( thread* thr, const sim_time* time );
 
@@ -75,6 +81,10 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.35  2008/02/28 07:54:09  phase1geo
+ Starting to add functionality for simulation optimization in the sim_expr_changed
+ function (feature request 1897410).
+
  Revision 1.34  2008/02/27 05:26:51  phase1geo
  Adding support for $finish and $stop.
 
