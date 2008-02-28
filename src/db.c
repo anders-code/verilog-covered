@@ -79,6 +79,7 @@ extern int         block_depth;
 extern int         generate_mode;
 extern int         generate_top_mode;
 extern int         generate_expr_mode;
+extern int         for_mode;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -1591,6 +1592,11 @@ expression* db_create_expression(
     expr->suppl.part.excluded = 1;
   }
 
+  /* If this expression is in the for control, set its bit */
+  if( for_mode > 0 ) {
+    expr->suppl.part.for_cntrl = 1;
+  }
+
   /*
    If this is some kind of assignment expression operator, set the our expression vector to that of
    the right expression.
@@ -2702,6 +2708,11 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.285  2008/02/28 03:53:17  phase1geo
+ Code addition to support feature request 1902840.  Added race6 diagnostic and updated
+ race5 diagnostics per this change.  For loop control assignments are now no longer
+ considered when performing race condition checking.
+
  Revision 1.284  2008/02/27 05:26:51  phase1geo
  Adding support for $finish and $stop.
 
