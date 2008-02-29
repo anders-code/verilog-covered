@@ -713,7 +713,7 @@ static bool bind_task_function_namedblock(
                                         get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, obf_file( funit_exp->filename ), exp->line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            exit( EXIT_FAILURE );
+            Throw 0;
           }
 
         }
@@ -908,6 +908,9 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.122  2008/02/29 23:58:19  phase1geo
+ Continuing to work on adding exception handling code.
+
  Revision 1.121  2008/01/10 04:59:03  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 
