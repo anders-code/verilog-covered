@@ -125,7 +125,6 @@ static void cli_usage() {
   printf( "  continue                Continues running the simulation.\n" );
   printf( "  thread active            Displays the current state of the active simulation queue.\n" );
   printf( "  thread delayed           Displays the current state of the delayed simulation queue.\n" );
-  printf( "  thread waiting           Displays the current state of the waiting simulation queue.\n" );
   printf( "  thread all              Displays the list of all threads.\n" );
   printf( "  current                 Displays the current scope, block, filename and line number.\n" );
   printf( "  time                    Displays the current simulation time.\n" );
@@ -548,10 +547,6 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
           if( perform ) {
             sim_display_delay_queue();
           }
-        } else if( strncmp( "waiting", arg, 7 ) == 0 ) {
-          if( perform ) {
-            sim_display_wait_queue();
-          }
         } else if( strncmp( "all", arg, 3 ) == 0 ) {
           if( perform ) {
             sim_display_all_list();
@@ -892,6 +887,10 @@ void cli_read_hist_file( const char* fname ) {
 
 /*
  $Log$
+ Revision 1.20  2008/02/29 00:08:31  phase1geo
+ Completed optimization code in simulator.  Still need to verify that code
+ changes enhanced performances as desired.  Checkpointing.
+
  Revision 1.19  2008/02/27 05:26:51  phase1geo
  Adding support for $finish and $stop.
 

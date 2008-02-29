@@ -27,7 +27,10 @@
 
 
 /*! \brief Creates new statement structure. */
-statement* statement_create( expression* exp );
+statement* statement_create(
+  expression* exp,
+  func_unit*  funit
+);
 
 /*! \brief Sizes all expressions for the given statement block */
 void statement_size_elements( statement* stmt, func_unit* funit );
@@ -74,6 +77,10 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.36  2008/02/29 00:08:31  phase1geo
+ Completed optimization code in simulator.  Still need to verify that code
+ changes enhanced performances as desired.  Checkpointing.
+
  Revision 1.35  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.
