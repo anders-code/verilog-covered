@@ -408,6 +408,8 @@ static bool bind_param( const char* name, expression* exp, func_unit* funit_exp,
  \param bind_locally    If TRUE, only search for specified signal within the same functional unit as this expression
 
  \return Returns TRUE if bind occurred successfully; otherwise, returns FALSE.
+
+ \throws anonymous Error
  
  Performs a binding of an expression and signal based on the name of the
  signal.  Looks up signal name in the specified functional unit and sets the expression
@@ -734,6 +736,8 @@ static bool bind_task_function_namedblock(
  \param cdd_reading  Set to TRUE if we are binding after reading the CDD file; otherwise, set to FALSE.
  \param pass         Specifies the starting pass to perform (setting this to 1 will bypass resolutions).
 
+ \throws anonymous Error
+
  In the process of binding, we go through each element of the binding list,
  finding the signal to be bound in the specified tree, adding the expression
  to the signal's expression pointer list, and setting the expression vector pointer
@@ -908,6 +912,9 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.123  2008/03/04 00:09:20  phase1geo
+ More exception handling.  Checkpointing.
+
  Revision 1.122  2008/02/29 23:58:19  phase1geo
  Continuing to work on adding exception handling code.
 
