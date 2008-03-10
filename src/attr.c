@@ -77,7 +77,7 @@ attr_param* attribute_create( const char* name, expression* expr ) { PROFILE(ATT
  \param funit    Pointer to current functional unit containing this attribute.
  \param exclude  If set to 1, sets the exclude bits (if they exist) in the structure created by the attribute.
 
- \throw anonymous Error
+ \throws anonymous fsm_arg_parse_attr attribute_parse
 
  Parses the attribute parameter list in a recursive fashion.  First,
  we go for the last entry and see if it refers to an attribute that covered
@@ -133,6 +133,10 @@ void attribute_dealloc( attr_param* ap ) { PROFILE(ATTRIBUTE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.12  2008/03/10 22:00:31  phase1geo
+ Working on more exception handling (script is finished now).  Starting to work
+ on code enhancements again :)  Checkpointing.
+
  Revision 1.11  2008/03/04 06:46:47  phase1geo
  More exception handling updates.  Still work to go.  Checkpointing.
 
