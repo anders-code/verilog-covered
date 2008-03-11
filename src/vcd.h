@@ -24,11 +24,16 @@
 */
 
 /*! \brief Parses specified VCD file, storing information into database. */
-void vcd_parse( char* vcd_file );
+void vcd_parse(
+  const char* vcd_file
+);
 
 
 /*
  $Log$
+ Revision 1.7  2008/03/11 22:06:49  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.6  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
