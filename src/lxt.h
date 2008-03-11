@@ -25,11 +25,16 @@
 
 
 /*! \brief  Parses and scores LXT-style dumpfile */
-void lxt_parse( char* lxt_file );
+void lxt_parse(
+  const char* lxt_file
+);
 
 
 /*
  $Log$
+ Revision 1.4  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.3  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
