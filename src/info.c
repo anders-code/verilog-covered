@@ -138,7 +138,7 @@ void info_db_write( FILE* file ) { PROFILE(INFO_DB_WRITE);
 /*!
  \param line  Pointer to string containing information line to parse.
 
- \throws anonymous Error
+ \throws anonymous Throw Throw Throw
 
  Reads information line from specified string and stores its information.
 */
@@ -279,6 +279,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.27  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.26  2008/03/10 22:00:31  phase1geo
  Working on more exception handling (script is finished now).  Starting to work
  on code enhancements again :)  Checkpointing.

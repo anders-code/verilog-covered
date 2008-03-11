@@ -205,7 +205,7 @@ void fsm_db_write( fsm* table, FILE* file, bool parse_mode ) { PROFILE(FSM_DB_WR
  \param line   Pointer to current line being read from the CDD file.
  \param funit  Pointer to current functional unit.
 
- \throws anonymous Error
+ \throws anonymous expression_create Throw Throw Throw Throw arc_db_read
 
  Reads in contents of FSM line from CDD file and stores newly created
  FSM into the specified functional unit.
@@ -1284,6 +1284,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.87  2008/03/11 22:06:47  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.86  2008/03/09 20:45:48  phase1geo
  More exception handling updates.
 
