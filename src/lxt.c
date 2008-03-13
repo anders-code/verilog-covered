@@ -76,6 +76,9 @@ static char* vcdid( int value ) { PROFILE(VCDID);
 
 }
 
+/*!
+ \throws anonymous db_do_timestep
+*/
 static void vcd_callback(
   struct lxt2_rd_trace **lt,
   lxtint64_t           *pnt_time,
@@ -129,7 +132,7 @@ static void vcd_callback(
 /*!
  \param lxt_file  Name of LXT file to read and score
 
- \throws anonymous Throw Throw Throw lxt2_rd_iter_blocks
+ \throws anonymous db_do_timestep Throw Throw Throw lxt2_rd_iter_blocks
 
  Main LXT parsing function.  Reads in an LXT-style dumpfile, tells Covered about signal information
  and simulation results.
@@ -254,6 +257,9 @@ void lxt_parse(
 
 /*
  $Log$
+ Revision 1.23  2008/03/13 10:28:55  phase1geo
+ The last of the exception handling modifications.
+
  Revision 1.22  2008/03/12 05:09:43  phase1geo
  More exception handling updates.  Added TODO item of creating a graduated test list
  from merged CDD files.
