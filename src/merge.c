@@ -101,6 +101,7 @@ static void merge_parse_args(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          printf( "merge Throw A\n" );
           Throw 0;
         }
       }
@@ -125,6 +126,7 @@ static void merge_parse_args(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "CDD file (%s) does not exist", argv[i] );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        printf( "merge Throw B\n" );
         Throw 0;
 
       }
@@ -138,6 +140,7 @@ static void merge_parse_args(
   /* Check to make sure that the user specified at least two files to merge */
   if( merge_in_num < 2 ) {
     print_output( "Must specify at least two CDD files to merge", FATAL, __FILE__, __LINE__ );
+    printf( "merge Throw C\n" );
     Throw 0;
   }
 
@@ -210,6 +213,10 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.42  2008/03/14 22:00:19  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.41  2008/03/11 22:06:48  phase1geo
  Finishing first round of exception handling code.
 

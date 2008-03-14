@@ -215,6 +215,7 @@ void lxt_parse(
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
         }
 
+        printf( "lxt Throw A\n" );
         Throw 0;
 
       }
@@ -236,6 +237,7 @@ void lxt_parse(
       symtable_dealloc( vcd_symtab );
       free_safe( timestep_tab );
       lxt2_rd_close( lt );
+      printf( "lxt Throw B\n" );
       Throw 0;
     }
 
@@ -249,6 +251,7 @@ void lxt_parse(
   } else {
 
     print_output( "Unable to read data from LXT dumpfile.  Exiting without scoring.", FATAL, __FILE__, __LINE__ );
+    printf( "lxt Throw C\n" );
     Throw 0;
 
   }
@@ -257,6 +260,10 @@ void lxt_parse(
 
 /*
  $Log$
+ Revision 1.24  2008/03/14 22:00:19  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.23  2008/03/13 10:28:55  phase1geo
  The last of the exception handling modifications.
 

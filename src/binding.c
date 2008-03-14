@@ -717,6 +717,7 @@ static bool bind_task_function_namedblock(
                                         get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, obf_file( funit_exp->filename ), exp->line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            printf( "binding Throw A\n" );
             Throw 0;
           }
 
@@ -891,6 +892,7 @@ void bind_perform( bool cdd_reading, int pass ) { PROFILE(BIND_PERFORM);
       free_safe( tmp_eb );
     }
     eb_head = eb_tail = NULL;
+    printf( "binding Throw B\n" );
     Throw 0;
   }
 
@@ -929,6 +931,10 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.125  2008/03/14 22:00:17  phase1geo
+ Beginning to instrument code for exception handling verification.  Still have
+ a ways to go before we have anything that is self-checking at this point, though.
+
  Revision 1.124  2008/03/10 22:00:31  phase1geo
  Working on more exception handling (script is finished now).  Starting to work
  on code enhancements again :)  Checkpointing.
