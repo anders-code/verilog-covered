@@ -1,3 +1,8 @@
+2008-03-13 23:52  phase1geo
+
+	Fixing bug 1914056.  Updated regression suite and added new
+	null_stmt* diagnostics to verify null statement behavior.
+
 2008-03-13 17:58  phase1geo
 
 	Adding first round of null statement diagnostics.
