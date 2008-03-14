@@ -88,6 +88,7 @@ void line_get_stats( func_unit* funit, int* total, int* hit ) { PROFILE(LINE_GET
           (stmt->exp->op != EXP_OP_NB_CALL) &&
           (stmt->exp->op != EXP_OP_FORK)    &&
           (stmt->exp->op != EXP_OP_JOIN)    &&
+          (stmt->exp->op != EXP_OP_NOOP)    &&
           (stmt->exp->line != 0) ) {
         *total = *total + 1;
         if( (stmt->exp->exec_num > 0) || (ESUPPL_STMT_EXCLUDED( stmt->exp->suppl ) == 1) ) {
@@ -153,6 +154,7 @@ bool line_collect( const char* funit_name, int funit_type, int cov, int** lines,
           (stmt->exp->op != EXP_OP_NB_CALL) &&
           (stmt->exp->op != EXP_OP_FORK)    &&
           (stmt->exp->op != EXP_OP_JOIN)    &&
+          (stmt->exp->op != EXP_OP_NOOP)    &&
           (stmt->exp->line != 0) ) {
 
         if( ((stmt->exp->exec_num > 0) ? 1 : 0) == cov ) {
@@ -449,6 +451,7 @@ static void line_display_verbose(
         (stmt->exp->op != EXP_OP_NB_CALL) &&
         (stmt->exp->op != EXP_OP_FORK)    &&
         (stmt->exp->op != EXP_OP_JOIN)    &&
+        (stmt->exp->op != EXP_OP_NOOP)    &&
         (stmt->exp->line != 0) ) {
 
       if( (((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered) && (ESUPPL_STMT_EXCLUDED( stmt->exp->suppl ) == 0) ) {
@@ -674,6 +677,10 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.83.2.2  2008/03/14 04:52:32  phase1geo
+ Fixing bug 1914056.  Updated regression suite and added new null_stmt*
+ diagnostics to verify null statement behavior.
+
  Revision 1.83.2.1  2008/02/23 04:21:40  phase1geo
  Fixing bugs 1899711, 1899735 and 1899768.
 

@@ -1,0 +1,21 @@
+2008-03-13 17:58  phase1geo
+
+	Adding first round of null statement diagnostics.
+
+2008-02-23 16:50  phase1geo
+
+	Fixing bug 1898164.
+
+2008-02-23 16:38  phase1geo
+
+	Fixing bug 1899674.
+
+2008-02-22 22:44  phase1geo
+
+	Adding func5.v diagnostic to regression suite to verify fix for bug
+	1899768.  Full regression passes.
+
+2008-02-22 22:21  phase1geo
+
+	Fixing bugs 1899711, 1899735 and 1899768.
+
