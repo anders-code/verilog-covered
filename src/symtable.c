@@ -382,7 +382,7 @@ void symtable_dealloc(
     }
 
     if( symtab->value != NULL ) {
-      free_safe( symtab->value, (strlen( symtab->value ) + 1) );
+      free_safe( symtab->value, symtab->size );
     }
 
     /* Remove sym_sig list */
@@ -403,6 +403,11 @@ void symtable_dealloc(
 
 /*
  $Log$
+ Revision 1.36  2008/03/17 22:02:32  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.35  2008/03/17 05:26:17  phase1geo
  Checkpointing.  Things don't compile at the moment.
 
