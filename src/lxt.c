@@ -235,7 +235,7 @@ void lxt_parse(
 
     } Catch_anonymous {
       symtable_dealloc( vcd_symtab );
-      free_safe( timestep_tab );
+      free_safe( timestep_tab, (sizeof( symtable* ) * vcd_symtab_size) );
       lxt2_rd_close( lt );
       printf( "lxt Throw B\n" );
       Throw 0;
@@ -243,7 +243,7 @@ void lxt_parse(
 
     /* Deallocate memory */
     symtable_dealloc( vcd_symtab );
-    free_safe( timestep_tab );
+    free_safe( timestep_tab, (sizeof( symtable* ) * vcd_symtab_size) );
 
     /* Close LXT file */
     lxt2_rd_close( lt );
@@ -260,6 +260,9 @@ void lxt_parse(
 
 /*
  $Log$
+ Revision 1.25  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.24  2008/03/14 22:00:19  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.
