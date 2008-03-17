@@ -240,7 +240,7 @@ void parser_explicitly_set_curr_range(
 
   /* Now rebuild current range, adding in the new range */
   crange->dim_num++;
-  crange->dim = (vector_width*)realloc( crange->dim, (sizeof( vector_width ) * crange->dim_num) );
+  crange->dim = (vector_width*)realloc_safe( crange->dim, (sizeof( vector_width ) * (crange->dim_num - 1)), (sizeof( vector_width ) * crange->dim_num) );
   crange->dim[crange->dim_num - 1].left     = left;
   crange->dim[crange->dim_num - 1].right    = right;
   crange->dim[crange->dim_num - 1].implicit = FALSE;
@@ -272,7 +272,7 @@ void parser_implicitly_set_curr_range(
 
   /* Now rebuild current range, adding in the new range */
   crange->dim_num++;
-  crange->dim = (vector_width*)realloc( crange->dim, (sizeof( vector_width ) * crange->dim_num) );
+  crange->dim = (vector_width*)realloc_safe( crange->dim, (sizeof( vector_width ) * (crange->dim_num - 1)), (sizeof( vector_width ) * crange->dim_num) );
   crange->dim[crange->dim_num - 1].left       = (static_expr*)malloc_safe( sizeof( static_expr ) );
   crange->dim[crange->dim_num - 1].left->num  = left_num;
   crange->dim[crange->dim_num - 1].left->exp  = NULL;
@@ -316,6 +316,11 @@ bool parser_check_generation(
 
 /*
  $Log$
+ Revision 1.23  2008/03/17 22:02:32  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.22  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

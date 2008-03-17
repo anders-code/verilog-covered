@@ -117,7 +117,7 @@ static void gen_item_stringify(
     }
 
     /* Deallocate the temporary string memory */
-    free_safe( tmp, (strlen( tmp ) + 1) );
+    free_safe( tmp, str_len );
 
   } else {
 
@@ -458,14 +458,14 @@ char* gen_item_calc_signal_name(
       if( genvar != NULL ) {
         unsigned int rv = snprintf( intstr, 20, "%d", parse_static_expr( genvar, funit, line, no_genvars ) );
         assert( rv < 20 );
-        new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
+        new_name = (char*)realloc_safe( new_name, (strlen( new_name ) + 1), (strlen( new_name ) + strlen( pre ) + strlen( intstr ) + 3) );
         strncat( new_name, pre, strlen( pre ) );
         strncat( new_name, "[", 1 );
         strncat( new_name, intstr, strlen( intstr ) );
         strncat( new_name, "]", 1 );
         tmpname = post;
       } else {
-        new_name = (char*)realloc( new_name, (strlen( new_name ) + strlen( pre ) + 1) );
+        new_name = (char*)realloc_safe( new_name, (strlen( new_name ) + 1), (strlen( new_name ) + strlen( pre ) + 1) );
         strncat( new_name, pre, strlen( pre ) );
       }
     } while( genvar != NULL );
@@ -1205,6 +1205,11 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.61  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.60  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

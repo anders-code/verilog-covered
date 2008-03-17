@@ -800,12 +800,6 @@ void param_expr_eval(
                 (expr->op != EXP_OP_MBIT_POS) &&
                 (expr->op != EXP_OP_MBIT_NEG) );
         expression_resize( expr, inst->funit, FALSE, TRUE );
-#ifdef OBSOLETE
-        if( expr->value->value != NULL ) {
-          free_safe( expr->value->value, (sizeof( vec_data* ) * expr->value->width ) );
-        }
-        expression_create_value( expr, expr->value->width, TRUE );
-#endif
         break;
     }
 
@@ -1165,6 +1159,11 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.107  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.106  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

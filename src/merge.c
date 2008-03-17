@@ -117,7 +117,7 @@ static void merge_parse_args(
         }
 
         /* Add the specified merge file to the list */
-        merge_in               = (char**)realloc( merge_in, (sizeof( char* ) * (merge_in_num + 1)) );
+        merge_in               = (char**)realloc_safe( merge_in, (sizeof( char* ) * merge_in_num), (sizeof( char* ) * (merge_in_num + 1)) );
         merge_in[merge_in_num] = strdup_safe( argv[i] );
         merge_in_num++;
 
@@ -213,6 +213,11 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.44  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.43  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

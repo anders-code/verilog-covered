@@ -163,8 +163,8 @@ bool line_collect( const char* funit_name, int funit_type, int cov, int** lines,
           for( i=stmt->exp->line; i<=last_line; i++ ) {
             if( *line_cnt == line_size ) {
               line_size += 20;
-              *lines    = (int*)realloc( *lines,    (sizeof( int ) * line_size) );
-              *excludes = (int*)realloc( *excludes, (sizeof( int ) * line_size) );
+              *lines    = (int*)realloc_safe( *lines,    (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
+              *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
             }
             (*lines)[(*line_cnt)]    = i;
             (*excludes)[(*line_cnt)] = ESUPPL_EXCLUDED( stmt->exp->suppl );
@@ -677,6 +677,11 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.88  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.87  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

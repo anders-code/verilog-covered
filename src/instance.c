@@ -1067,7 +1067,7 @@ void instance_dealloc_single( funit_inst* inst ) { PROFILE(INSTANCE_DEALLOC_SING
 #endif
 
     /* Free up memory for this functional unit instance */
-    free_safe( inst, sizeof( func_inst ) );
+    free_safe( inst, sizeof( funit_inst ) );
 
   }
 
@@ -1172,6 +1172,11 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.92  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.91  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

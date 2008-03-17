@@ -114,18 +114,18 @@ void search_init() { PROFILE(SEARCH_INIT);
   if( top_instance == NULL ) {
     top_instance = strdup_safe( top_module );
     (void)inst_link_add( instance_create( mod, top_instance, NULL ), &inst_head, &inst_tail );
-    leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
+    leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
     leading_hierarchies[leading_hier_num] = strdup_safe( "*" );
     leading_hier_num++;
   } else {
     scope_extract_back( top_instance, dutname, lhier );
     (void)inst_link_add( instance_create( mod, dutname, NULL ), &inst_head, &inst_tail );
     if( lhier[0] == '\0' ) {
-      leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
+      leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
       leading_hierarchies[leading_hier_num] = strdup_safe( "*" );
       leading_hier_num++;
     } else {
-      leading_hierarchies = (char**)realloc( leading_hierarchies, (sizeof( char* ) * (leading_hier_num + 1)) );
+      leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
       leading_hierarchies[leading_hier_num] = strdup_safe( lhier );
       leading_hier_num++;
     }
@@ -300,6 +300,11 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.43  2008/03/17 22:02:32  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.42  2008/03/14 22:00:20  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.
