@@ -465,7 +465,7 @@ void vcd_parse(
 
     } Catch_anonymous {
       symtable_dealloc( vcd_symtab );
-      free_safe( timestep_tab );
+      free_safe( timestep_tab, (sizeof( symtable*) * vcd_symtab_size) );
       rv = fclose( vcd_handle );
       assert( rv == 0 );
       printf( "vcd Throw L\n" );
@@ -474,7 +474,7 @@ void vcd_parse(
 
     /* Deallocate memory */
     symtable_dealloc( vcd_symtab );
-    free_safe( timestep_tab );
+    free_safe( timestep_tab, (sizeof( symtable*) * vcd_symtab_size) );
 
     /* Close VCD file */
     rv = fclose( vcd_handle );
@@ -494,6 +494,11 @@ void vcd_parse(
 
 /*
  $Log$
+ Revision 1.41  2008/03/17 22:02:32  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.40  2008/03/14 22:00:21  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.
