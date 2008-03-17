@@ -124,13 +124,13 @@ void attribute_dealloc(
     attribute_dealloc( ap->next );
 
     /* Deallocate the name string */
-    free_safe( ap->name );
+    free_safe( ap->name, (strlen( ap->name ) + 1) );
 
     /* Deallocate the expression tree */
     expression_dealloc( ap->expr, FALSE );
 
     /* Finally, deallocate myself */
-    free_safe( ap );
+    free_safe( ap, sizeof( attr_param ) );
 
   }
 
@@ -138,6 +138,9 @@ void attribute_dealloc(
 
 /*
  $Log$
+ Revision 1.14  2008/03/17 05:26:15  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.13  2008/03/14 22:00:17  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.
