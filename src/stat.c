@@ -133,7 +133,7 @@ void statistic_dealloc( statistic* stat ) { PROFILE(STATISTIC_DEALLOC);
   if( stat != NULL ) {
    
     /* Free up memory for entire structure */
-    free_safe( stat );
+    free_safe( stat, sizeof( statistic ) );
 
   }
 
@@ -141,6 +141,9 @@ void statistic_dealloc( statistic* stat ) { PROFILE(STATISTIC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.13  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.12  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission
