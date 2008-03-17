@@ -105,7 +105,7 @@ char* obfuscate_name( const char* real_name, char prefix ) { PROFILE(OBFUSCATE_N
   }
 
   /* Deallocate key string */
-  free_safe( key );
+  free_safe( key, (strlen( key ) + 1) );
 
   return( obfname );
 
@@ -123,6 +123,9 @@ void obfuscate_dealloc() { PROFILE(OBFUSCATE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.12  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.11  2008/01/16 23:10:31  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.
