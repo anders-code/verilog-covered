@@ -71,14 +71,14 @@ tnode* tree_add( const char* key, const char* value, bool override, tnode** root
 
         /* Match found, replace value with new value */
         if( override ) {
-          free_safe( curr->value );
+          free_safe( curr->value, (strlen( curr->value ) + 1) );
           curr->value = node->value;
         } else {
-          free_safe( node->value );
+          free_safe( node->value, (strlen( node->value ) + 1) );
         }
 
-        free_safe( node->name );
-        free_safe( node );
+        free_safe( node->name, (strlen( node->name ) + 1) );
+        free_safe( node, sizeof( tnode ) );
         node   = curr;
         placed = TRUE;
 
@@ -255,9 +255,9 @@ void tree_remove( const char* key, tnode** root ) { PROFILE(TREE_REMOVE);
 
     }
 
-    free_safe(node->name);
-    free_safe(node->value);
-    free_safe(node);
+    free_safe( node->name, (strlen( node->name ) + 1) );
+    free_safe( node->value, (strlen( node->value ) + 1) );
+    free_safe( node, sizeof( tnode ) );
 
   }
 
@@ -283,9 +283,9 @@ void tree_dealloc( tnode* root ) { PROFILE(TREE_DEALLOC);
       tree_dealloc( root->right );
     }
     
-    free_safe( root->name );
-    free_safe( root->value );
-    free_safe( root );
+    free_safe( root->name, (strlen( root->name ) + 1) );
+    free_safe( root->value, (strlen( root->value ) + 1) );
+    free_safe( root, sizeof( tnode ) );
     
   }
 
@@ -295,6 +295,11 @@ void tree_dealloc( tnode* root ) { PROFILE(TREE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.9  2008/03/17 22:02:32  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.8  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related
