@@ -265,10 +265,7 @@ static void statement_queue_compare(
       /* Deallocate the current element */
       tsll = sll;
       sll  = sll->next;
-      free_safe( tsll );
-
-      // printf( "After SLL remove\n" );
-      // statement_queue_display();
+      free_safe( tsll, sizeof( stmt_loop_link ) );
 
     } else {
 
@@ -979,7 +976,7 @@ void statement_dealloc_recursive(
     /* Disconnect statement from current functional unit */
     db_remove_statement_from_current_funit( stmt );
 
-    free_safe( stmt );
+    free_safe( stmt, sizeof( statement ) );
     
   }
 
@@ -1001,7 +998,7 @@ void statement_dealloc(
   if( stmt != NULL ) {
  
     /* Finally, deallocate this statement */
-    free_safe( stmt );
+    free_safe( stmt, sizeof( statement ) );
 
   }
 
@@ -1012,6 +1009,9 @@ void statement_dealloc(
 
 /*
  $Log$
+ Revision 1.131  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.130  2008/03/14 22:00:20  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

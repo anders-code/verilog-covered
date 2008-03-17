@@ -431,7 +431,7 @@ void static_expr_dealloc(
       expression_dealloc( stexp->exp, FALSE );
     }
 
-    free_safe( stexp );
+    free_safe( stexp, sizeof( static_expr ) );
 
   }
 
@@ -439,6 +439,9 @@ void static_expr_dealloc(
 
 /*
  $Log$
+ Revision 1.33  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.32  2008/03/11 22:06:49  phase1geo
  Finishing first round of exception handling code.
 
