@@ -419,7 +419,7 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
       /* Deallocate memory for this bind structure */
       free_safe( curr->sig_name, (strlen( curr->sig_name ) + 1) );
       free_safe( curr->funit_name, (strlen( curr->funit_name ) + 1) );
-      free_safe( curr, sizeeof( fv_bind ) );
+      free_safe( curr, sizeof( fv_bind ) );
 
       curr = tmp;
 
@@ -527,6 +527,11 @@ void fsm_var_remove(
 
 /*
  $Log$
+ Revision 1.44  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.43  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 
