@@ -272,7 +272,7 @@ static void struct_union_member_dealloc(
     }
 
     /* Deallocate the member itself */
-    free_safe( mem );
+    free_safe( mem, sizeof( su_member ) );
   
   }
 
@@ -301,10 +301,10 @@ void struct_union_dealloc(
     }
 
     /* Deallocate the name */
-    free_safe( su->name );
+    free_safe( su->name, (strlen( su->name ) + 1) );
 
     /* Deallocate the struct/union itself */
-    free_safe( su );
+    free_safe( su, sizeof( su_member ) );
 
   }
 
@@ -338,6 +338,9 @@ void struct_union_dealloc_list(
 
 /*
  $Log$
+ Revision 1.8  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.7  2008/01/30 05:51:51  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 
