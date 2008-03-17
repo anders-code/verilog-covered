@@ -1194,7 +1194,7 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
   while( all_head != NULL ) {
     tmp = all_head;
     all_head = all_head->all_next;
-    free_safe( tmp );
+    free_safe( tmp, sizeof( thread ) );
   }
 
   all_head = all_tail = all_next = NULL;
@@ -1213,6 +1213,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.124  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.123  2008/02/29 00:08:31  phase1geo
  Completed optimization code in simulator.  Still need to verify that code
  changes enhanced performances as desired.  Checkpointing.
