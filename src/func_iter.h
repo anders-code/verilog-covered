@@ -32,6 +32,7 @@
 typedef struct func_iter_s {
   stmt_iter** sis;
   int         si_num;
+  int         sis_num;
 } func_iter;
 
 
@@ -47,6 +48,11 @@ void func_iter_dealloc( func_iter* si );
 
 /*
  $Log$
+ Revision 1.3  2008/03/17 22:02:31  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.2  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 
