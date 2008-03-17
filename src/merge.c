@@ -201,11 +201,11 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
   db_close();
 
   /* Deallocate memory */
-  free_safe( merged_file );
+  free_safe( merged_file, (strlen( merged_file ) + 1) );
   for( i=0; i<merge_in_num; i++ ) {
-    free_safe( merge_in[i] );
+    free_safe( merge_in[i], (strlen( merge_in[i] ) + 1) );
   }
-  free_safe( merge_in );
+  free_safe( merge_in, (sizeof( char* ) * merge_in_num) );
 
   PROFILE_END;
 
@@ -213,6 +213,9 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.43  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.42  2008/03/14 22:00:19  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.
