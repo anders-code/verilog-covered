@@ -2452,7 +2452,7 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
     /* Deallocate all vector values */
     if( (vec->value != NULL) && (vec->suppl.part.owns_data == 1) ) {
-      free_safe( vec->value, vec->width );
+      free_safe( vec->value, (sizeof( vec_data ) * vec->width) );
       vec->value = NULL;
     }
 
@@ -2467,6 +2467,9 @@ void vector_dealloc( vector* vec ) { PROFILE(VECTOR_DEALLOC);
 
 /*
  $Log$
+ Revision 1.120  2008/03/18 03:56:44  phase1geo
+ More updates for memory checking (some "fixes" here as well).
+
  Revision 1.119  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

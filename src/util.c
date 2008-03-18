@@ -1166,11 +1166,16 @@ void* realloc_safe1(
     largest_malloc_size = curr_malloc_size;
   }
  
-  newptr = realloc( ptr, size );
+  if( size == 0 ) {
+    free( ptr );
+    newptr = NULL;
+  } else {
+    newptr = realloc( ptr, size );
+    assert( newptr != NULL );
+  }
 #ifdef TESTMODE
   printf( "REALLOC (%p -> %p) %d bytes (file: %s, line: %d)\n", ptr, newptr, size, file, line );
 #endif
-  assert( ((size > 0) && (newptr != NULL)) || ((size == 0) && (newptr == NULL)) );
 
   MALLOC_CALL(profile_index);
 
@@ -1305,6 +1310,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.83  2008/03/18 03:56:44  phase1geo
+ More updates for memory checking (some "fixes" here as well).
+
  Revision 1.82  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function
