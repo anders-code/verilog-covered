@@ -310,6 +310,9 @@ void ovl_display_verbose( FILE* ofile, const func_unit* funit ) { PROFILE(OVL_DI
             fprintf( ofile, "      %-26s  %-22s  \"%-38s\"  %9u\n",
                      obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point, stmt->exp->exec_num );
           }
+
+          /* Deallocate the coverage point */
+          free_safe( cov_point, (strlen( cov_point ) + 1) );
           
         }
 
@@ -466,6 +469,10 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.24  2008/03/18 21:36:24  phase1geo
+ Updates from regression runs.  Regressions still do not completely pass at
+ this point.  Checkpointing.
+
  Revision 1.23  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

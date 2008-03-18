@@ -1228,6 +1228,9 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
   /* Check all of the dimensions within range and create vector parameters, if necessary */
   if( sig != NULL ) {
 
+    if( sig->dim != NULL ) {
+      free_safe( sig->dim, (sizeof( dim_range ) * (sig->pdim_num + sig->udim_num)) );
+    }
     assert( prange != NULL );
     sig->udim_num = (urange != NULL) ? urange->dim_num : 0;
     sig->pdim_num = prange->dim_num;
@@ -2853,6 +2856,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.297  2008/03/18 21:36:24  phase1geo
+ Updates from regression runs.  Regressions still do not completely pass at
+ this point.  Checkpointing.
+
  Revision 1.296  2008/03/17 22:02:30  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

@@ -160,12 +160,12 @@ bool scope_find_param(
         }
 
       } Catch_anonymous {
-        free_safe( scope, (strlen( scope ) + 1) );
+        free_safe( scope, (strlen( name ) + 1) );
         printf( "scope Throw B\n" );
         Throw 0;
       }
 
-      free_safe( scope, (strlen( scope ) + 1) );
+      free_safe( scope, (strlen( name ) + 1) );
 
     }
 
@@ -179,12 +179,12 @@ bool scope_find_param(
     }
 
   } Catch_anonymous {
-    free_safe( parm_name, (strlen( parm_name ) + 1) );
+    free_safe( parm_name, (strlen( name ) + 1) );
     printf( "scope Throw C\n" );
     Throw 0;
   }
 
-  free_safe( parm_name, (strlen( parm_name ) + 1) );
+  free_safe( parm_name, (strlen( name ) + 1) );
 
   PROFILE_END;
 
@@ -439,6 +439,10 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.51  2008/03/18 21:36:24  phase1geo
+ Updates from regression runs.  Regressions still do not completely pass at
+ this point.  Checkpointing.
+
  Revision 1.50  2008/03/18 03:56:44  phase1geo
  More updates for memory checking (some "fixes" here as well).
 
