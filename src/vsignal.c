@@ -669,6 +669,7 @@ vsignal* vsignal_from_string(
     /* Specify that this width is unknown */
     free_safe( sig->value->value, sizeof( vec_data ) );
     sig->value->width = 0;
+    sig->value->value = NULL;
     *str += chars_read;
   } else {
     sig = NULL;
@@ -779,6 +780,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.66  2008/03/18 05:36:04  phase1geo
+ More updates (regression still broken).
+
  Revision 1.65  2008/03/18 05:11:28  phase1geo
  More bug fixes for memory handling.
 
