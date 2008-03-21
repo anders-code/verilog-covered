@@ -444,6 +444,8 @@ expression* expression_create(
   new_expr->elem.funit          = NULL;
   new_expr->name                = NULL;
 
+  printf( "Allocated expression %s (%p -> %p)\n", expression_string( new_expr ), new_expr, new_expr->value );
+
   if( right != NULL ) {
 
     /* Get information from right */
@@ -4430,6 +4432,12 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.295  2008/03/21 21:16:38  phase1geo
+ Removing UNUSED_* types in lexer due to a bug that was found in the usage of
+ ignore_mode in the lexer (a token that should have been ignored was not due to
+ the parser's need to examine the created token for branch traversal purposes).
+ This cleans up the parser also.
+
  Revision 1.294  2008/03/21 04:33:45  phase1geo
  Fixing bug 1921909.  Also fixing issue with new check_mem regression script.
 
