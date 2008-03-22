@@ -483,6 +483,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
         /* If this is a port assignment, we need to link the expression and signal together immediately */
         if( exp->op == EXP_OP_PASSIGN ) {
           vector_dealloc( exp->value );
+          exp->suppl.part.owns_vec = 0;
           exp->value = found_sig->value;
         }
 
@@ -931,6 +932,10 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.128  2008/03/22 02:21:07  phase1geo
+ Checking in start of changes to properly handle the deallocation of vector
+ memory from expressions.  Things are pretty broke at this point!
+
  Revision 1.127  2008/03/18 03:56:44  phase1geo
  More updates for memory checking (some "fixes" here as well).
 
