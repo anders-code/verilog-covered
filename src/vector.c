@@ -422,6 +422,7 @@ void vector_db_read(
     } else {
 
       free_safe( (*vec)->value, (sizeof( vec_data ) * width) );
+      (*vec)->value = NULL;
 
     }
 
@@ -478,7 +479,7 @@ void vector_db_merge(
         Throw 0;
       }
 
-    } else {
+    } else if( base->suppl.part.owns_data == 1 ) {
 
       i = 0;
       while( i < width ) {
@@ -2589,6 +2590,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.124  2008/03/24 13:55:46  phase1geo
+ More attempts to fix memory issues.  Checkpointing.
+
  Revision 1.123  2008/03/24 13:16:46  phase1geo
  More changes for memory allocation/deallocation issues.  Things are still pretty
  broke at the moment.
