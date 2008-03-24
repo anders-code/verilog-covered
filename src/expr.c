@@ -444,8 +444,6 @@ expression* expression_create(
   new_expr->elem.funit          = NULL;
   new_expr->name                = NULL;
 
-  printf( "Allocated expression %s (%p -> %p)\n", expression_string( new_expr ), new_expr, new_expr->value );
-
   if( right != NULL ) {
 
     /* Get information from right */
@@ -4521,6 +4519,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.298  2008/03/24 13:16:46  phase1geo
+ More changes for memory allocation/deallocation issues.  Things are still pretty
+ broke at the moment.
+
  Revision 1.297  2008/03/22 05:23:24  phase1geo
  More attempts to fix memory problems.  Things are still pretty broke at the moment.
 
