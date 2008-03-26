@@ -378,7 +378,7 @@ void codegen_gen_expr(
       *code       = (char**)malloc_safe( sizeof( char* ) );
       *code_depth = 1;
 
-      if( expr->value->suppl.part.base == DECIMAL ) {
+      if( ESUPPL_STATIC_BASE( expr->suppl ) == DECIMAL ) {
 
         rv = snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
         assert( rv < 20 );
@@ -387,10 +387,10 @@ void codegen_gen_expr(
         }
         (*code)[0] = strdup_safe( code_format );
 
-      } else if( expr->value->suppl.part.base == QSTRING ) {
+      } else if( ESUPPL_STATIC_BASE( expr->suppl ) == QSTRING ) {
 
         unsigned int slen;
-        tmpstr = vector_to_string( expr->value );
+        tmpstr = vector_to_string( expr->value, QSTRING );
         slen   = strlen( tmpstr ) + 3;
         (*code)[0] = (char*)malloc_safe( slen );
         rv = snprintf( (*code)[0], slen, "\"%s\"", tmpstr );
@@ -399,7 +399,7 @@ void codegen_gen_expr(
 
       } else { 
 
-        (*code)[0] = vector_to_string( expr->value );
+        (*code)[0] = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ) );
 
       }
 
@@ -965,6 +965,11 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.91  2008/03/26 21:29:31  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.90  2008/03/18 03:56:44  phase1geo
  More updates for memory checking (some "fixes" here as well).
 

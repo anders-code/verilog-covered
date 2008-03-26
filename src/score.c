@@ -913,11 +913,14 @@ static void score_parse_args(
             printf( "score Throw AK\n" );
             Throw 0;
           } else {
+            vector* vec;
+            int     base;
             score_add_arg( argv[i-1] );
             score_add_arg( argv[i] );
             *ptr = '\0';
             ptr++;
-            defparam_add( tmp, vector_from_string( &ptr, FALSE ) );
+            vector_from_string( &ptr, FALSE, &vec, &base );
+            defparam_add( tmp, vec );
           }
         } Catch_anonymous {
           free_safe( tmp, (strlen( argv[i] ) + 1) );
@@ -1211,6 +1214,11 @@ void command_score( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.121  2008/03/26 21:29:31  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.120  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.

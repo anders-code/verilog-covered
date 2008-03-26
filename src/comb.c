@@ -924,7 +924,7 @@ static void combination_underline_tree(
 
     } else if( exp->op == EXP_OP_STATIC ) {
 
-      if( exp->value->suppl.part.base == DECIMAL ) {
+      if( ESUPPL_STATIC_BASE( exp->suppl ) == DECIMAL ) {
 
         rv = snprintf( code_fmt, 300, "%d", vector_to_int( exp->value ) );
         assert( rv < 300 );
@@ -940,12 +940,12 @@ static void combination_underline_tree(
       
       } else {
 
-        tmpstr = vector_to_string( exp->value );
+        tmpstr = vector_to_string( exp->value, ESUPPL_STATIC_BASE( exp->suppl ) );
         *size  = strlen( tmpstr );
         free_safe( tmpstr, (strlen( tmpstr ) + 1) );
 
         /* Adjust for quotation marks */
-        if( exp->value->suppl.part.base == QSTRING ) {
+        if( ESUPPL_STATIC_BASE( exp->suppl ) == QSTRING ) {
           *size += 2;
         }
 
@@ -3065,6 +3065,11 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.191  2008/03/26 21:29:31  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.190  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.
