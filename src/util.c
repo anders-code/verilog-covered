@@ -119,11 +119,9 @@ void set_output_suppression( bool value ) { PROFILE(SET_OUTPUT_SUPPRESSION);
 
  Sets the global debug mode to the specified value.
 */
-void set_debug( bool value ) { PROFILE(SET_DEBUG);
+void set_debug( bool value ) {
 
   debug_mode = value;
-
-  PROFILE_END;
 
 }
 
@@ -1322,6 +1320,11 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.86  2008/03/26 21:29:32  phase1geo
+ Initial checkin of new optimizations for unknown and not_zero values in vectors.
+ This attempts to speed up expression operations across the board.  Working on
+ debugging regressions.  Checkpointing.
+
  Revision 1.85  2008/03/22 05:23:24  phase1geo
  More attempts to fix memory problems.  Things are still pretty broke at the moment.
 
