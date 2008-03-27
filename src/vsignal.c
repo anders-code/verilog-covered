@@ -173,7 +173,7 @@ void vsignal_create_vec(
     /* Iterate through expression list, setting the expression to this signal */
     expl = sig->exp_head;
     while( expl != NULL ) {
-      if( expl->exp->op != EXP_OP_FUNC_CALL ) {
+      if( (expl->exp->op != EXP_OP_FUNC_CALL) && (expl->exp->op != EXP_OP_PASSIGN) ) {
         expression_set_value( expl->exp, sig, NULL );
       }
       expl = expl->next;
@@ -780,6 +780,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.68  2008/03/27 06:09:58  phase1geo
+ Fixing some regression errors.  Checkpointing.
+
  Revision 1.67  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.
