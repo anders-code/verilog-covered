@@ -5173,8 +5173,6 @@ void expression_dealloc(
 
   if( expr != NULL ) {
 
-    // printf( "Deallocating expression %s (%p) - owns_vec: %d\n", expression_string( expr ), expr, ESUPPL_OWNS_VEC( expr->suppl ) );
-
     op = expr->op;
 
     if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
@@ -5248,6 +5246,13 @@ void expression_dealloc(
 
       }
 
+    } else {
+
+      /* Remove our expression from its signal, if we have one */
+      if( expr->sig != NULL ) {
+        exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
+      }
+
     }
 
     /* Deallocate children */
@@ -5283,6 +5288,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.305  2008/03/27 16:12:52  phase1geo
+ Fixing memory write issue.
+
  Revision 1.304  2008/03/27 06:09:58  phase1geo
  Fixing some regression errors.  Checkpointing.
 
