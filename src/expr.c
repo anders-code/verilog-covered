@@ -3044,7 +3044,7 @@ bool expression_op_func__null(
 ) { PROFILE(EXPRESSION_OP_FUNC__NULL);
 
   /* Set the true/false indicators as necessary */
-  if( (expr->op != EXP_OP_STATIC) && (expr->op != EXP_OP_PARAM) ) {
+  if( expr->op != EXP_OP_STATIC ) {
     expression_set_tf_preclear( expr );
   } else {
     expression_set_tf( expr );
@@ -5331,6 +5331,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.309  2008/03/28 14:03:50  phase1geo
+ Removing param check from expression_op_func__null function.
+
  Revision 1.308  2008/03/28 02:31:57  phase1geo
  Fixing more problems with expression coverage gathering functions.
 
