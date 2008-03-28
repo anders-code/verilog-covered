@@ -1273,6 +1273,8 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
     while( table->arc_head != NULL ) {
       tmp = table->arc_head;
       table->arc_head = table->arc_head->next;
+      expression_dealloc( tmp->to_state, FALSE );
+      expression_dealloc( tmp->from_state, FALSE );
       free_safe( tmp, sizeof( fsm_arc ) );
     }
 
@@ -1296,6 +1298,9 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.93  2008/03/28 21:11:32  phase1geo
+ Fixing memory leak issues with -ep option and embedded FSM attributes.
+
  Revision 1.92  2008/03/18 05:36:04  phase1geo
  More updates (regression still broken).
 

@@ -1469,6 +1469,11 @@ char* vector_to_string(
     }
 
     str[pos] = '\0';
+
+  } else if( base == DECIMAL ) {
+
+    snprintf( width_str, 20, "%d", vector_to_int( vec ) );
+    str = strdup_safe( width_str );
  
   } else {
 
@@ -2634,6 +2639,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.131  2008/03/28 21:11:32  phase1geo
+ Fixing memory leak issues with -ep option and embedded FSM attributes.
+
  Revision 1.130  2008/03/28 18:28:26  phase1geo
  Fixing bug in trigger expression function due to recent changes.
 
