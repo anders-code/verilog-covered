@@ -238,7 +238,7 @@ static bool expression_op_func__dly_op( expression*, thread*, const sim_time* );
 static bool expression_op_func__repeat_dly( expression*, thread*, const sim_time* );
 static bool expression_op_func__wait( expression*, thread*, const sim_time* );
 
-static void expression_assign( expression*, expression*, int*, const sim_time* );
+static void expression_assign( expression*, expression*, int*, thread* thr, const sim_time* );
 
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
@@ -2894,7 +2894,7 @@ bool expression_op_func__bassign( expression* expr, thread* thr, const sim_time*
 
   int intval = 0;  /* Integer value */
 
-  expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? time : &(thr->curr_time)) );
+  expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
 
   PROFILE_END;
 
@@ -3145,7 +3145,7 @@ bool expression_op_func__passign( expression* expr, thread* thr, const sim_time*
      to the right expression.
     */
     case SSUPPL_TYPE_OUTPUT :
-      expression_assign( expr->right, expr, &intval, ((thr == NULL) ? time : &(thr->curr_time)) );
+      expression_assign( expr->right, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
       retval = TRUE;
       break;
 
@@ -3410,7 +3410,7 @@ bool expression_op_func__dly_assign( expression* expr, thread* thr, const sim_ti
 
   /* Check the dly_op expression.  If eval_t is set to 1, perform the assignment */
   if( ESUPPL_IS_TRUE( expr->right->suppl ) == 1 ) {
-    expression_assign( expr->left, expr->right, &intval, ((thr == NULL) ? time : &(thr->curr_time)) );
+    expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)) );
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
   } else {
@@ -3734,6 +3734,30 @@ void expression_operate_recursively( expression* expr, func_unit* funit, bool si
 }
 
 /*!
+ \param expr  Pointer to expression tree to evaluate
+ \param thr   Pointer to thread containing this expression
+ \param time  Pointer to the current simulation time
+
+ Recursively travels down the given expression tree, performing the given expression operations.
+ This function is called by the expression_assign function to calculate the contents of the SBIT_SEL
+ index on the LHS of assign statements.
+*/
+void expression_operate_lhs_tree( expression* expr, thread* thr, const sim_time* time ) {
+
+  if( expr != NULL ) {
+
+    /* Evaluate children first */
+    expression_operate_lhs_tree( expr->left, thr, time );
+    expression_operate_lhs_tree( expr->right, thr, time );
+
+    /* Perform operation */
+    expression_operate( expr, thr, time );
+
+  }
+
+}
+
+/*!
  \param expr  Pointer to expression to evaluate.
  
  \return Returns TRUE if expression contains only static expressions; otherwise, returns FALSE.
@@ -3911,6 +3935,7 @@ void expression_set_assigned( expression* expr ) { PROFILE(EXPRESSION_SET_ASSIGN
  \param lhs   Pointer to current expression on left-hand-side of assignment to calculate for.
  \param rhs   Pointer to the right-hand-expression that will be assigned from.
  \param lsb   Current least-significant bit in rhs value to start assigning.
+ \param thr   Pointer to threads that owns this expression assignment.
  \param time  Specifies current simulation time when expression assignment occurs.
 
  Recursively iterates through specified LHS expression, assigning the value from the RHS expression.
@@ -3920,6 +3945,7 @@ void expression_assign(
   expression*     lhs,
   expression*     rhs,
   int*            lsb,
+  thread*         thr,
   const sim_time* time
 ) { PROFILE(EXPRESSION_ASSIGN);
 
@@ -3989,6 +4015,7 @@ void expression_assign(
         break;
       case EXP_OP_SBIT_SEL :
         if( lhs->sig->suppl.part.assigned == 1 ) {
+          expression_operate_lhs_tree( lhs->left, thr, time );   /* Calculate index */
           if( !vector_is_unknown( lhs->left->value ) ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * dim_width;
             if( intval1 >= 0 ) {           // Only perform assignment if selected bit is within range
@@ -4104,12 +4131,12 @@ void expression_assign(
 #endif
       case EXP_OP_CONCAT   :
       case EXP_OP_LIST     :
-        expression_assign( lhs->right, rhs, lsb, time );
-        expression_assign( lhs->left,  rhs, lsb, time );
+        expression_assign( lhs->right, rhs, lsb, thr, time );
+        expression_assign( lhs->left,  rhs, lsb, thr, time );
         break;
       case EXP_OP_DIM      :
-        expression_assign( lhs->left,  rhs, lsb, time );
-        expression_assign( lhs->right, rhs, lsb, time );
+        expression_assign( lhs->left,  rhs, lsb, thr, time );
+        expression_assign( lhs->right, rhs, lsb, thr, time );
         break;
       case EXP_OP_STATIC   :
         break;
@@ -4278,6 +4305,9 @@ void expression_dealloc( expression* expr, bool exp_only ) { PROFILE(EXPRESSION_
 
 /* 
  $Log$
+ Revision 1.279.2.2  2008/03/29 17:28:35  phase1geo
+ Initial attempt to fix bug 1928475.  Full regression passes.
+
  Revision 1.279.2.1  2008/03/21 04:37:44  phase1geo
  Fixing bug 1921909.
 
