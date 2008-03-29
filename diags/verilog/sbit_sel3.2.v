@@ -9,6 +9,8 @@
 
 module main;
 
+reg [31:0] a, b;
+
 initial begin
 	a = 0;
 	b = 2;
@@ -24,11 +26,12 @@ initial begin
         $finish;
 end
 
+// Function to recursively add 1 to the initial input value
 function automatic [31:0] foo;
-  input x;
+  input [31:0] x;
   begin
     if( x == 0 )
-      foo = 0;
+      foo = 1;
     else
       foo = foo( x - 1 ) + 1;
   end
