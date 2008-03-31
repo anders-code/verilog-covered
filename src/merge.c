@@ -197,18 +197,11 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
   } Catch_anonymous {}
 
-  /* Deallocate simulator stuff */
-  sim_dealloc();
-
   /* Close database */
   db_close();
 
-  /* Deallocate memory */
+  /* Deallocate other memory */
   free_safe( merged_file, (strlen( merged_file ) + 1) );
-  for( i=0; i<merge_in_num; i++ ) {
-    free_safe( merge_in[i], (strlen( merge_in[i] ) + 1) );
-  }
-  free_safe( merge_in, (sizeof( char* ) * merge_in_num) );
 
   PROFILE_END;
 
@@ -216,6 +209,11 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.46  2008/03/31 21:40:23  phase1geo
+ Fixing several more memory issues and optimizing a bit of code per regression
+ failures.  Full regression still does not pass but does complete (yeah!)
+ Checkpointing.
+
  Revision 1.45  2008/03/31 18:39:08  phase1geo
  Fixing more regression issues related to latest code modifications.  Checkpointing.
 
