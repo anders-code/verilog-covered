@@ -4219,8 +4219,6 @@ bool expression_op_func__mbit_pos(
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
-  expression_set_unary_evals( expr );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -4272,8 +4270,6 @@ bool expression_op_func__mbit_neg(
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
-  expression_set_unary_evals( expr );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -5343,6 +5339,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.316  2008/03/31 22:00:38  phase1geo
+ Fixing issue with mbit_pos and mbit_neg expressions as found in regression.
+ Updated regression files.  Checkpointing.
+
  Revision 1.315  2008/03/31 21:40:23  phase1geo
  Fixing several more memory issues and optimizing a bit of code per regression
  failures.  Full regression still does not pass but does complete (yeah!)
