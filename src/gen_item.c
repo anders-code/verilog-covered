@@ -447,8 +447,9 @@ char* gen_item_calc_signal_name(
   char* ptr;              /* Pointer to allocated memory for name */
 
   /* Allocate memory */
-  tmpname = strdup_safe( name );
-  ptr     = tmpname;
+  tmpname  = strdup_safe( name );
+  ptr      = tmpname;
+  new_name = strdup_safe( "" );
 
   Try {
 
@@ -1207,6 +1208,9 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.64  2008/03/31 18:39:08  phase1geo
+ Fixing more regression issues related to latest code modifications.  Checkpointing.
+
  Revision 1.63  2008/03/21 21:16:41  phase1geo
  Removing UNUSED_* types in lexer due to a bug that was found in the usage of
  ignore_mode in the lexer (a token that should have been ignored was not due to

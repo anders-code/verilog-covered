@@ -197,6 +197,9 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
   } Catch_anonymous {}
 
+  /* Deallocate simulator stuff */
+  sim_dealloc();
+
   /* Close database */
   db_close();
 
@@ -213,6 +216,9 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.45  2008/03/31 18:39:08  phase1geo
+ Fixing more regression issues related to latest code modifications.  Checkpointing.
+
  Revision 1.44  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function
