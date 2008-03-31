@@ -258,7 +258,7 @@ void parse_and_score_dumpfile(
     info_initialize();
 
     /* Read in contents of specified database file */
-    db_read( db, READ_MODE_MERGE_NO_MERGE );
+    db_read( db, READ_MODE_NO_MERGE );
   
     /* Bind expressions to signals/functional units */
     bind_perform( TRUE, 0 );
@@ -311,6 +311,11 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.62  2008/03/31 21:40:23  phase1geo
+ Fixing several more memory issues and optimizing a bit of code per regression
+ failures.  Full regression still does not pass but does complete (yeah!)
+ Checkpointing.
+
  Revision 1.61  2008/03/14 22:00:19  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.
