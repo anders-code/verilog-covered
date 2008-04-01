@@ -195,6 +195,11 @@ void db_close() { PROFILE(DB_CLOSE);
 
     /* Deallocate the binding list */
     bind_dealloc();
+
+    /* Deallocate the needed module list */
+    str_link_delete_list( modlist_head );
+    modlist_head = NULL;
+    modlist_tail = NULL;
     
     /* Free memory associated with current instance scope */
     assert( curr_inst_scope_size == 0 );
@@ -2494,7 +2499,7 @@ void db_parse_attribute(
 
   } Catch_anonymous {
     attribute_dealloc( ap );
-    printf( "db Throw R\n" );
+    // printf( "db Throw R\n" ); - HIT
     Throw 0;
   }
 
@@ -2857,6 +2862,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.300  2008/04/01 23:08:20  phase1geo
+ More updates for error diagnostic cleanup.  Full regression still not
+ passing (but is getting close).
+
  Revision 1.299  2008/03/31 21:40:22  phase1geo
  Fixing several more memory issues and optimizing a bit of code per regression
  failures.  Full regression still does not pass but does complete (yeah!)
