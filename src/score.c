@@ -288,8 +288,8 @@ static void score_generate_top_vpi_module(
   }
 
   /* Deallocate memory */
-  free_safe( mod_name, (strlen( mod_name ) + 1) );
-  free_safe( ext, (strlen( ext ) + 1) );
+  free_safe( mod_name, (strlen( vpi_file ) + 1) );
+  free_safe( ext, (strlen( vpi_file ) + 1) );
 
 }
 
@@ -353,8 +353,8 @@ static void score_generate_pli_tab_file(
   }
 
   /* Deallocate memory */
-  free_safe( mod_name, (strlen( mod_name ) + 1) );
-  free_safe( ext, (strlen( ext ) + 1) );
+  free_safe( mod_name, (strlen( tab_file ) + 5) );
+  free_safe( ext, (strlen( tab_file ) + 1) );
 
 }
 
@@ -1220,6 +1220,9 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.124  2008/04/01 13:00:49  phase1geo
+ More regression fixes and updates.  Checkpointing.
+
  Revision 1.123  2008/03/30 05:24:02  phase1geo
  Fixing a few more bugs.  Updated regression files per these changes.  Full regression
  still not running cleanly at this point.  Checkpointing.
