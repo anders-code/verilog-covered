@@ -422,6 +422,7 @@ expression* expression_create(
   int         lwidth = 0;  /* Bit width of expression on left */
 
   new_expr = (expression*)malloc_safe( sizeof( expression ) );
+  //assert( new_expr != (expression*)0x108350 );
 
   new_expr->suppl.all           = 0;
   new_expr->suppl.part.lhs      = (nibble)lhs & 0x1;
@@ -5339,6 +5340,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.317  2008/04/02 05:39:50  phase1geo
+ More updates to support error memory deallocation.  Full regression still
+ fails at this point.  Checkpointing.
+
  Revision 1.316  2008/03/31 22:00:38  phase1geo
  Fixing issue with mbit_pos and mbit_neg expressions as found in regression.
  Updated regression files.  Checkpointing.
