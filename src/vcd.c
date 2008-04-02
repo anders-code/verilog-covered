@@ -278,7 +278,7 @@ static void vcd_parse_def(
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
-    printf( "vcd Throw H\n" );
+    //printf( "vcd Throw H\n" ); - HIT
     Throw 0;
 
   }
@@ -468,7 +468,7 @@ void vcd_parse(
       free_safe( timestep_tab, (sizeof( symtable*) * vcd_symtab_size) );
       rv = fclose( vcd_handle );
       assert( rv == 0 );
-      printf( "vcd Throw L\n" );
+      //printf( "vcd Throw L\n" ); - HIT
       Throw 0;
     }
 
@@ -494,6 +494,10 @@ void vcd_parse(
 
 /*
  $Log$
+ Revision 1.42  2008/04/02 05:39:51  phase1geo
+ More updates to support error memory deallocation.  Full regression still
+ fails at this point.  Checkpointing.
+
  Revision 1.41  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function
