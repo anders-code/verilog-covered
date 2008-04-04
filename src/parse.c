@@ -118,10 +118,8 @@ void parse_design(
         parser_ret = VLparse();
 
         if( (parser_ret != 0) || (error_count > 0) ) {
-          //unsigned int rv = fclose( VLin );
-          //assert( rv == 0 );
           print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
-          printf( "parse Throw B\n" );
+          // printf( "parse Throw B\n" ); - HIT
           Throw 0;
         }
 
@@ -305,6 +303,9 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.65  2008/04/04 20:06:39  phase1geo
+ More fixes per regression runs.  Checkpointing.
+
  Revision 1.64  2008/04/02 05:39:51  phase1geo
  More updates to support error memory deallocation.  Full regression still
  fails at this point.  Checkpointing.
