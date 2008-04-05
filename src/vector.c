@@ -2477,6 +2477,10 @@ bool vector_op_inc(
   /* Finally add the values and assign them back to the target */
   (void)vector_op_add( tgt, tmp1, tmp2 );
 
+  /* Deallocate memory */
+  vector_dealloc( tmp1 );
+  vector_dealloc( tmp2 );
+
   PROFILE_END;
 
   return( TRUE );
@@ -2675,6 +2679,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.135  2008/04/05 06:19:42  phase1geo
+ Fixes memory issues with increment operation and updates to regressions.
+
  Revision 1.134  2008/04/05 04:49:46  phase1geo
  More regression fixes and updates.
 
