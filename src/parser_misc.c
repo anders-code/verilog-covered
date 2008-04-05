@@ -126,7 +126,7 @@ void parser_dealloc_sig_range(
   }
 
   if( i > 0 ) {
-    free_safe( range->dim, sizeof( vector_width ) );
+    free_safe( range->dim, (sizeof( vector_width ) * range->dim_num) );
     range->dim     = NULL;
     range->dim_num = 0;
   }
@@ -316,6 +316,9 @@ bool parser_check_generation(
 
 /*
  $Log$
+ Revision 1.24  2008/04/05 05:54:32  phase1geo
+ Fixing memory deallocation.
+
  Revision 1.23  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function
