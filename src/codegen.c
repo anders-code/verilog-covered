@@ -368,7 +368,8 @@ void codegen_gen_expr(
 
     }
 
-    if( (expr->op == EXP_OP_LAST) || (expr->op == EXP_OP_NB_CALL) || (expr->op == EXP_OP_JOIN) || (expr->op == EXP_OP_FORK) ) {
+    if( (expr->op == EXP_OP_LAST) || (expr->op == EXP_OP_NB_CALL) || (expr->op == EXP_OP_JOIN) || (expr->op == EXP_OP_FORK) ||
+        ((parent_op == EXP_OP_REPEAT) && (expr->parent->expr->left == expr)) ) {
 
       /* Do nothing. */
       *code_depth = 0;
@@ -965,6 +966,9 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.92  2008/04/05 05:30:18  phase1geo
+ Fixing report bug from regressions and updating more regression runs.
+
  Revision 1.91  2008/03/26 21:29:31  phase1geo
  Initial checkin of new optimizations for unknown and not_zero values in vectors.
  This attempts to speed up expression operations across the board.  Working on
