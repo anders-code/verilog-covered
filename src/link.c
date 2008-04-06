@@ -1272,7 +1272,10 @@ void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit
 
  Deletes each element of the specified list.
 */
-void gitem_link_delete_list( gitem_link* head, bool rm_elems ) { PROFILE(GITEM_LINK_DELETE_LIST);
+void gitem_link_delete_list(
+  gitem_link* head,
+  bool        rm_elems
+) { PROFILE(GITEM_LINK_DELETE_LIST);
 
   gitem_link* tmp;  /* Temporary pointer to current link in list */
 
@@ -1323,6 +1326,9 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.78  2008/04/06 05:46:54  phase1geo
+ Another regression memory deallocation fix.  Updates to regression files.
+
  Revision 1.77  2008/03/17 05:26:16  phase1geo
  Checkpointing.  Things don't compile at the moment.
 
