@@ -106,13 +106,17 @@ void stmt_blk_remove() {
       db_remove_stmt_blks_calling_statement( stmt );
     }
     /* Deallocate the statement block now */
-    statement_dealloc_recursive( stmt );
+    statement_dealloc_recursive( stmt, TRUE );
   }
 
 }
 
 /*
  $Log$
+ Revision 1.16  2008/04/06 05:24:17  phase1geo
+ Fixing another regression memory problem.  Updated regression files
+ accordingly.  Checkpointing.
+
  Revision 1.15  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do
