@@ -412,7 +412,7 @@ bool gen_item_varname_contains_genvar( char* name ) { PROFILE(GEN_ITEM_VARNAME_C
   }
 
   /* Deallocate memory */
-  free_safe( tmpname, (strlen( tmpname ) + 1)  );
+  free_safe( tmpname, (strlen( name ) + 1)  );
 
   return( retval );
 
@@ -1184,7 +1184,7 @@ void gen_item_dealloc(
           vsignal_dealloc( gi->elem.sig );
           break;
         case GI_TYPE_STMT :
-          statement_dealloc_recursive( gi->elem.stmt );
+          statement_dealloc_recursive( gi->elem.stmt, FALSE );
           break;
         case GI_TYPE_INST :
         case GI_TYPE_TFN  :
@@ -1208,6 +1208,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.65  2008/04/06 05:24:17  phase1geo
+ Fixing another regression memory problem.  Updated regression files
+ accordingly.  Checkpointing.
+
  Revision 1.64  2008/03/31 18:39:08  phase1geo
  Fixing more regression issues related to latest code modifications.  Checkpointing.
 

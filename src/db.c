@@ -2224,7 +2224,7 @@ void db_remove_statement( statement* stmt ) { PROFILE(DB_REMOVE_STATEMENT);
 #endif
 
     /* Call the recursive statement deallocation function */
-    statement_dealloc_recursive( stmt );
+    statement_dealloc_recursive( stmt, TRUE );
 
   }
 
@@ -2862,6 +2862,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.302  2008/04/06 05:24:17  phase1geo
+ Fixing another regression memory problem.  Updated regression files
+ accordingly.  Checkpointing.
+
  Revision 1.301  2008/04/04 20:06:39  phase1geo
  More fixes per regression runs.  Checkpointing.
 
