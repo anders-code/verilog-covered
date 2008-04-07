@@ -51,7 +51,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        12
+#define CDD_VERSION        13
 
 /*!
  This contains the header information specified when executing this tool.
@@ -2574,6 +2574,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.290  2008/04/07 19:35:41  phase1geo
+ Incremented CDD version and updated regression files.  Also fixed issue
+ with expression_dealloc function for FUNC_CALL operations.  Full regression
+ passes.
+
  Revision 1.289  2008/03/31 21:40:23  phase1geo
  Fixing several more memory issues and optimizing a bit of code per regression
  failures.  Full regression still does not pass but does complete (yeah!)
