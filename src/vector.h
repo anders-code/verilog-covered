@@ -29,7 +29,14 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init( /*@out@*/ vector* vec, vec_data* value, bool owns_value, int width, int type );
+void vector_init(
+  /*@out@*/ vector*   vec,
+            vec_data* value,
+            nibble    data,
+            bool      owns_value,
+            int       width,
+            int       type
+);
 
 /*! \brief Creates and initializes new vector */
 vector* vector_create( int width, int type, bool data );
@@ -210,6 +217,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.57  2008/04/08 19:50:37  phase1geo
+ Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
+ replacing them with the temporary vector solution.
+
  Revision 1.56  2008/04/08 05:26:34  phase1geo
  Second checkin of performance optimizations (regressions do not pass at this
  point).
