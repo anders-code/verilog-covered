@@ -1446,7 +1446,7 @@ void expression_db_read(
       }
 
       /* Create temporary vectors if necessary */
-      if( EXPR_TMP_VECS( op ) > 0 ) {
+      if( (EXPR_TMP_VECS( op ) > 0) && (expr->elem.tvecs == NULL) ) {
         unsigned i;
         expr->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
         for( i=0; i<EXPR_TMP_VECS( op ); i++ ) {
@@ -5396,6 +5396,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.323  2008/04/08 05:47:58  phase1geo
+ Fixing bug with optimization code.  IV regression runs cleanly.
+
  Revision 1.322  2008/04/08 05:26:33  phase1geo
  Second checkin of performance optimizations (regressions do not pass at this
  point).
