@@ -856,7 +856,7 @@ typedef enum exp_op_type_e {
 /*!
  Specifies the number of temporary vectors required by the given expression operation.
 */
-#define EXPR_TMP_VECS(x)             exp_op_info[op].suppl.tmp_vecs
+#define EXPR_TMP_VECS(x)             exp_op_info[x].suppl.tmp_vecs
 
 /*!
  \addtogroup op_tables
@@ -1849,7 +1849,7 @@ struct exp_info_s {
     control measurable:1;                 /*!< Specifies if this operation type can be measured */
     control is_context_switch:1;          /*!< Specifies if this operation will cause a context switch */
     control assignable:1;                 /*!< Specifies if this operation can be immediately assigned (i.e., +=) */
-    control tmp_vecs:2;                   /*!< Number of temporary vectors used by this expression */
+    control tmp_vecs:3;                   /*!< Number of temporary vectors used by this expression */
   } suppl;                                /*!< Supplemental information about this expression */
 };
 
@@ -1907,7 +1907,7 @@ struct const_value_s {
  Contains temporary storage vectors used by certain expressions for performance purposes.
 */
 struct vecblk_s {
-  vector vec[3];                     /*!< Vector array */
+  vector vec[5];                     /*!< Vector array */
   int    index;                      /*!< Specifies to the called function which vector may be accessed */
 }; 
 
@@ -2604,6 +2604,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.292  2008/04/08 05:26:33  phase1geo
+ Second checkin of performance optimizations (regressions do not pass at this
+ point).
+
  Revision 1.291  2008/04/07 23:14:00  phase1geo
  Beginnings of adding support for temporary vector storage for expressions.  Still
  work to go here before it is working.  Checkpointing.
