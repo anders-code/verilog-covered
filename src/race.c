@@ -615,7 +615,7 @@ static void race_check_one_block_assignment(
                 if( expl->exp->left->op == EXP_OP_STATIC ) {
                   intval = (vector_to_int( expl->exp->left->value ) - dim_lsb) * dim_width;
                   if( (intval >= 0) && (intval < expl->exp->value->width) ) {
-                    vector_init( &vec, NULL, FALSE, expl->exp->value->width, VTYPE_SIG );
+                    vector_init( &vec, NULL, 0x0, FALSE, expl->exp->value->width, VTYPE_SIG );
                     if( dim_be ) {
                       vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
                     } else {
@@ -632,7 +632,7 @@ static void race_check_one_block_assignment(
               case EXP_OP_MBIT_SEL :
                 if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
                   intval = ((dim_be ? vector_to_int( expl->exp->left->value ) : vector_to_int( expl->exp->right->value )) - dim_lsb) * dim_width;
-                  vector_init( &vec, NULL, FALSE, expl->exp->value->width, VTYPE_SIG );
+                  vector_init( &vec, NULL, 0x0, FALSE, expl->exp->value->width, VTYPE_SIG );
                   if( dim_be ) {
                     vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
                   } else {
@@ -1170,6 +1170,10 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.79  2008/04/08 19:50:36  phase1geo
+ Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
+ replacing them with the temporary vector solution.
+
  Revision 1.78  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

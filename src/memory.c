@@ -91,7 +91,7 @@ void memory_get_stat(
       (*wr_hit)++;
       (*rd_hit)++;
     } else {
-      vector_init( &vec, NULL, FALSE, pwidth, VTYPE_MEM );
+      vector_init( &vec, NULL, 0x0, FALSE, pwidth, VTYPE_MEM );
       vec.value = &(sig->value->value[i]);
       wr = 0;
       rd = 0;
@@ -328,7 +328,7 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
       unsigned int slen;
 
       /* Initialize the vector */
-      vector_init( &vec, NULL, FALSE, dim_width, VTYPE_MEM );
+      vector_init( &vec, NULL, 0x0, FALSE, dim_width, VTYPE_MEM );
       if( be ) {
         vec.value = value + (dim_width * ((msb - lsb) - i));
       } else {
@@ -1012,7 +1012,7 @@ static void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, c
     for( i=0; i<((msb - lsb) + 1); i++ ) {
 
       /* Initialize the vector */
-      vector_init( &vec, NULL, FALSE, dim_width, VTYPE_MEM );
+      vector_init( &vec, NULL, 0x0, FALSE, dim_width, VTYPE_MEM );
       if( be ) {
         vec.value = value + (dim_width * ((msb - lsb) - i));
       } else {
@@ -1345,6 +1345,10 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.27  2008/04/08 19:50:36  phase1geo
+ Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
+ replacing them with the temporary vector solution.
+
  Revision 1.26  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function
