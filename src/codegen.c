@@ -652,7 +652,7 @@ void codegen_gen_expr(
                                right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_MOD_A    :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " %%= ",
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " %= ",
                                right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_ADD      :
@@ -982,6 +982,12 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.95  2008/04/09 18:00:33  phase1geo
+ Fixing op-and-assign operation and updated regression files appropriately.
+ Also modified verilog/Makefile to compile lib or src directory as needed
+ according to the VPI environment variable being set or not.  Full regression
+ passes.
+
  Revision 1.94  2008/04/08 22:45:10  phase1geo
  Optimizations for op-and-assign expressions.  This is an untested checkin
  at this point but it does compile cleanly.  Checkpointing.
