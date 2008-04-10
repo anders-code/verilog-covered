@@ -1296,9 +1296,6 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
     Try {
       report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE );
     } Catch_anonymous {
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open CDD \"%s\"", ifile );
-      Tcl_AddErrorInfo( tcl, user_msg );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = TCL_ERROR;
     }
 
@@ -1328,9 +1325,6 @@ int tcl_func_close_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
   Try {
     report_close_cdd();
   } Catch_anonymous {
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to close CDD file" );
-    Tcl_AddErrorInfo( tcl, user_msg );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
@@ -1361,9 +1355,6 @@ int tcl_func_save_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
   Try {
     report_save_cdd( filename );
   } Catch_anonymous {
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to save CDD file \"%s\"", argv[1] );
-    Tcl_AddErrorInfo( tcl, user_msg );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
@@ -1402,9 +1393,6 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
     Try {
       report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE );
     } Catch_anonymous {
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to merge current CDD with \"%s\"", ifile );
-      Tcl_AddErrorInfo( tcl, user_msg );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = TCL_ERROR;
     }
 
@@ -1696,7 +1684,7 @@ int tcl_func_preprocess_verilog( ClientData d, Tcl_Interp* tcl, int argc, const 
     if( strcmp( "-D", score_args[i] ) == 0 ) {
       score_parse_define( score_args[i+1] );
     } else if( strcmp( "-I", score_args[i] ) == 0 ) {
-      search_add_include_path( score_args[i] );
+      search_add_include_path( score_args[i+1] );
     }
   }
 
@@ -2280,6 +2268,12 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.75  2008/04/10 23:16:42  phase1geo
+ Fixing issues with memory and file handling in preprocessor when an error
+ occurs (so that we can recover properly in the GUI).  Also fixing various
+ GUI issues from the previous checkin.  Working on debugging problem with
+ preprocessing code in verilog.tcl.  Checkpointing.
+
  Revision 1.74  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function
