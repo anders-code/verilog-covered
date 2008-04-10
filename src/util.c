@@ -224,6 +224,7 @@ void print_output( const char* msg, int type, const char* file, int line ) {
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+          fprintf( stderr, "ERROR!  %s (file: %s, line: %d)\n", msg, obf_file( file ), line );
 #endif
 #endif
         } else {
@@ -236,6 +237,7 @@ void print_output( const char* msg, int type, const char* file, int line ) {
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+          fprintf( stderr, "ERROR!  %s\n", msg );
 #endif
 #endif
         } else {
@@ -1343,6 +1345,12 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.90  2008/04/10 23:16:42  phase1geo
+ Fixing issues with memory and file handling in preprocessor when an error
+ occurs (so that we can recover properly in the GUI).  Also fixing various
+ GUI issues from the previous checkin.  Working on debugging problem with
+ preprocessing code in verilog.tcl.  Checkpointing.
+
  Revision 1.89  2008/04/08 23:58:17  phase1geo
  Fixing test mode code so that it works properly in regression and stand-alone
  runs.
