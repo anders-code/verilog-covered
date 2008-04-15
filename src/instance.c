@@ -305,7 +305,11 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed 
  passed back to the calling function; otherwise, the ignore count is
  decremented and the searching continues.
 */
-funit_inst* instance_find_by_funit( funit_inst* root, const func_unit* funit, int* ignore ) { PROFILE(INSTANCE_FIND_BY_FUNIT);
+funit_inst* instance_find_by_funit(
+            funit_inst*      root,
+            const func_unit* funit,
+  /*@out@*/ int*             ignore
+) { PROFILE(INSTANCE_FIND_BY_FUNIT);
 
   funit_inst* match_inst = NULL;  /* Pointer to functional unit instance that found a match */
   funit_inst* curr_child;         /* Pointer to current instances child functional unit instance */
@@ -1172,6 +1176,11 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.94  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.93  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.
