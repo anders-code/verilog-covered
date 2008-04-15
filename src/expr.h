@@ -90,7 +90,17 @@ void expression_db_write_tree( expression* root, FILE* file );
 void expression_db_read( char** line, /*@null@*/func_unit* curr_mod, bool eval );
 
 /*! \brief Reads and merges two expressions and stores result in base expression. */
-void expression_db_merge( expression* base, char** line, bool same );
+void expression_db_merge(
+  expression* base,
+  char**      line,
+  bool        same
+);
+
+/*! \brief Merges two expressions into the base expression. */
+void expression_merge(
+  expression* base,
+  expression* other
+);
 
 /*! \brief Returns user-readable name of specified expression operation. */
 const char* expression_string_op( int op );
@@ -128,6 +138,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.67  2008/04/15 06:08:46  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.66  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.
