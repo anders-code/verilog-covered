@@ -451,6 +451,28 @@ void vsignal_db_merge(
 }
 
 /*!
+ Merges two vsignals, placing the result into the base vsignal.  This function is used to calculate
+ module coverage for the GUI.
+*/
+void vsignal_merge(
+  vsignal* base,  /*!< Base vsignal that will contain the merged results */
+  vsignal* other  /*!< Other vsignal that will be merged into the base vsignal */
+) { PROFILE(VSIGNAL_MERGE);
+
+  assert( base != NULL );
+  assert( base->name != NULL );
+  assert( scope_compare( base->name, other->name ) );
+  assert( base->pdim_num == other->pdim_num );
+  assert( base->udim_num == other->udim_num );
+
+  /* Read in vector information */
+  vector_merge( base->value, other->value );
+
+  PROFILE_END;
+
+}
+
+/*!
  \param sig   Pointer to signal to propagate change information from.
  \param time  Current simulation time when signal changed.
 
@@ -782,6 +804,11 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.71  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.70  2008/03/31 21:40:24  phase1geo
  Fixing several more memory issues and optimizing a bit of code per regression
  failures.  Full regression still does not pass but does complete (yeah!)
