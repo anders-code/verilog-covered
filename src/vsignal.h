@@ -46,6 +46,12 @@ void vsignal_db_read( char** line, /*@null@*/func_unit* curr_funit );
 /*! \brief Reads and merges two vsignals, placing result into base vsignal. */
 void vsignal_db_merge( vsignal* base, char** line, bool same );
 
+/*! \brief Merges two vsignals, placing the result into the base vsignal. */
+void vsignal_merge(
+  vsignal* base,
+  vsignal* other
+);
+
 /*! \brief Propagates specified signal information to rest of design. */
 void vsignal_propagate( vsignal* sig, const sim_time* time );
 
@@ -79,6 +85,11 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.28  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.27  2008/03/13 10:28:55  phase1geo
  The last of the exception handling modifications.
 
