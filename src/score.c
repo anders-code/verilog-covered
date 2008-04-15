@@ -1136,6 +1136,9 @@ void command_score(
 
   Try {
 
+    /* Create a database to start storing the results */
+    (void)db_create();
+
     /* Parse score command-line */
     score_parse_args( argc, last_arg, argv );
 
@@ -1223,6 +1226,9 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.127  2008/04/15 20:37:11  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.126  2008/04/04 20:06:39  phase1geo
  More fixes per regression runs.  Checkpointing.
 
