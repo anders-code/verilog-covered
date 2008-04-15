@@ -104,6 +104,12 @@ void arc_db_merge(
   bool   same
 );
 
+/*! \brief Merges two FSM arcs, placing the results in the base arc. */
+void arc_merge(
+  char** base,
+  char*  other
+);
+
 /*! \brief Stores arc array state values to specified string array. */
 void arc_get_states(
   char***     states,
@@ -136,6 +142,11 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.27  2008/04/15 06:08:46  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.26  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.
