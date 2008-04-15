@@ -1294,7 +1294,7 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
     ifile = strdup_safe( argv[1] );
 
     Try {
-      report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE );
+      report_read_cdd_and_ready( ifile, READ_MODE_REPORT_NO_MERGE );
     } Catch_anonymous {
       retval = TCL_ERROR;
     }
@@ -1391,7 +1391,7 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
     merge_in_num++;
 
     Try {
-      report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE );
+      report_read_cdd_and_ready( ifile, READ_MODE_MERGE_INST_MERGE );
     } Catch_anonymous {
       retval = TCL_ERROR;
     }
@@ -2268,6 +2268,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.76  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.75  2008/04/10 23:16:42  phase1geo
  Fixing issues with memory and file handling in preprocessor when an error
  occurs (so that we can recover properly in the GUI).  Also fixing various

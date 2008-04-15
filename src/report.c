@@ -775,8 +775,20 @@ void report_read_cdd_and_ready(
 
   } else {
 
+    inst_link* instl = inst_head;
+
+    /* Read in database, performing instance merging */
     db_read( ifile, read_mode );
     bind_perform( TRUE, 0 );
+
+    /* Gather instance statistics */
+    while( instl != NULL ) {
+      report_gather_instance_stats( instl->inst );
+      instl = instl->next;
+    }
+
+    /* Now merge functional units and gather module statistics */
+    db_merge_funits();
     report_gather_funit_stats( funit_head );
 
   }
@@ -910,7 +922,7 @@ void command_report(
         unsigned int rv;
 
         if( input_db != NULL ) {
-          report_read_cdd_and_ready( input_db, READ_MODE_REPORT_MOD_MERGE );
+          report_read_cdd_and_ready( input_db, READ_MODE_REPORT_NO_MERGE );
         }
 
         /* Initialize the Tcl/Tk interpreter */
@@ -998,6 +1010,11 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.101  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.100  2008/03/17 05:26:17  phase1geo
  Checkpointing.  Things don't compile at the moment.
 
