@@ -51,7 +51,17 @@ void fsm_db_write( fsm* table, FILE* file, bool parse_mode );
 void fsm_db_read( char** line, /*@null@*/func_unit* funit );
 
 /*! \brief Reads and merges two FSMs, placing result into base FSM. */
-void fsm_db_merge( fsm* base, char** line, bool same );
+void fsm_db_merge(
+  fsm*   base,
+  char** line,
+  bool   same
+);
+
+/*! \brief Merges two FSMs, placing the result into the base FSM. */
+void fsm_merge(
+  fsm* base,
+  fsm* other
+);
 
 /*! \brief Sets the bit in set table based on the values of last and curr. */
 void fsm_table_set( fsm* table );
@@ -112,6 +122,11 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.28  2008/04/15 06:08:46  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.27  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.
