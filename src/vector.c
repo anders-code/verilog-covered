@@ -57,7 +57,15 @@
 #include "util.h"
 
 
-#define VECTOR_SIZE(width,size)   (((width % size) == 0) ? (width / size) : ((width / size) + 1))
+/*!
+ Returns the number of 32-bit elements are required to store a vector with a bit width of width.
+*/
+#define VECTOR_SIZE32(width)      (((width & 0x3f) == 0) ? (width >> 5) : ((width >> 5) + 1)
+
+/*!
+ Returns the number of 64-bit elements are required to store a vector with a bit width of width.
+*/
+#define VECTOR_SIZE64(width)      (((width & 0x7f) == 0) ? (width >> 6) : ((width >> 6) + 1)
 
 
 /*@-initsize@*/
@@ -68,6 +76,9 @@ nibble nand_optab[OPTAB_SIZE] = { NAND_OP_TABLE };  /*!< NAND operation table */
 nibble nor_optab[OPTAB_SIZE]  = { NOR_OP_TABLE  };  /*!< NOR operation table */
 nibble nxor_optab[OPTAB_SIZE] = { NXOR_OP_TABLE };  /*!< NXOR operation table */
 /*@=initsize@*/
+
+/*! Contains the structure sizes for the various vector types (vector "type" supplemental field is the index to this array */
+static const unsigned int vector_type_sizes = {VTYPE_INDEX_VAL_NUM, VTYPE_INDEX_SIG_NUM, VTYPE_INDEX_EXP_NUM, VTYPE_INDEX_MEM_NUM};
 
 extern char user_msg[USER_MSG_LENGTH];
 
@@ -87,12 +98,10 @@ extern char user_msg[USER_MSG_LENGTH];
 void vector_init_uint32(
   vector*   vec,
   uint32**  value,
-  int       num,
   uint32    data_l,
   uint32    data_h,
   bool      owns_value,
   int       width,
-  int       size,
   int       type,
   int       data_type
 ) { PROFILE(VECTOR_INIT);
@@ -107,6 +116,8 @@ void vector_init_uint32(
   if( value != NULL ) {
 
     int i, j;
+    int size = VECTOR_SIZE32(width);
+    int num  = vector_type_sizes[type];
 
     assert( width > 0 );
 
@@ -156,21 +167,15 @@ vector* vector_create(
     case VDATA_U32 :
       {
         uint32** value = NULL;
-        int size = VECTOR_SIZE(width,32);
         if( data == TRUE ) {
-          int num;
-          switch( type ) {
-            case VTYPE_VAL :  num = VTYPE_INDEX_VAL_NUM;  break;
-            case VTYPE_SIG :  num = VTYPE_INDEX_SIG_NUM;  break;
-            case VTYPE_EXP :  num = VTYPE_INDEX_EXP_NUM;  break;
-            case VTYPE_MEM :  num = VTYPE_INDEX_MEM_NUM;  break;
-          }
+          int num  = vector_type_sizes[type];
+          int size = VECTOR_SIZE32(width);
           value = (uint32**)malloc_safe( sizeof( uint32* ) * num );
           for( i=0; i<num; i++ ) {
             value[i] = (uint32*)malloc_safe( sizeof( uint32 ) * size );
           }
         }
-        vector_init_uint32( new_vec, value, num, 0x0, 0x0, (value != NULL), width, size, type, data_type );
+        vector_init_uint32( new_vec, value, 0x0, 0x0, (value != NULL), width, type, data_type );
       }
       break;
     }
@@ -193,19 +198,23 @@ void vector_copy(
   vector*       to_vec
 ) { PROFILE(VECTOR_COPY);
 
-  unsigned int i;  /* Loop iterator */
+  unsigned int i, j;  /* Loop iterators */
 
   assert( from_vec != NULL );
   assert( to_vec != NULL );
   assert( from_vec->width == to_vec->width );
+  assert( from_vec->suppl.part.type == to_vec->suppl.part.type );
+  assert( from_vec->suppl.part.data_type == to_vec->suppl.part.data_type );
 
-  /* Copy the data indication supplemental bits */
-  to_vec->suppl.part.unknown  = from_vec->suppl.part.unknown;
-  to_vec->suppl.part.not_zero = from_vec->suppl.part.not_zero;
-
-  /* Copy contents of value array */
-  for( i=0; i<from_vec->width; i++ ) {
-    to_vec->value[i] = from_vec->value[i];
+  switch( to_vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      for( i=0; i<VECTOR_SIZE32(from_vec->width); i++ ) {
+        for( j=0; j<vector_type_sizes[to_vec->suppl.part.type]; j++ ) {
+          to_vec->value.u32[j][i] = from_vec->value.u32[j][i];
+        }
+      }
+      break;
+    default:  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -231,77 +240,10 @@ void vector_clone(
   } else {
 
     /* Create vector */
-    *to_vec = vector_create( from_vec->width, from_vec->suppl.part.type, TRUE );
+    *to_vec = vector_create( from_vec->width, from_vec->suppl.part.type, from_vec->suppl.part.data_type, TRUE );
 
     vector_copy( from_vec, *to_vec );
 
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
- \param dat0  Data nibble 0
- \param dat1  Data nibble 1
- \param dat2  Data nibble 2
- \param dat3  Data nibble 3
-
- \return Returns an unsigned integer containing the values of dat0, dat1, dat2 and dat3
-         in an encoded, packed manner.
-*/
-static unsigned int vector_nibbles_to_uint(
-  nibble dat0,
-  nibble dat1,
-  nibble dat2,
-  nibble dat3
-) { PROFILE(VECTOR_NIBBLES_TO_UINT);
-
-  unsigned int d[4];  /* Array of unsigned int format of dat0,1,2,3 */
-  unsigned int i;     /* Loop iterator */
-
-  d[0] = ((unsigned int)dat0) & 0xff;
-  d[1] = ((unsigned int)dat1) & 0xff;
-  d[2] = ((unsigned int)dat2) & 0xff;
-  d[3] = ((unsigned int)dat3) & 0xff;
-
-  for( i=0; i<4; i++ ) {
-    d[i] = ( ((d[i] & 0x03) << (i *  2)) |
-             ((d[i] & 0x04) << (i +  6)) |
-             ((d[i] & 0x08) << (i +  9)) |
-             ((d[i] & 0x10) << (i + 12)) |
-             ((d[i] & 0x20) << (i + 15)) |
-             ((d[i] & 0x40) << (i + 18)) |
-             ((d[i] & 0x80) << (i + 21)) );
-  }
-
-  PROFILE_END;
-
-  return( d[0] | d[1] | d[2] | d[3] );
-
-}
-
-/*!
- \param data  Unsigned integer value containing the data to be nibble-ized
- \param dat   Array of four nibbles to populate
-
- Decodes and unpacks the given unsigned integer value into the specified nibble array.
-*/
-static void vector_uint_to_nibbles(
-  unsigned int data,
-  nibble*      dat
-) { PROFILE(VECTOR_UINT_TO_NIBBLES);
-
-  unsigned int i;  /* Loop iterator */
-
-  for( i=0; i<4; i++ ) {
-    dat[i] = (nibble)( (((data & (0x00000003 << (i * 2))) >> ((i * 2) + 0)) |
-                        ((data & (0x00000100 << i)      ) >> (i +  6)) |
-                        ((data & (0x00001000 << i)      ) >> (i +  9)) |
-                        ((data & (0x00010000 << i)      ) >> (i + 12)) |
-                        ((data & (0x00100000 << i)      ) >> (i + 15)) |
-                        ((data & (0x01000000 << i)      ) >> (i + 18)) |
-                        ((data & (0x10000000 << i)      ) >> (i + 21))) & 0xff );
   }
 
   PROFILE_END;
@@ -321,9 +263,7 @@ void vector_db_write(
   bool    write_data
 ) { PROFILE(VECTOR_DB_WRITE);
 
-  int    i;      /* Loop iterator */
   nibble mask;   /* Mask value for vector value nibbles */
-  nibble dflt;   /* Default value (based on 2 or 4 state) */
 
   assert( vec != NULL );
   assert( vec->width > 0 );
@@ -338,15 +278,6 @@ void vector_db_write(
     default        :  break;
   }
 
-  /* Calculate default value of bit */
-  dflt = (vec->suppl.part.is_2state == 1) ? 0x0 : 0x2;
-
-  /* If we will be writing Xs for our data, make sure that we set not_zero and unknown appropriately */
-  if( !write_data && (dflt == 0x2) ) {
-    vec->suppl.part.unknown  = 1;
-    vec->suppl.part.not_zero = 0;
-  }
-
   /* Output vector information to specified file */
   /*@-formatcode@*/
   fprintf( file, "%d %hhu",
@@ -358,45 +289,24 @@ void vector_db_write(
   /* Only write our data if we own it */
   if( vec->suppl.part.owns_data == 1 ) {
 
-    if( vec->value == NULL ) {
-
-      /* If the vector value was NULL, output default value */
-      for( i=0; i<vec->width; i+=4 ) {
-        switch( vec->width - i ) {
-          case 0 :  break;
-          case 1 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, 0x0,  0x0,  0x0 ) );   break;
-          case 2 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, 0x0,  0x0 ) );   break;
-          case 3 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, dflt, 0x0 ) );   break;
-          default:  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, dflt, dflt ) );  break;
+    /* Output value based on data type */
+    switch( vec->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32       dflt_h = (vec->suppl.part.is_2state == 1) ? 0x0 : 0xffffffff;
+          unsigned int i, j;
+          for( i=0; i<VECTOR_SIZE32(vec->width); i++ ) {
+            fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[0][i] : 0 );
+            fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[1][i] : dflt_h );
+            for( j=2; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
+              if( (mask & (0x1 << j)) == 1 ) {
+                fprintf( file, " %x", (vec->value.u32 != NULL) ? vec->value.u32[j][i] : 0 );
+              }
+            }
+          }
         }
-      }
-
-    } else {
-
-      for( i=0; i<vec->width; i+=4 ) {
-        switch( vec->width - i ) {
-          case 0 :  break;
-          case 1 :
-            fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 0, 0, 0 ) );
-            break;
-          case 2 :
-            fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)),
-                                                          ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)), 0, 0 ) );
-            break;
-          case 3 :
-            fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 
-                                                          ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)),
-                                                          ((vec->value[i+2].all & mask) | (write_data ? 0 : dflt)), 0 ) );
-            break;
-          default:
-            fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 
-                                                          ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)),
-                                                          ((vec->value[i+2].all & mask) | (write_data ? 0 : dflt)),
-                                                          ((vec->value[i+3].all & mask) | (write_data ? 0 : dflt)) ) );
-            break;
-        }
-      }
-
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
@@ -420,10 +330,8 @@ void vector_db_read(
 ) { PROFILE(VECTOR_DB_READ);
 
   int          width;          /* Vector bit width */
-  int          suppl;          /* Temporary supplemental value */
-  int          i;              /* Loop iterator */
+  vsuppl       suppl;          /* Temporary supplemental value */
   int          chars_read;     /* Number of characters read */
-  unsigned int value;          /* Temporary value */
   nibble       nibs[4];        /* Temporary nibble value containers */
 
   /* Read in vector information */
@@ -432,45 +340,31 @@ void vector_db_read(
     *line = *line + chars_read;
 
     /* Create new vector */
-    *vec              = vector_create( width, VTYPE_VAL, TRUE );
-    (*vec)->suppl.all = (char)suppl & 0xff;
+    *vec              = vector_create( width, suppl.part.type, suppl.part.data_type, TRUE );
+    (*vec)->suppl.all = suppl.all;
 
-    if( (*vec)->suppl.part.owns_data == 1 ) {
+    if( suppl.part.owns_data == 1 ) {
 
       Try {
 
-        i = 0;
-        while( i < width ) {
-          if( sscanf( *line, "%x%n", &value, &chars_read ) == 1 ) {
-            *line += chars_read;
-            vector_uint_to_nibbles( value, nibs );
-            switch( width - i ) {
-              case 0 :  break;
-              case 1 :
-                (*vec)->value[i+0].all = nibs[0];
-                break;
-              case 2 :
-                (*vec)->value[i+0].all = nibs[0];
-                (*vec)->value[i+1].all = nibs[1];
-                break;
-              case 3 :
-                (*vec)->value[i+0].all = nibs[0];
-                (*vec)->value[i+1].all = nibs[1];
-                (*vec)->value[i+2].all = nibs[2];
-                break;
-              default:
-                (*vec)->value[i+0].all = nibs[0];
-                (*vec)->value[i+1].all = nibs[1];
-                (*vec)->value[i+2].all = nibs[2];
-                (*vec)->value[i+3].all = nibs[3];
-                break;
+        switch( suppl.part.data_type ) {
+          case VDATA_U32 :
+            {
+              unsigned int i, j;
+              for( i=0; i<VECTOR_SIZE32(width); i++ ) {
+                for( j=0; j<vector_type_sizes[suppl.part.type]; j++ ) {
+                  if( sscanf( *line, "%x%n", &((*vec)->value.u32[j][i]), &chars_read ) == 1 ) {
+                    *line += chars_read;
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                    printf( "vector Throw A\n" );
+                    Throw 0;
+                  }
+                }
+              }
             }
-          } else {
-            print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-            printf( "vector Throw A\n" );
-            Throw 0;
-          }
-          i += 4;
+            break;
+          default :  assert( 0 );  break;
         }
 
       } Catch_anonymous {
@@ -483,8 +377,19 @@ void vector_db_read(
     /* Otherwise, deallocate the vector data */
     } else {
 
-      free_safe( (*vec)->value, (sizeof( vec_data ) * width) );
-      (*vec)->value = NULL;
+      switch( suppl.part.data_type ) {
+        case VDATA_U32 :
+          {
+            unsigned int i;
+            for( i=0; i<vector_type_sizes[suppl.part.type]; i++ ) {
+              free_safe( (*vec)->value.u32[i], (sizeof( uint32* ) * VECTOR_SIZE32(width)) );
+            }
+            free_safe( (*vec)->value.u32, (sizeof( uint32 ) * vector_type_sizes[suppl.part.type]) );
+            (*vec)->value = NULL;
+          }
+          break;
+        default :  assert( 0 );  break;
+      }
 
     }
 
@@ -2705,6 +2610,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.2  2008/04/17 23:16:08  phase1geo
+ More work on vector.c.  Completed initial pass of vector_db_write/read and
+ vector_copy/clone functionality.  Checkpointing.
+
  Revision 1.138.2.1  2008/04/16 22:29:58  phase1geo
  Finished format for new vector value format.  Completed work on vector_init_uint32
  and vector_create.

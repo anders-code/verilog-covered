@@ -1520,6 +1520,30 @@ union isuppl_u {
 };
 
 /*------------------------------------------------------------------------------*/
+
+union vsuppl_u;
+
+/*!
+ Renaming vsuppl_u field for convenience.
+*/
+typedef union vsuppl_u vsuppl;
+
+/*!
+ Supplemental field for information line in CDD file.
+*/
+union vsuppl_u {
+  nibble   all;                    /*!< Allows us to set all bits in the suppl field */
+  struct {
+    nibble type      :2;           /*!< Specifies what type of information is stored in this vector
+                                        (see \ref vector_types for legal values) */
+    nibble data_type :2;           /*!< Specifies what the size/type of a single value entry is */
+    nibble owns_data :1;           /*!< Specifies if this vector owns its data array or not */
+    nibble is_signed :1;           /*!< Specifies that this vector should be treated as a signed value */
+    nibble is_2state :1;           /*!< Specifies that this vector should be treated as a 2-state value */
+  } part;
+};
+
+/*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DECLARATIONS  */
 
 union  expr_stmt_u;
@@ -1927,17 +1951,7 @@ struct str_link_s {
 */
 struct vector_s {
   int        width;                  /*!< Bit width of this vector */
-  union {
-    nibble   all;                    /*!< Allows us to set all bits in the suppl field */
-    struct {
-      nibble type      :2;           /*!< Specifies what type of information is stored in this vector
-                                          (see \ref vector_types for legal values) */
-      nibble data_type :2;           /*!< Specifies what the size/type of a single value entry is */
-      nibble owns_data :1;           /*!< Specifies if this vector owns its data array or not */
-      nibble is_signed :1;           /*!< Specifies that this vector should be treated as a signed value */
-      nibble is_2state :1;           /*!< Specifies that this vector should be treated as a 2-state value */
-    } part;
-  } suppl;                           /*!< Supplemental field */
+  vsuppl     suppl;                  /*!< Supplemental field */
   union {
     uint32** u32;                    /*!< 32-bit unsigned integer array for value, signal, expression and memory types */
 //    uint64** u64;                    /*!< 64-bit unsigned integer value */
@@ -2672,6 +2686,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.3  2008/04/17 23:16:08  phase1geo
+ More work on vector.c.  Completed initial pass of vector_db_write/read and
+ vector_copy/clone functionality.  Checkpointing.
+
  Revision 1.294.2.2  2008/04/16 22:29:58  phase1geo
  Finished format for new vector value format.  Completed work on vector_init_uint32
  and vector_create.
