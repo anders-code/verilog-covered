@@ -696,25 +696,27 @@ void vector_display_value_uint32(
  width parameter.
 */
 void vector_display_nibble_uint32(
-  uint32* value,
-  int     width,
-  int     type
+  uint32** value,
+  int      width,
+  int      type
 ) {
 
-  int i;  /* Loop iterator */
+  unsigned int i, j;  /* Loop iterator */
 
   printf( "\n" );
   printf( "      raw value:" );
   
-  for( i=(width - 1); i>=0; i-- ) {
-    /*@-formatcode@*/
-    printf( " %hhx", nib[i].all );
-    /*@=formatcode@*/
+  for( i=0; i<vector_type_sizes[type]; i++ ) {
+    for( j=(VECTOR_SIZE32(width) - 1); j>=0; j-- ) {
+      /*@-formatcode@*/
+      printf( " %x", value[i][j] );
+      /*@=formatcode@*/
+    }
   }
 
   /* Display nibble value */
   printf( ", " );
-  vector_display_value( nib, width );
+  vector_display_value_uint32( value, width );
 
   switch( type ) {
 
@@ -722,17 +724,17 @@ void vector_display_nibble_uint32(
 
       /* Display nibble toggle01 history */
       printf( ", 0->1: " );
-      vector_display_toggle01( nib, width, stdout );
+      vector_display_toggle01_uint32( value, width, stdout );
 
       /* Display nibble toggle10 history */
       printf( ", 1->0: " );
-      vector_display_toggle10( nib, width, stdout );
+      vector_display_toggle10_uint32( value, width, stdout );
 
       /* Display bit set information */
-      printf( ", set: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", set: %d'h", width );
+      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.sig.set );
+        printf( "%x", value[VTYPE_INDEX_SIG_SET][i] );
         /*@=formatcode@*/
       }
 
@@ -741,42 +743,42 @@ void vector_display_nibble_uint32(
     case VTYPE_EXP :
 
       /* Display eval_a information */
-      printf( ", a: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", a: %d'h", width );
+      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.exp.eval_a );
+        printf( "%x", value[VTYPE_INDEX_EXP_EVAL_A][i] );
         /*@=formatcode@*/
       }
 
       /* Display eval_b information */
-      printf( ", b: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", b: %d'h", width );
+      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.exp.eval_b );
+        printf( "%x", value[VTYPE_INDEX_EXP_EVAL_B][i] );
         /*@=formatcode@*/
       }
 
       /* Display eval_c information */
-      printf( ", c: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", c: %d'h", width );
+      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.exp.eval_c );
+        printf( "%x", value[VTYPE_INDEX_EXP_EVAL_C][i] );
         /*@=formatcode@*/
       }
 
       /* Display eval_d information */
-      printf( ", d: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", d: %d'h", width );
+      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.exp.eval_d );
+        printf( "%x", value[VTYPE_INDEX_EXP_EVAL_D][i] );
         /*@=formatcode@*/
       }
 
       /* Display set information */
-      printf( ", set: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", set: %d'h", width );
+      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.exp.set );
+        printf( "%x", value[VTYPE_INDEX_EXP_SET][i] );
         /*@=formatcode@*/
       }
 
@@ -786,25 +788,25 @@ void vector_display_nibble_uint32(
   
       /* Display nibble toggle01 history */
       printf( ", 0->1: " );
-      vector_display_toggle01( nib, width, stdout );
+      vector_display_toggle01_uint32( value, width, stdout );
 
       /* Display nibble toggle10 history */
       printf( ", 1->0: " );
-      vector_display_toggle10( nib, width, stdout );
+      vector_display_toggle10_uint32( value, width, stdout );
 
       /* Write history */
-      printf( ", wr: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", wr: %d'h", width );
+      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.mem.wr );
+        printf( "%x", value[VTYPE_INDEX_MEM_WR][i]);
         /*@=formatcode@*/
       }
 
       /* Read history */
-      printf( ", rd: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", rd: %d'h", width );
+      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.mem.rd );
+        printf( "%x", value[VTYPE_INDEX_MEM_RD][i] );
         /*@=formatcode@*/
       }
 
@@ -831,8 +833,11 @@ void vector_display(
   printf( "Vector (%p) => width: %d, suppl: %hhx\n", vec, vec->width, vec->suppl.all );
   /*@=formatcode@*/
 
-  if( (vec->width > 0) && (vec->value != NULL) ) {
-    vector_display_nibble( vec->value, vec->width, vec->suppl.part.type );
+  if( (vec->width > 0) && (vec->value.u32 != NULL) ) {
+    switch( vec->suppl.part.data_type ) {
+      case VDATA_U32 :  vector_display_nibble_uint32( vec->value.u32, vec->width, vec->suppl.part.type );  break;
+      default        :  assert( 0 );  break;
+    }
   } else {
     printf( "NO DATA" );
   }
@@ -856,13 +861,20 @@ void vector_toggle_count(
   int*    tog10_cnt
 ) { PROFILE(VECTOR_TOGGLE_COUNT);
 
-  int i;  /* Loop iterator */
-
   if( (vec->suppl.part.type == VTYPE_SIG) || (vec->suppl.part.type == VTYPE_MEM) ) {
 
-    for( i=0; i<vec->width; i++ ) {
-      *tog01_cnt = *tog01_cnt + vec->value[i].part.sig.tog01;
-      *tog10_cnt = *tog10_cnt + vec->value[i].part.sig.tog10;
+    unsigned int i, j;
+
+    switch( vec->suppl.part.data_type ) {
+      case VDATA_U32 :
+        for( i=0; i<VECTOR_SIZE32(vec->width); i++ ) {
+          for( j=0; j<32; j++ ) {
+            *tog01_cnt += ((vec->value.u32[VTYPE_INDEX_SIG_TOG01][i] >> j) & 0x1);
+            *tog10_cnt += ((vec->value.u32[VTYPE_INDEX_SIG_TOG10][i] >> j) & 0x1);
+          }
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
@@ -885,11 +897,18 @@ void vector_mem_rw_count(
   int*    rd_cnt
 ) { PROFILE(VECTOR_MEM_RW_COUNT);
 
-  int i;  /* Loop iterator */
+  unsigned int i, j;  /* Loop iterator */
 
-  for( i=0; i<vec->width; i++ ) {
-    *wr_cnt += vec->value[i].part.mem.wr;
-    *rd_cnt += vec->value[i].part.mem.rd;
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      for( i=0; i<VECTOR_SIZE32(vec->width); i++ ) {
+        for( j=0; j<32; j++ ) {
+          *wr_cnt += vec->value.u32[VTYPE_INDEX_MEM_WR][i];
+          *rd_cnt += vec->value.u32[VTYPE_INDEX_MEM_RD][i];
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -909,22 +928,27 @@ void vector_mem_rw_count(
 */
 bool vector_set_assigned(
   vector* vec,
-  int msb,
-  int lsb
+  int     msb,
+  int     lsb
 ) { PROFILE(VECTOR_SET_ASSIGNED);
 
-  bool prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
-  int  i;                      /* Loop iterator */
+  bool          prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
+  unsigned int  i;                      /* Loop iterator */
 
   assert( vec != NULL );
   assert( (msb - lsb) < vec->width );
   assert( vec->suppl.part.type == VTYPE_SIG );
 
-  for( i=lsb; i<=msb; i++ ) {
-    if( vec->value[i].part.sig.misc == 1 ) {
-      prev_assigned = TRUE;
-    }
-    vec->value[i].part.sig.misc = 1;
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      for( i=lsb; i<=msb; i++ ) {
+        if( ((vec->value.u32[VTYPE_INDEX_SIG_MISC][i/32] >> (i % 32)) & 0x1) == 1 ) {
+          prev_assigned = TRUE;
+        }
+        vec->value.u32[VTYPE_INDEX_SIG_MISC][i] |= (0x1 << (i % 32));
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -2622,6 +2646,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.4  2008/04/18 14:14:19  phase1geo
+ More vector updates.
+
  Revision 1.138.2.3  2008/04/18 05:05:28  phase1geo
  More updates to vector file.  Updated merge and output functions.  Checkpointing.
 
