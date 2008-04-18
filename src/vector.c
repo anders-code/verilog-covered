@@ -329,10 +329,9 @@ void vector_db_read(
   char**   line
 ) { PROFILE(VECTOR_DB_READ);
 
-  int          width;          /* Vector bit width */
-  vsuppl       suppl;          /* Temporary supplemental value */
-  int          chars_read;     /* Number of characters read */
-  nibble       nibs[4];        /* Temporary nibble value containers */
+  int    width;       /* Vector bit width */
+  vsuppl suppl;       /* Temporary supplemental value */
+  int    chars_read;  /* Number of characters read */
 
   /* Read in vector information */
   if( sscanf( *line, "%d %d%n", &width, &suppl, &chars_read ) == 2 ) {
@@ -424,12 +423,9 @@ void vector_db_merge(
   bool    same
 ) { PROFILE(VECTOR_DB_MERGE);
 
-  int          width;           /* Width of read vector */
-  int          suppl;           /* Supplemental value of vector */
-  int          chars_read;      /* Number of characters read */
-  int          i;               /* Loop iterator */
-  unsigned int value;           /* Integer form of value */
-  nibble       nibs[4];         /* Temporary nibble containers */
+  int    width;       /* Width of read vector */
+  vsuppl suppl;       /* Supplemental value of vector */
+  int    chars_read;  /* Number of characters read */
 
   assert( base != NULL );
 
@@ -448,40 +444,30 @@ void vector_db_merge(
 
     } else if( base->suppl.part.owns_data == 1 ) {
 
-      i = 0;
-      while( i < width ) {
-        if( sscanf( *line, "%x%n", &value, &chars_read ) == 1 ) {
-          *line += chars_read;
-          vector_uint_to_nibbles( value, nibs );
-          switch( width - i ) {
-            case 0 :  break;
-            case 1 :  
-              base->value[i+0].all = (base->value[i+0].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[0] & VECTOR_MERGE_MASK);
-              break;
-            case 2 :
-              base->value[i+0].all = (base->value[i+0].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[0] & VECTOR_MERGE_MASK);
-              base->value[i+1].all = (base->value[i+1].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[1] & VECTOR_MERGE_MASK);
-              break;
-            case 3 :
-              base->value[i+0].all = (base->value[i+0].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[0] & VECTOR_MERGE_MASK);
-              base->value[i+1].all = (base->value[i+1].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[1] & VECTOR_MERGE_MASK);
-              base->value[i+2].all = (base->value[i+2].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[2] & VECTOR_MERGE_MASK);
-              break;
-            default:
-              base->value[i+0].all = (base->value[i+0].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[0] & VECTOR_MERGE_MASK);
-              base->value[i+1].all = (base->value[i+1].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[1] & VECTOR_MERGE_MASK);
-              base->value[i+2].all = (base->value[i+2].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[2] & VECTOR_MERGE_MASK);
-              base->value[i+3].all = (base->value[i+3].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[3] & VECTOR_MERGE_MASK);
-              break;
+      switch( base->suppl.part.data_type ) {
+        case VDATA_U32 :
+          {
+            unsigned int i, j;
+            uint32       value;
+            for( i=0; i<VECTOR_SIZE32(width); i++ ) {
+              for( j=0; j<vector_type_sizes[suppl.part.type]; j++ ) {
+                if( sscanf( *line, "%x%n", &value, &chars_read ) == 1 ) {
+                  *line += chars_read;
+                  if( j >= 2 ) {
+                    base->value.u32[j][i] |= value;
+                  }
+                } else {
+                  print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+                  printf( "vector Throw E\n" );
+                  Throw 0;
+                }
+              }
+            } 
           }
-        } else {
-          print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-          printf( "vector Throw E\n" );
-          Throw 0;
-        }
-        i += 4;
+          break;
+        default :  assert( 0 );  break;
       }
-                       
+
     }
 
   } else {
@@ -505,13 +491,20 @@ void vector_merge(
   vector* other  /*!< Vector which will merge its results into the base vector */
 ) { PROFILE(VECTOR_MERGE);
 
-  int i;  /* Loop iterator */
+  unsigned int i, j;  /* Loop iterator */
 
   assert( base != NULL );
   assert( base->width == other->width );
 
-  for( i=0; i<base->width; i++ ) {
-    base->value[i].all = (base->value[i].all & VECTOR_MERGE_MASK) | (other->value[i].all & VECTOR_MERGE_MASK);
+  switch( base->suppl.part.data_type ) {
+    case VDATA_U32 :
+      for( i=0; i<VECTOR_SIZE32(base->width); i++ ) {
+        for( j=2; j<vector_type_sizes[base->suppl.part.type]; j++ ) {
+          base->value.u32[j][i] |= other->value.u32[j][i];
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -524,21 +517,25 @@ void vector_merge(
 
  \return Returns a string showing the toggle 0 -> 1 information.
 */
-char* vector_get_toggle01(
-  vec_data* nib,
-  int       width
-) { PROFILE(VECTOR_GET_TOGGLE01);
+char* vector_get_toggle01_uint32(
+  uint32** value,
+  int      width
+) { PROFILE(VECTOR_GET_TOGGLE01_UINT32);
 
-  char* bits = (char*)malloc_safe( width + 1 );
-  int   i;
-  char  tmp[2];
+  char*        bits      = (char*)malloc_safe( width + 1 );
+  int          bits_left = (width % 32);
+  unsigned int i, j;
+  char         tmp[2];
 
-  for( i=(width - 1); i>=0; i-- ) {
-    /*@-formatcode@*/
-    unsigned int rv = snprintf( tmp, 2, "%hhx", nib[i].part.sig.tog01 );
-    /*@=formatcode@*/
-    assert( rv < 2 );
-    bits[((width - 1) - i)] = tmp[0];
+  for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+    for( j=(bits_left - 1); j>=0; j-- ) {
+      /*@-formatcode@*/
+      unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[VTYPE_INDEX_SIG_TOG01][i] >> j) & 0x1) );
+      /*@=formatcode@*/
+      assert( rv < 2 );
+      bits[((width - 1) - i)] = tmp[0];
+    }
+    bits_left = 32;
   }
 
   bits[width] = '\0';
@@ -555,23 +552,27 @@ char* vector_get_toggle01(
 
  \return Returns a string showing the toggle 1 -> 0 information.
 */
-char* vector_get_toggle10(
-  vec_data* nib,
-  int       width
-) { PROFILE(VECTOR_GET_TOGGLE10);
+char* vector_get_toggle10_uint32(
+  uint32** value,
+  int      width
+) { PROFILE(VECTOR_GET_TOGGLE10_UINT32);
 
-  char* bits = (char*)malloc_safe( width + 1 );
-  int   i; 
-  char  tmp[2];
-
-  for( i=(width - 1); i>=0; i-- ) {
-    /*@-formatcode@*/
-    unsigned int rv = snprintf( tmp, 2, "%hhx", nib[i].part.sig.tog10 );
-    /*@=formatcode@*/
-    assert( rv < 2 );
-    bits[((width - 1) - i)] = tmp[0];
-  }
-
+  char*        bits      = (char*)malloc_safe( width + 1 );
+  int          bits_left = (width % 32);
+  unsigned int i, j;
+  char         tmp[2];
+  
+  for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+    for( j=(bits_left - 1); j>=0; j-- ) {
+      /*@-formatcode@*/ 
+      unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[VTYPE_INDEX_SIG_TOG10][i] >> j) & 0x1) );
+      /*@=formatcode@*/ 
+      assert( rv < 2 );
+      bits[((width - 1) - i)] = tmp[0];
+    } 
+    bits_left = 32;
+  } 
+  
   bits[width] = '\0';
 
   PROFILE_END;
@@ -588,25 +589,28 @@ char* vector_get_toggle10(
  Displays the toggle01 information from the specified vector to the output
  stream specified in ofile.
 */
-void vector_display_toggle01(
-  vec_data* nib,
-  int       width,
-  FILE*     ofile
-) { PROFILE(VECTOR_DISPLAY_TOGGLE01);
+void vector_display_toggle01_uint32(
+  uint32** value,
+  int      width,
+  FILE*    ofile
+) { PROFILE(VECTOR_DISPLAY_TOGGLE01_UINT32);
 
-  unsigned int value = 0;  /* Current 4-bit hexidecimal value of toggle */
-  int          i;          /* Loop iterator */
+  unsigned int nib       = 0;
+  unsigned int i, j;
+  int          bits_left = (width % 32);
 
   fprintf( ofile, "%d'h", width );
 
-  for( i=(width - 1); i>=0; i-- ) {
-    value = value | (nib[i].part.sig.tog01 << ((unsigned)i % 4));
-    if( (i % 4) == 0 ) {
-      fprintf( ofile, "%1x", value );
-      value = 0;
-    }
-    if( ((i % 16) == 0) && (i != 0) ) {
-      fprintf( ofile, "_" );
+  for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+    for( j=(bits_left - 1); j>=0; j-- ) {
+      nib |= (((value[VTYPE_INDEX_SIG_TOG01][i] >> j) & 0x1) << ((unsigned)j % 4));
+      if( (j % 4) == 0 ) {
+        fprintf( ofile, "%1x", nib );
+        nib = 0;
+      }
+      if( ((j % 16) == 0) && (j != 0) ) {
+        fprintf( ofile, "_" );
+      }
     }
   }
 
@@ -622,26 +626,29 @@ void vector_display_toggle01(
  Displays the toggle10 information from the specified vector to the output
  stream specified in ofile.
 */
-void vector_display_toggle10(
-  vec_data* nib,
-  int       width,
-  FILE*     ofile
-) { PROFILE(VECTOR_DISPLAY_TOGGLE10);
+void vector_display_toggle10_uint32(
+  uint32** value,
+  int      width,
+  FILE*    ofile
+) { PROFILE(VECTOR_DISPLAY_TOGGLE10_UINT32);
 
-  unsigned int value = 0;  /* Current 4-bit hexidecimal value of toggle */
-  int          i;          /* Loop iterator */
-
+  unsigned int nib       = 0;
+  unsigned int i, j;
+  int          bits_left = (width % 32);
+  
   fprintf( ofile, "%d'h", width );
-
-  for( i=(width - 1); i>=0; i-- ) {
-    value = value | (nib[i].part.sig.tog10 << ((unsigned)i % 4));
-    if( (i % 4) == 0 ) {
-      fprintf( ofile, "%1x", value );
-      value = 0;
-    }
-    if( ((i % 16) == 0) && (i != 0) ) {
-      fprintf( ofile, "_" );
-    }
+      
+  for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+    for( j=(bits_left - 1); j>=0; j-- ) {
+      nib |= (((value[VTYPE_INDEX_SIG_TOG10][i] >> j) & 0x1) << ((unsigned)j % 4));
+      if( (j % 4) == 0 ) {
+        fprintf( ofile, "%1x", nib );
+        nib = 0;
+      }
+      if( ((j % 16) == 0) && (j != 0) ) {
+        fprintf( ofile, "_" );
+      }
+    } 
   }
 
   PROFILE_END;
@@ -654,22 +661,27 @@ void vector_display_toggle10(
 
  Displays the binary value of the specified vector data array to standard output.
 */
-void vector_display_value(
-  vec_data* nib,
-  int       width
+void vector_display_value_uint32(
+  uint32** value,
+  int      width
 ) {
 
-  int i;  /* Loop iterator */
+  unsigned int i, j;  /* Loop iterator */
+  int bits_left = (width % 32);
 
   printf( "value: %d'b", width );
 
-  for( i=(width - 1); i>=0; i-- ) {
-    switch( nib[i].part.val.value ) {
-      case 0 :  printf( "0" );  break;
-      case 1 :  printf( "1" );  break;
-      case 2 :  printf( "x" );  break;
-      case 3 :  printf( "z" );  break;
-      default:  break;
+  for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+    for( j=(bits_left - 1); j>=0; j-- ) {
+      if( ((value[VTYPE_INDEX_VAL_VALH][i] >> j) & 0x1) == 0 ) {
+        printf( "%d", ((value[VTYPE_INDEX_VAL_VALL][i] >> j) & 0x1) );
+      } else {
+        if( ((value[VTYPE_INDEX_VAL_VALL][i] >> j) & 0x1) == 0 ) {
+          printf( "x" );
+        } else {
+          printf( "z" );
+        }
+      }
     }
   }
 
@@ -683,10 +695,10 @@ void vector_display_value(
  Outputs the specified nibble array to standard output as described by the
  width parameter.
 */
-void vector_display_nibble(
-  vec_data* nib,
-  int       width,
-  int       type
+void vector_display_nibble_uint32(
+  uint32* value,
+  int     width,
+  int     type
 ) {
 
   int i;  /* Loop iterator */
@@ -2610,6 +2622,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.3  2008/04/18 05:05:28  phase1geo
+ More updates to vector file.  Updated merge and output functions.  Checkpointing.
+
  Revision 1.138.2.2  2008/04/17 23:16:08  phase1geo
  More work on vector.c.  Completed initial pass of vector_db_write/read and
  vector_copy/clone functionality.  Checkpointing.

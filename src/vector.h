@@ -87,19 +87,36 @@ void vector_merge(
 );
 
 /*! \brief Returns string containing toggle 0 -> 1 information in binary format */
-char* vector_get_toggle01( vec_data* nib, int width );
+char* vector_get_toggle01_uint32(
+  uint32** value,
+  int      width
+);
 
 /*! \brief Returns string containing toggle 1 -> 0 information in binary format */
-char* vector_get_toggle10( vec_data* nib, int width );
+char* vector_get_toggle10_uint32(
+  uint32** value,
+  int      width
+);
 
 /*! \brief Outputs the toggle01 information from the specified nibble to the specified output stream. */
-void vector_display_toggle01( vec_data* nib, int width, FILE* ofile );
+void vector_display_toggle01_uint32(
+  uint32** value,
+  int      width,
+  FILE*    ofile
+);
 
 /*! \brief Outputs the toggle10 information from the specified nibble to the specified output stream. */
-void vector_display_toggle10( vec_data* nib, int width, FILE* ofile );
+void vector_display_toggle10_uint32(
+  uint32** value,
+  int      width,
+  FILE*    ofile
+);
 
 /*! \brief Outputs the binary value of the specified nibble array to standard output */
-void vector_display_value( vec_data* nib, int width );
+void vector_display_value_uint32(
+  uint32** nib,
+  int      width
+);
 
 /*@-exportlocal@*/
 /*! \brief Outputs nibble to standard output. */
@@ -242,6 +259,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.2  2008/04/18 05:05:28  phase1geo
+ More updates to vector file.  Updated merge and output functions.  Checkpointing.
+
  Revision 1.58.2.1  2008/04/17 23:16:08  phase1geo
  More work on vector.c.  Completed initial pass of vector_db_write/read and
  vector_copy/clone functionality.  Checkpointing.
