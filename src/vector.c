@@ -60,21 +60,21 @@
 /*!
  Returns the number of 32-bit elements are required to store a vector with a bit width of width.
 */
-#define VECTOR_SIZE32(width)      (((width & 0x3f) == 0) ? (width >> 5) : ((width >> 5) + 1)
+#define VECTOR_SIZE32(width)      (((width & 0x1f) == 0) ? (width >> 5) : ((width >> 5) + 1)
 
 /*!
  Returns the number of 64-bit elements are required to store a vector with a bit width of width.
 */
-#define VECTOR_SIZE64(width)      (((width & 0x7f) == 0) ? (width >> 6) : ((width >> 6) + 1)
+#define VECTOR_SIZE64(width)      (((width & 0x3f) == 0) ? (width >> 6) : ((width >> 6) + 1)
 
 
 /*@-initsize@*/
-nibble xor_optab[OPTAB_SIZE]  = { XOR_OP_TABLE  };  /*!< XOR operation table */
-nibble and_optab[OPTAB_SIZE]  = { AND_OP_TABLE  };  /*!< AND operation table */
-nibble or_optab[OPTAB_SIZE]   = { OR_OP_TABLE   };  /*!< OR operation table */
-nibble nand_optab[OPTAB_SIZE] = { NAND_OP_TABLE };  /*!< NAND operation table */
-nibble nor_optab[OPTAB_SIZE]  = { NOR_OP_TABLE  };  /*!< NOR operation table */
-nibble nxor_optab[OPTAB_SIZE] = { NXOR_OP_TABLE };  /*!< NXOR operation table */
+const nibble xor_optab[OPTAB_SIZE]  = { XOR_OP_TABLE  };  /*!< XOR operation table */
+const nibble and_optab[OPTAB_SIZE]  = { AND_OP_TABLE  };  /*!< AND operation table */
+const nibble or_optab[OPTAB_SIZE]   = { OR_OP_TABLE   };  /*!< OR operation table */
+const nibble nand_optab[OPTAB_SIZE] = { NAND_OP_TABLE };  /*!< NAND operation table */
+const nibble nor_optab[OPTAB_SIZE]  = { NOR_OP_TABLE  };  /*!< NOR operation table */
+const nibble nxor_optab[OPTAB_SIZE] = { NXOR_OP_TABLE };  /*!< NXOR operation table */
 /*@=initsize@*/
 
 /*! Contains the structure sizes for the various vector types (vector "type" supplemental field is the index to this array */
@@ -958,11 +958,109 @@ bool vector_set_assigned(
 }
 
 /*!
- \param vec       Pointer to vector to set value to.
- \param value     New value to set vector value to.
- \param width     Width of new value.
- \param from_idx  Starting bit index of value to start copying.
- \param to_idx    Starting bit index of value to copy to.
+ \param vec  Pointer to vector to calculate coverage metrics for and perform scratch -> actual assignment
+ \param scratchl  Pointer to scratch array containing new lower data
+ \param scratchh  Pointer to scratch array containing new upper data
+ \param lsb  Least-significant bit to get coverage for
+ \param msb  Most-significant bit to get coverage for
+
+ \return Returns TRUE if the assigned value has changed; otherwise, returns FALSE.
+
+ This function is called after a value has been stored in the SCRATCH arrays.  This
+ function calculates the vector coverage information based on the vector type and performs the assignment
+ from the SCRATCH array to the 
+*/
+static bool vector_set_coverage_and_assign_uint32(
+  vector* vec,
+  uint32* scratchl,
+  uint32* scratchh,
+  int     lsb,
+  int     msb
+) { PROFILE(vector_set_coverage_and_assign);
+
+  bool         changed = FALSE;                     /* Set to TRUE if the assigned value has changed */
+  unsigned int lindex  = (lsb >> 5);                /* Index of lowest array entry */
+  unsigned int hindex  = (msb >> 5);                /* Index of highest array entry */
+  uint32       lmask   = (0xffffffff << lsb);       /* Mask to be used in lower element */
+  uint32       hmask   = (0xffffffff >> (32-msb));  /* Mask to be used in upper element */
+
+  /* If the lindex and hindex are the same, set lmask to the AND of the high and low masks */
+  if( lindex == hindex ) {
+    lmask &= hmask;
+  }
+
+  switch( vec->suppl.part.type ) {
+    case VTYPE_VAL :
+      for( i=lindex; i<=hindex; i++ ) {
+        vec->value.u32[VTYPE_INDEX_VAL_VALL][i] = scratchl[i];
+        vec->value.u32[VTYPE_INDEX_VAL_VALH][i] = scratchh[i];
+      }
+      retval = TRUE;
+      break;
+    case VTYPE_SIG :
+      for( i=lindex; i<=hindex; i++ ) {
+        uint32  fvall = scratchl[i];
+        uint32  fvalh = scratchh[i];
+        uint32* tvall = &(vec->value.u32[VTYPE_INDEX_SIG_VALL][i]);
+        uint32* tvalh = &(vec->value.u32[VTYPE_INDEX_SIG_VALH][i]);
+        uint32* set   = &(vec->value.u32[VTYPE_INDEX_SIG_SET][i]);
+        uint32  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : 0xffffffff);
+        if( (fvall != *tvall) || (fvalh != *tvalh) || ((*set & mask) == 0) ) {
+          if( (*set & mask) != 0 ) {
+            vec->value.u32[VTYPE_INDEX_SIG_TOG01][i] |= ((~fvalh & fvall) ^ (~(*tvalh) & *tvall)) & ~(~fvalh & fvall);
+            vec->value.u32[VTYPE_INDEX_SIG_TOG10][i] |= ((~fvalh & fvall) ^ (~(*tvalh) & *tvall)) &  (~fvalh & fvall);
+          }
+          *set   = mask;
+          *tvall = fvall;
+          *tvalh = fvalh;
+          retval = TRUE;
+        }
+      }
+      break;
+    case VTYPE_MEM :
+      for( i=lindex; i<=hindex; i++ ) {
+        uint32  fvall = scratchl[i];
+        uint32  fvalh = scratchh[i];
+        uint32* tvall = &(vec->value.u32[VTYPE_INDEX_MEM_VALL][i]);
+        uint32* tvalh = &(vec->value.u32[VTYPE_INDEX_MEM_VALH][i]);
+        if( (fvall != *tvall) || (fvalh != *tvalh) ) {
+          vec->value.u32[VTYPE_INDEX_MEM_TOG01][i] |= ((~fvalh & fvall) ^ (~(*tvalh) & *tvall)) & ~(~fvalh & fvall);
+          vec->value.u32[VTYPE_INDEX_MEM_TOG10][i] |= ((~fvalh & fvall) ^ (~(*tvalh) & *tvall)) &  (~fvalh & fvall);
+          vec->value.u32[VTYPE_INDEX_MEM_WR][i]     = (i==lindex) ? lmask : (i==hindex ? hmask : 0xffffffff);
+          *tvall = fvall;
+          *tvalh = fvalh;
+          retval = TRUE;
+        }
+      }
+      break;
+    case VTYPE_EXP :
+      for( i=lindex; i<=hindex; i++ ) {
+        uint32  fvall = scratchl[i];
+        uint32  fvalh = scratchh[i];
+        uint32* tvall = &(vec->value.u32[VTYPE_INDEX_EXP_VALL][i]);
+        uint32* tvalh = &(vec->value.u32[VTYPE_INDEX_EXP_VALH][i]);
+        uint32* set   = &(vec->value.u32[VTYPE_INDEX_EXP_SET][i]);
+        uint32  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : 0xffffffff);
+        if( (fvall != *tvall) || (fvalh != *tvalh) || ((*set & mask) == 0) ) {
+          *set   = mask;
+          *tvall = fvall;
+          *tvalh = fvalh;
+          retval = TRUE;
+        }
+      }
+      break;
+
+  
+  PROFILE_END;
+
+  return( changed );
+
+}
+
+/*!
+ \param vec    Pointer to vector to set value to.
+ \param value  New value to set vector value to.
+ \param width  Width of new value.
 
  \return Returns TRUE if assignment was performed; otherwise, returns FALSE.
 
@@ -972,113 +1070,38 @@ bool vector_set_assigned(
  been set, checks to see if new vector bits have toggled, sets appropriate
  toggle values, sets the new value to this value and returns.
 */
-bool vector_set_value(
+bool vector_set_value_uint32(
   vector*   vec,
-  vec_data* value,
-  int       width,
-  int       from_idx,
-  int       to_idx
+  uint32**  value,
+  int       width
 ) { PROFILE(VECTOR_SET_VALUE);
 
-  bool      retval = FALSE;  /* Return value for this function */
-  nibble    from_val;        /* Current bit value of value being assigned */
-  nibble    to_val;          /* Current bit value of previous value */
-  int       i;               /* Loop iterator */
-  vec_data  set_val;         /* Value to set current vec value to */
-  vec_data* vval;            /* Pointer to vector value array */
-  nibble    v2st;            /* Value to AND with from value bit if the target is a 2-state value */
-  nibble    ored = 0;        /* Stored valued in vector OR'ed */
+  bool         retval = FALSE;                /* Return value for this function */
+  int          size;                          /* Size of vector value array */
+  unsigned int i;                             /* Loop iterator */
+  int          v2st;                          /* Value to AND with from value bit if the target is a 2-state value */
+  uint32       scratchl[MAX_BIT_WIDTH >> 5];  /* Lower scratch array */
+  uint32       scratchh[MAX_BIT_WIDTH >> 5];  /* Upper scratch array */
 
   assert( vec != NULL );
 
-  vval = vec->value;
-  v2st = vec->suppl.part.is_2state << 1;
-
-  /* Verify that index is within range */
-  assert( to_idx < vec->width );
-  assert( to_idx >= 0 );
-
-  /* Adjust width to smaller of two values */
-  width = (width > (vec->width - to_idx)) ? (vec->width - to_idx) : width;
-
-  switch( vec->suppl.part.type ) {
-    case VTYPE_VAL :
-      for( i=0; i<width; i++ ) {
-        vval[i + to_idx].part.val.value = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
-        ored |= vval[i + to_idx].part.val.value;
-      }
-      retval = TRUE;
-      break;
-    case VTYPE_SIG :
-      for( i=width; i--; ) {
-        set_val  = vval[i + to_idx];
-        from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
-        to_val   = set_val.part.sig.value;
-        if( (from_val != to_val) || (set_val.part.sig.set == 0x0) ) {
-          if( set_val.part.sig.set == 0x1 ) {
-            /* Assign toggle values if necessary */
-            if( (to_val == 0) && (from_val == 1) ) {
-              set_val.part.sig.tog01 = 1;
-            } else if( (to_val == 1) && (from_val == 0) ) {
-              set_val.part.sig.tog10 = 1;
-            }
-          }
-          /* Perform value assignment */
-          set_val.part.sig.set   = 1;
-          set_val.part.sig.value = from_val;
-          ored                  |= from_val;
-          vval[i + to_idx]       = set_val;
-          retval = TRUE;
-        } else {
-          ored |= to_val;
-        }
-      }
-      break;
-    case VTYPE_MEM :
-      for( i=width; i--; ) {
-        set_val  = vval[i + to_idx];
-        from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
-        to_val   = set_val.part.mem.value;
-        if( from_val != to_val ) {
-          /* Assign toggle values if necessary */
-          if( (to_val == 0) && (from_val == 1) ) {
-            set_val.part.mem.tog01 = 1;
-          } else if( (to_val == 1) && (from_val == 0) ) {
-            set_val.part.mem.tog10 = 1;
-          }
-          /* Perform value assignment */
-          set_val.part.mem.wr    = 1;
-          set_val.part.mem.value = from_val;
-          ored                  |= from_val;
-          vval[i + to_idx]       = set_val;
-          retval = TRUE;
-        } else {
-          ored |= to_val;
-        }
-      }
-      break;
-    case VTYPE_EXP :
-      for( i=width; i--; ) {
-        set_val  = vval[i + to_idx];
-        from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
-        to_val   = set_val.part.exp.value;
-        if( (from_val != to_val) || (set_val.part.exp.set == 0x0) ) {
-          /* Perform value assignment */
-          set_val.part.exp.set   = 1;
-          set_val.part.exp.value = from_val;
-          ored                  |= from_val;
-          vval[i + to_idx]       = set_val;
-          retval = TRUE;
-        } else {
-          ored |= to_val;
-        }
-      }
-      break;
-    default : break;
+  /* Adjust the width if it exceeds our width */
+  if( vec->width < width ) {
+    width = vec->width;
   }
 
-  /* Store OR'ed value bits in the vector supplemental field bits not_zero and unknown */
-  vec->suppl.all |= (ored << 2);
+  /* Get some information from the vector */
+  v2st = vec->suppl.part.is_2state << 1;
+  size = VECTOR_SIZE32( width ) - 1;
+
+  /* Calculate the new values and place them in the scratch arrays */
+  for( i=size; i--; ) {
+    scratchl[i] = v2st ? (~value[VTYPE_INDEX_VAL_VALH][i] & value[VTYPE_INDEX_VAL_VALL][i]) : value[VTYPE_INDEX_VAL_VALL][i];
+    scratchh[i] = v2st ? 0 : value[VTYPE_INDEX_VAL_VALH][i];
+  }
+
+  /* Calculate the coverage and perform the actual assignment */
+  retval = vector_set_coverage_and_assign( vec, &scratchl, &scratchh, 0, (width - 1) );
 
   PROFILE_END;
 
@@ -1087,27 +1110,8 @@ bool vector_set_value(
 }
 
 /*!
- \param vec  Pointer to vector to synchronize the data and not_zero/unknown supplemental bits
-
- Synchronizes the not_zero and unknown supplemental bits with the vectors data payload.
-*/
-inline void vector_sync_nz_and_unk( vector* vec ) {
-
-  int i        = 0;  /* Loop iterator */
-  nibble ored  = 0;  /* OR'ed values */
-
-  VSUPPL_CLR_NZ_AND_UNK( vec->suppl );
-  for( i=0; i<vec->width; i++ ) {
-    ored |= vec->value[i].part.val.value;
-  }
-  vec->suppl.all |= (ored << 2);
-
-}
-
-/*!
- \param vec  Pointer to vector to bit-fill
- \param msb  Most-significant bit to end bit-filling on
- \param lsb  Least-significant bit to start bit-filling
+ \param vec   Pointer to vector to bit-fill
+ \param last  Bit position of last set value
 
  \return Returns TRUE if any of the bits in the bit-fill range have changed
          value.
@@ -1117,33 +1121,85 @@ inline void vector_sync_nz_and_unk( vector* vec ) {
 */
 bool vector_bit_fill(
   vector* vec,
-  int     msb,
-  int     lsb
+  int     last
 ) { PROFILE(VECTOR_BIT_FILL);
 
-  vec_data value;            /* Temporary vector data value */
-  bool     changed = FALSE;  /* Return value for this function */
-  int      i;                /* Loop iterator */
+  bool     changed = FALSE;             /* Return value for this function */
+  int      i;                           /* Loop iterator */
 
   assert( vec != NULL );
-  assert( lsb > 0 ); 
-  msb = (msb > vec->width) ? vec->width : msb;
+  assert( last > 0 );
+  assert( last < vec->width ); 
 
-  switch( vec->value[lsb-1].part.val.value ) {
-    case 0 :  value.all = 0;  break;
-    case 1 :  value.all = 0;  break;
-    case 2 :  value.all = 2;  break;
-    case 3 :  value.all = 3;  break;
-    default:  break;
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        unsigned int last_index = (last >> 5);
+        unsigned int bit_pos    = (last & 0x1f);
+        uint32       valh       = vec->value[VTYPE_INDEX_VAL_VALH][last_index];
+        uint32       mask       = 0xffffffff << (bit_pos + 1);
+        uint32       scratchl[MAX_BIT_WIDTH >> 5];
+        uint32       scratchh[MAX_BIT_WIDTH >> 5];
+        if( (valh & (1 << bit_pos)) == 0 ) {
+          for( i=last_index; i<VECTOR_SIZE32(vec->width); i++ ) {
+            scratchl[i] = (vec->value.u32[VTYPE_INDEX_VAL_VALL][i] & ~mask);
+            scratchh[i] = (vec->value.u32[VTYPE_INDEX_VAL_VALH][i] & ~mask);
+            mask        = 0xffffffff;
+          }
+        } else {
+          uint32 vall = vec->value[VTYPE_INDEX_VAL_VALL][last_index];
+          if( (vall & (1 << bit_pos)) == 0 ) {
+            for( i=last_index; i<VECTOR_SIZE32(vec->width); i++ ) {
+              scratchl[i] = (vec->value.u32[VTYPE_INDEX_VAL_VALL][i] & ~mask);
+              scratchh[i] = (vec->value.u32[VTYPE_INDEX_VAL_VALH][i] & ~mask) | mask;
+              mask        = 0xffffffff;
+            }
+          } else {
+            for( i=last_index; i<VECTOR_SIZE32(vec->width); i++ ) {
+              scratchl[i] = (vec->value.u32[VTYPE_INDEX_VAL_VALL][i] & ~mask) | mask;
+              scratchh[i] = (vec->value.u32[VTYPE_INDEX_VAL_VALH][i] & ~mask) | mask;
+              mask        = 0xffffffff;
+            }
+          }
+        }
+
+        /* Get coverage information and perform assign */
+        vector_set_coverage_and_assign( vec, &scratchl, &scratchh, last, (vec->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
   }
+          
+  return( changed );
 
-  for( i=lsb; i<msb; i++ ) {
-    changed |= vector_set_value( vec, &value, 1, 0, i );
+}
+
+/*!
+ \param vec  Pointer to vector check for unknown-ness
+
+ \return Returns TRUE if the given vector contains unknown (X or Z) bits; otherwise, returns FALSE.
+*/
+bool vector_is_unknown(
+  vector* vec
+) { PROFILE(VECTOR_IS_UKNOWN);
+
+  unsigned int i = 0;  /* Loop iterator */
+  unsigned int size;   /* Size of data array */
+
+  assert( vec != NULL );
+  assert( vec->value != NULL );
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      size = VECTOR_SIZE32( vec->width );
+      while( (i < size) && (vec->value.u32[VTYPE_INDEX_VAL_VALH][i] == 0) ) i++;
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
 
-  return( changed );
+  return( i < size );
 
 }
 
@@ -1157,16 +1213,23 @@ bool vector_is_set(
   vector* vec
 ) { PROFILE(VECTOR_IS_SET);
 
-  int i = 0;  /* Loop iterator */
+  unsigned int i = 0;  /* Loop iterator */
+  unsigned int size;   /* Size of data array */
 
   assert( vec != NULL );
   assert( vec->value != NULL );
 
-  while( (i < vec->width) && (vec->value[i].part.sig.set == 0) ) i++;
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      size = VECTOR_SIZE32( vec->width );
+      while( (i < size) && (vec->value.u32[VTYPE_INDEX_SIG_SET][i] == 0) ) i++;
+      break;
+    default :  assert( 0 );  break;
+  }
 
   PROFILE_END;
 
-  return( i < vec->width );
+  return( i < size );
 
 }
 
@@ -1187,28 +1250,14 @@ int vector_to_int(
   int i;            /* Loop iterator */
   int width;        /* Number of bits to use in creating integer */
 
-  width = (vec->width > (SIZEOF_INT * 8)) ? 32 : vec->width;
-
-  for( i=(width - 1); i>=0; i-- ) {
-    switch( vec->value[i].part.val.value ) {
-      /*@-shiftimplementation@*/
-      case 0 :  retval = (retval << 1) | 0;  break;
-      case 1 :  retval = (retval << 1) | 1;  break;
-      /*@=shiftimplementation@*/
-      default:
-        print_output( "Vector converting to integer contains X or Z values", FATAL, __FILE__, __LINE__ );
-        assert( vec->value[i].part.val.value < 2 );
-        break;
-    }
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :  retval = vec->value.u32[VTYPE_INDEX_VAL_VALL][0];  break;
+    default        :  assert( 0 );  break;
   }
 
   /* If the vector is signed, sign-extend the integer */
   if( vec->suppl.part.is_signed == 1 ) {
-    for( i=width; i<(SIZEOF_INT * 8); i++ ) {
-      /*@-shiftnegative@*/
-      retval |= (vec->value[width-1].part.val.value << i);
-      /*@=shiftnegative@*/
-    }
+    retval = -retval;
   }
 
   PROFILE_END;
@@ -2646,6 +2695,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.5  2008/04/18 22:04:15  phase1geo
+ More work on vector functions for new data structure implementation.  Worked
+ on vector_set_value, bit_fill and some checking functions.  Checkpointing.
+
  Revision 1.138.2.4  2008/04/18 14:14:19  phase1geo
  More vector updates.
 

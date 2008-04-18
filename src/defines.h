@@ -1961,12 +1961,6 @@ struct vector_s {
 };
 
 /*!
- Clears the not_zero and unknown bits from the given vector supplemental field.  This needs to be called
- prior to calling the vector_set_value function.
-*/
-#define VSUPPL_CLR_NZ_AND_UNK(x)     x.all &= 0xf3;
-
-/*!
  Contains information about a parsed constant value including its data and base type.
 */
 struct const_value_s {
@@ -2686,6 +2680,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.4  2008/04/18 22:04:15  phase1geo
+ More work on vector functions for new data structure implementation.  Worked
+ on vector_set_value, bit_fill and some checking functions.  Checkpointing.
+
  Revision 1.294.2.3  2008/04/17 23:16:08  phase1geo
  More work on vector.c.  Completed initial pass of vector_db_write/read and
  vector_copy/clone functionality.  Checkpointing.
