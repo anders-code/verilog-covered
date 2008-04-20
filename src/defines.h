@@ -1063,6 +1063,20 @@ typedef enum exp_op_type_e {
 /*! @} */
 
 /*!
+ \addtogroup vector_type_sizes Vector Type Data Sizes
+
+ The following defines specify that various types of data types that can be stored in a vector.  This
+ value determines which value pointer is used in the vector structure for holding data.
+
+ @{
+*/
+
+/*! 32-bit unsigned integer */
+#define VDATA_U32      0
+
+/*! @} */
+
+/*!
  \addtogroup vector_type_indices Vector Type Information Indices
 */
 
@@ -2680,6 +2694,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.5  2008/04/20 05:43:45  phase1geo
+ More work on the vector file.  Completed initial pass of conversion operations,
+ bitwise operations and comparison operations.
+
  Revision 1.294.2.4  2008/04/18 22:04:15  phase1geo
  More work on vector functions for new data structure implementation.  Worked
  on vector_set_value, bit_fill and some checking functions.  Checkpointing.

@@ -120,44 +120,56 @@ void vector_display_value_uint32(
 
 /*@-exportlocal@*/
 /*! \brief Outputs nibble to standard output. */
-void vector_display_nibble( vec_data* nib, int width, int type );
+void vector_display_nibble_uint32(
+  uint32** value,
+  int      width,
+  int      type
+);
 /*@=exportlocal@*/
 
 /*! \brief Outputs vector contents to standard output. */
-void vector_display( const vector* vec );
-
-/*! \brief Selects bit from value array from bit position pos. */
-nibble vector_bit_val( nibble* value, int pos );
+void vector_display(
+  const vector* vec
+);
 
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
-bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx );
+bool vector_set_value_uint32(
+  vector*  vec,
+  uint32** value,
+  int      width
+);
 
-/*! \brief Sets the not_zero and unknown supplement bits to match given value. */
-void vector_sync_nz_and_unk( vector* vec );
+/*! \brief Bit fills the given vector with the appropriate value starting at the last bit */
+bool vector_bit_fill(
+  vector* vec,
+  int     last
+);
 
-/*! \brief Bit fills the given vector with the appropriate value given the specified msb and lsb */
-bool vector_bit_fill( vector* vec, int msb, int lsb );
-
-/*! \brief Performs a zero-fill of all bits starting at lsb and continuing to the vector's msb */
-bool vector_zero_fill( vector* vec, int msb, int lsb );
-
-/*! \brief Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble */
-void vector_set_type( vector* vec, int type );
-
-/*! \brief Returns value of vector output type. */
-int vector_get_type( vector* vec );
+/*! \brief Returns TRUE if specified vector has unknown bits set */
+bool vector_is_unknown(
+  const vector* vec
+);
 
 /*! \brief Returns TRUE if specified vector has been set (simulated) */
-bool vector_is_set( vector* vec );
+bool vector_is_set(
+  const vector* vec
+);
 
 /*! \brief Converts vector into integer value. */
-int vector_to_int( vector* vec );
+int vector_to_int(
+  const vector* vec
+);
 
 /*! \brief Converts vector into a 64-bit value. */
-uint64 vector_to_uint64( vector* vec );
+uint64 vector_to_uint64(
+  const vector* vec
+);
 
 /*! \brief Converts vector into a sim_time structure. */
-void vector_to_sim_time( vector* vec, sim_time* time );
+void vector_to_sim_time(
+  const vector* vec,
+  sim_time*     time
+);
 
 /*! \brief Converts integer into vector value. */
 void vector_from_int( vector* vec, int value );
@@ -196,11 +208,53 @@ void vector_mem_rw_count( vector* vec, int* wr_cnt, int* rd_cnt );
 /*! \brief Sets all assigned bits in vector bit value array within specified range. */
 bool vector_set_assigned( vector* vec, int msb, int lsb );
 
-/*! \brief Performs bitwise operation on two source vectors from specified operation table. */
-bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab );
+/*! \brief Performs bitwise AND operation on two source vectors. */
+bool vector_bitwise_and_op( vector* tgt, vector* src1, vector* src2 );
 
-/*! \brief Performs bitwise comparison of two vectors. */
-bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type );
+/*! \brief Performs bitwise NAND operation on two source vectors. */
+bool vector_bitwise_nand_op( vector* tgt, vector* src1, vector* src2 );
+
+/*! \brief Performs bitwise OR operation on two source vectors. */
+bool vector_bitwise_or_op( vector* tgt, vector* src1, vector* src2 );
+
+/*! \brief Performs bitwise NOR operation on two source vectors. */
+bool vector_bitwise_nor_op( vector* tgt, vector* src1, vector* src2 );
+
+/*! \brief Performs bitwise XOR operation on two source vectors. */
+bool vector_bitwise_xor_op( vector* tgt, vector* src1, vector* src2 );
+
+/*! \brief Performs bitwise NXOR operation on two source vectors. */
+bool vector_bitwise_nxor_op( vector* tgt, vector* src1, vector* src2 );
+
+/*! \brief Performs less-than comparison of two vectors. */
+bool vector_op_lt( vector* tgt, vector* left, vector* right );
+
+/*! \brief Performs less-than-or-equal comparison of two vectors. */
+bool vector_op_le( vector* tgt, vector* left, vector* right );
+
+/*! \brief Performs greater-than comparison of two vectors. */
+bool vector_op_gt( vector* tgt, vector* left, vector* right );
+
+/*! \brief Performs greater-than-or-equal comparison of two vectors. */
+bool vector_op_ge( vector* tgt, vector* left, vector* right );
+
+/*! \brief Performs equal comparison of two vectors. */
+bool vector_op_eq( vector* tgt, vector* left, vector* right );
+
+/*! \brief Performs case equal comparison of two vectors. */
+bool vector_op_ceq( vector* tgt, vector* left, vector* right );
+
+/*! \brief Performs casex equal comparison of two vectors. */
+bool vector_op_cxeq( vector* tgt, vector* left, vector* right );
+
+/*! \brief Performs casez equal comparison of two vectors. */
+bool vector_op_czeq( vector* tgt, vector* left, vector* right );
+
+/*! \brief Performs not-equal comparison of two vectors. */
+bool vector_op_ne( vector* tgt, vector* left, vector* right );
+
+/*! \brief Performs case not-equal comparison of two vectors. */
+bool vector_op_cne( vector* tgt, vector* left, vector* right );
 
 /*! \brief Performs left shift operation on left expression by right expression bits. */
 bool vector_op_lshift( vector* tgt, vector* left, vector* right );
@@ -259,6 +313,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.3  2008/04/20 05:43:46  phase1geo
+ More work on the vector file.  Completed initial pass of conversion operations,
+ bitwise operations and comparison operations.
+
  Revision 1.58.2.2  2008/04/18 05:05:28  phase1geo
  More updates to vector file.  Updated merge and output functions.  Checkpointing.
 
