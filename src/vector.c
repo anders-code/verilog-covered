@@ -504,6 +504,102 @@ void vector_merge(
 }
 
 /*!
+ \return Returns eval_a coverage information for specified vector and bit position.
+*/
+int vector_get_eval_a(
+  vector* vec,   /*!< Pointer to vector to get eval_a information from */
+  int     index  /*!< Index to retrieve bit from */
+) { PROFILE(VECTOR_GET_EVAL_A);
+
+  int retval;  /* Return value for this function */
+
+  assert( vec != NULL );
+  assert( vec->suppl.part.type == VTYPE_EXP );
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :  retval = (vec->value.u32[VTYPE_INDEX_EXP_EVAL_A][index>>5] >> (index & 0x1f)) & 0x1;
+    default        :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns eval_b coverage information for specified vector and bit position.
+*/
+int vector_get_eval_b(
+  vector* vec,   /*!< Pointer to vector to get eval_b information from */
+  int     index  /*!< Index to retrieve bit from */
+) { PROFILE(VECTOR_GET_EVAL_B);
+
+  int retval;  /* Return value for this function */
+
+  assert( vec != NULL );
+  assert( vec->suppl.part.type == VTYPE_EXP );
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :  retval = (vec->value.u32[VTYPE_INDEX_EXP_EVAL_B][index>>5] >> (index & 0x1f)) & 0x1;
+    default        :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns eval_c coverage information for specified vector and bit position.
+*/
+int vector_get_eval_c(
+  vector* vec,   /*!< Pointer to vector to get eval_c information from */
+  int     index  /*!< Index to retrieve bit from */
+) { PROFILE(VECTOR_GET_EVAL_C);
+
+  int retval;  /* Return value for this function */
+
+  assert( vec != NULL );
+  assert( vec->suppl.part.type == VTYPE_EXP );
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :  retval = (vec->value.u32[VTYPE_INDEX_EXP_EVAL_C][index>>5] >> (index & 0x1f)) & 0x1;
+    default        :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns eval_a coverage information for specified vector and bit position.
+*/
+int vector_get_eval_d(
+  vector* vec,   /*!< Pointer to vector to get eval_d information from */
+  int     index  /*!< Index to retrieve bit from */
+) { PROFILE(VECTOR_GET_EVAL_D);
+
+  int retval;  /* Return value for this function */
+
+  assert( vec != NULL );
+  assert( vec->suppl.part.type == VTYPE_EXP );
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :  retval = (vec->value.u32[VTYPE_INDEX_EXP_EVAL_D][index>>5] >> (index & 0x1f)) & 0x1;
+    default        :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
  \param vec  Pointer to vector to count eval_a/b bits in
 
  \return Returns the number of eval_a/b bits are set in the given vector.
@@ -1296,6 +1392,67 @@ bool vector_is_unknown(
   PROFILE_END;
 
   return( i < size );
+
+}
+
+/*!
+ \param vec  Pointer to vector to check for non-zero-ness
+
+ \return Returns TRUE if the given vector contains at least one non-zero bit; otherwise, returns FALSE.
+*/
+bool vector_is_not_zero(
+  const vector* vec
+) { PROFILE(VECTOR_IS_NOT_ZERO);
+
+  unsigned int i = 0;  /* Loop iterator */
+  unsigned int size;   /* Size of data array */
+
+  assert( vec != NULL );
+  assert( vec->value.u32 != NULL );
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      size = VECTOR_SIZE32( vec->width );
+      while( (i < size) && (vec->value.u32[VTYPE_INDEX_VAL_VALL][i] == 0) ) i++;
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( i < size );
+
+}
+
+/*!
+ \param vec  Pointer to vector to set to a value of X
+
+ Sets the entire specified vector to a value of X.
+*/
+void vector_set_to_x(
+  vector* vec
+) { PROFILE(VECTOR_SET_TO_X);
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32:
+      {
+        uint32       scratchl[MAX_BIT_WIDTH>>5];
+        uint32       scratchh[MAX_BIT_WIDTH>>5];
+        uint32       end_mask = 0xffffffff >> (32 - (vec->width & 0x1f));
+        unsigned int i;
+        for( i=0; i<(VECTOR_SIZE32(vec->width)-1); i++ ) {
+          scratchl[i] = 0;
+          scratchh[i] = 0xffffffff;
+        }
+        scratchl[i] = 0;
+        scratchh[i] = end_mask;
+        vector_set_coverage_and_assign_uint32( vec, scratchl, scratchh, 0, (vec->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
 
 }
 
@@ -3418,6 +3575,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.8  2008/04/21 23:13:04  phase1geo
+ More work to update other files per vector changes.  Currently in the middle
+ of updating expr.c.  Checkpointing.
+
  Revision 1.138.2.7  2008/04/21 04:37:23  phase1geo
  Attempting to get other files (besides vector.c) to compile with new vector
  changes.  Still work to go here.  The initial pass through vector.c is not

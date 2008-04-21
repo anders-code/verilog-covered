@@ -29,7 +29,7 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init(
+void vector_init_uin32(
   /*@out@*/ vector*   vec,
             uint32**  value,
             uint32    data_l,
@@ -86,20 +86,38 @@ void vector_merge(
   vector* other
 );
 
-/*! \brief Counts the number of eval_a/b bits set in the given vector */
-int vector_get_eval_ab_count(
-  vector* vec
+/*! \brief Returns the value of the eval_a for the given bit index. */
+int vector_get_eval_a(
+  vector* vec,
+  int     index
 );
+
+/*! \brief Returns the value of the eval_b for the given bit index. */
+int vector_get_eval_b(
+  vector* vec,
+  int     index
+);
+
+/*! \brief Returns the value of the eval_c for the given bit index. */
+int vector_get_eval_c(
+  vector* vec,
+  int     index
+);
+
+/*! \brief Returns the value of the eval_d for the given bit index. */
+int vector_get_eval_d(
+  vector* vec,
+  int     index
+);
+
+/*! \brief Counts the number of eval_a/b bits set in the given vector */
+int vector_get_eval_ab_count( vector* vec );
 
 /*! \brief Counts the number of eval_a/b/c bits set in the given vector */
-int vector_get_eval_abc_count(
-  vector* vec
-);
+int vector_get_eval_abc_count( vector* vec );
 
 /*! \brief Counts the number of eval_a/b/c/d bits set in the given vector */
-int vector_get_eval_abcd_count(
-  vector* vec
-);
+int vector_get_eval_abcd_count( vector* vec );
 
 /*! \brief Returns string containing toggle 0 -> 1 information in binary format */
 char* vector_get_toggle01_uint32(
@@ -161,24 +179,22 @@ bool vector_bit_fill(
 );
 
 /*! \brief Returns TRUE if specified vector has unknown bits set */
-bool vector_is_unknown(
-  const vector* vec
-);
+bool vector_is_unknown( const vector* vec );
+
+/*! \brief Returns TRUE if specified vector is a non-zero value (does not check unknown bit) */
+bool vector_is_not_zero( const vector* vec );
+
+/*! \brief Sets entire vector value to a value of X */
+void vector_set_to_x( vector* vec );
 
 /*! \brief Returns TRUE if specified vector has been set (simulated) */
-bool vector_is_set(
-  const vector* vec
-);
+bool vector_is_set( const vector* vec );
 
 /*! \brief Converts vector into integer value. */
-int vector_to_int(
-  const vector* vec
-);
+int vector_to_int( const vector* vec );
 
 /*! \brief Converts vector into a 64-bit value. */
-uint64 vector_to_uint64(
-  const vector* vec
-);
+uint64 vector_to_uint64( const vector* vec );
 
 /*! \brief Converts vector into a sim_time structure. */
 void vector_to_sim_time(
@@ -187,10 +203,16 @@ void vector_to_sim_time(
 );
 
 /*! \brief Converts integer into vector value. */
-void vector_from_int( vector* vec, int value );
+void vector_from_int(
+  vector* vec,
+  int     value
+);
 
 /*! \brief Converts a 64-bit integer into a vector value. */
-void vector_from_uint64( vector* vec, uint64 value );
+void vector_from_uint64(
+  vector* vec,
+  uint64 value
+);
 
 /*! \brief Converts vector into a string value in specified format. */
 char* vector_to_string(
@@ -328,6 +350,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.5  2008/04/21 23:13:05  phase1geo
+ More work to update other files per vector changes.  Currently in the middle
+ of updating expr.c.  Checkpointing.
+
  Revision 1.58.2.4  2008/04/21 04:37:23  phase1geo
  Attempting to get other files (besides vector.c) to compile with new vector
  changes.  Still work to go here.  The initial pass through vector.c is not

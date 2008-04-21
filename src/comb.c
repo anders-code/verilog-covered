@@ -1616,8 +1616,8 @@ static void combination_unary(
       for( i=0; i<exp->value->width; i++ ) {
         (*info)[i+6] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[i+6], length, "         %4d | %c   %c", i,
-                       ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
-                       ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*') );
+                       ((vector_get_eval_a( exp->value, i ) == 1) ? ' ' : '*'),
+                       ((vector_get_eval_b( exp->value, i ) == 1) ? ' ' : '*') );
         assert( rv < length );
       }
 
@@ -1792,9 +1792,9 @@ static void combination_two_vars(
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
           rv = snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c", i,
-                         ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*') );
+                         ((vector_get_eval_a( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_b( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_c( exp->value, i ) == 1) ? ' ' : '*') );
           assert( rv < length );
         }
 
@@ -1833,9 +1833,9 @@ static void combination_two_vars(
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
           rv = snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c", i,
-                         ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*') );
+                         ((vector_get_eval_a( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_b( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_c( exp->value, i ) == 1) ? ' ' : '*') );
           assert( rv < length );
         }
 
@@ -1875,10 +1875,10 @@ static void combination_two_vars(
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
           rv = snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c    %c", i,
-                         ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_d == 1) ? ' ' : '*') );
+                         ((vector_get_eval_a( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_b( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_c( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_d( exp->value, i ) == 1) ? ' ' : '*') );
           assert( rv < length );
         }
 
@@ -3001,6 +3001,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.193.2.2  2008/04/21 23:13:04  phase1geo
+ More work to update other files per vector changes.  Currently in the middle
+ of updating expr.c.  Checkpointing.
+
  Revision 1.193.2.1  2008/04/21 04:37:23  phase1geo
  Attempting to get other files (besides vector.c) to compile with new vector
  changes.  Still work to go here.  The initial pass through vector.c is not

@@ -359,9 +359,6 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"ARSHIFT_A",      ">>>=",         expression_op_func__arshift_a,  {0, 0, NOT_COMB,   1, 1, 0, 1, 1} }
  };
 
-/*! One bit unknown value that can be used by vector selection operators */
-static vec_data x_value = {0x2};
-
 
 /*!
  \param exp    Pointer to expression to allocate temporary vectors for
@@ -383,14 +380,14 @@ static void expression_create_tmp_vecs(
   */
   if( (EXPR_TMP_VECS( exp->op ) > 0) && (exp->elem.tvecs == NULL) ) {
  
-    nibble   data;
+    uint32   hdata;
     unsigned i;
 
     /* Calculate the width that we need to allocate */
     switch( exp->op ) {
       case EXP_OP_PEDGE :
-      case EXP_OP_NEDGE :  data = 0x2;  width = 1;                         break;
-      case EXP_OP_AEDGE :  data = 0x2;  width = exp->right->value->width;  break;
+      case EXP_OP_NEDGE :  hdata = 0xffffffff;  width = 1;                         break;
+      case EXP_OP_AEDGE :  hdata = 0xffffffff;  width = exp->right->value->width;  break;
       case EXP_OP_ADD_A :
       case EXP_OP_SUB_A :
       case EXP_OP_MLT_A :
@@ -402,14 +399,16 @@ static void expression_create_tmp_vecs(
       case EXP_OP_LS_A  :
       case EXP_OP_RS_A  :
       case EXP_OP_ALS_A :
-      case EXP_OP_ARS_A :  data = 0x0;  width = exp->left->value->width;   break;
-      default           :  data = 0x0;                                     break;
+      case EXP_OP_ARS_A :  hdata = 0x0;  width = exp->left->value->width;   break;
+      default           :  hdata = 0x0;                                     break;
     }
 
     /* Allocate the memory */
     exp->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
     for( i=0; i<EXPR_TMP_VECS( exp->op ); i++ ) {
-      vector_init( &(exp->elem.tvecs->vec[i]), (vec_data*)malloc_safe( sizeof( vec_data ) * width ), data, TRUE, width, VTYPE_VAL );
+      vector* vec = vector_create( width, VTYPE_VAL, VDATA_U32, TRUE );
+      vector_init_uint32( &(exp->elem.tvecs->vec[i]), vec->value.u32, 0, hdata, TRUE, width, VTYPE_VAL, VDATA_U32 );
+      free_safe( vec, sizeof( vector ) );
     }
 
   }
@@ -436,7 +435,7 @@ static void expression_create_value(
   bool        data
 ) { PROFILE(EXPRESSION_CREATE_VALUE);
 
-  vec_data* value = NULL;  /* Temporary storage of vector nibble array */
+  vector* vec = NULL;  /* Temporary storage of vector array */
 
   if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
 
@@ -449,16 +448,18 @@ static void expression_create_value(
       Throw 0;
     }
 
-    value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
-    assert( exp->value->value == NULL );
+    vec = vector_create( width, VTYPE_EXP, VDATA_U32, TRUE );
+    assert( exp->value->value.u32 == NULL );
+    vector_init_uint32( exp->value, vec->value.u32, 0x0, 0x0, TRUE, width, VTYPE_EXP, VDATA_U32 );
 
     /* Create the temporary vectors now, if needed */
     expression_create_tmp_vecs( exp, width );
 
-  }
+  } else {
 
-  /* Create value */
-  vector_init( exp->value, value, 0x0, (value != NULL), width, VTYPE_EXP );
+    vector_init_uint32( exp->value, NULL, 0x0, FALSE, width, VTYPE_EXP, VDATA_U32 );
+
+  }
 
   PROFILE_END;
 
@@ -517,7 +518,7 @@ expression* expression_create(
   new_expr->left                = left;
   new_expr->value               = (vector*)malloc_safe( sizeof( vector ) );
   new_expr->suppl.part.owns_vec = 1;
-  new_expr->value->value        = NULL;
+  new_expr->value->value.u32    = NULL;
   new_expr->table               = NULL;
   new_expr->elem.funit          = NULL;
   new_expr->name                = NULL;
@@ -566,13 +567,13 @@ expression* expression_create(
 
       expression_create_value( new_expr, rwidth, data );
 
-    } else if( (op == EXP_OP_EXPAND) && (rwidth > 0) && (lwidth > 0) && (left->value->value != NULL) ) {
+    } else if( (op == EXP_OP_EXPAND) && (rwidth > 0) && (lwidth > 0) && (left->value->value.u32 != NULL) ) {
 
       /*
        If the left-hand expression is a known value, go ahead and create the value here; otherwise,
        hold off because our vector value will be coming.
       */
-      if( !left->value->suppl.part.unknown ) {
+      if( !vector_is_unknown( left->value ) ) {
         expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), data );
       } else {
         expression_create_value( new_expr, 1, data );
@@ -646,7 +647,7 @@ expression* expression_create(
   }
 
   if( (data == FALSE) && (generate_expr_mode == 0) ) {
-    assert( new_expr->value->value == NULL );
+    assert( new_expr->value->value.u32 == NULL );
   }
 
   PROFILE_END;
@@ -720,7 +721,7 @@ void expression_set_value( expression* exp, vsignal* sig, func_unit* funit ) { P
   }
 
   /* Point expression value to the signal value */
-  exp->value->value                = sig->value->value;
+  exp->value->value.u32            = sig->value->value.u32;
   exp->value->suppl.part.owns_data = 0;
 
   PROFILE_END;
@@ -833,7 +834,7 @@ void expression_resize(
       case EXP_OP_MBIT_NEG       :
         if( recursive && (expr->sig != NULL) ) {
           expression_set_value( expr, expr->sig, funit );
-          assert( expr->value->value != NULL );
+          assert( expr->value->value.u32 != NULL );
         }
         break;
 
@@ -884,8 +885,8 @@ void expression_resize(
       case EXP_OP_NEDGE   :
       case EXP_OP_PEDGE   :
       case EXP_OP_AEDGE   :
-        if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
-          assert( expr->value->value == NULL );
+        if( (expr->value->width != 1) || (expr->value->value.u32 == NULL) ) {
+          assert( expr->value->value.u32 == NULL );
           expression_create_value( expr, 1, alloc );
         }
         break;
@@ -897,8 +898,8 @@ void expression_resize(
       case EXP_OP_EXPAND :
         expression_operate_recursively( expr->left, funit, TRUE );
         if( (expr->value->width != (vector_to_int( expr->left->value ) * expr->right->value->width)) ||
-            (expr->value->value == NULL) ) {
-          assert( expr->value->value == NULL );
+            (expr->value->value.u32 == NULL) ) {
+          assert( expr->value->value.u32 == NULL );
           expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), alloc );
         }
         break;
@@ -910,8 +911,8 @@ void expression_resize(
       */
       case EXP_OP_LIST :
         if( (expr->value->width != (expr->left->value->width + expr->right->value->width)) ||
-            (expr->value->value == NULL) ) {
-          assert( expr->value->value == NULL );
+            (expr->value->value.u32 == NULL) ) {
+          assert( expr->value->value.u32 == NULL );
           expression_create_value( expr, (expr->left->value->width + expr->right->value->width), alloc );
         }
         break;
@@ -927,8 +928,8 @@ void expression_resize(
             tmp_inst = inst_link_find_by_funit( expr->elem.funit, db_list[curr_db]->inst_head, &ignore );
             funit_size_elements( expr->elem.funit, tmp_inst, FALSE, FALSE );
           }
-          if( (expr->value->width != expr->sig->value->width) || (expr->value->value == NULL) ) {
-            assert( expr->value->value == NULL );
+          if( (expr->value->width != expr->sig->value->width) || (expr->value->value.u32 == NULL) ) {
+            assert( expr->value->value.u32 == NULL );
             expression_create_value( expr, expr->sig->value->width, alloc );
           }
         }
@@ -954,22 +955,22 @@ void expression_resize(
           } else {
             largest_width = 1;
           }
-          if( (expr->value->width != largest_width) || (expr->value->value == NULL) ) {
-            assert( expr->value->value == NULL );
+          if( (expr->value->width != largest_width) || (expr->value->value.u32 == NULL) ) {
+            assert( expr->value->value.u32 == NULL );
             expression_create_value( expr, largest_width, alloc );
           }
 
         /* If our parent is a DLY_OP, we need to get our value from the LHS of the DLY_ASSIGN expression */
         } else if( expr->parent->expr->op == EXP_OP_DLY_OP ) {
-          if( (expr->parent->expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value == NULL) ) {
-            assert( expr->value->value == NULL );
+          if( (expr->parent->expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value.u32 == NULL) ) {
+            assert( expr->value->value.u32 == NULL );
             expression_create_value( expr, expr->parent->expr->parent->expr->left->value->width, alloc );
           }
 
         /* Otherwise, get our value from the size of the expression on the left-hand-side of the assignment */
         } else {
-          if( (expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value == NULL) ) {
-            assert( expr->value->value == NULL );
+          if( (expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value.u32 == NULL) ) {
+            assert( expr->value->value.u32 == NULL );
             expression_create_value( expr, expr->parent->expr->left->value->width, alloc );
           }
         }
@@ -1715,10 +1716,10 @@ void expression_display(
           left_id, 
           right_id );
 
-  if( expr->value->value == NULL ) {
+  if( expr->value->value.u32 == NULL ) {
     printf( "NO DATA VECTOR" );
   } else {
-    vector_display_value( expr->value->value, expr->value->width );
+    vector_display_value( expr->value->value.u32, expr->value->width );
   }
   printf( "\n" );
 
@@ -1739,8 +1740,8 @@ inline static void expression_set_tf_preclear( expression* expr ) {
   expr->suppl.part.eval_f = 0;
       
   /* Set TRUE/FALSE bits to indicate value */
-  if( !expr->value->suppl.part.unknown ) {
-    if( expr->value->suppl.part.not_zero ) {
+  if( !vector_is_unknown( expr->value ) ) {
+    if( vector_is_not_zero( expr->value ) ) {
       expr->suppl.part.true   = 1;
       expr->suppl.part.eval_t = 1;
     } else {
@@ -1761,8 +1762,8 @@ inline static void expression_set_tf_preclear( expression* expr ) {
 inline static void expression_set_tf( expression* expr ) {
 
   /* Set TRUE/FALSE bits to indicate value */
-  if( !expr->value->suppl.part.unknown ) {
-    if( expr->value->suppl.part.not_zero ) {
+  if( !vector_is_unknown( expr->value ) ) {
+    if( vector_is_not_zero( expr->value ) ) {
       expr->suppl.part.true   = 1; 
       expr->suppl.part.eval_t = 1;
     } else {
@@ -1785,7 +1786,7 @@ inline static void expression_set_unary_evals( expression* expr ) {
   nibble    val;
   int       i;
   int       width = expr->value->width;
-  vec_data* value = expr->value->value;
+  vec_data* value = expr->value->value.u32;
 
   for( i=0; i<width; i++ ) {
     val = value[i].part.exp.value;
@@ -1814,9 +1815,9 @@ inline static void expression_set_and_comb_evals( expression* expr ) {
   int       width  = expr->value->width;
   int       lwidth = expr->left->value->width;
   int       rwidth = expr->right->value->width;
-  vec_data* lvalue = expr->left->value->value;
-  vec_data* rvalue = expr->right->value->value;
-  vec_data* value  = expr->value->value;
+  vec_data* lvalue = expr->left->value->value.u32;
+  vec_data* rvalue = expr->right->value->value.u32;
+  vec_data* value  = expr->value->value.u32;
 
   for( i=0; i<width; i++ ) {
     lval = (i < lwidth) ? lvalue[i].part.exp.value : 0;
@@ -1844,9 +1845,9 @@ inline static void expression_set_or_comb_evals( expression* expr ) {
   int       width  = expr->value->width;
   int       lwidth = expr->left->value->width;
   int       rwidth = expr->right->value->width;
-  vec_data* lvalue = expr->left->value->value;
-  vec_data* rvalue = expr->right->value->value;
-  vec_data* value  = expr->value->value;
+  vec_data* lvalue = expr->left->value->value.u32;
+  vec_data* rvalue = expr->right->value->value.u32;
+  vec_data* value  = expr->value->value.u32;
 
   for( i=0; i<width; i++ ) {
     lval = (i < lwidth) ? lvalue[i].part.exp.value : 0;
@@ -1874,9 +1875,9 @@ inline static void expression_set_other_comb_evals( expression* expr ) {
   int       width  = expr->value->width;
   int       lwidth = expr->left->value->width;
   int       rwidth = expr->right->value->width;
-  vec_data* lvalue = expr->left->value->value;
-  vec_data* rvalue = expr->right->value->value;
-  vec_data* value  = expr->value->value;
+  vec_data* lvalue = expr->left->value->value.u32;
+  vec_data* rvalue = expr->right->value->value.u32;
+  vec_data* value  = expr->value->value.u32;
 
   for( i=0; i<width; i++ ) {
     lval = (i < lwidth) ? lvalue[i].part.exp.value : 0;
@@ -2080,13 +2081,9 @@ bool expression_op_func__divide(
   /* Clear not_zero and unknown bits */
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
 
-  if( expr->left->value->suppl.part.unknown || expr->right->value->suppl.part.unknown ) {
+  if( vector_is_unknown( expr->left ) || vector_is_unknown( expr->right ) ) {
 
-    unsigned int i;
-
-    for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &x_value, 1, 0, i );
-    }
+    vector_set_to_x( expr->value );
 
   } else {
 
@@ -3266,7 +3263,7 @@ bool expression_op_func__cond(
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
 
   /* Simple vector copy from right side and gather coverage information */
-  if( retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 ) ) {
+  if( retval = vector_set_value( expr->value, expr->right->value->value.u32, expr->right->value->width, 0, 0 ) ) {
     expression_set_tf_preclear( expr );
   }
   expression_set_unary_evals( expr );
@@ -3299,9 +3296,9 @@ bool expression_op_func__cond_sel(
 
   if( !expr->parent->expr->left->value->suppl.part.unknown ) {
     if( !expr->parent->expr->left->value->suppl.part.not_zero ) {
-      retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+      retval = vector_set_value( expr->value, expr->right->value->value.u32, expr->right->value->width, 0, 0 );
     } else {
-      retval = vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
+      retval = vector_set_value( expr->value, expr->left->value->value.u32, expr->left->value->width, 0, 0 );
     }
   } else {
     vec_data bitx;
@@ -3647,10 +3644,10 @@ bool expression_op_func__sbit(
 
     /* Calculate starting bit position and width */
     if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-      vstart = expr->parent->expr->left->value->value;
+      vstart = expr->parent->expr->left->value->value.u32;
       vwidth = expr->parent->expr->left->value->width;
     } else {
-      vstart = expr->sig->value->value;
+      vstart = expr->sig->value->value.u32;
       vwidth = expr->sig->value->width;
     }
 
@@ -3668,31 +3665,31 @@ bool expression_op_func__sbit(
     /* Adjust this expression's vector data pointer to point to correct bits in signal */
     intval = (vector_to_int( expr->left->value ) - dim_lsb) * dim_width;
     if( intval < 0 ) {
-      expr->value->value = &x_value;
+      expr->value->value.u32 = &x_value;
     } else {
       if( dim_be ) {
         if( intval > vwidth ) {
-          expr->value->value = &x_value;
+          expr->value->value.u32 = &x_value;
         } else {
-          expr->value->value = vstart + (vwidth - (intval + expr->value->width));
+          expr->value->value.u32 = vstart + (vwidth - (intval + expr->value->width));
         }
       } else {
         if( intval >= vwidth ) {
-          expr->value->value = &x_value;
+          expr->value->value.u32 = &x_value;
         } else {
-          expr->value->value = vstart + intval;
+          expr->value->value.u32 = vstart + intval;
         }
       }
     }
 
     /* If this expression references a memory and is the last unpacked dimension, set the first read vector data bit to 1 */
     if( (expr->value->suppl.part.type == VTYPE_MEM) && ((exp_dim + 1) == expr->sig->udim_num) ) { 
-      expr->value->value[0].part.mem.rd = 1;
+      expr->value->value.u32[0].part.mem.rd = 1;
     }
 
     /* Set the unknown and not_zero bits accordingly */
-    expr->value->suppl.part.unknown  = ((expr->value->value[0].part.exp.value & 0x2) >> 1);
-    expr->value->suppl.part.not_zero = (expr->value->value[0].part.exp.value & 0x1);
+    expr->value->suppl.part.unknown  = ((expr->value->value.u32[0].part.exp.value & 0x2) >> 1);
+    expr->value->suppl.part.not_zero = (expr->value->value.u32[0].part.exp.value & 0x1);
 
   }
 
@@ -3731,10 +3728,10 @@ bool expression_op_func__mbit(
 
   /* Calculate starting bit position */
   if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-    vstart = expr->parent->expr->left->value->value;
+    vstart = expr->parent->expr->left->value->value.u32;
     vwidth = expr->parent->expr->left->value->width;
   } else {
-    vstart = expr->sig->value->value;
+    vstart = expr->sig->value->value.u32;
     vwidth = expr->sig->value->width;
   }
 
@@ -3753,10 +3750,10 @@ bool expression_op_func__mbit(
   assert( intval >= 0 );
   if( dim_be ) {
     assert( intval <= vwidth );
-    expr->value->value = vstart + (vwidth - (intval + expr->value->width));
+    expr->value->value.u32 = vstart + (vwidth - (intval + expr->value->width));
   } else {
     assert( intval < vwidth );
-    expr->value->value = vstart + intval;
+    expr->value->value.u32 = vstart + intval;
   }
 
   /* Calculate unknown and not_zero supplemental fields */
@@ -3801,7 +3798,7 @@ bool expression_op_func__expand(
   if( !expr->left->value->suppl.part.unknown ) {
 
     for( j=0; j<expr->right->value->width; j++ ) {
-      bit.part.exp.value = expr->right->value->value[j].part.exp.value;
+      bit.part.exp.value = expr->right->value->value.u32[j].part.exp.value;
       width              = vector_to_int( expr->left->value );
       for( i=0; i<width; i++ ) {
         retval |= vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
@@ -3850,8 +3847,8 @@ bool expression_op_func__list(
   /* Clear the unknown and not_zero bits */
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
 
-  retval |= vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-  retval |= vector_set_value( expr->value, expr->left->value->value,  expr->left->value->width,  0, expr->right->value->width );
+  retval |= vector_set_value( expr->value, expr->right->value->value.u32, expr->right->value->width, 0, 0 );
+  retval |= vector_set_value( expr->value, expr->left->value->value.u32,  expr->left->value->width,  0, expr->right->value->width );
 
   /* Gather coverage information */
   if( retval ) {
@@ -3887,7 +3884,7 @@ bool expression_op_func__concat(
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
 
   /* Perform concatenation operation and gather coverage information */
-  if( retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 ) ) {
+  if( retval = vector_set_value( expr->value, expr->right->value->value.u32, expr->right->value->width, 0, 0 ) ) {
     expression_set_tf_preclear( expr );
   }
   expression_set_unary_evals( expr );
@@ -3918,7 +3915,7 @@ bool expression_op_func__pedge(
   register vec_data value1b;  /* 2-bit vector value */
 
   value1a.all            = 0;
-  value1a.part.exp.value = expr->right->value->value[0].part.exp.value;
+  value1a.part.exp.value = expr->right->value->value.u32[0].part.exp.value;
   value1b                = expr->elem.tvecs->vec[0].value[0];
 
   if( (value1a.part.exp.value != value1b.part.exp.value) &&
@@ -3961,7 +3958,7 @@ bool expression_op_func__nedge(
   register vec_data value1b;  /* 2-bit vector value */
 
   value1a.all            = 0;
-  value1a.part.exp.value = expr->right->value->value[0].part.exp.value;
+  value1a.part.exp.value = expr->right->value->value.u32[0].part.exp.value;
   value1b                = expr->elem.tvecs->vec[0].value[0];
 
   if( (value1a.part.exp.value != value1b.part.exp.value) &&
@@ -4030,7 +4027,7 @@ bool expression_op_func__aedge(
       expr->suppl.part.eval_t = 1;
       retval = TRUE;
       VSUPPL_CLR_NZ_AND_UNK( expr->elem.tvecs->vec[0].suppl );
-      (void)vector_set_value( &(expr->elem.tvecs->vec[0]), expr->right->value->value, expr->right->value->width, 0, 0 );
+      (void)vector_set_value( &(expr->elem.tvecs->vec[0]), expr->right->value->value.u32, expr->right->value->width, 0, 0 );
     } else {
       expr->suppl.part.eval_t = 0;
       retval = FALSE;
@@ -4389,7 +4386,7 @@ bool expression_op_func__func_call(
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
 
   /* Then copy the function variable to this expression */
-  retval = vector_set_value( expr->value, expr->sig->value->value, expr->value->width, 0, 0 );
+  retval = vector_set_value( expr->value, expr->sig->value->value.u32, expr->value->width, 0, 0 );
   
   /* Deallocate the reentrant structure of the current thread (if it exists) */
   if( (thr != NULL) && (thr->ren != NULL) ) {
@@ -4566,7 +4563,7 @@ bool expression_op_func__repeat(
 
   retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT );
 
-  if( expr->value->value[0].part.exp.value == 0 ) {
+  if( expr->value->value.u32[0].part.exp.value == 0 ) {
     vector_from_int( expr->left->value, 0 );
   } else {
     vector_from_int( expr->left->value, (vector_to_int( expr->left->value ) + 1) );
@@ -4675,7 +4672,7 @@ bool expression_op_func__passign(
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
       VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
-      retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+      retval = vector_set_value( expr->value, expr->right->value->value.u32, expr->right->value->width, 0, 0 );
       vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
       break;
 
@@ -4727,9 +4724,9 @@ bool expression_op_func__mbit_pos(
 
   /* Calculate starting bit position */
   if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-    vstart = expr->parent->expr->left->value->value;
+    vstart = expr->parent->expr->left->value->value.u32;
   } else {
-    vstart = expr->sig->value->value;
+    vstart = expr->sig->value->value.u32;
   }
 
   if( !expr->left->value->suppl.part.unknown ) {
@@ -4740,7 +4737,7 @@ bool expression_op_func__mbit_pos(
     intval = (vector_to_int( expr->left->value ) - lsb) * vsignal_calc_width_for_expr( expr, expr->sig );
     assert( intval >= 0 );
     assert( intval < expr->sig->value->width );
-    expr->value->value = vstart + intval;
+    expr->value->value.u32 = vstart + intval;
 
   }
 
@@ -4777,9 +4774,9 @@ bool expression_op_func__mbit_neg(
 
   /* Calculate starting bit position */
   if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-    vstart = expr->parent->expr->left->value->value;
+    vstart = expr->parent->expr->left->value->value.u32;
   } else {
-    vstart = expr->sig->value->value;
+    vstart = expr->sig->value->value.u32;
   }
 
   if( !expr->left->value->suppl.part.unknown ) {
@@ -4791,7 +4788,7 @@ bool expression_op_func__mbit_neg(
     intval2 = vector_to_int( expr->right->value );
     assert( intval1 < expr->sig->value->width );
     assert( ((intval1 - intval2) + 1) >= 0 );
-    expr->value->value = vstart + ((intval1 - intval2) + 1);
+    expr->value->value.u32 = vstart + ((intval1 - intval2) + 1);
 
   }
 
@@ -4862,7 +4859,7 @@ bool expression_op_func__iinc(
 
   /* Copy the left-hand value to our expression */
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
-  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
+  (void)vector_set_value( expr->value, expr->left->value->value.u32, expr->left->value->width, 0, 0 );
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -4896,7 +4893,7 @@ bool expression_op_func__pinc(
 
   /* Copy the left-hand value to our expression */
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
-  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
+  (void)vector_set_value( expr->value, expr->left->value->value.u32, expr->left->value->width, 0, 0 );
 
   /* Perform increment */
   expr->elem.tvecs->index = 0;
@@ -4946,7 +4943,7 @@ bool expression_op_func__idec(
 
   /* Copy the left-hand value to our expression */
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
-  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
+  (void)vector_set_value( expr->value, expr->left->value->value.u32, expr->left->value->width, 0, 0 );
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -4980,7 +4977,7 @@ bool expression_op_func__pdec(
 
   /* Copy the left-hand value to our expression */
   VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
-  (void)vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
+  (void)vector_set_value( expr->value, expr->left->value->value.u32, expr->left->value->width, 0, 0 );
 
   /* Perform decrement */
   expr->elem.tvecs->index = 0;
@@ -5063,7 +5060,7 @@ bool expression_op_func__dly_op(
   /* If we are not waiting for the delay to occur, copy the contents of the operation */
   if( !thr->suppl.part.exec_first ) {
     VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
-    (void)vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+    (void)vector_set_value( expr->value, expr->right->value->value.u32, expr->right->value->width, 0, 0 );
   }
 
   /* Explicitly call the delay/event.  If the delay is complete, set eval_t to TRUE */
@@ -5103,7 +5100,7 @@ bool expression_op_func__repeat_dly(
     (void)expression_op_func__repeat( expr->left, thr, time );
 
     /* If the repeat operation evaluated to TRUE, perform delay operation */
-    if( expr->left->value->value[0].part.exp.value == 1 ) {
+    if( expr->left->value->value.u32[0].part.exp.value == 1 ) {
       (void)exp_op_info[expr->right->op].func( expr->right, thr, time );
       expr->suppl.part.eval_t = 0;
 
@@ -5544,11 +5541,11 @@ void expression_assign(
     /* Calculate starting vector value bit and signal LSB/BE for LHS */
     if( lhs->sig != NULL ) {
       if( (lhs->parent->expr->op == EXP_OP_DIM) && (lhs->parent->expr->right == lhs) ) {
-        vstart = lhs->parent->expr->left->value->value;
+        vstart = lhs->parent->expr->left->value->value.u32;
         vwidth = lhs->parent->expr->left->value->width;
       } else {
         /* Get starting vector bit from signal itself */
-        vstart = lhs->sig->value->value;
+        vstart = lhs->sig->value->value.u32;
         vwidth = lhs->sig->value->width;
       }
       exp_dim = expression_get_curr_dimension( lhs );
@@ -5579,7 +5576,7 @@ void expression_assign(
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
             VSUPPL_CLR_NZ_AND_UNK( lhs->value->suppl );
-            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value.u32, rhs->value->width, *lsb, 0 );
             if( rhs->value->width < lhs->value->width ) {
               (void)vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
@@ -5607,13 +5604,13 @@ void expression_assign(
             if( intval1 >= 0 ) {           // Only perform assignment if selected bit is within range
               if( dim_be ) {
                 if( intval1 <= vwidth ) {  // Only perform assignment if selected bit is within range
-                  lhs->value->value = vstart + (vwidth - (intval1 + lhs->value->width));
+                  lhs->value->value.u32 = vstart + (vwidth - (intval1 + lhs->value->width));
                 } else {
                   assign = FALSE;
                 }
               } else {
                 if( intval1 < vwidth ) {   // Only perform assignment if selected bit is within range
-                  lhs->value->value = vstart + intval1;
+                  lhs->value->value.u32 = vstart + intval1;
                 } else {
                   assign = FALSE;
                 }
@@ -5624,7 +5621,7 @@ void expression_assign(
           }
           if( assign ) {
             VSUPPL_CLR_NZ_AND_UNK( lhs->value->suppl );
-            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value.u32, rhs->value->width, *lsb, 0 );
             if( rhs->value->width < lhs->value->width ) {
               (void)vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
@@ -5647,14 +5644,14 @@ void expression_assign(
           assert( intval1 >= 0 );
           if( dim_be ) {
             assert( intval1 <= vwidth );
-            lhs->value->value = vstart + (vwidth - (intval1 + lhs->value->width));
+            lhs->value->value.u32 = vstart + (vwidth - (intval1 + lhs->value->width));
           } else {
             assert( intval1 < vwidth );
-            lhs->value->value = vstart + intval1;
+            lhs->value->value.u32 = vstart + intval1;
           }
           if( assign ) {
             VSUPPL_CLR_NZ_AND_UNK( lhs->value->suppl );
-            (void)vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value.u32, rhs->value->width, *lsb, 0 );
             if( rhs->value->width < lhs->value->width ) {
               (void)vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
             }
@@ -5680,11 +5677,11 @@ void expression_assign(
             intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
             assert( intval1 >= 0 );
             assert( ((intval1 + intval2) - 1) < lhs->sig->value->width );
-            lhs->value->value = vstart + intval1;
+            lhs->value->value.u32 = vstart + intval1;
           }
           if( assign ) {
             VSUPPL_CLR_NZ_AND_UNK( lhs->value->suppl );
-            (void)vector_set_value( lhs->value, rhs->value->value, intval2, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value.u32, intval2, *lsb, 0 );
             vector_sync_nz_and_unk( lhs->sig->value );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -5706,11 +5703,11 @@ void expression_assign(
             intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
             assert( intval1 < lhs->sig->value->width );
             assert( ((intval1 - intval2) + 1) >= 0 );
-            lhs->value->value = vstart + ((intval1 - intval2) + 1);
+            lhs->value->value.u32 = vstart + ((intval1 - intval2) + 1);
           }
           if( assign ) {
             VSUPPL_CLR_NZ_AND_UNK( lhs->value->suppl );
-            (void)vector_set_value( lhs->value, rhs->value->value, intval2, *lsb, 0 );
+            (void)vector_set_value( lhs->value, rhs->value->value.u32, intval2, *lsb, 0 );
             vector_sync_nz_and_unk( lhs->sig->value );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -5907,6 +5904,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.2  2008/04/21 23:13:04  phase1geo
+ More work to update other files per vector changes.  Currently in the middle
+ of updating expr.c.  Checkpointing.
+
  Revision 1.329.2.1  2008/04/21 04:37:23  phase1geo
  Attempting to get other files (besides vector.c) to compile with new vector
  changes.  Still work to go here.  The initial pass through vector.c is not
