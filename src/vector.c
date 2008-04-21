@@ -504,6 +504,108 @@ void vector_merge(
 }
 
 /*!
+ \param vec  Pointer to vector to count eval_a/b bits in
+
+ \return Returns the number of eval_a/b bits are set in the given vector.
+*/
+int vector_get_eval_ab_count(
+  vector* vec
+) { PROFILE(VECTOR_GET_EVAL_ABC_COUNT);
+
+  int          count = 0;  /* Number of EVAL_A/B bits set */
+  unsigned int i, j;       /* Loop iterators */
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      for( i=0; i<VECTOR_SIZE32( vec->width ); i++ ) {
+        uint32 value_a = vec->value.u32[VTYPE_INDEX_EXP_EVAL_A][i];
+        uint32 value_b = vec->value.u32[VTYPE_INDEX_EXP_EVAL_B][i];
+        for( j=0; j<32; j++ ) {
+          count += (value_a >> j) & 0x1;
+          count += (value_b >> j) & 0x1;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( count );
+
+}
+
+/*!
+ \param vec  Pointer to vector to count eval_a/b/c bits in
+
+ \return Returns the number of eval_a/b/c bits are set in the given vector.
+*/
+int vector_get_eval_abc_count(
+  vector* vec
+) { PROFILE(VECTOR_GET_EVAL_ABC_COUNT);
+
+  int          count = 0;  /* Number of EVAL_A/B/C bits set */
+  unsigned int i, j;       /* Loop iterators */
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      for( i=0; i<VECTOR_SIZE32( vec->width ); i++ ) {
+        uint32 value_a = vec->value.u32[VTYPE_INDEX_EXP_EVAL_A][i]; 
+        uint32 value_b = vec->value.u32[VTYPE_INDEX_EXP_EVAL_B][i]; 
+        uint32 value_c = vec->value.u32[VTYPE_INDEX_EXP_EVAL_C][i]; 
+        for( j=0; j<32; j++ ) {
+          count += (value_a >> j) & 0x1;
+          count += (value_b >> j) & 0x1;
+          count += (value_c >> j) & 0x1;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+  
+  PROFILE_END;
+
+  return( count );
+
+}
+
+/*!
+ \param vec  Pointer to vector to count eval_a/b/c/d bits in
+
+ \return Returns the number of eval_a/b/c/d bits are set in the given vector.
+*/
+int vector_get_eval_abcd_count(
+  vector* vec
+) { PROFILE(VECTOR_GET_EVAL_ABCD_COUNT);
+
+  int          count = 0;  /* Number of EVAL_A/B/C/D bits set */
+  unsigned int i, j;       /* Loop iterators */
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      for( i=0; i<VECTOR_SIZE32( vec->width ); i++ ) {
+        uint32 value_a = vec->value.u32[VTYPE_INDEX_EXP_EVAL_A][i]; 
+        uint32 value_b = vec->value.u32[VTYPE_INDEX_EXP_EVAL_B][i]; 
+        uint32 value_c = vec->value.u32[VTYPE_INDEX_EXP_EVAL_C][i]; 
+        uint32 value_d = vec->value.u32[VTYPE_INDEX_EXP_EVAL_D][i]; 
+        for( j=0; j<32; j++ ) {
+          count += (value_a >> j) & 0x1;
+          count += (value_b >> j) & 0x1;
+          count += (value_c >> j) & 0x1;
+          count += (value_d >> j) & 0x1;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+  
+  PROFILE_END;
+
+  return( count );
+
+}
+
+/*!
  \param nib    Pointer to vector data array to get string from
  \param width  Width of given vector data array
 
@@ -2630,6 +2732,8 @@ bool vector_op_lshift(
 ) { PROFILE(VECTOR_OP_LSHIFT);
 
   bool     retval  = FALSE;  /* Return value for this function */
+
+#ifdef OBSOLETE
   int      shift_val;        /* Number of bits to shift left */
   vec_data zero;             /* Zero value for zero-fill */
   vec_data unknown;          /* X-value for unknown fill */
@@ -2661,6 +2765,9 @@ bool vector_op_lshift(
     }
 
   }
+#endif
+
+  assert( 0 );
 
   PROFILE_END;
 
@@ -2685,6 +2792,8 @@ bool vector_op_rshift(
 ) { PROFILE(VECTOR_OP_RSHIFT);
 
   bool     retval = FALSE;  /* Return value for this function */
+
+#ifdef OBSOLETE
   int      shift_val;       /* Number of bits to shift left */
   vec_data zero;            /* Zero value for zero-fill */
   vec_data unknown;         /* X-value for unknown fill */
@@ -2716,6 +2825,9 @@ bool vector_op_rshift(
     }
 
   }
+#endif
+
+  assert( 0 );
 
   PROFILE_END;
 
@@ -2740,6 +2852,8 @@ bool vector_op_arshift(
 ) { PROFILE(VECTOR_OP_ARSHIFT);
 
   bool     retval = FALSE;  /* Return value for this function */
+
+#ifdef OBSOLETE
   int      shift_val;       /* Number of bits to shift left */
   vec_data sign;            /* Sign extended value for zero-fill */
   vec_data unknown;         /* X-value for unknown fill */
@@ -2772,6 +2886,9 @@ bool vector_op_arshift(
     }
 
   }
+#endif
+
+  assert( 0 );
 
   PROFILE_END;
 
@@ -2795,6 +2912,7 @@ bool vector_op_add(
   vector* right
 ) { PROFILE(VECTOR_OP_ADD);
 
+#ifdef OBSOLETE
   int    i;               /* Loop iterator */
   int    tgt_width = tgt->width;
   nibble v2st      = tgt->suppl.part.is_2state;
@@ -2884,10 +3002,13 @@ bool vector_op_add(
 
   /* Update the unknown and not_zero bits */
   tgt->suppl.all |= (ored << 2);
+#endif
+
+  assert( 0 );
 
   PROFILE_END;
 
-  return( tgt_width > 0 );
+  return( TRUE );
 
 }
 
@@ -2906,6 +3027,8 @@ bool vector_op_negate(
 ) { PROFILE(VECTOR_OP_NEGATE);
 
   bool    retval = FALSE;                      /* Return value for this function */
+
+#ifdef OBSOLETE
   vector* vec1   = &(tvb->vec[tvb->index++]);  /* Temporary vector holder */
   vector* vec2   = &(tvb->vec[tvb->index++]);  /* Temporary vector holder */
 
@@ -2917,6 +3040,9 @@ bool vector_op_negate(
 
   /* Add one to the inverted value */
   retval = vector_op_add( tgt, vec1, vec2 );
+#endif
+
+  assert( 0 );
 
   PROFILE_END;
 
@@ -2944,6 +3070,8 @@ bool vector_op_subtract(
 ) { PROFILE(VECTOR_OP_SUBTRACT);
 
   bool    retval = FALSE;                      /* Return value for this function */
+
+#ifdef OBSOLETE
   vector* vec    = &(tvb->vec[tvb->index++]);  /* Temporary vector holder */
 
   /* Negate the value on the right */
@@ -2951,6 +3079,9 @@ bool vector_op_subtract(
 
   /* Add new value to left value */
   retval = vector_op_add( tgt, left, vec );
+#endif
+
+  assert( 0 );
 
   PROFILE_END;
 
@@ -2978,6 +3109,8 @@ bool vector_op_multiply(
 ) { PROFILE(VECTOR_OP_MULTIPLY);
 
   bool     retval   = FALSE;                      /* Return value for this function */
+
+#ifdef OBSOLETE
   vector   vec;                                   /* Intermediate vector */
   vec_data vec_val[32];                           /* Intermediate value */
   nibble   lunknown = left->suppl.part.unknown;   /* Set to 1 if left vector is unknown */
@@ -3035,6 +3168,9 @@ bool vector_op_multiply(
 
   /* Set target value */
   retval = vector_set_value( tgt, vec.value, vec.width, 0, 0 );
+#endif
+
+  assert( 0 );
 
   PROFILE_END;
 
@@ -3055,6 +3191,7 @@ bool vector_op_inc(
   vecblk* tvb
 ) { PROFILE(VECTOR_OP_INC);
 
+#ifdef OBSOLETE
   vector* tmp1 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the same contents as the target */
   vector* tmp2 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the value of 1 */
 
@@ -3066,6 +3203,9 @@ bool vector_op_inc(
   
   /* Finally add the values and assign them back to the target */
   (void)vector_op_add( tgt, tmp1, tmp2 );
+#endif
+
+  assert( 0 );
 
   PROFILE_END;
 
@@ -3086,6 +3226,7 @@ bool vector_op_dec(
   vecblk* tvb
 ) { PROFILE(VECTOR_OP_DEC);
 
+#ifdef OBSOLETE
   vector* tmp1 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the same contents as the target */
   vector* tmp2 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the value of 1 */
 
@@ -3097,6 +3238,9 @@ bool vector_op_dec(
 
   /* Finally add the values and assign them back to the target */
   (void)vector_op_subtract( tgt, tmp1, tmp2, tvb );
+#endif
+
+  assert( 0 );
 
   PROFILE_END;
 
@@ -3118,6 +3262,8 @@ bool vector_unary_inv(
 ) { PROFILE(VECTOR_UNARY_INV);
 
   bool     retval = FALSE;  /* Return value for this function */
+
+#ifdef OBSOLETE
   nibble   bit;             /* Selected bit from source vector */
   vec_data vec_val;         /* Temporary value */
   int      i;               /* Loop iterator */
@@ -3133,6 +3279,9 @@ bool vector_unary_inv(
     vec_val.part.val.value = vals[src->value[i].part.val.value];
     retval                |= vector_set_value( tgt, &vec_val, 1, 0, i );
   }
+#endif
+
+  assert( 0 );
 
   PROFILE_END;
 
@@ -3157,8 +3306,8 @@ bool vector_unary_op(
 ) { PROFILE(VECTOR_UNARY_OP);
 
   bool     retval;   /* Return value for this function */
-  nibble   uval;     /* Unary operation value */
-  nibble   bit;      /* Current bit under evaluation */
+
+#ifdef OBSOLETE
   vector   vec;      /* Temporary vector value */
   vec_data vec_val;  /* Temporary value */
   int      i;        /* Loop iterator */
@@ -3189,6 +3338,9 @@ bool vector_unary_op(
     retval = vector_set_value( tgt, vec.value, 1, 0, 0 );
 
   }
+#endif
+
+  assert( 0 );
 
   PROFILE_END;
 
@@ -3210,12 +3362,17 @@ bool vector_unary_not(
 ) { PROFILE(VECTOR_UNARY_NOT);
 
   bool     retval;   /* Return value of this function */
+
+#ifdef OBSOLETE
   vector   vec;      /* Temporary vector value */
   vec_data vec_val;  /* Temporary value */
 
   vector_init( &vec, &vec_val, 0x0, FALSE, 1, VTYPE_VAL );
   vec_val.part.val.value = src->suppl.part.unknown ? 2 : src->suppl.part.not_zero;
   retval = vector_unary_inv( tgt, &vec );
+#endif
+
+  assert( 0 );
 
   PROFILE_END;
 
@@ -3236,9 +3393,18 @@ void vector_dealloc(
   if( vec != NULL ) {
 
     /* Deallocate all vector values */
-    if( (vec->value != NULL) && (vec->suppl.part.owns_data == 1) ) {
-      free_safe( vec->value, (sizeof( vec_data ) * vec->width) );
-      vec->value = NULL;
+    if( (vec->value.u32 != NULL) && (vec->suppl.part.owns_data == 1) ) {
+      unsigned int i;
+      switch( vec->suppl.part.data_type ) {
+        case VDATA_U32 :
+          for( i=0; i<vector_type_sizes[vec->suppl.part.type]; i++ ) {
+            free_safe( vec->value.u32[i], (sizeof( uint32 ) * VECTOR_SIZE32( vec->width )) );
+          }
+          free_safe( vec->value.u32, (sizeof( uint32* ) * vector_type_sizes[vec->suppl.part.type]) );
+          vec->value.u32 = NULL;
+          break;
+        default :  assert( 0 );  break;
+      }
     }
 
     /* Deallocate vector itself */
@@ -3252,6 +3418,12 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.7  2008/04/21 04:37:23  phase1geo
+ Attempting to get other files (besides vector.c) to compile with new vector
+ changes.  Still work to go here.  The initial pass through vector.c is not
+ complete at this time as I am attempting to get what I have completed
+ debugged.  Checkpointing work.
+
  Revision 1.138.2.6  2008/04/20 05:43:45  phase1geo
  More work on the vector file.  Completed initial pass of conversion operations,
  bitwise operations and comparison operations.

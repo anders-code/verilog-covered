@@ -300,6 +300,7 @@ static bool arc_set_states( char* arcs, int start, const vector* left, const vec
   int           entry_size;     /* Number of characters needed to store one entry */
   int           index;          /* Current index of vector to extract */
 
+#ifdef OBSOLETE
   /* Check specified vector for unknown information */
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
 
@@ -344,6 +345,9 @@ static bool arc_set_states( char* arcs, int start, const vector* left, const vec
     }
 
   }
+#endif
+
+  assert( 0 );
 
   return( retval );
 
@@ -1487,6 +1491,12 @@ void arc_dealloc( char* arcs ) { PROFILE(ARC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.60.2.2  2008/04/21 04:37:22  phase1geo
+ Attempting to get other files (besides vector.c) to compile with new vector
+ changes.  Still work to go here.  The initial pass through vector.c is not
+ complete at this time as I am attempting to get what I have completed
+ debugged.  Checkpointing work.
+
  Revision 1.60.2.1  2008/04/20 05:43:45  phase1geo
  More work on the vector file.  Completed initial pass of conversion operations,
  bitwise operations and comparison operations.

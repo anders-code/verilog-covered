@@ -86,6 +86,21 @@ void vector_merge(
   vector* other
 );
 
+/*! \brief Counts the number of eval_a/b bits set in the given vector */
+int vector_get_eval_ab_count(
+  vector* vec
+);
+
+/*! \brief Counts the number of eval_a/b/c bits set in the given vector */
+int vector_get_eval_abc_count(
+  vector* vec
+);
+
+/*! \brief Counts the number of eval_a/b/c/d bits set in the given vector */
+int vector_get_eval_abcd_count(
+  vector* vec
+);
+
 /*! \brief Returns string containing toggle 0 -> 1 information in binary format */
 char* vector_get_toggle01_uint32(
   uint32** value,
@@ -313,6 +328,12 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.4  2008/04/21 04:37:23  phase1geo
+ Attempting to get other files (besides vector.c) to compile with new vector
+ changes.  Still work to go here.  The initial pass through vector.c is not
+ complete at this time as I am attempting to get what I have completed
+ debugged.  Checkpointing work.
+
  Revision 1.58.2.3  2008/04/20 05:43:46  phase1geo
  More work on the vector file.  Completed initial pass of conversion operations,
  bitwise operations and comparison operations.
