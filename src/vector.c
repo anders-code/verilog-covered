@@ -606,7 +606,7 @@ int vector_get_eval_d(
 */
 int vector_get_eval_ab_count(
   vector* vec
-) { PROFILE(VECTOR_GET_EVAL_ABC_COUNT);
+) { PROFILE(VECTOR_GET_EVAL_AB_COUNT);
 
   int          count = 0;  /* Number of EVAL_A/B bits set */
   unsigned int i, j;       /* Loop iterators */
@@ -1293,13 +1293,178 @@ bool vector_set_value_uint32(
   }
 
   /* Calculate the coverage and perform the actual assignment */
-  retval = vector_set_coverage_and_assign( vec, scratchl, scratchh, 0, (width - 1) );
+  retval = vector_set_coverage_and_assign_uint32( vec, scratchl, scratchh, 0, (width - 1) );
 
   PROFILE_END;
 
   return( retval );
 
 }
+
+/*!
+ \param vec  Pointer to vector to set eval_a/b bits for unary operation
+
+ Called by expression_op_func__* functions for operations that are unary
+ in nature.
+*/
+void vector_set_unary_evals(
+  vector* vec
+) { PROFILE(VECTOR_SET_UNARY_EVALS);
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        unsigned int i;
+        for( i=0; i<VECTOR_SIZE32(vec->width); i++ ) {
+          uint32 lval = vec->value.u32[VTYPE_INDEX_EXP_VALL][i];
+          uint32 hval = vec->value.u32[VTYPE_INDEX_EXP_VALH][i];
+          vec->value.u32[VTYPE_INDEX_EXP_EVAL_A][i] = ~hval & ~lval;
+          vec->value.u32[VTYPE_INDEX_EXP_EVAL_B][i] = ~hval &  lval;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ \param tgt    Pointer to target vector to set eval_a/b/c supplemental bits
+ \param left   Pointer to target vector on the left
+ \param right  Pointer to target vector on the right
+
+ Sets the eval_a/b/c supplemental bits as necessary.  This function should be called
+ by expression_op_func__* functions that are AND-type combinational operations only and own their
+ own vectors.
+*/    
+void vector_set_and_comb_evals(
+  vector* tgt,
+  vector* left,
+  vector* right
+) { PROFILE(VECTOR_SET_AND_COMB_EVALS);
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        unsigned int i;
+        unsigned int size  = VECTOR_SIZE32( tgt->width );
+        unsigned int lsize = VECTOR_SIZE32( left->width );
+        unsigned int rsize = VECTOR_SIZE32( right->width );
+        uint32**     val   = tgt->value.u32;
+        uint32**     lval  = left->value.u32;
+        uint32**     rval  = right->value.u32;
+
+        for( i=0; i<size; i++ ) {
+          uint32 lvall = (i < lsize) ? lval[VTYPE_INDEX_EXP_VALL][i] : 0;
+          uint32 lvalh = (i < lsize) ? lval[VTYPE_INDEX_EXP_VALH][i] : 0;
+          uint32 rvall = (i < rsize) ? rval[VTYPE_INDEX_EXP_VALL][i] : 0;
+          uint32 rvalh = (i < rsize) ? rval[VTYPE_INDEX_EXP_VALH][i] : 0;
+          
+          val[VTYPE_INDEX_EXP_EVAL_A][i] |= ~lvalh & ~lvall;
+          val[VTYPE_INDEX_EXP_EVAL_B][i] |= ~rvalh & ~rvall;
+          val[VTYPE_INDEX_EXP_EVAL_C][i] |= ~lvalh & ~rvalh & lvall & rvall;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+ 
+}
+
+/*!
+ \param tgt    Pointer to target vector to set eval_a/b/c supplemental bits
+ \param left   Pointer to vector on left of expression
+ \param right  Pointer to vector on right of expression
+
+ Sets the eval_a/b/c supplemental bits as necessary.  This function should be called
+ by expression_op_func__* functions that are OR-type combinational operations only and own their
+ own vectors.
+*/
+void vector_set_or_comb_evals(
+  vector* tgt,
+  vector* left,
+  vector* right
+) { PROFILE(VECTOR_SET_OR_COMB_EVALS);
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        unsigned int i;
+        unsigned int size  = VECTOR_SIZE32( tgt->width );
+        unsigned int lsize = VECTOR_SIZE32( left->width );
+        unsigned int rsize = VECTOR_SIZE32( right->width );
+        uint32**     val   = tgt->value.u32;
+        uint32**     lval  = left->value.u32;
+        uint32**     rval  = right->value.u32;
+
+        for( i=0; i<size; i++ ) {
+          uint32 lvall = (i < lsize) ? lval[VTYPE_INDEX_EXP_VALL][i] : 0;
+          uint32 lvalh = (i < lsize) ? lval[VTYPE_INDEX_EXP_VALH][i] : 0;
+          uint32 rvall = (i < lsize) ? rval[VTYPE_INDEX_EXP_VALL][i] : 0;
+          uint32 rvalh = (i < lsize) ? rval[VTYPE_INDEX_EXP_VALH][i] : 0;
+
+          val[VTYPE_INDEX_EXP_EVAL_A][i] |= ~lvalh & lvall;
+          val[VTYPE_INDEX_EXP_EVAL_B][i] |= ~rvalh & rvall;
+          val[VTYPE_INDEX_EXP_EVAL_C][i] |= ~lvalh & ~rvalh & ~lvall & ~rvall;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+}
+
+/*! 
+ \param tgt    Pointer to target vector to set eval_a/b/c/d supplemental bits
+ \param left   Pointer to vector on left of expression
+ \param right  Pointer to vector on right of expression
+
+ Sets the eval_a/b/c/d supplemental bits as necessary.  This function should be called
+ by expression_op_func__* functions that are OTHER-type combinational operations only and own their
+ own vectors. 
+*/
+void vector_set_other_comb_evals(
+  vector* tgt,
+  vector* left,
+  vector* right
+) { PROFILE(VECTOR_SET_OTHER_COMB_EVALS);
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        unsigned int i;
+        unsigned int size  = VECTOR_SIZE32( tgt->width );
+        unsigned int lsize = VECTOR_SIZE32( left->width );
+        unsigned int rsize = VECTOR_SIZE32( right->width );
+        uint32**     val   = tgt->value.u32;
+        uint32**     lval  = left->value.u32;
+        uint32**     rval  = right->value.u32;
+
+        for( i=0; i<size; i++ ) { 
+          uint32 lvall = (i < lsize) ? lval[VTYPE_INDEX_EXP_VALL][i] : 0;
+          uint32 lvalh = (i < lsize) ? lval[VTYPE_INDEX_EXP_VALH][i] : 0;
+          uint32 rvall = (i < rsize) ? rval[VTYPE_INDEX_EXP_VALL][i] : 0;
+          uint32 rvalh = (i < rsize) ? rval[VTYPE_INDEX_EXP_VALH][i] : 0;
+
+          val[VTYPE_INDEX_EXP_EVAL_A][i] |= ~lvalh & ~rvalh & ~lvall & ~rvall;
+          val[VTYPE_INDEX_EXP_EVAL_B][i] |= ~lvalh & ~rvalh & ~lvall &  rvall;
+          val[VTYPE_INDEX_EXP_EVAL_C][i] |= ~lvalh & ~rvalh &  lvall & ~rvall;
+          val[VTYPE_INDEX_EXP_EVAL_D][i] |= ~lvalh & ~rvalh &  lvall &  rvall;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+  
+} 
 
 /*!
  \param vec   Pointer to vector to bit-fill
@@ -1427,11 +1592,15 @@ bool vector_is_not_zero(
 /*!
  \param vec  Pointer to vector to set to a value of X
 
+ \return Returns TRUE if the given vector changed value; otherwise, returns FALSE.
+
  Sets the entire specified vector to a value of X.
 */
-void vector_set_to_x(
+bool vector_set_to_x(
   vector* vec
 ) { PROFILE(VECTOR_SET_TO_X);
+
+  bool retval;  /* Return value for this function */
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_U32:
@@ -1446,7 +1615,7 @@ void vector_set_to_x(
         }
         scratchl[i] = 0;
         scratchh[i] = end_mask;
-        vector_set_coverage_and_assign_uint32( vec, scratchl, scratchh, 0, (vec->width - 1) );
+        retval = vector_set_coverage_and_assign_uint32( vec, scratchl, scratchh, 0, (vec->width - 1) );
       }
       break;
     default :  assert( 0 );  break;
@@ -2111,7 +2280,7 @@ bool vector_bitwise_and_op(
           scratchl[i] = ~(val1_h | val2_h) & (val1_l & val2_l);
           scratchh[i] = (val1_h & val2_h) | (val1_h & val2_l) | (val2_h & val1_l);
         }
-        retval = vector_set_coverage_and_assign( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
+        retval = vector_set_coverage_and_assign_uint32( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
       }
       break;
     default :  assert( 0 );  break;
@@ -2158,7 +2327,7 @@ bool vector_bitwise_nand_op(
           scratchl[i] = ~(val1_h | val2_h) & ~(val1_l & val2_l);
           scratchh[i] = (val1_h & val2_h) | (val1_h & ~val2_l) | (val2_h & ~val1_l);
         }
-        retval = vector_set_coverage_and_assign( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
+        retval = vector_set_coverage_and_assign_uint32( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
       }
       break;
     default :  assert( 0 );  break; 
@@ -2205,7 +2374,7 @@ bool vector_bitwise_or_op(
           scratchl[i] = ~(val1_h | val2_h) & (val1_l | val2_l);
           scratchh[i] = (val1_h & val2_h) | (val1_h & ~val2_l) | (val2_h & ~val1_l);
         }
-        retval = vector_set_coverage_and_assign( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
+        retval = vector_set_coverage_and_assign_uint32( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
       }
       break;
     default :  assert( 0 );  break;
@@ -2252,7 +2421,7 @@ bool vector_bitwise_nor_op(
           scratchl[i] = ~(val1_h | val2_h) & ~(val1_l | val2_l);
           scratchh[i] = (val1_h & val2_h) | (val1_h & val2_l) | (val2_h & val1_l);
         }
-        retval = vector_set_coverage_and_assign( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
+        retval = vector_set_coverage_and_assign_uint32( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
       }
       break;
     default :  assert( 0 );  break;
@@ -2299,7 +2468,7 @@ bool vector_bitwise_xor_op(
           scratchl[i] = (val1_l ^ val2_l) & ~(val1_h | val2_h);
           scratchh[i] = (val1_h | val2_h);
         }
-        retval = vector_set_coverage_and_assign( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
+        retval = vector_set_coverage_and_assign_uint32( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
       }
       break;
     default :  assert( 0 );  break;
@@ -2346,7 +2515,7 @@ bool vector_bitwise_nxor_op(
           scratchl[i] = ~(val1_l ^ val2_l) & ~(val1_h | val2_h);
           scratchh[i] = (val1_h | val2_h);
         }
-        retval = vector_set_coverage_and_assign( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
+        retval = vector_set_coverage_and_assign_uint32( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
       }
       break;
     default :  assert( 0 );  break;
@@ -2399,7 +2568,7 @@ bool vector_op_lt(
         } else {
           scratchl = (lvall < rvall);
         }
-        retval = vector_set_coverage_and_assign( tgt, &scratchl, &scratchh, 0, 0 );
+        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -2452,7 +2621,7 @@ bool vector_op_le(
         } else {
           scratchl = (lvall <= rvall);
         }
-        retval = vector_set_coverage_and_assign( tgt, &scratchl, &scratchh, 0, 0 );
+        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -2505,7 +2674,7 @@ bool vector_op_gt(
         } else {
           scratchl = (lvall > rvall);
         }
-        retval = vector_set_coverage_and_assign( tgt, &scratchl, &scratchh, 0, 0 );
+        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -2558,7 +2727,7 @@ bool vector_op_ge(
         } else {
           scratchl = (lvall >= rvall);
         }
-        retval = vector_set_coverage_and_assign( tgt, &scratchl, &scratchh, 0, 0 );
+        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -2611,7 +2780,7 @@ bool vector_op_eq(
         } else {
           scratchl = (lvall == rvall);
         }
-        retval = vector_set_coverage_and_assign( tgt, &scratchl, &scratchh, 0, 0 );
+        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -2660,7 +2829,7 @@ bool vector_op_ceq(
           rvalh = (i<rsize) ? right->value.u32[VTYPE_INDEX_VAL_VALH][i] : 0xffffffff;
         } while( (i >= 0) && ((lvall & ~lvalh) == (rvall & ~rvalh)) );
         scratchl = (lvall == rvall);
-        retval   = vector_set_coverage_and_assign( tgt, &scratchl, &scratchh, 0, 0 );
+        retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -2709,7 +2878,7 @@ bool vector_op_cxeq(
           rvalh = (i<rsize) ? right->value.u32[VTYPE_INDEX_VAL_VALH][i] : 0xffffffff;
         } while( (i >= 0) && ((lvall == rvall) || (lvalh == 0) || (rvall == 0)) );
         scratchl = (lvall == rvall);
-        retval   = vector_set_coverage_and_assign( tgt, &scratchl, &scratchh, 0, 0 );
+        retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -2758,7 +2927,7 @@ bool vector_op_czeq(
           rvalh = (i<rsize) ? right->value.u32[VTYPE_INDEX_VAL_VALH][i] : 0xffffffff;
         } while( (i >= 0) && ((lvall == rvall) || ~(lvalh & lvall) || ~(rvalh & rvall)) );
         scratchl = (lvall == rvall);
-        retval   = vector_set_coverage_and_assign( tgt, &scratchl, &scratchh, 0, 0 );
+        retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -2811,7 +2980,7 @@ bool vector_op_ne(
         } else {
           scratchl = (lvall != rvall);
         }
-        retval = vector_set_coverage_and_assign( tgt, &scratchl, &scratchh, 0, 0 );
+        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -2860,7 +3029,7 @@ bool vector_op_cne(
           rvalh = (i<rsize) ? right->value.u32[VTYPE_INDEX_VAL_VALH][i] : 0xffffffff;
         } while( (i >= 0) && ((lvall & ~lvalh) == (rvall & ~rvalh)) );
         scratchl = (lvall != rvall); 
-        retval   = vector_set_coverage_and_assign( tgt, &scratchl, &scratchh, 0, 0 );
+        retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -3336,6 +3505,100 @@ bool vector_op_multiply(
 }
 
 /*!
+ \param tgt    Pointer to vector that will store divide result
+ \param left   Pointer to left vector
+ \param right  Pointer to right vector
+
+ \return Returns TRUE if value changes; otherwise, returns FALSE.
+
+ Performs vector divide operation.
+*/
+bool vector_op_divide(
+  vector* tgt,
+  vector* left,
+  vector* right
+) { PROFILE(VECTOR_OP_DIVIDE);
+
+  bool retval;  /* Return value for this function */
+
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32 vall;
+          uint32 valh = 0;
+          uint32 rval = right->value.u32[VTYPE_INDEX_EXP_VALL][0];
+          if( rval == 0 ) {
+            print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
+            printf( "vector Throw A1\n" );
+            Throw 0;
+          }
+          vall = left->value.u32[VTYPE_INDEX_EXP_VALL][0] / rval;
+          retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 31 );
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ \param tgt    Pointer to vector that will store divide result
+ \param left   Pointer to left vector
+ \param right  Pointer to right vector
+
+ \return Returns TRUE if value changes; otherwise, returns FALSE.
+
+ Performs vector modulus operation.
+*/
+bool vector_op_modulus(
+  vector* tgt,
+  vector* left,
+  vector* right
+) { PROFILE(VECTOR_OP_MODULUS);
+
+  bool retval;  /* Return value for this function */
+
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32 vall;
+          uint32 valh = 0;
+          uint32 rval = right->value.u32[VTYPE_INDEX_EXP_VALL][0];
+          if( rval == 0 ) {
+            print_output( "Modulus by 0 error", FATAL, __FILE__, __LINE__ );
+            printf( "vector Throw A2\n" );
+            Throw 0;
+          }
+          vall = left->value.u32[VTYPE_INDEX_EXP_VALL][0] % rval;
+          retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 31 );
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \param tgt  Target vector to assign data to
  \param tvb  Pointer to vector block for temporary vectors
 
@@ -3575,6 +3838,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.9  2008/04/22 05:51:36  phase1geo
+ Continuing work on expr.c.  Checkpointing.
+
  Revision 1.138.2.8  2008/04/21 23:13:04  phase1geo
  More work to update other files per vector changes.  Currently in the middle
  of updating expr.c.  Checkpointing.

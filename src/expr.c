@@ -1775,124 +1775,6 @@ inline static void expression_set_tf( expression* expr ) {
 }
 
 /*!
- \param expr  Pointer to expression to set eval_a/b supplemental bits
-
- Sets the eval_a/b supplemental bits as necessary.  This function should be called
- by expression_op_func__* functions that are unary operations only and own their
- own vectors.
-*/
-inline static void expression_set_unary_evals( expression* expr ) {
-
-  nibble    val;
-  int       i;
-  int       width = expr->value->width;
-  vec_data* value = expr->value->value.u32;
-
-  for( i=0; i<width; i++ ) {
-    val = value[i].part.exp.value;
-    if( val < 2 ) {
-      if( val == 0 ) {
-        value[i].part.exp.eval_a = 1;
-      } else {
-        value[i].part.exp.eval_b = 1;
-      }
-    }
-  }
-
-}
-
-/*!
- \param expr  Pointer to expression to set eval_a/b/c supplemental bits
-
- Sets the eval_a/b/c supplemental bits as necessary.  This function should be called
- by expression_op_func__* functions that are AND-type combinational operations only and own their
- own vectors.
-*/
-inline static void expression_set_and_comb_evals( expression* expr ) {
-
-  nibble    lval, rval;
-  int       i;
-  int       width  = expr->value->width;
-  int       lwidth = expr->left->value->width;
-  int       rwidth = expr->right->value->width;
-  vec_data* lvalue = expr->left->value->value.u32;
-  vec_data* rvalue = expr->right->value->value.u32;
-  vec_data* value  = expr->value->value.u32;
-
-  for( i=0; i<width; i++ ) {
-    lval = (i < lwidth) ? lvalue[i].part.exp.value : 0;
-    rval = (i < rwidth) ? rvalue[i].part.exp.value : 0;
-    if( (lval < 2) || (rval < 2) ) {
-      value[i].part.exp.eval_a |= (lval == 0) ? 1 : 0;
-      value[i].part.exp.eval_b |= (rval == 0) ? 1 : 0;
-      value[i].part.exp.eval_c |= ((lval == 1) && (rval == 1)) ? 1 : 0;
-    }
-  }
-
-}
-
-/*!             
- \param expr  Pointer to expression to set eval_a/b/c supplemental bits
-            
- Sets the eval_a/b/c supplemental bits as necessary.  This function should be called
- by expression_op_func__* functions that are OR-type combinational operations only and own their
- own vectors.
-*/            
-inline static void expression_set_or_comb_evals( expression* expr ) {
-              
-  nibble    lval, rval;
-  int       i;  
-  int       width  = expr->value->width;
-  int       lwidth = expr->left->value->width;
-  int       rwidth = expr->right->value->width;
-  vec_data* lvalue = expr->left->value->value.u32;
-  vec_data* rvalue = expr->right->value->value.u32;
-  vec_data* value  = expr->value->value.u32;
-
-  for( i=0; i<width; i++ ) {
-    lval = (i < lwidth) ? lvalue[i].part.exp.value : 0;
-    rval = (i < rwidth) ? rvalue[i].part.exp.value : 0;
-    if( (lval < 2) || (rval < 2) ) {
-      value[i].part.exp.eval_a |= (lval == 1) ? 1 : 0;
-      value[i].part.exp.eval_b |= (rval == 1) ? 1 : 0;
-      value[i].part.exp.eval_c |= ((lval == 0) && (rval == 0)) ? 1 : 0;
-    }
-  }
-
-}
-
-/*!
- \param expr  Pointer to expression to set eval_a/b/c/d supplemental bits
-            
- Sets the eval_a/b/c/d supplemental bits as necessary.  This function should be called
- by expression_op_func__* functions that are OTHER-type combinational operations only and own their
- own vectors. 
-*/            
-inline static void expression_set_other_comb_evals( expression* expr ) { 
-                
-  nibble    lval, rval;
-  int       i; 
-  int       width  = expr->value->width;
-  int       lwidth = expr->left->value->width;
-  int       rwidth = expr->right->value->width;
-  vec_data* lvalue = expr->left->value->value.u32;
-  vec_data* rvalue = expr->right->value->value.u32;
-  vec_data* value  = expr->value->value.u32;
-
-  for( i=0; i<width; i++ ) {
-    lval = (i < lwidth) ? lvalue[i].part.exp.value : 0;
-    rval = (i < rwidth) ? rvalue[i].part.exp.value : 0;
-    if( (lval < 2) && (rval < 2) ) {
-      value[i].part.exp.eval_a |= ((lval == 0) && (rval == 0)) ? 1 : 0;
-      value[i].part.exp.eval_b |= ((lval == 0) && (rval == 1)) ? 1 : 0;
-      value[i].part.exp.eval_c |= ((lval == 1) && (rval == 0)) ? 1 : 0;
-      value[i].part.exp.eval_d |= ((lval == 1) && (rval == 1)) ? 1 : 0;
-    }
-  }
-
-}
-
-/*!
  \param expr  Pointer to expression to set 00/01/10/11 supplemental bits.
 
  Sets the eval_00/01/10/11 supplemental bits as necessary.  This function should be
@@ -1936,7 +1818,7 @@ bool expression_op_func__xor(
   }
 
   /* Gather other coverage stats */
-  expression_set_other_comb_evals( expr );
+  vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -1974,7 +1856,7 @@ bool expression_op_func__xor_a(
   if( retval = vector_bitwise_xor_op( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_other_comb_evals( expr );
+  vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   /* Fourth, assign the new value to the left expression */
@@ -2009,7 +1891,7 @@ bool expression_op_func__multiply(
   }
 
   /* Gather other coverage stats */
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2047,7 +1929,7 @@ bool expression_op_func__multiply_a(
   if( retval = vector_op_multiply( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   /* Fourth, assign the new value to the left expression */
@@ -2076,43 +1958,13 @@ bool expression_op_func__divide(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__DIVIDE);
 
-  bool retval = FALSE;  /* Return value for this function */
-
-  /* Clear not_zero and unknown bits */
-  VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
-
-  if( vector_is_unknown( expr->left ) || vector_is_unknown( expr->right ) ) {
-
-    vector_set_to_x( expr->value );
-
-  } else {
-
-    vector   vec1;
-    vec_data value32[32];
-    int      intval1;
-    int      intval2;
-
-    vector_init( &vec1, value32, 0x0, FALSE, 32, VTYPE_VAL );
-    intval1 = vector_to_int( expr->left->value );
-    intval2 = vector_to_int( expr->right->value );
-
-    if( intval2 == 0 ) {
-      print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-      printf( "expr Throw J\n" );
-      Throw 0;
-    }
-
-    intval1 = intval1 / intval2;
-    vector_from_int( &vec1, intval1 );
-    retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
-
-  }
+  bool retval;  /* Return value for this function */
 
   /* Gather coverage information */
-  if( retval ) {
+  if( retval = vector_op_divide( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2146,43 +1998,11 @@ bool expression_op_func__divide_a(
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
   
-  /* Third, perform divide and gather coverage information */
-  VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
-  
-  if( tmp->suppl.part.unknown || expr->right->value->suppl.part.unknown ) {
-  
-    unsigned int i;
-
-    for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &x_value, 1, 0, i );
-    }
-    
-  } else {
-  
-    vector   vec1;
-    vec_data value32[32];
-    int      intval1 = vector_to_int( tmp );
-    int      intval2 = vector_to_int( expr->right->value );
-
-    vector_init( &vec1, value32, 0x0, FALSE, 32, VTYPE_VAL );
-    
-    if( intval2 == 0 ) {
-      print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-      printf( "expr Throw J\n" );
-      Throw 0;
-    }
-    
-    intval1 = intval1 / intval2;
-    vector_from_int( &vec1, intval1 );
-    retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
-
-  }
-
-  /* Gather coverage information */
-  if( retval ) {
+  /* Perform division operation and gather coverage information */
+  if( retval = vector_op_divide( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
@@ -2211,45 +2031,13 @@ bool expression_op_func__mod(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__MOD);
 
-  bool retval = FALSE;  /* Return value for this function */
+  bool retval;  /* Return value for this function */
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
-
-  if( expr->left->value->suppl.part.unknown || expr->right->value->suppl.part.unknown ) {
-
-    unsigned int i;
-
-    for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &x_value, 1, 0, i );
-    }
-
-  } else {
-
-    vector   vec1;
-    vec_data value32[32];
-    int      intval1 = vector_to_int( expr->left->value );
-    int      intval2 = vector_to_int( expr->right->value );
-
-    vector_init( &vec1, value32, 0x0, FALSE, 32, VTYPE_VAL );
-
-    if( intval2 == 0 ) {
-      print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-      printf( "expr Throw K\n" );
-      Throw 0;
-    }
-
-    intval1 = intval1 % intval2;
-    vector_from_int( &vec1, intval1 );
-    retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
-
-  }
-
-  /* Gather coverage information */
-  if( retval ) {
+  /* Perform mod operation and gather coverage information */
+  if( retval = vector_op_modulus( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2265,7 +2053,7 @@ bool expression_op_func__mod(
     
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
- Performs an divide-and-assign operation.
+ Performs an modulus-and-assign operation.
 */
 bool expression_op_func__mod_a(
   expression*     expr,
@@ -2273,7 +2061,7 @@ bool expression_op_func__mod_a(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__MOD_A);
 
-  bool    retval = FALSE;                        /* Return value for this function */
+  bool    retval;                                /* Return value for this function */
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
@@ -2283,43 +2071,11 @@ bool expression_op_func__mod_a(
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Third, perform divide and gather coverage information */
-  VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
-
-  if( tmp->suppl.part.unknown || expr->right->value->suppl.part.unknown ) {
-
-    unsigned int i;
-
-    for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &x_value, 1, 0, i );
-    }
-
-  } else {
-
-    vector   vec1;
-    vec_data value32[32];
-    int      intval1 = vector_to_int( tmp );
-    int      intval2 = vector_to_int( expr->right->value );
-
-    vector_init( &vec1, value32, 0x0, FALSE, 32, VTYPE_VAL );
-
-    if( intval2 == 0 ) {
-      print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-      printf( "expr Throw K\n" );
-      Throw 0;
-    }
-
-    intval1 = intval1 % intval2;
-    vector_from_int( &vec1, intval1 );
-    retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
-
-  }
-
-  /* Gather coverage information */
-  if( retval ) {
+  /* Perform mod operation and ather coverage information */
+  if( retval = vector_op_modulus( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
@@ -2352,7 +2108,7 @@ bool expression_op_func__add(
   if( retval = vector_op_add( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_other_comb_evals( expr );
+  vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2390,7 +2146,7 @@ bool expression_op_func__add_a(
   if( retval = vector_op_add( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_other_comb_evals( expr );
+  vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
@@ -2424,7 +2180,7 @@ bool expression_op_func__subtract(
   if( retval = vector_op_subtract( expr->value, expr->left->value, expr->right->value, expr->elem.tvecs ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_other_comb_evals( expr );
+  vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2463,7 +2219,7 @@ bool expression_op_func__sub_a(
   if( retval = vector_op_subtract( expr->value, tmp, expr->right->value, expr->elem.tvecs ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_other_comb_evals( expr );
+  vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
@@ -2496,7 +2252,7 @@ bool expression_op_func__and(
   if( retval = vector_bitwise_and_op( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_and_comb_evals( expr );
+  vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2534,7 +2290,7 @@ bool expression_op_func__and_a(
   if( retval = vector_bitwise_and_op( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_and_comb_evals( expr );
+  vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
@@ -2567,7 +2323,7 @@ bool expression_op_func__or(
   if( retval = vector_bitwise_or_op( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_or_comb_evals( expr );
+  vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2605,7 +2361,7 @@ bool expression_op_func__or_a(
   if( retval = vector_bitwise_or_op( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_or_comb_evals( expr );
+  vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
@@ -2638,7 +2394,7 @@ bool expression_op_func__nand(
   if( retval = vector_bitwise_nand_op( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_and_comb_evals( expr );
+  vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2668,7 +2424,7 @@ bool expression_op_func__nor(
   if( retval = vector_bitwise_nor_op( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_or_comb_evals( expr );
+  vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2698,7 +2454,7 @@ bool expression_op_func__nxor(
   if( retval = vector_bitwise_nxor_op( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_other_comb_evals( expr );
+  vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2728,7 +2484,7 @@ bool expression_op_func__lt(
   if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2758,7 +2514,7 @@ bool expression_op_func__gt(
   if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GT ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2788,7 +2544,7 @@ bool expression_op_func__lshift(
   if( retval = vector_op_lshift( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2826,7 +2582,7 @@ bool expression_op_func__lshift_a(
   if( retval = vector_op_lshift( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr ); 
 
   /* Finally, assign the new value to the left expression */
@@ -2859,7 +2615,7 @@ bool expression_op_func__rshift(
   if( vector_op_rshift( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2897,7 +2653,7 @@ bool expression_op_func__rshift_a(
   if( retval = vector_op_rshift( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
@@ -2930,7 +2686,7 @@ bool expression_op_func__arshift(
   if( retval = vector_op_arshift( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -2968,7 +2724,7 @@ bool expression_op_func__arshift_a(
   if( retval = vector_op_arshift( expr->value, tmp, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
@@ -3001,7 +2757,7 @@ bool expression_op_func__eq(
   if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -3031,7 +2787,7 @@ bool expression_op_func__ceq(
   if( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -3061,7 +2817,7 @@ bool expression_op_func__le(
   if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LE ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -3091,7 +2847,7 @@ bool expression_op_func__ge(
   if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GE ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -3121,7 +2877,7 @@ bool expression_op_func__ne(
   if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_NE ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -3151,7 +2907,7 @@ bool expression_op_func__cne(
   if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CNE ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -3192,7 +2948,7 @@ bool expression_op_func__lor(
   if( retval = vector_bitwise_or_op( expr->value, &vec1, &vec2 ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_or_comb_evals( expr );
+  vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -3233,7 +2989,7 @@ bool expression_op_func__land(
   if( retval = vector_bitwise_and_op( expr->value, &vec1, &vec2 ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_and_comb_evals( expr );
+  vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -3266,7 +3022,7 @@ bool expression_op_func__cond(
   if( retval = vector_set_value( expr->value, expr->right->value->value.u32, expr->right->value->width, 0, 0 ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -3314,7 +3070,7 @@ bool expression_op_func__cond_sel(
   if( retval ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -3344,7 +3100,7 @@ bool expression_op_func__uinv(
   if( retval = vector_unary_inv( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -3373,7 +3129,7 @@ bool expression_op_func__uand(
   if( retval = vector_unary_and_op( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -3402,7 +3158,7 @@ bool expression_op_func__unot(
   if( retval = vector_unary_not( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -3431,7 +3187,7 @@ bool expression_op_func__uor(
   if( retval = vector_unary_or_op( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -3460,7 +3216,7 @@ bool expression_op_func__uxor(
   if( retval = vector_unary_xor_op( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -3489,7 +3245,7 @@ bool expression_op_func__unand(
   if( retval = vector_unary_nand_op( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -3518,7 +3274,7 @@ bool expression_op_func__unor(
   if( retval = vector_unary_nor_op( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -3547,7 +3303,7 @@ bool expression_op_func__unxor(
   if( retval = vector_unary_nxor_op( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -3818,7 +3574,7 @@ bool expression_op_func__expand(
   if( retval ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -3854,7 +3610,7 @@ bool expression_op_func__list(
   if( retval ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -3887,7 +3643,7 @@ bool expression_op_func__concat(
   if( retval = vector_set_value( expr->value, expr->right->value->value.u32, expr->right->value->width, 0, 0 ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -4228,7 +3984,7 @@ bool expression_op_func__case(
   if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -4258,7 +4014,7 @@ bool expression_op_func__casex(
   if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CXEQ ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -4288,7 +4044,7 @@ bool expression_op_func__casez(
   if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CZEQ ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -4325,7 +4081,7 @@ bool expression_op_func__default(
   if( retval = vector_set_value( expr->value, &bit, 1, 0, 0 ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -4398,7 +4154,7 @@ bool expression_op_func__func_call(
   if( retval ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -4424,7 +4180,7 @@ bool expression_op_func__task_call(
   (void)sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
 
   /* Gather coverage information */
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -4573,7 +4329,7 @@ bool expression_op_func__repeat(
   if( retval ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -4635,7 +4391,7 @@ bool expression_op_func__exponent(
   if( retval ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -4826,7 +4582,7 @@ bool expression_op_func__negate(
   if( retval = vector_op_negate( expr->value, expr->right->value, expr->elem.tvecs ) ) {
     expression_set_tf_preclear( expr );
   }
-  expression_set_unary_evals( expr );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -5904,6 +5660,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.3  2008/04/22 05:51:36  phase1geo
+ Continuing work on expr.c.  Checkpointing.
+
  Revision 1.329.2.2  2008/04/21 23:13:04  phase1geo
  More work to update other files per vector changes.  Currently in the middle
  of updating expr.c.  Checkpointing.

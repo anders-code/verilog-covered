@@ -172,6 +172,42 @@ bool vector_set_value_uint32(
   int      width
 );
 
+/*!
+ \brief Sets eval_a/b bits according to unary coverage
+ \note  We may want to create a separate VTYPE_EXP_UNARY to handle this in vector_set_coverage_and_assign.
+*/
+void vector_set_unary_evals( vector* vec );
+
+/*!
+ \brief Sets eval_a/b/c bits according to AND combinational logic coverage
+ \note  We may want to create a separate VTYPE_EXP_AND to handle this in vector_set_coverage_and_assign.
+*/
+void vector_set_and_comb_evals( 
+  vector* tgt, 
+  vector* left, 
+  vector* right 
+);
+
+/*!
+ \brief Sets eval_a/b/c bits according to OR combinational logic coverage
+ \note  We may want to create a separate VTYPE_EXP_OR to handle this in vector_set_coverage_and_assign.
+*/
+void vector_set_or_comb_evals( 
+  vector* tgt, 
+  vector* left, 
+  vector* right 
+);
+
+/*!
+ \brief Sets eval_a/b/c/d bits according to other combinational logic coverage
+ \note  We may want to create a separate VTYPE_EXP_OTHER to handle this in vector_set_coverage_and_assign.
+*/
+void vector_set_other_comb_evals(
+  vector* tgt,
+  vector* left,
+  vector* right
+);
+
 /*! \brief Bit fills the given vector with the appropriate value starting at the last bit */
 bool vector_bit_fill(
   vector* vec,
@@ -185,7 +221,7 @@ bool vector_is_unknown( const vector* vec );
 bool vector_is_not_zero( const vector* vec );
 
 /*! \brief Sets entire vector value to a value of X */
-void vector_set_to_x( vector* vec );
+bool vector_set_to_x( vector* vec );
 
 /*! \brief Returns TRUE if specified vector has been set (simulated) */
 bool vector_is_set( const vector* vec );
@@ -321,7 +357,25 @@ bool vector_op_subtract(
 );
 
 /*! \brief Performs multiplication operation on left and right expression values. */
-bool vector_op_multiply( vector* tgt, vector* left, vector* right );
+bool vector_op_multiply(
+  vector* tgt,
+  vector* left,
+  vector* right
+);
+
+/*! \brief Performs division operation on left and right vector values. */
+bool vector_op_divide(
+  vector* tgt,
+  vector* left,
+  vector* right
+);
+
+/*! \brief Performs modulus operation on left and right vector values. */
+bool vector_op_modulus(
+  vector* tgt,
+  vector* left,
+  vector* right
+);
 
 /*! \brief Performs increment operation on specified vector. */
 bool vector_op_inc(
@@ -350,6 +404,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.6  2008/04/22 05:51:36  phase1geo
+ Continuing work on expr.c.  Checkpointing.
+
  Revision 1.58.2.5  2008/04/21 23:13:05  phase1geo
  More work to update other files per vector changes.  Currently in the middle
  of updating expr.c.  Checkpointing.
