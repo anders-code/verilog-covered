@@ -329,6 +329,12 @@ bool vector_op_ne( vector* tgt, vector* left, vector* right );
 /*! \brief Performs case not-equal comparison of two vectors. */
 bool vector_op_cne( vector* tgt, vector* left, vector* right );
 
+/*! \brief Performs logical-OR operation of two vectors. */
+bool vector_op_lor( vector* tgt, vector* left, vector* right );
+
+/*! \brief Performs logical-AND operation of two vectors. */
+bool vector_op_land( vector* tgt, vector* left, vector* right );
+
 /*! \brief Performs left shift operation on left expression by right expression bits. */
 bool vector_op_lshift( vector* tgt, vector* left, vector* right );
  
@@ -404,6 +410,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.7  2008/04/22 14:03:57  phase1geo
+ More work on expr.c.  Checkpointing.
+
  Revision 1.58.2.6  2008/04/22 05:51:36  phase1geo
  Continuing work on expr.c.  Checkpointing.
 

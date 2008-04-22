@@ -2931,22 +2931,10 @@ bool expression_op_func__lor(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__LOR);
 
-  
-  vector   vec1;     /* Used for logical reduction */
-  vector   vec2;     /* Used for logical reduction */
-  vec_data value1a;  /* 1-bit nibble value */
-  vec_data value1b;  /* 1-bit nibble value */
-  bool     retval;   /* Return value for this function */
-
-  vector_init( &vec1, &value1a, 0x0, FALSE, 1, VTYPE_VAL );
-  vector_init( &vec2, &value1b, 0x0, FALSE, 1, VTYPE_VAL );
-
-  /* Use the unknown and not_zero supplemental fields to setup the values to LOR */
-  value1a.part.val.value = expr->left->value->suppl.part.unknown  ? 2 : expr->left->value->suppl.part.not_zero;
-  value1b.part.val.value = expr->right->value->suppl.part.unknown ? 2 : expr->right->value->suppl.part.not_zero;
+  bool retval;  /* Return value for this function */
 
   /* Perform bitwise OR operation and gather coverage information */
-  if( retval = vector_bitwise_or_op( expr->value, &vec1, &vec2 ) ) {
+  if( retval = vector_op_lor( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
@@ -2973,21 +2961,10 @@ bool expression_op_func__land(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__LAND);
 
-  vector   vec1;     /* Used for logical reduction */
-  vector   vec2;     /* Used for logical reduction */
-  vec_data value1a;  /* 1-bit nibble value */
-  vec_data value1b;  /* 1-bit nibble value */
-  bool     retval;   /* Return value for this function */
-
-  vector_init( &vec1, &value1a, 0x0, FALSE, 1, VTYPE_VAL );
-  vector_init( &vec2, &value1b, 0x0, FALSE, 1, VTYPE_VAL );
-
-  /* Use the unknown and not_zero supplemental fields to setup the values to LOR */
-  value1a.part.val.value = expr->left->value->suppl.part.unknown  ? 2 : expr->left->value->suppl.part.not_zero;
-  value1b.part.val.value = expr->right->value->suppl.part.unknown ? 2 : expr->right->value->suppl.part.not_zero;
+  bool retval;  /* Return value for this function */
 
   /* Perform AND operation and gather coverage information */
-  if( retval = vector_bitwise_and_op( expr->value, &vec1, &vec2 ) ) {
+  if( retval = vector_op_land( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
@@ -3016,11 +2993,8 @@ bool expression_op_func__cond(
 
   bool retval;  /* Return value for this function */
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
-
   /* Simple vector copy from right side and gather coverage information */
-  if( retval = vector_set_value( expr->value, expr->right->value->value.u32, expr->right->value->width, 0, 0 ) ) {
+  if( retval = vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -3046,25 +3020,16 @@ bool expression_op_func__cond_sel(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__COND_SEL);
 
-  bool retval = FALSE;  /* Return value for this function */
+  bool retval;  /* Return value for this function */
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
-
-  if( !expr->parent->expr->left->value->suppl.part.unknown ) {
-    if( !expr->parent->expr->left->value->suppl.part.not_zero ) {
-      retval = vector_set_value( expr->value, expr->right->value->value.u32, expr->right->value->width, 0, 0 );
+  if( !vector_is_unknown( expr->parent->expr->left->value ) ) {
+    if( !vector_is_not_zero( expr->parent->expr->left->value ) ) {
+      retval = vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width );
     } else {
-      retval = vector_set_value( expr->value, expr->left->value->value.u32, expr->left->value->width, 0, 0 );
+      retval = vector_set_value_uint32( expr->value, expr->left->value->value.u32, expr->left->value->width );
     }
   } else {
-    vec_data bitx;
-    int      i;
-    bitx.all            = 0; 
-    bitx.part.exp.value = 2;
-    for( i=0; i<expr->value->width; i++ ) {
-      retval |= vector_set_value( expr->value, &bitx, 1, 0, i );
-    }
+    retval = vector_set_to_x( expr->value );
   }
 
   /* Gather coverage information */
@@ -5661,6 +5626,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.5  2008/04/22 14:03:56  phase1geo
+ More work on expr.c.  Checkpointing.
+
  Revision 1.329.2.4  2008/04/22 12:46:29  phase1geo
  More work on expr.c.  Checkpointing.
 

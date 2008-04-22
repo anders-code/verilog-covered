@@ -3041,24 +3041,59 @@ bool vector_op_cne(
 
 }
 
+/*!
+ \return Returns TRUE if the value of tgt changed as a result of this operation; otherwise, returns FALSE.
+
+ Performs logical-OR operation and calculates coverage information.
+*/
 bool vector_op_lor(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector* tgt,   /*!< Pointer to vector to store result into */
+  vector* left,  /*!< Pointer to left vector of expression */
+  vector* right  /*!< Pointer to right vector of expression */
 ) { PROFILE(VECTOR_OP_LOR);
 
-  bool retval;  /* Return value for this function */
+  bool retval;                                 /* Return value for this function */
+  bool lunknown = vector_is_unknown( left );   /* Check for left value being unknown */
+  bool runknown = vector_is_unknown( right );  /* Check for right value being unknown */
 
   switch( tgt->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        unsigned int i     = 0;
-        unsigned int lsize = VECTOR_SIZE32( left->width );
-        unsigned int rsize = VECTOR_SIZE32( right->width );
-        uint32       val;
-        while( (i<lsize) && ((~left->value.u32[VTYPE_INDEX_VAL_VALH] & left->value.u32[VTYPE_INDEX_VAL_VALL]) != 0) ) i++;
-        for( i=0; i<lsize; i++ ) {
-          if( ~left->value.u32[VTYPE_INDEX_VAL_VALH] & left->value.u32[VTYPE_INDEX_VAL_VALL]
+        uint32 valh = (lunknown && runknown) ? 1 : 0;
+        uint32 vall = ((!lunknown && vector_is_not_zero( left )) || (!runknown && vector_is_not_zero( right ))) ? 1 : 0;
+        retval      = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the value of tgt changed as a result of this operation; otherwise, returns FALSE.
+
+ Performs logical-AND operation and calculates coverage information.
+*/
+bool vector_op_land(
+  vector* tgt,   /*!< Pointer to vector to store result into */
+  vector* left,  /*!< Pointer to left vector of expression */
+  vector* right  /*!< Pointer to right vector of expression */
+) { PROFILE(VECTOR_OP_LAND);
+
+  bool retval;                                 /* Return value for this function */
+  bool lunknown = vector_is_unknown( left );   /* Check for left value being unknown */
+  bool runknown = vector_is_unknown( right );  /* Check for right value being unknown */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        uint32 valh = (lunknown && runknown) ? 1 : 0;
+        uint32 vall = ((!lunknown && !vector_is_not_zero( left )) || (!runknown && !vector_is_not_zero( right ))) ? 1 : 0;
+        retval      = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -3761,50 +3796,17 @@ bool vector_unary_and_op(
         uint32       valh  = 0;
         uint32       vall  = 1;
         uint32       lmask = 0xffffffff >> (src->width & 0x1f);
-        for( i=0; i<ssize; i++ ) {
+        for( i=0; i<(ssize-1); i++ ) {
           valh |= (src->value.u32[VTYPE_INDEX_VAL_VALH][i] != 0) ? 1 : 0;
-          vall &= ~valh & ((src->value.u32[VTYPE_INDEX_VAL_VALL][i] == ((i+1)==ssize)?lmask:0xffffffff) ? 1 : 0);
+          vall &= ~valh & ((src->value.u32[VTYPE_INDEX_VAL_VALL][i] == 0xffffffff) ? 1 : 0);
         }
+        valh |= (src->value.u32[VTYPE_INDEX_VAL_VALH][i] != 0) ? 1 : 0;
+        vall &= ~valh & ((src->value.u32[VTYPE_INDEX_VAL_VALL][i] == lmask) ? 1 : 0);
         retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
   }
-
-#ifdef OBSOLETE
-  vector   vec;      /* Temporary vector value */
-  vec_data vec_val;  /* Temporary value */
-  int      i;        /* Loop iterator */
-
-  if( (src->width == 1) && (optab[16] == 1) ) {
-
-    /* Perform inverse operation if our source width is 1 and we are a NOT operation. */
-    retval = vector_unary_inv( tgt, src );
-
-  } else {
-
-    vector_init( &vec, &vec_val, 0x0, FALSE, 1, VTYPE_VAL );
-
-    assert( src != NULL );
-    assert( src->value != NULL );
-
-    uval = src->value[0].part.val.value;
-
-    for( i=1; i<src->width; i++ ) {
-      bit  = src->value[i].part.val.value;
-      uval = optab[ ((uval << 2) | bit) ]; 
-    }
-
-    /* Clear the unknown and not_zero bits */
-    VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
-
-    vec.value[0].part.val.value = uval;
-    retval = vector_set_value( tgt, vec.value, 1, 0, 0 );
-
-  }
-#endif
-
-  assert( 0 );
 
   PROFILE_END;
 
@@ -3882,6 +3884,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.11  2008/04/22 14:03:57  phase1geo
+ More work on expr.c.  Checkpointing.
+
  Revision 1.138.2.10  2008/04/22 12:46:29  phase1geo
  More work on expr.c.  Checkpointing.
 

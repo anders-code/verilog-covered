@@ -889,6 +889,8 @@ profiler profiles[NUM_PROFILES] = {
   {"vector_op_czeq", NULL, 0, 0, 0, TRUE},
   {"vector_op_ne", NULL, 0, 0, 0, TRUE},
   {"vector_op_cne", NULL, 0, 0, 0, TRUE},
+  {"vector_op_lor", NULL, 0, 0, 0, TRUE},
+  {"vector_op_land", NULL, 0, 0, 0, TRUE},
   {"vector_op_lshift", NULL, 0, 0, 0, TRUE},
   {"vector_op_rshift", NULL, 0, 0, 0, TRUE},
   {"vector_op_arshift", NULL, 0, 0, 0, TRUE},
