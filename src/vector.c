@@ -1268,12 +1268,12 @@ bool vector_set_value_uint32(
   int       width
 ) { PROFILE(VECTOR_SET_VALUE);
 
-  bool         retval = FALSE;                /* Return value for this function */
-  int          size;                          /* Size of vector value array */
-  unsigned int i;                             /* Loop iterator */
-  int          v2st;                          /* Value to AND with from value bit if the target is a 2-state value */
-  uint32       scratchl[MAX_BIT_WIDTH >> 5];  /* Lower scratch array */
-  uint32       scratchh[MAX_BIT_WIDTH >> 5];  /* Upper scratch array */
+  bool   retval = FALSE;                /* Return value for this function */
+  int    size;                          /* Size of vector value array */
+  int    i;                             /* Loop iterator */
+  int    v2st;                          /* Value to AND with from value bit if the target is a 2-state value */
+  uint32 scratchl[MAX_BIT_WIDTH >> 5];  /* Lower scratch array */
+  uint32 scratchh[MAX_BIT_WIDTH >> 5];  /* Upper scratch array */
 
   assert( vec != NULL );
 
@@ -1294,6 +1294,56 @@ bool vector_set_value_uint32(
 
   /* Calculate the coverage and perform the actual assignment */
   retval = vector_set_coverage_and_assign_uint32( vec, scratchl, scratchh, 0, (width - 1) );
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if stored data differed from original data; otherwise, returns FALSE.
+
+ Used for single- and multi-bit part selection.  Bits are pulled from the source vector via the
+ LSB and MSB range
+*/
+bool vector_part_select(
+  vector* tgt,        /*!< Pointer to vector that will store the result */
+  vector* src,        /*!< Pointer to vector containing data to store */
+  int     lsb,        /*!< LSB offset */
+  int     msb,        /*!< MSB offset */
+  bool    set_mem_rd  /*!< If TRUE, set the memory read bit in the source */
+) { PROFILE(VECTOR_PART_SELECT);
+
+  bool retval;  /* Return value for this function */
+
+  switch( src->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        uint32       valh[MAX_BIT_WIDTH>>5];
+        uint32       vall[MAX_BIT_WIDTH>>5];
+        int          i;
+        unsigned int pos = 0;
+
+        assert( (msb-lsb) == tgt->width );
+
+        for( i=lsb; i<=msb; i++ ) {
+          if( (pos & 0x1f) == 0 ) {
+            valh[pos>>5] = 0;
+            vall[pos>>5] = 0;
+          }
+          vall[pos>>5] |= ((src->value.u32[VTYPE_INDEX_VAL_VALL][i>>5] >> (i & 0x1f)) & 0x1) << pos;
+          valh[pos>>5] |= ((src->value.u32[VTYPE_INDEX_VAL_VALH][i>>5] >> (i & 0x1f)) & 0x1) << pos;
+          if( set_mem_rd ) {
+            src->value.u32[VTYPE_INDEX_MEM_RD][i>>5] |= (1 << (i & 0x1f));
+          }
+          pos++;
+        }
+        retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
 
   PROFILE_END;
 
@@ -3847,6 +3897,145 @@ bool vector_unary_not(
 }
 
 /*!
+ \return Returns TRUE if the new value differs from the old value; otherwise, returns FALSE.
+
+ Performs expansion operation.
+*/
+bool vector_op_expand(
+  vector*       tgt,   /*!< Pointer to vector to store results in */
+  const vector* left,  /*!< Pointer to vector containing expansion multiplier value */
+  const vector* right  /*!< Pointer to vector that will be multiplied */
+) { PROFILE(VECTOR_OP_EXPAND);
+
+  bool retval;  /* Return value for this function */
+
+  /* If the expansion multiplier is unknown, set the target to X */
+  if( vector_is_unknown( left ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  /* Otherwise, perform the expansion */
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32 vall[MAX_BIT_WIDTH>>5];
+          uint32 valh[MAX_BIT_WIDTH>>5];
+          unsigned int i, j;
+          unsigned int rwidth     = right->width;
+          unsigned int multiplier = vector_to_int( left );
+          unsigned int pos        = 0;
+          uint32*      rvall      = right->value.u32[VTYPE_INDEX_VAL_VALL];
+          uint32*      rvalh      = right->value.u32[VTYPE_INDEX_VAL_VALH];
+          for( i=0; i<multiplier; i++ ) {
+            for( j=0; j<rwidth; j++ ) {
+              if( (pos & 0x1f) == 0 ) {
+                vall[pos>>5] = 0;
+                valh[pos>>5] = 0;
+              }
+              vall[pos>>5] |= ((rvall[j>>5] >> (j & 0x1f)) & 0x1) << (pos & 0x1f);
+              valh[pos>>5] |= ((rvalh[j>>5] >> (j & 0x1f)) & 0x1) << (pos & 0x1f);
+              pos++;
+            }
+          }
+          retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the new value differs from the old value; otherwise, returns FALSE.
+
+ Performs list operation.
+*/
+bool vector_op_list(
+  vector*       tgt,   /*!< Pointer to vector to store results in */
+  const vector* left,  /*!< Pointer to vector containing expansion multiplier value */
+  const vector* right  /*!< Pointer to vector that will be multiplied */
+) { PROFILE(VECTOR_OP_LIST);
+        
+  bool retval;  /* Return value for this function */
+          
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {       
+        uint32       vall[MAX_BIT_WIDTH>>5];
+        uint32       valh[MAX_BIT_WIDTH>>5];
+        unsigned int i;
+        unsigned int pos        = right->width;
+        unsigned int lwidth     = left->width;
+        unsigned int rsize      = VECTOR_SIZE32( pos );
+        uint32*      lvall      = left->value.u32[VTYPE_INDEX_VAL_VALL];
+        uint32*      lvalh      = left->value.u32[VTYPE_INDEX_VAL_VALH];
+        uint32*      rvall      = right->value.u32[VTYPE_INDEX_VAL_VALL];
+        uint32*      rvalh      = right->value.u32[VTYPE_INDEX_VAL_VALH];
+
+        /* Load right vector directly */
+        for( i=0; i<rsize; i++ ) {
+          vall[i] = rvall[i];
+          valh[i] = rvalh[i];
+        }
+
+        /* Load left vector a bit at at time */
+        for( i=0; i<lwidth; i++ ) {
+          if( (pos & 0x1f) == 0 ) {
+            vall[pos>>5] = 0;
+            valh[pos>>5] = 0;
+          }
+          vall[pos>>5] |= ((lvall[i>>5] >> (i & 0x1f)) & 0x1) << (pos & 0x1f);
+          valh[pos>>5] |= ((lvalh[i>>5] >> (i & 0x1f)) & 0x1) << (pos & 0x1f);
+          pos++;
+        }
+        retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+  
+}
+
+/*!
+ Deallocates the value structure for the given vector.
+*/
+void vector_dealloc_value(
+  vector* vec  /*!< Pointer to vector to deallocate value for */
+) { PROFILE(VECTOR_DEALLOC_VALUE);
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        unsigned int i;
+        unsigned int elems = vector_type_sizes[vec->suppl.part.type];
+
+        for( i=0; i<elems; i++ ) {
+          free_safe( vec->value.u32[i], (sizeof( uint32 ) * VECTOR_SIZE32( vec->width )) );
+        }
+        free_safe( vec->value.u32, (sizeof( uint32* ) * elems) );
+        vec->value.u32 = NULL;
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \param vec  Pointer to vector to deallocate memory from.
 
  Deallocates all heap memory that was initially allocated with the malloc
@@ -3860,17 +4049,7 @@ void vector_dealloc(
 
     /* Deallocate all vector values */
     if( (vec->value.u32 != NULL) && (vec->suppl.part.owns_data == 1) ) {
-      unsigned int i;
-      switch( vec->suppl.part.data_type ) {
-        case VDATA_U32 :
-          for( i=0; i<vector_type_sizes[vec->suppl.part.type]; i++ ) {
-            free_safe( vec->value.u32[i], (sizeof( uint32 ) * VECTOR_SIZE32( vec->width )) );
-          }
-          free_safe( vec->value.u32, (sizeof( uint32* ) * vector_type_sizes[vec->suppl.part.type]) );
-          vec->value.u32 = NULL;
-          break;
-        default :  assert( 0 );  break;
-      }
+      vector_dealloc_value( vec );
     }
 
     /* Deallocate vector itself */
@@ -3884,6 +4063,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.12  2008/04/22 23:01:43  phase1geo
+ More updates.  Completed initial pass of expr.c and fsm_arg.c.  Working
+ on memory.c.  Checkpointing.
+
  Revision 1.138.2.11  2008/04/22 14:03:57  phase1geo
  More work on expr.c.  Checkpointing.
 

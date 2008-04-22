@@ -172,6 +172,15 @@ bool vector_set_value_uint32(
   int      width
 );
 
+/*! \brief Sets specified target vector to bit range of source vector. */
+bool vector_part_select(
+  vector* tgt,
+  vector* src,
+  int     lsb,
+  int     msb,
+  bool    set_mem_rd
+);
+
 /*!
  \brief Sets eval_a/b bits according to unary coverage
  \note  We may want to create a separate VTYPE_EXP_UNARY to handle this in vector_set_coverage_and_assign.
@@ -404,12 +413,33 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab );
 /*! \brief Performs unary logical NOT operation on specified vector value. */
 bool vector_unary_not( vector* tgt, vector* src );
 
+/*! \brief Performs expansion operation. */
+bool vector_op_expand(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs list operation. */
+bool vector_op_list(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Deallocates the value structure for the given vector. */
+void vector_dealloc_value( vector* vec );
+
 /*! \brief Deallocates all memory allocated for vector */
 void vector_dealloc( vector* vec );
 
 
 /*
  $Log$
+ Revision 1.58.2.8  2008/04/22 23:01:43  phase1geo
+ More updates.  Completed initial pass of expr.c and fsm_arg.c.  Working
+ on memory.c.  Checkpointing.
+
  Revision 1.58.2.7  2008/04/22 14:03:57  phase1geo
  More work on expr.c.  Checkpointing.
 
