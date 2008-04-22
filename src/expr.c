@@ -2931,6 +2931,7 @@ bool expression_op_func__lor(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__LOR);
 
+  
   vector   vec1;     /* Used for logical reduction */
   vector   vec2;     /* Used for logical reduction */
   vec_data value1a;  /* 1-bit nibble value */
@@ -5660,6 +5661,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.4  2008/04/22 12:46:29  phase1geo
+ More work on expr.c.  Checkpointing.
+
  Revision 1.329.2.3  2008/04/22 05:51:36  phase1geo
  Continuing work on expr.c.  Checkpointing.
 

@@ -3041,6 +3041,35 @@ bool vector_op_cne(
 
 }
 
+bool vector_op_lor(
+  vector* tgt,
+  vector* left,
+  vector* right
+) { PROFILE(VECTOR_OP_LOR);
+
+  bool retval;  /* Return value for this function */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        unsigned int i     = 0;
+        unsigned int lsize = VECTOR_SIZE32( left->width );
+        unsigned int rsize = VECTOR_SIZE32( right->width );
+        uint32       val;
+        while( (i<lsize) && ((~left->value.u32[VTYPE_INDEX_VAL_VALH] & left->value.u32[VTYPE_INDEX_VAL_VALL]) != 0) ) i++;
+        for( i=0; i<lsize; i++ ) {
+          if( ~left->value.u32[VTYPE_INDEX_VAL_VALH] & left->value.u32[VTYPE_INDEX_VAL_VALL]
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
 /*!
  \param tgt    Target vector for storage of results.
  \param left   Expression value being shifted left.
@@ -3710,22 +3739,37 @@ bool vector_unary_inv(
 }
 
 /*!
- \param tgt    Target vector for operation result storage.
- \param src    Source vector to be operated on.
- \param optab  Operation table.
+ \param tgt  Target vector for operation result storage.
+ \param src  Source vector to be operated on.
 
  \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
 
- Performs unary operation on specified vector value from specifed
- operation table.
+ Performs unary AND operation on specified vector value.
 */
-bool vector_unary_op(
+bool vector_unary_and_op(
   vector* tgt,
-  vector* src,
-  nibble* optab
+  vector* src
 ) { PROFILE(VECTOR_UNARY_OP);
 
-  bool     retval;   /* Return value for this function */
+  bool retval;  /* Return value for this function */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        unsigned int i;
+        unsigned int ssize = VECTOR_SIZE32( src->width );
+        uint32       valh  = 0;
+        uint32       vall  = 1;
+        uint32       lmask = 0xffffffff >> (src->width & 0x1f);
+        for( i=0; i<ssize; i++ ) {
+          valh |= (src->value.u32[VTYPE_INDEX_VAL_VALH][i] != 0) ? 1 : 0;
+          vall &= ~valh & ((src->value.u32[VTYPE_INDEX_VAL_VALL][i] == ((i+1)==ssize)?lmask:0xffffffff) ? 1 : 0);
+        }
+        retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
 
 #ifdef OBSOLETE
   vector   vec;      /* Temporary vector value */
@@ -3838,6 +3882,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.10  2008/04/22 12:46:29  phase1geo
+ More work on expr.c.  Checkpointing.
+
  Revision 1.138.2.9  2008/04/22 05:51:36  phase1geo
  Continuing work on expr.c.  Checkpointing.
 
