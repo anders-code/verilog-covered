@@ -738,12 +738,12 @@ char* vector_get_toggle01_uint32(
   int      width
 ) { PROFILE(VECTOR_GET_TOGGLE01_UINT32);
 
-  char*        bits      = (char*)malloc_safe( width + 1 );
-  int          bits_left = (width % 32);
-  unsigned int i, j;
-  char         tmp[2];
+  char* bits      = (char*)malloc_safe( width + 1 );
+  int   bits_left = (width % 32);
+  int   i, j;
+  char  tmp[2];
 
-  for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+  for( i=VECTOR_SIZE32(width); i--; ) {
     for( j=(bits_left - 1); j>=0; j-- ) {
       /*@-formatcode@*/
       unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[VTYPE_INDEX_SIG_TOG01][i] >> j) & 0x1) );
@@ -773,13 +773,13 @@ char* vector_get_toggle10_uint32(
   int      width
 ) { PROFILE(VECTOR_GET_TOGGLE10_UINT32);
 
-  char*        bits      = (char*)malloc_safe( width + 1 );
-  int          bits_left = (width % 32);
-  unsigned int i, j;
-  char         tmp[2];
+  char* bits      = (char*)malloc_safe( width + 1 );
+  int   bits_left = (width % 32);
+  int   i, j;
+  char  tmp[2];
   
-  for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
-    for( j=(bits_left - 1); j>=0; j-- ) {
+  for( i=VECTOR_SIZE32(width); i--; ) {
+    for( j=(bits_left - 1); j--; ) {
       /*@-formatcode@*/ 
       unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[VTYPE_INDEX_SIG_TOG10][i] >> j) & 0x1) );
       /*@=formatcode@*/ 
@@ -812,13 +812,13 @@ void vector_display_toggle01_uint32(
 ) { PROFILE(VECTOR_DISPLAY_TOGGLE01_UINT32);
 
   unsigned int nib       = 0;
-  unsigned int i, j;
+  int          i, j;
   int          bits_left = (width % 32);
 
   fprintf( ofile, "%d'h", width );
 
-  for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
-    for( j=(bits_left - 1); j>=0; j-- ) {
+  for( i=VECTOR_SIZE32(width); i--; ) {
+    for( j=(bits_left - 1); j--; ) {
       nib |= (((value[VTYPE_INDEX_SIG_TOG01][i] >> j) & 0x1) << ((unsigned)j % 4));
       if( (j % 4) == 0 ) {
         fprintf( ofile, "%1x", nib );
@@ -849,12 +849,12 @@ void vector_display_toggle10_uint32(
 ) { PROFILE(VECTOR_DISPLAY_TOGGLE10_UINT32);
 
   unsigned int nib       = 0;
-  unsigned int i, j;
+  int          i, j;
   int          bits_left = (width % 32);
   
   fprintf( ofile, "%d'h", width );
       
-  for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+  for( i=VECTOR_SIZE32(width); i--; ) {
     for( j=(bits_left - 1); j>=0; j-- ) {
       nib |= (((value[VTYPE_INDEX_SIG_TOG10][i] >> j) & 0x1) << ((unsigned)j % 4));
       if( (j % 4) == 0 ) {
@@ -4205,6 +4205,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.15  2008/04/23 14:33:50  phase1geo
+ Fixing bug in vector display functions that caused infinite looping.  Checkpointing.
+
  Revision 1.138.2.14  2008/04/23 06:32:32  phase1geo
  Starting to debug vector changes.  Checkpointing.
 
