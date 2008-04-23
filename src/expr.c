@@ -450,7 +450,8 @@ static void expression_create_value(
 
     vec = vector_create( width, VTYPE_EXP, VDATA_U32, TRUE );
     assert( exp->value->value.u32 == NULL );
-    vector_init_uint32( exp->value, vec->value.u32, 0x0, 0x0, TRUE, width, VTYPE_EXP, VDATA_U32 );
+    vector_init_uint32( exp->value, vec->value.u32, 0x0, 0x0, TRUE, width, exp->value->suppl.part.type, exp->value->suppl.part.data_type );
+    free_safe( vec, sizeof( vector ) );
 
     /* Create the temporary vectors now, if needed */
     expression_create_tmp_vecs( exp, width );
@@ -666,63 +667,71 @@ expression* expression_create(
  Sets the specified expression (if necessary) to the value of the
  specified signal's vector value.
 */
-void expression_set_value( expression* exp, vsignal* sig, func_unit* funit ) { PROFILE(EXPRESSION_SET_VALUE);
+void expression_set_value(
+  expression* exp,
+  vsignal*    sig,
+  func_unit*  funit
+) { PROFILE(EXPRESSION_SET_VALUE);
   
-  int lbit;       /* Bit boundary specified by left child */
-  int rbit;       /* Bit boundary specified by right child */
   int exp_width;  /* Dimensional width of the expression */
-  int exp_dim;    /* Dimension of the expression */
   
   assert( exp != NULL );
   assert( exp->value != NULL );
   assert( sig != NULL );
   assert( sig->value != NULL );
 
-  /* Regardless of the type, set the supplemental field */
-  exp->value->suppl = sig->value->suppl;
+  /* If we are a SIG, PARAM or TRIGGER type, set our value to the signal's value */
+  if( (exp->op == EXP_OP_SIG) || (exp->op == EXP_OP_PARAM) || (exp->op == EXP_OP_TRIGGER) ) {
 
-  /* Calculate expression dimensional width */
-  exp_width = vsignal_calc_width_for_expr( exp, sig );
+    exp->value->suppl                = sig->value->suppl;
+    exp->value->width                = sig->value->width;
+    exp->value->value.u32            = sig->value->value.u32;
+    exp->value->suppl.part.owns_data = 0;
 
-  /* Calculate the expression dimension */
-  exp_dim = expression_get_curr_dimension( exp );
-  
-  /* Set the expression width */
-  switch( exp->op ) {
-    case EXP_OP_SIG       :
-    case EXP_OP_PARAM     :
-    case EXP_OP_TRIGGER   :
-      exp->value->width = sig->value->width;
-      break;
-    case EXP_OP_SBIT_SEL   :
-    case EXP_OP_PARAM_SBIT :
-      exp->value->width = exp_width;
-      break;
-    case EXP_OP_MBIT_SEL   :
-    case EXP_OP_PARAM_MBIT :
-      expression_operate_recursively( exp->left,  funit, TRUE );
-      expression_operate_recursively( exp->right, funit, TRUE );
-      lbit = vector_to_int( exp->left->value  );
-      rbit = vector_to_int( exp->right->value );
-      if( lbit <= rbit ) {
-        exp->value->width = ((rbit - lbit) + 1) * exp_width;
-      } else {
-        exp->value->width = ((lbit - rbit) + 1) * exp_width;
-      }
-      break;
-    case EXP_OP_MBIT_POS :
-    case EXP_OP_MBIT_NEG :
-    case EXP_OP_PARAM_MBIT_POS :
-    case EXP_OP_PARAM_MBIT_NEG :
-      expression_operate_recursively( exp->right, funit, TRUE );
-      exp->value->width = vector_to_int( exp->right->value ) * exp_width;
-      break;
-    default :  break;
+  /* Otherwise, create our own vector to store the part select */
+  } else {
+
+    /* Calculate expression dimensional width */
+    exp_width = vsignal_calc_width_for_expr( exp, sig );
+
+    /* Set the expression width */
+    switch( exp->op ) {
+      case EXP_OP_SBIT_SEL   :
+      case EXP_OP_PARAM_SBIT :
+        exp->value->width = exp_width;
+        break;
+      case EXP_OP_MBIT_SEL   :
+      case EXP_OP_PARAM_MBIT :
+        {
+          int lbit, rbit;
+          expression_operate_recursively( exp->left,  funit, TRUE );
+          expression_operate_recursively( exp->right, funit, TRUE );
+          lbit = vector_to_int( exp->left->value  );
+          rbit = vector_to_int( exp->right->value );
+          if( lbit <= rbit ) {
+            exp->value->width = ((rbit - lbit) + 1) * exp_width;
+          } else {
+            exp->value->width = ((lbit - rbit) + 1) * exp_width;
+          }
+        }
+        break;
+      case EXP_OP_MBIT_POS :
+      case EXP_OP_MBIT_NEG :
+      case EXP_OP_PARAM_MBIT_POS :
+      case EXP_OP_PARAM_MBIT_NEG :
+        expression_operate_recursively( exp->right, funit, TRUE );
+        exp->value->width = vector_to_int( exp->right->value ) * exp_width;
+        break;
+      default :  break;
+    }
+
+    /* Allocate a vector for this expression */
+    if( exp->value->value.u32 != NULL ) {
+      vector_dealloc_value( exp->value );
+    }
+    expression_create_value( exp, exp->value->width, TRUE );
+
   }
-
-  /* Point expression value to the signal value */
-  exp->value->value.u32            = sig->value->value.u32;
-  exp->value->suppl.part.owns_data = 0;
 
   PROFILE_END;
 
@@ -3322,16 +3331,8 @@ bool expression_op_func__sig(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__SIG);
 
-  bool retval;  /* Return value for this function */
-
-  /* Set the unknown and not_zero bits as necessary */
-  switch( expr->sig->value->suppl.part.data_type ) {
-    case VDATA_U32 :  retval = vector_set_value_uint32( expr->value, expr->sig->value->value.u32, expr->sig->value->width );
-    default        :  assert( 0 );  break;
-  }
-
   /* Gather coverage information */
-  if( retval && (expr->op != EXP_OP_PARAM) ) {
+  if( expr->op != EXP_OP_PARAM ) {
     expression_set_tf_preclear( expr );
   } else {
     expression_set_tf( expr );
@@ -3339,7 +3340,7 @@ bool expression_op_func__sig(
 
   PROFILE_END;
 
-  return( retval );
+  return( TRUE );
 
 }
 
@@ -5555,6 +5556,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.9  2008/04/23 21:27:06  phase1geo
+ Fixing several bugs found in initial testing.  Checkpointing.
+
  Revision 1.329.2.8  2008/04/23 06:32:32  phase1geo
  Starting to debug vector changes.  Checkpointing.
 

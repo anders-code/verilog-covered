@@ -106,18 +106,25 @@ void vector_init_uint32(
 
   if( value != NULL ) {
 
-    int i, j;
-    int size = VECTOR_SIZE32(width);
-    int num  = vector_type_sizes[type];
+    int    i, j;
+    int    size  = VECTOR_SIZE32(width);
+    int    num   = vector_type_sizes[type];
+    uint32 lmask = 0xffffffff >> (31 - ((width - 1) & 0x1f));
 
     assert( width > 0 );
 
-    for( i=0; i<size; i++ ) {
+    for( i=0; i<(size - 1); i++ ) {
       vec->value.u32[VTYPE_INDEX_VAL_VALL][i] = data_l;
       vec->value.u32[VTYPE_INDEX_VAL_VALH][i] = data_h;
       for( j=2; j<num; j++ ) {
         vec->value.u32[j][i] = 0x0;
       }
+    }
+
+    vec->value.u32[VTYPE_INDEX_VAL_VALL][i] = data_l & lmask;
+    vec->value.u32[VTYPE_INDEX_VAL_VALH][i] = data_h & lmask;
+    for( j=2; j<num; j++ ) {
+      vec->value.u32[j][i] = 0x0;
     }
 
   } else {
@@ -323,15 +330,27 @@ void vector_db_write(
         {
           uint32       dflt_h = (vec->suppl.part.is_2state == 1) ? 0x0 : 0xffffffff;
           unsigned int i, j;
-          for( i=0; i<VECTOR_SIZE32(vec->width); i++ ) {
-            fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[0][i] : 0 );
-            fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[1][i] : dflt_h );
+          for( i=0; i<(VECTOR_SIZE32(vec->width) - 1); i++ ) {
+            fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[VTYPE_INDEX_VAL_VALL][i] : 0 );
+            fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[VTYPE_INDEX_VAL_VALH][i] : dflt_h );
             for( j=2; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
               if( ((mask >> j) & 0x1) == 1 ) {
                 fprintf( file, " %x", (vec->value.u32 != NULL) ? vec->value.u32[j][i] : 0 );
               } else {
                 fprintf( file, " 0" );
               }
+            }
+          }
+
+          dflt_h >>= (31 - ((vec->width - 1) & 0x1f));
+
+          fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[VTYPE_INDEX_VAL_VALL][i] : 0 );
+          fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[VTYPE_INDEX_VAL_VALH][i] : dflt_h );
+          for( j=2; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
+            if( ((mask >> j) & 0x1) == 1 ) {
+              fprintf( file, " %x", (vec->value.u32 != NULL) ? vec->value.u32[j][i] : 0 );
+            } else {
+              fprintf( file, " 0" );
             }
           }
         }
@@ -739,19 +758,19 @@ char* vector_get_toggle01_uint32(
 ) { PROFILE(VECTOR_GET_TOGGLE01_UINT32);
 
   char* bits      = (char*)malloc_safe( width + 1 );
-  int   bits_left = (width % 32);
+  int   bits_left = ((width - 1) & 0x1f);
   int   i, j;
   char  tmp[2];
 
   for( i=VECTOR_SIZE32(width); i--; ) {
-    for( j=(bits_left - 1); j>=0; j-- ) {
+    for( j=bits_left; j>=0; j-- ) {
       /*@-formatcode@*/
       unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[VTYPE_INDEX_SIG_TOG01][i] >> j) & 0x1) );
       /*@=formatcode@*/
       assert( rv < 2 );
       bits[((width - 1) - i)] = tmp[0];
     }
-    bits_left = 32;
+    bits_left = 31;
   }
 
   bits[width] = '\0';
@@ -774,19 +793,19 @@ char* vector_get_toggle10_uint32(
 ) { PROFILE(VECTOR_GET_TOGGLE10_UINT32);
 
   char* bits      = (char*)malloc_safe( width + 1 );
-  int   bits_left = (width % 32);
+  int   bits_left = ((width - 1) & 0x1f);
   int   i, j;
   char  tmp[2];
   
   for( i=VECTOR_SIZE32(width); i--; ) {
-    for( j=(bits_left - 1); j--; ) {
+    for( j=bits_left; j>=0; j-- ) {
       /*@-formatcode@*/ 
       unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[VTYPE_INDEX_SIG_TOG10][i] >> j) & 0x1) );
       /*@=formatcode@*/ 
       assert( rv < 2 );
       bits[((width - 1) - i)] = tmp[0];
     } 
-    bits_left = 32;
+    bits_left = 31;
   } 
   
   bits[width] = '\0';
@@ -813,21 +832,22 @@ void vector_display_toggle01_uint32(
 
   unsigned int nib       = 0;
   int          i, j;
-  int          bits_left = (width % 32);
+  int          bits_left = ((width - 1) & 0x1f);
 
   fprintf( ofile, "%d'h", width );
 
   for( i=VECTOR_SIZE32(width); i--; ) {
-    for( j=(bits_left - 1); j--; ) {
+    for( j=bits_left; j>=0; j-- ) {
       nib |= (((value[VTYPE_INDEX_SIG_TOG01][i] >> j) & 0x1) << ((unsigned)j % 4));
       if( (j % 4) == 0 ) {
         fprintf( ofile, "%1x", nib );
         nib = 0;
       }
-      if( ((j % 16) == 0) && (j != 0) ) {
+      if( ((j % 16) == 0) && ((j != 0) || (i != 0)) ) {
         fprintf( ofile, "_" );
       }
     }
+    bits_left = 31;
   }
 
   PROFILE_END;
@@ -850,21 +870,22 @@ void vector_display_toggle10_uint32(
 
   unsigned int nib       = 0;
   int          i, j;
-  int          bits_left = (width % 32);
+  int          bits_left = ((width - 1) & 0x1f);
   
   fprintf( ofile, "%d'h", width );
       
   for( i=VECTOR_SIZE32(width); i--; ) {
-    for( j=(bits_left - 1); j>=0; j-- ) {
+    for( j=bits_left; j>=0; j-- ) {
       nib |= (((value[VTYPE_INDEX_SIG_TOG10][i] >> j) & 0x1) << ((unsigned)j % 4));
       if( (j % 4) == 0 ) {
         fprintf( ofile, "%1x", nib );
         nib = 0;
       }
-      if( ((j % 16) == 0) && (j != 0) ) {
+      if( ((j % 16) == 0) && ((j != 0) || (i != 0)) ) {
         fprintf( ofile, "_" );
       }
     } 
+    bits_left = 31;
   }
 
   PROFILE_END;
@@ -883,12 +904,20 @@ void vector_display_value_uint32(
 ) {
 
   int i, j;  /* Loop iterator */
-  int bits_left = (width & 0x1f);
+  int bits_left = ((width - 1) & 0x1f);
+
+/*
+  printf( "RAW: " );
+  for( i=0; i<VECTOR_SIZE32(width); i++ ) {
+    printf( "(%x %x) ", value[VTYPE_INDEX_VAL_VALH][i], value[VTYPE_INDEX_VAL_VALL][i] );
+  }
+  printf( " " );
+*/
 
   printf( "value: %d'b", width );
 
   for( i=VECTOR_SIZE32(width); i--; ) {
-    for( j=bits_left; j--; ) {
+    for( j=bits_left; j>=0; j-- ) {
       if( ((value[VTYPE_INDEX_VAL_VALH][i] >> j) & 0x1) == 0 ) {
         printf( "%d", ((value[VTYPE_INDEX_VAL_VALL][i] >> j) & 0x1) );
       } else {
@@ -899,7 +928,7 @@ void vector_display_value_uint32(
         }
       }
     }
-    bits_left = 32;
+    bits_left = 31;
   }
 
 }
@@ -1162,7 +1191,7 @@ bool vector_set_assigned(
         if( ((vec->value.u32[VTYPE_INDEX_SIG_MISC][i>>5] >> (i & 0x1f)) & 0x1) == 1 ) {
           prev_assigned = TRUE;
         }
-        vec->value.u32[VTYPE_INDEX_SIG_MISC][i] |= (0x1 << (i & 0x1f));
+        vec->value.u32[VTYPE_INDEX_SIG_MISC][i>>5] |= (0x1 << (i & 0x1f));
       }
       break;
     default :  assert( 0 );  break;
@@ -1188,19 +1217,19 @@ bool vector_set_assigned(
  from the SCRATCH array to the 
 */
 bool vector_set_coverage_and_assign_uint32(
-  vector* vec,
-  uint32* scratchl,
-  uint32* scratchh,
-  int     lsb,
-  int     msb
+  vector*       vec,
+  const uint32* scratchl,
+  const uint32* scratchh,
+  int           lsb,
+  int           msb
 ) { PROFILE(VECTOR_SET_COVERAGE_AND_ASSIGN);
 
-  bool         changed = FALSE;                     /* Set to TRUE if the assigned value has changed */
-  unsigned int lindex  = (lsb >> 5);                /* Index of lowest array entry */
-  unsigned int hindex  = (msb >> 5);                /* Index of highest array entry */
-  uint32       lmask   = (0xffffffff << lsb);       /* Mask to be used in lower element */
-  uint32       hmask   = (0xffffffff >> (32-msb));  /* Mask to be used in upper element */
-  unsigned int i;                                   /* Loop iterator */
+  bool         changed = FALSE;                              /* Set to TRUE if the assigned value has changed */
+  unsigned int lindex  = (lsb >> 5);                         /* Index of lowest array entry */
+  unsigned int hindex  = (msb >> 5);                         /* Index of highest array entry */
+  uint32       lmask   = (0xffffffff << lsb);                /* Mask to be used in lower element */
+  uint32       hmask   = (0xffffffff >> (31-(msb & 0x1f)));  /* Mask to be used in upper element */
+  unsigned int i;                                            /* Loop iterator */
 
   /* If the lindex and hindex are the same, set lmask to the AND of the high and low masks */
   if( lindex == hindex ) {
@@ -1210,66 +1239,70 @@ bool vector_set_coverage_and_assign_uint32(
   switch( vec->suppl.part.type ) {
     case VTYPE_VAL :
       for( i=lindex; i<=hindex; i++ ) {
-        vec->value.u32[VTYPE_INDEX_VAL_VALL][i] = scratchl[i];
-        vec->value.u32[VTYPE_INDEX_VAL_VALH][i] = scratchh[i];
+        uint32* tvall = &(vec->value.u32[VTYPE_INDEX_SIG_VALL][i]);
+        uint32* tvalh = &(vec->value.u32[VTYPE_INDEX_SIG_VALH][i]);
+        uint32  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : 0xffffffff);
+        *tvall = (*tvall & ~mask) | (scratchl[i] & mask);
+        *tvalh = (*tvalh & ~mask) | (scratchh[i] & mask);
       }
       changed = TRUE;
       break;
     case VTYPE_SIG :
       for( i=lindex; i<=hindex; i++ ) {
-        uint32  fvall = scratchl[i];
-        uint32  fvalh = scratchh[i];
+        uint32  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : 0xffffffff);
+        uint32  fvall = scratchl[i] & mask;
+        uint32  fvalh = scratchh[i] & mask;
         uint32* tvall = &(vec->value.u32[VTYPE_INDEX_SIG_VALL][i]);
         uint32* tvalh = &(vec->value.u32[VTYPE_INDEX_SIG_VALH][i]);
         uint32* set   = &(vec->value.u32[VTYPE_INDEX_SIG_SET][i]);
-        uint32  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : 0xffffffff);
-        if( (fvall != *tvall) || (fvalh != *tvalh) || ((*set & mask) == 0) ) {
+        if( (fvall != (*tvall & mask)) || (fvalh != (*tvalh & mask)) || ((*set & mask) == 0) ) {
           if( (*set & mask) != 0 ) {
-            vec->value.u32[VTYPE_INDEX_SIG_TOG01][i] |= ((~fvalh & fvall) ^ (~(*tvalh) & *tvall)) & ~(~fvalh & fvall);
-            vec->value.u32[VTYPE_INDEX_SIG_TOG10][i] |= ((~fvalh & fvall) ^ (~(*tvalh) & *tvall)) &  (~fvalh & fvall);
+            vec->value.u32[VTYPE_INDEX_SIG_TOG01][i] |= ((~fvalh & fvall) ^ ((~(*tvalh) & *tvall) & mask)) & (~fvalh &  fvall);
+            vec->value.u32[VTYPE_INDEX_SIG_TOG10][i] |= ((~fvalh & fvall) ^ ((~(*tvalh) & *tvall) & mask)) & ( fvalh | ~fvall);
           }
-          *set    = mask;
-          *tvall  = fvall;
-          *tvalh  = fvalh;
+          *set   |= mask;
+          *tvall  = (*tvall & ~mask) | fvall;
+          *tvalh  = (*tvalh & ~mask) | fvalh;
           changed = TRUE;
         }
       }
       break;
     case VTYPE_MEM :
       for( i=lindex; i<=hindex; i++ ) {
-        uint32  fvall = scratchl[i];
-        uint32  fvalh = scratchh[i];
+        uint32  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : 0xffffffff);
+        uint32  fvall = scratchl[i] & mask;
+        uint32  fvalh = scratchh[i] & mask;
         uint32* tvall = &(vec->value.u32[VTYPE_INDEX_MEM_VALL][i]);
         uint32* tvalh = &(vec->value.u32[VTYPE_INDEX_MEM_VALH][i]);
-        if( (fvall != *tvall) || (fvalh != *tvalh) ) {
-          vec->value.u32[VTYPE_INDEX_MEM_TOG01][i] |= ((~fvalh & fvall) ^ (~(*tvalh) & *tvall)) & ~(~fvalh & fvall);
-          vec->value.u32[VTYPE_INDEX_MEM_TOG10][i] |= ((~fvalh & fvall) ^ (~(*tvalh) & *tvall)) &  (~fvalh & fvall);
-          vec->value.u32[VTYPE_INDEX_MEM_WR][i]     = (i==lindex) ? lmask : (i==hindex ? hmask : 0xffffffff);
-          *tvall  = fvall;
-          *tvalh  = fvalh;
+        if( (fvall != (*tvall & mask)) || (fvalh != (*tvalh & mask)) ) {
+          vec->value.u32[VTYPE_INDEX_MEM_TOG01][i] |= ((~fvalh & fvall) ^ ((~(*tvalh) & *tvall) & mask)) & ~(~fvalh & fvall);
+          vec->value.u32[VTYPE_INDEX_MEM_TOG10][i] |= ((~fvalh & fvall) ^ ((~(*tvalh) & *tvall) & mask)) &  (~fvalh & fvall);
+          vec->value.u32[VTYPE_INDEX_MEM_WR][i]     = mask;
+          *tvall  = (*tvall & ~mask) | fvall;
+          *tvalh  = (*tvalh & ~mask) | fvalh;
           changed = TRUE;
         }
       }
       break;
     case VTYPE_EXP :
       for( i=lindex; i<=hindex; i++ ) {
-        uint32  fvall = scratchl[i];
-        uint32  fvalh = scratchh[i];
+        uint32  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : 0xffffffff);
+        uint32  fvall = scratchl[i] & mask;
+        uint32  fvalh = scratchh[i] & mask;
         uint32* tvall = &(vec->value.u32[VTYPE_INDEX_EXP_VALL][i]);
         uint32* tvalh = &(vec->value.u32[VTYPE_INDEX_EXP_VALH][i]);
         uint32* set   = &(vec->value.u32[VTYPE_INDEX_EXP_SET][i]);
-        uint32  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : 0xffffffff);
-        if( (fvall != *tvall) || (fvalh != *tvalh) || ((*set & mask) == 0) ) {
+        if( (fvall != (*tvall & mask)) || (fvalh != (*tvalh & mask)) || ((*set & mask) == 0) ) {
           *set    = mask;
-          *tvall  = fvall;
-          *tvalh  = fvalh;
+          *tvall  = (*tvall & ~mask) | fvall;
+          *tvalh  = (*tvalh & ~mask) | fvalh;
           changed = TRUE;
         }
       }
       break;
     default :  assert( 0 );  break;
   }
-  
+
   PROFILE_END;
 
   return( changed );
@@ -1352,7 +1385,7 @@ bool vector_part_select(
         int          i;
         unsigned int pos = 0;
 
-        assert( ((msb-lsb) + 1) == tgt->width );
+        assert( ((msb-lsb) + 1) <= tgt->width );
 
         for( i=lsb; i<=msb; i++ ) {
           if( (pos & 0x1f) == 0 ) {
@@ -1366,7 +1399,7 @@ bool vector_part_select(
           }
           pos++;
         }
-        retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+        retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, lsb, msb );
       }
       break;
     default :  assert( 0 );  break;
@@ -1569,13 +1602,14 @@ bool vector_bit_fill(
     case VDATA_U32 :
       {
         unsigned int last_index = (last >> 5);
+        unsigned int next_index = ((last + 1) >> 5);
         unsigned int bit_pos    = (last & 0x1f);
         uint32       valh       = vec->value.u32[VTYPE_INDEX_VAL_VALH][last_index];
         uint32       mask       = 0xffffffff << (bit_pos + 1);
         uint32       scratchl[MAX_BIT_WIDTH >> 5];
         uint32       scratchh[MAX_BIT_WIDTH >> 5];
         if( (valh & (1 << bit_pos)) == 0 ) {
-          for( i=last_index; i<VECTOR_SIZE32(vec->width); i++ ) {
+          for( i=next_index; i<VECTOR_SIZE32(vec->width); i++ ) {
             scratchl[i] = (vec->value.u32[VTYPE_INDEX_VAL_VALL][i] & ~mask);
             scratchh[i] = (vec->value.u32[VTYPE_INDEX_VAL_VALH][i] & ~mask);
             mask        = 0xffffffff;
@@ -1583,13 +1617,13 @@ bool vector_bit_fill(
         } else {
           uint32 vall = vec->value.u32[VTYPE_INDEX_VAL_VALL][last_index];
           if( (vall & (1 << bit_pos)) == 0 ) {
-            for( i=last_index; i<VECTOR_SIZE32(vec->width); i++ ) {
+            for( i=next_index; i<VECTOR_SIZE32(vec->width); i++ ) {
               scratchl[i] = (vec->value.u32[VTYPE_INDEX_VAL_VALL][i] & ~mask);
               scratchh[i] = (vec->value.u32[VTYPE_INDEX_VAL_VALH][i] & ~mask) | mask;
               mask        = 0xffffffff;
             }
           } else {
-            for( i=last_index; i<VECTOR_SIZE32(vec->width); i++ ) {
+            for( i=next_index; i<VECTOR_SIZE32(vec->width); i++ ) {
               scratchl[i] = (vec->value.u32[VTYPE_INDEX_VAL_VALL][i] & ~mask) | mask;
               scratchh[i] = (vec->value.u32[VTYPE_INDEX_VAL_VALH][i] & ~mask) | mask;
               mask        = 0xffffffff;
@@ -1598,12 +1632,12 @@ bool vector_bit_fill(
         }
 
         /* Get coverage information and perform assign */
-        vector_set_coverage_and_assign_uint32( vec, scratchl, scratchh, last, (vec->width - 1) );
+        vector_set_coverage_and_assign_uint32( vec, scratchl, scratchh, (last + 1), (vec->width - 1) );
       }
       break;
     default :  assert( 0 );  break;
   }
-          
+ 
   return( changed );
 
 }
@@ -1684,7 +1718,7 @@ bool vector_set_to_x(
       {
         uint32       scratchl[MAX_BIT_WIDTH>>5];
         uint32       scratchh[MAX_BIT_WIDTH>>5];
-        uint32       end_mask = 0xffffffff >> (32 - (vec->width & 0x1f));
+        uint32       end_mask = 0xffffffff >> (31 - ((vec->width - 1) & 0x1f));
         unsigned int i;
         for( i=0; i<(VECTOR_SIZE32(vec->width)-1); i++ ) {
           scratchl[i] = 0;
@@ -1780,8 +1814,14 @@ uint64 vector_to_uint64(
   uint64 retval = 0;   /* 64-bit integer value returned to calling function */
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_U32 :  retval = ((uint64)vec->value.u32[VTYPE_INDEX_VAL_VALL][1] << 32) | vec->value.u32[VTYPE_INDEX_VAL_VALL][0];  break;
-    default        :  assert( 0 );  break;
+    case VDATA_U32 :
+      if( vec->width > 32 ) {
+        retval = ((uint64)vec->value.u32[VTYPE_INDEX_VAL_VALL][1] << 32) | (uint64)vec->value.u32[VTYPE_INDEX_VAL_VALL][0];
+      } else {
+        retval = (uint64)vec->value.u32[VTYPE_INDEX_VAL_VALL][0];
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   /* If the vector is signed, sign-extend the integer */
@@ -1840,7 +1880,7 @@ void vector_from_int(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_U32 :
-      vec->value.u32[VTYPE_INDEX_VAL_VALL][0] = value & (0xffffffff >> (32 - ((vec->width > 32) ? 32 : vec->width)));
+      vec->value.u32[VTYPE_INDEX_VAL_VALL][0] = value & (0xffffffff >> (31 - ((vec->width - 1) & 0x1f)));
       break;
     default :  assert( 0 );  break;
   }
@@ -1868,8 +1908,8 @@ void vector_from_uint64(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_U32 :
-      vec->value.u32[VTYPE_INDEX_VAL_VALL][0] = value & (0xffffffff >> (32 - ((vec->width > 32) ? 32 : vec->width)));
-      vec->value.u32[VTYPE_INDEX_VAL_VALL][1] = ((uint64)value >> 32) & (0xffffffff >> (32 - ((vec->width > 64) ? 32 : (vec->width - 32))));
+      vec->value.u32[VTYPE_INDEX_VAL_VALL][0] = value & (0xffffffff >> (31 - ((vec->width - 1) & 0x1f)));
+      vec->value.u32[VTYPE_INDEX_VAL_VALL][1] = ((uint64)value >> 32) & (0xffffffff >> (31 - ((vec->width - 1) & 0x1f)));
       break;
     default :  assert( 0 );  break;
   }
@@ -1909,7 +1949,7 @@ static void vector_set_static(
           case VDATA_U32 :
             for( i=0; i<bits_per_char; i++ ) {
               if( (i + pos) < vec->width ) {
-                vec->value.u32[VTYPE_INDEX_VAL_VALL][(i+pos)>>5] = (1 << ((i+pos) & 0x1f));
+                vec->value.u32[VTYPE_INDEX_VAL_VALL][(i+pos)>>5] |= (1 << ((i+pos) & 0x1f));
               }
             }
             break;
@@ -1920,8 +1960,8 @@ static void vector_set_static(
           case VDATA_U32 :
             for( i=0; i<bits_per_char; i++ ) {
               if( (i + pos) < vec->width ) {
-                vec->value.u32[VTYPE_INDEX_VAL_VALL][(i+pos)>>5] = (1 << ((i+pos) & 0x1f));
-                vec->value.u32[VTYPE_INDEX_VAL_VALH][(i+pos)>>5] = (1 << ((i+pos) & 0x1f));
+                vec->value.u32[VTYPE_INDEX_VAL_VALL][(i+pos)>>5] |= (1 << ((i+pos) & 0x1f));
+                vec->value.u32[VTYPE_INDEX_VAL_VALH][(i+pos)>>5] |= (1 << ((i+pos) & 0x1f));
               }
             }
             break;
@@ -1941,7 +1981,7 @@ static void vector_set_static(
           case VDATA_U32 :
             for( i=0; i<bits_per_char; i++ ) {
               if( (i + pos) < vec->width ) {
-                vec->value.u32[VTYPE_INDEX_VAL_VALL][(i+pos)>>5] = ((val >> i) & 0x1) << ((i + pos) & 0x1f);
+                vec->value.u32[VTYPE_INDEX_VAL_VALL][(i+pos)>>5] |= ((val >> i) & 0x1) << ((i + pos) & 0x1f);
               }
             }
             break;
@@ -3671,7 +3711,7 @@ bool vector_op_divide(
           uint32 rval = right->value.u32[VTYPE_INDEX_EXP_VALL][0];
           if( rval == 0 ) {
             print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-            printf( "vector Throw A1\n" );
+            printf( "vector Throw G\n" );
             Throw 0;
           }
           vall = left->value.u32[VTYPE_INDEX_EXP_VALL][0] / rval;
@@ -3718,7 +3758,7 @@ bool vector_op_modulus(
           uint32 rval = right->value.u32[VTYPE_INDEX_EXP_VALL][0];
           if( rval == 0 ) {
             print_output( "Modulus by 0 error", FATAL, __FILE__, __LINE__ );
-            printf( "vector Throw A2\n" );
+            printf( "vector Throw H\n" );
             Throw 0;
           }
           vall = left->value.u32[VTYPE_INDEX_EXP_VALL][0] % rval;
@@ -4205,6 +4245,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.16  2008/04/23 21:27:06  phase1geo
+ Fixing several bugs found in initial testing.  Checkpointing.
+
  Revision 1.138.2.15  2008/04/23 14:33:50  phase1geo
  Fixing bug in vector display functions that caused infinite looping.  Checkpointing.
 

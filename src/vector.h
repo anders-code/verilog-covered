@@ -302,11 +302,11 @@ bool vector_set_assigned( vector* vec, int msb, int lsb );
 
 /*! \brief Set coverage information for given vector and assigns values from scratch arrays to vector. */
 bool vector_set_coverage_and_assign_uint32(
-  vector* vec,
-  uint32* scratchl,
-  uint32* scratchh,
-  int     lsb,
-  int     msb
+  vector*       vec,
+  const uint32* scratchl,
+  const uint32* scratchh,
+  int           lsb,
+  int           msb
 );
 
 /*! \brief Performs bitwise AND operation on two source vectors. */
@@ -470,6 +470,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.11  2008/04/23 21:27:06  phase1geo
+ Fixing several bugs found in initial testing.  Checkpointing.
+
  Revision 1.58.2.10  2008/04/23 06:32:32  phase1geo
  Starting to debug vector changes.  Checkpointing.
 
