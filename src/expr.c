@@ -457,7 +457,7 @@ static void expression_create_value(
 
   } else {
 
-    vector_init_uint32( exp->value, NULL, 0x0, FALSE, width, VTYPE_EXP, VDATA_U32 );
+    vector_init_uint32( exp->value, NULL, 0x0, 0x0, FALSE, width, VTYPE_EXP, VDATA_U32 );
 
   }
 
@@ -5555,6 +5555,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.8  2008/04/23 06:32:32  phase1geo
+ Starting to debug vector changes.  Checkpointing.
+
  Revision 1.329.2.7  2008/04/23 05:20:44  phase1geo
  Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
 

@@ -1832,6 +1832,7 @@ expr_primary
         }
         vector_dealloc( tmp->value );
         tmp->value = $1.vec;
+        vector_display( $1.vec );
         $$ = tmp;
       } else {
         vector_dealloc( $1.vec );

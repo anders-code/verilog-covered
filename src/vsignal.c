@@ -134,7 +134,6 @@ void vsignal_create_vec(
   int       i;          /* Loop iterator */
   vector*   vec;        /* Temporary vector used for getting a vector value */
   exp_link* expl;       /* Pointer to current expression in signal expression list */
-  int       old_width;  /* Original width of signal vector */
 
   assert( sig != NULL );
   assert( sig->value != NULL );
@@ -142,8 +141,8 @@ void vsignal_create_vec(
   /* If this signal has been previously simulated, don't create a new vector */
   if( !vector_is_set( sig->value ) ) {
 
-    /* Save the old width */
-    old_width = sig->value->width;
+    /* Deallocate the old memory */
+    vector_dealloc_value( sig->value );
 
     /* Set the initial signal width to 1 */
     sig->value->width = 1;
@@ -164,9 +163,6 @@ void vsignal_create_vec(
 
     /* Create the vector and assign it to the signal */
     vec = vector_create( sig->value->width, ((sig->suppl.part.type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), VDATA_U32, TRUE );
-    if( sig->value->value.u32 != NULL ) {
-      free_safe( sig->value->value.u32, old_width );
-    }
     sig->value->value.u32 = vec->value.u32;
     free_safe( vec, sizeof( vector ) );
 
@@ -804,6 +800,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.71.2.2  2008/04/23 06:32:32  phase1geo
+ Starting to debug vector changes.  Checkpointing.
+
  Revision 1.71.2.1  2008/04/23 05:20:45  phase1geo
  Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
 

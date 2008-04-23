@@ -162,7 +162,6 @@ vector* vector_create(
           int          num  = vector_type_sizes[type];
           int          size = VECTOR_SIZE32(width);
           unsigned int i;
-          printf( "num: %d\n", num );
           value = (uint32**)malloc_safe( sizeof( uint32* ) * num );
           for( i=0; i<num; i++ ) {
             value[i] = (uint32*)malloc_safe( sizeof( uint32 ) * size );
@@ -328,8 +327,10 @@ void vector_db_write(
             fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[0][i] : 0 );
             fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[1][i] : dflt_h );
             for( j=2; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
-              if( (mask & (0x1 << j)) == 1 ) {
+              if( ((mask >> j) & 0x1) == 1 ) {
                 fprintf( file, " %x", (vec->value.u32 != NULL) ? vec->value.u32[j][i] : 0 );
+              } else {
+                fprintf( file, " 0" );
               }
             }
           }
@@ -405,19 +406,7 @@ void vector_db_read(
     /* Otherwise, deallocate the vector data */
     } else {
 
-      switch( suppl.part.data_type ) {
-        case VDATA_U32 :
-          {
-            unsigned int i;
-            for( i=0; i<vector_type_sizes[suppl.part.type]; i++ ) {
-              free_safe( (*vec)->value.u32[i], (sizeof( uint32* ) * VECTOR_SIZE32(width)) );
-            }
-            free_safe( (*vec)->value.u32, (sizeof( uint32 ) * vector_type_sizes[suppl.part.type]) );
-            (*vec)->value.u32 = NULL;
-          }
-          break;
-        default :  assert( 0 );  break;
-      }
+      vector_dealloc_value( *vec );
 
     }
 
@@ -893,13 +882,13 @@ void vector_display_value_uint32(
   int      width
 ) {
 
-  unsigned int i, j;  /* Loop iterator */
-  int bits_left = (width % 32);
+  int i, j;  /* Loop iterator */
+  int bits_left = (width & 0x1f);
 
   printf( "value: %d'b", width );
 
-  for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
-    for( j=(bits_left - 1); j>=0; j-- ) {
+  for( i=VECTOR_SIZE32(width); i--; ) {
+    for( j=bits_left; j--; ) {
       if( ((value[VTYPE_INDEX_VAL_VALH][i] >> j) & 0x1) == 0 ) {
         printf( "%d", ((value[VTYPE_INDEX_VAL_VALL][i] >> j) & 0x1) );
       } else {
@@ -910,6 +899,7 @@ void vector_display_value_uint32(
         }
       }
     }
+    bits_left = 32;
   }
 
 }
@@ -928,13 +918,13 @@ void vector_display_nibble_uint32(
   int      type
 ) {
 
-  unsigned int i, j;  /* Loop iterator */
+  int i, j;  /* Loop iterator */
 
   printf( "\n" );
   printf( "      raw value:" );
   
   for( i=0; i<vector_type_sizes[type]; i++ ) {
-    for( j=(VECTOR_SIZE32(width) - 1); j>=0; j-- ) {
+    for( j=VECTOR_SIZE32(width); j--; ) {
       /*@-formatcode@*/
       printf( " %x", value[i][j] );
       /*@=formatcode@*/
@@ -959,7 +949,7 @@ void vector_display_nibble_uint32(
 
       /* Display bit set information */
       printf( ", set: %d'h", width );
-      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+      for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
         printf( "%x", value[VTYPE_INDEX_SIG_SET][i] );
         /*@=formatcode@*/
@@ -971,7 +961,7 @@ void vector_display_nibble_uint32(
 
       /* Display eval_a information */
       printf( ", a: %d'h", width );
-      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+      for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
         printf( "%x", value[VTYPE_INDEX_EXP_EVAL_A][i] );
         /*@=formatcode@*/
@@ -979,7 +969,7 @@ void vector_display_nibble_uint32(
 
       /* Display eval_b information */
       printf( ", b: %d'h", width );
-      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+      for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
         printf( "%x", value[VTYPE_INDEX_EXP_EVAL_B][i] );
         /*@=formatcode@*/
@@ -987,7 +977,7 @@ void vector_display_nibble_uint32(
 
       /* Display eval_c information */
       printf( ", c: %d'h", width );
-      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+      for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
         printf( "%x", value[VTYPE_INDEX_EXP_EVAL_C][i] );
         /*@=formatcode@*/
@@ -995,7 +985,7 @@ void vector_display_nibble_uint32(
 
       /* Display eval_d information */
       printf( ", d: %d'h", width );
-      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+      for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
         printf( "%x", value[VTYPE_INDEX_EXP_EVAL_D][i] );
         /*@=formatcode@*/
@@ -1003,7 +993,7 @@ void vector_display_nibble_uint32(
 
       /* Display set information */
       printf( ", set: %d'h", width );
-      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+      for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
         printf( "%x", value[VTYPE_INDEX_EXP_SET][i] );
         /*@=formatcode@*/
@@ -1023,7 +1013,7 @@ void vector_display_nibble_uint32(
 
       /* Write history */
       printf( ", wr: %d'h", width );
-      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+      for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
         printf( "%x", value[VTYPE_INDEX_MEM_WR][i]);
         /*@=formatcode@*/
@@ -1031,7 +1021,7 @@ void vector_display_nibble_uint32(
 
       /* Read history */
       printf( ", rd: %d'h", width );
-      for( i=(VECTOR_SIZE32(width) - 1); i>=0; i-- ) {
+      for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
         printf( "%x", value[VTYPE_INDEX_MEM_RD][i] );
         /*@=formatcode@*/
@@ -1362,7 +1352,7 @@ bool vector_part_select(
         int          i;
         unsigned int pos = 0;
 
-        assert( (msb-lsb) == tgt->width );
+        assert( ((msb-lsb) + 1) == tgt->width );
 
         for( i=lsb; i<=msb; i++ ) {
           if( (pos & 0x1f) == 0 ) {
@@ -1907,6 +1897,7 @@ static void vector_set_static(
 
   char*        ptr       = str + (strlen( str ) - 1);  /* Pointer to current character evaluating */
   unsigned int pos       = 0;                          /* Current bit position in vector */
+  unsigned int i;                                      /* Loop iterator */
   uint32       u32l      = 0;                          /* 32-bit unsigned integer */
   uint32       u32h      = 0;                          /* 32-bit unsigned integer */
   int          data_type = vec->suppl.part.data_type;  /* Copy of data type for performance reasons */
@@ -1916,12 +1907,10 @@ static void vector_set_static(
       if( (*ptr == 'x') || (*ptr == 'X') ) {
         switch( data_type ) {
           case VDATA_U32 :
-            u32h |= (0xf >> (4 - bits_per_char)) << (pos % 32);
-            if( (pos + bits_per_char) >= 32 ) {
-              vec->value.u32[VTYPE_INDEX_VAL_VALL][pos >> 5] = u32l;
-              vec->value.u32[VTYPE_INDEX_VAL_VALH][pos >> 5] = u32h;
-              u32h = (0xf >> (bits_per_char - ((bits_per_char + pos) % 32)));
-              u32l = 0;
+            for( i=0; i<bits_per_char; i++ ) {
+              if( (i + pos) < vec->width ) {
+                vec->value.u32[VTYPE_INDEX_VAL_VALL][(i+pos)>>5] = (1 << ((i+pos) & 0x1f));
+              }
             }
             break;
           default :  assert( 0 );  break;
@@ -1929,13 +1918,11 @@ static void vector_set_static(
       } else if( (*ptr == 'z') || (*ptr == 'Z') || (*ptr == '?') ) {
         switch( data_type ) {
           case VDATA_U32 :
-            u32l |= (0xf >> (4 - bits_per_char)) << (pos % 32);
-            u32h |= (0xf >> (4 - bits_per_char)) << (pos % 32);
-            if( (pos + bits_per_char) >= 32 ) {
-              vec->value.u32[VTYPE_INDEX_VAL_VALL][pos >> 5] = u32l;
-              vec->value.u32[VTYPE_INDEX_VAL_VALH][pos >> 5] = u32h;
-              u32l = (0xf >> (bits_per_char - ((bits_per_char + pos) % 32)));
-              u32h = (0xf >> (bits_per_char - ((bits_per_char + pos) % 32)));
+            for( i=0; i<bits_per_char; i++ ) {
+              if( (i + pos) < vec->width ) {
+                vec->value.u32[VTYPE_INDEX_VAL_VALL][(i+pos)>>5] = (1 << ((i+pos) & 0x1f));
+                vec->value.u32[VTYPE_INDEX_VAL_VALH][(i+pos)>>5] = (1 << ((i+pos) & 0x1f));
+              }
             }
             break;
           default :  assert( 0 );  break;
@@ -1952,12 +1939,10 @@ static void vector_set_static(
         }
         switch( data_type ) {
           case VDATA_U32 :
-            u32l |= (val >> (4 - bits_per_char)) << (pos % 32);
-            if( (pos + bits_per_char) >= 32 ) {
-              vec->value.u32[VTYPE_INDEX_VAL_VALL][pos >> 5] = u32l;
-              vec->value.u32[VTYPE_INDEX_VAL_VALH][pos >> 5] = u32h;
-              u32l = (val >> (bits_per_char - ((bits_per_char + pos) % 32)));
-              u32h = (val >> (bits_per_char - ((bits_per_char + pos) % 32)));
+            for( i=0; i<bits_per_char; i++ ) {
+              if( (i + pos) < vec->width ) {
+                vec->value.u32[VTYPE_INDEX_VAL_VALL][(i+pos)>>5] = ((val >> i) & 0x1) << ((i + pos) & 0x1f);
+              }
             }
             break;
           default :  assert( 0 );  break;
@@ -2002,7 +1987,7 @@ char* vector_to_string(
       case VDATA_U32 :
         {
           int offset = (vec->width >> 3) % 4;
-          for( i=(VECTOR_SIZE32(vec->width) - 1); i>=0; i-- ) {
+          for( i=VECTOR_SIZE32(vec->width); i--; ) {
             uint32 val    = vec->value.u32[VTYPE_INDEX_VAL_VALL][i]; 
             for( j=(offset - 1); j>=0; j-- ) {
               str[pos] = (val >> (j * 8)) & 0xff;
@@ -4220,6 +4205,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.14  2008/04/23 06:32:32  phase1geo
+ Starting to debug vector changes.  Checkpointing.
+
  Revision 1.138.2.13  2008/04/23 05:20:45  phase1geo
  Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
 

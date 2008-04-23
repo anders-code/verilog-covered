@@ -29,7 +29,7 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init_uin32(
+void vector_init_uint32(
   /*@out@*/ vector*   vec,
             uint32**  value,
             uint32    data_l,
@@ -470,6 +470,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.10  2008/04/23 06:32:32  phase1geo
+ Starting to debug vector changes.  Checkpointing.
+
  Revision 1.58.2.9  2008/04/23 05:20:45  phase1geo
  Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
 
