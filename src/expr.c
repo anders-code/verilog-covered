@@ -450,7 +450,7 @@ static void expression_create_value(
 
     vec = vector_create( width, VTYPE_EXP, VDATA_U32, TRUE );
     assert( exp->value->value.u32 == NULL );
-    vector_init_uint32( exp->value, vec->value.u32, 0x0, 0x0, TRUE, width, exp->value->suppl.part.type, exp->value->suppl.part.data_type );
+    vector_init_uint32( exp->value, vec->value.u32, 0x0, 0x0, TRUE, width, vec->suppl.part.type, vec->suppl.part.data_type );
     free_safe( vec, sizeof( vector ) );
 
     /* Create the temporary vectors now, if needed */
@@ -5556,6 +5556,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.10  2008/04/23 23:06:03  phase1geo
+ More bug fixes to vector functionality.  Bitwise operators appear to be
+ working correctly when 2-state values are used.  Checkpointing.
+
  Revision 1.329.2.9  2008/04/23 21:27:06  phase1geo
  Fixing several bugs found in initial testing.  Checkpointing.
 

@@ -51,7 +51,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        13
+#define CDD_VERSION        14
 
 /*!
  This contains the header information specified when executing this tool.
@@ -2694,6 +2694,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.6  2008/04/23 23:06:03  phase1geo
+ More bug fixes to vector functionality.  Bitwise operators appear to be
+ working correctly when 2-state values are used.  Checkpointing.
+
  Revision 1.294.2.5  2008/04/20 05:43:45  phase1geo
  More work on the vector file.  Completed initial pass of conversion operations,
  bitwise operations and comparison operations.

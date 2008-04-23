@@ -562,7 +562,7 @@ int vector_get_eval_a(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_U32 :  retval = (vec->value.u32[VTYPE_INDEX_EXP_EVAL_A][index>>5] >> (index & 0x1f)) & 0x1;
+    case VDATA_U32 :  retval = (vec->value.u32[VTYPE_INDEX_EXP_EVAL_A][index>>5] >> (index & 0x1f)) & 0x1;  break;
     default        :  assert( 0 );  break;
   }
 
@@ -586,7 +586,7 @@ int vector_get_eval_b(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_U32 :  retval = (vec->value.u32[VTYPE_INDEX_EXP_EVAL_B][index>>5] >> (index & 0x1f)) & 0x1;
+    case VDATA_U32 :  retval = (vec->value.u32[VTYPE_INDEX_EXP_EVAL_B][index>>5] >> (index & 0x1f)) & 0x1;  break;
     default        :  assert( 0 );  break;
   }
 
@@ -610,7 +610,7 @@ int vector_get_eval_c(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_U32 :  retval = (vec->value.u32[VTYPE_INDEX_EXP_EVAL_C][index>>5] >> (index & 0x1f)) & 0x1;
+    case VDATA_U32 :  retval = (vec->value.u32[VTYPE_INDEX_EXP_EVAL_C][index>>5] >> (index & 0x1f)) & 0x1;  break;
     default        :  assert( 0 );  break;
   }
 
@@ -634,7 +634,7 @@ int vector_get_eval_d(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_U32 :  retval = (vec->value.u32[VTYPE_INDEX_EXP_EVAL_D][index>>5] >> (index & 0x1f)) & 0x1;
+    case VDATA_U32 :  retval = (vec->value.u32[VTYPE_INDEX_EXP_EVAL_D][index>>5] >> (index & 0x1f)) & 0x1;  break;
     default        :  assert( 0 );  break;
   }
 
@@ -3907,7 +3907,7 @@ bool vector_unary_and(
         unsigned int ssize = VECTOR_SIZE32( src->width );
         uint32       valh  = 0;
         uint32       vall  = 1;
-        uint32       lmask = 0xffffffff >> (src->width & 0x1f);
+        uint32       lmask = 0xffffffff >> (31 - ((src->width - 1) & 0x1f));
         for( i=0; i<(ssize-1); i++ ) {
           valh |= (src->value.u32[VTYPE_INDEX_VAL_VALH][i] != 0) ? 1 : 0;
           vall &= ~valh & ((src->value.u32[VTYPE_INDEX_VAL_VALL][i] == 0xffffffff) ? 1 : 0);
@@ -4170,12 +4170,14 @@ bool vector_op_list(
 
         /* Load left vector a bit at at time */
         for( i=0; i<lwidth; i++ ) {
+          printf( "i: %d\n", i );
           if( (pos & 0x1f) == 0 ) {
             vall[pos>>5] = 0;
             valh[pos>>5] = 0;
           }
           vall[pos>>5] |= ((lvall[i>>5] >> (i & 0x1f)) & 0x1) << (pos & 0x1f);
           valh[pos>>5] |= ((lvalh[i>>5] >> (i & 0x1f)) & 0x1) << (pos & 0x1f);
+          printf( "  vall[%d]: %x, valh[%d]: %x\n", (pos>>5), vall[pos>>5], (pos>>5), valh[pos>>5] );
           pos++;
         }
         retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
@@ -4245,6 +4247,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.17  2008/04/23 23:06:03  phase1geo
+ More bug fixes to vector functionality.  Bitwise operators appear to be
+ working correctly when 2-state values are used.  Checkpointing.
+
  Revision 1.138.2.16  2008/04/23 21:27:06  phase1geo
  Fixing several bugs found in initial testing.  Checkpointing.
 
