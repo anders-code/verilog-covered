@@ -54,6 +54,16 @@ void vector_copy(
   vector*       to_vec
 );
 
+/*!
+ Copies the entire contents of a bit range from from_vec to to_vec,
+ aligning the stored value starting at bit 0.
+*/
+void vector_copy_range(
+  vector*       to_vec,
+  const vector* from_vec,
+  int           lsb
+);
+
 /*! \brief Copies contents of from_vec to to_vec, allocating memory */
 void vector_clone(
             const vector* from_vec,
@@ -147,7 +157,7 @@ void vector_display_toggle10_uint32(
 
 /*! \brief Outputs the binary value of the specified nibble array to standard output */
 void vector_display_value_uint32(
-  uint32** nib,
+  uint32** value,
   int      width
 );
 
@@ -290,6 +300,15 @@ void vector_mem_rw_count( vector* vec, int* wr_cnt, int* rd_cnt );
 /*! \brief Sets all assigned bits in vector bit value array within specified range. */
 bool vector_set_assigned( vector* vec, int msb, int lsb );
 
+/*! \brief Set coverage information for given vector and assigns values from scratch arrays to vector. */
+bool vector_set_coverage_and_assign_uint32(
+  vector* vec,
+  uint32* scratchl,
+  uint32* scratchh,
+  int     lsb,
+  int     msb
+);
+
 /*! \brief Performs bitwise AND operation on two source vectors. */
 bool vector_bitwise_and_op( vector* tgt, vector* src1, vector* src2 );
 
@@ -407,8 +426,23 @@ bool vector_op_dec(
 /*! \brief Performs unary bitwise inversion operation on specified vector value. */
 bool vector_unary_inv( vector* tgt, vector* src );
 
-/*! \brief Performs unary operation on specified vector value. */
-bool vector_unary_op( vector* tgt, vector* src, nibble* optab );
+/*! \brief Performs unary AND operation on specified vector value. */
+bool vector_unary_and( vector* tgt, vector* src );
+
+/*! \brief Performs unary NAND operation on specified vector value. */
+bool vector_unary_nand( vector* tgt, vector* src );
+
+/*! \brief Performs unary OR operation on specified vector value. */
+bool vector_unary_or( vector* tgt, vector* src );
+
+/*! \brief Performs unary NOR operation on specified vector value. */
+bool vector_unary_nor( vector* tgt, vector* src );
+
+/*! \brief Performs unary XOR operation on specified vector value. */
+bool vector_unary_xor( vector* tgt, vector* src );
+
+/*! \brief Performs unary NXOR operation on specified vector value. */
+bool vector_unary_nxor( vector* tgt, vector* src );
 
 /*! \brief Performs unary logical NOT operation on specified vector value. */
 bool vector_unary_not( vector* tgt, vector* src );
@@ -436,6 +470,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.9  2008/04/23 05:20:45  phase1geo
+ Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
+
  Revision 1.58.2.8  2008/04/22 23:01:43  phase1geo
  More updates.  Completed initial pass of expr.c and fsm_arg.c.  Working
  on memory.c.  Checkpointing.

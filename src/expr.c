@@ -1719,7 +1719,7 @@ void expression_display(
   if( expr->value->value.u32 == NULL ) {
     printf( "NO DATA VECTOR" );
   } else {
-    vector_display_value( expr->value->value.u32, expr->value->width );
+    vector_display_value_uint32( expr->value->value.u32, expr->value->width );
   }
   printf( "\n" );
 
@@ -2481,7 +2481,7 @@ bool expression_op_func__lt(
   bool retval;  /* Return value for this function */
 
   /* Perform less-than operation and gather coverage information */
-  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT ) ) {
+  if( retval = vector_op_lt( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -2511,7 +2511,7 @@ bool expression_op_func__gt(
   bool retval;  /* Return value for this function */
 
   /* Perform greater-than operation and gather coverage information */
-  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GT ) ) {
+  if( retval = vector_op_gt( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -2754,7 +2754,7 @@ bool expression_op_func__eq(
   bool retval;  /* Return value for this function */
 
   /* Perform  equality operation and gather coverage information */
-  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ ) ) {
+  if( retval = vector_op_eq( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -2784,7 +2784,7 @@ bool expression_op_func__ceq(
   bool retval;  /* Return value for this function */
 
   /* Perform equality operation and gather coverage information */
-  if( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ ) ) {
+  if( vector_op_ceq( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -2814,7 +2814,7 @@ bool expression_op_func__le(
   bool retval;  /* Return value for this function */
 
   /* Perform less-than-or-equal operation and gather coverage information */
-  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LE ) ) {
+  if( retval = vector_op_le( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -2844,7 +2844,7 @@ bool expression_op_func__ge(
   bool retval;  /* Return value for this function */
 
   /* Perform greater-than-or-equal operation and gather coverage information */
-  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GE ) ) {
+  if( retval = vector_op_ge( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -2874,7 +2874,7 @@ bool expression_op_func__ne(
   bool retval;  /* Return value for this function */
 
   /* Perform not-equal operation and gather coverage information */
-  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_NE ) ) {
+  if( retval = vector_op_ne( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -2904,7 +2904,7 @@ bool expression_op_func__cne(
   bool retval;  /* Return value for this function */
 
   /* Perform not-equal operation and gather coverage information */
-  if( retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CNE ) ) {
+  if( retval = vector_op_cne( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -3092,7 +3092,7 @@ bool expression_op_func__uand(
   bool retval;  /* Return value for this function */
 
   /* Perform unary AND operation and gather coverage information */
-  if( retval = vector_unary_and_op( expr->value, expr->right->value ) ) {
+  if( retval = vector_unary_and( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -3150,7 +3150,7 @@ bool expression_op_func__uor(
   bool retval;  /* Return value for this function */
 
   /* Perform unary OR operation and gather coverage information */
-  if( retval = vector_unary_or_op( expr->value, expr->right->value ) ) {
+  if( retval = vector_unary_or( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -3179,7 +3179,7 @@ bool expression_op_func__uxor(
   bool retval;  /* Return value for this function */
 
   /* Perform unary XOR operation and gather coverage information */
-  if( retval = vector_unary_xor_op( expr->value, expr->right->value ) ) {
+  if( retval = vector_unary_xor( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -3208,7 +3208,7 @@ bool expression_op_func__unand(
   bool retval;  /* Return value for this function */
 
   /* Perform unary NAND operation and gather coverage information */
-  if( retval = vector_unary_nand_op( expr->value, expr->right->value ) ) {
+  if( retval = vector_unary_nand( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -3237,7 +3237,7 @@ bool expression_op_func__unor(
   bool retval;  /* Return value for this function */
 
   /* Perform unary NOR operation and gather coverage information */
-  if( retval = vector_unary_nor_op( expr->value, expr->right->value ) ) {
+  if( retval = vector_unary_nor( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -3266,7 +3266,7 @@ bool expression_op_func__unxor(
   bool retval;  /* Return value for this function */
 
   /* Perform unary NXOR operation and gather coverage information */
-  if( retval = vector_unary_nxor_op( expr->value, expr->right->value ) ) {
+  if( retval = vector_unary_nxor( expr->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -3544,13 +3544,10 @@ bool expression_op_func__list(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__LIST);
 
-  bool retval = FALSE;  /* Return value for this function */
-
-  retval |= vector_set_value( expr->value, expr->right->value->value.u32, expr->right->value->width, 0, 0 );
-  retval |= vector_set_value( expr->value, expr->left->value->value.u32,  expr->left->value->width,  0, expr->right->value->width );
+  bool retval;  /* Return value for this function */
 
   /* Gather coverage information */
-  if( retval ) {
+  if( retval = vector_op_list( expr->value, expr->left->value, expr->right->value ) ) {
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -4340,7 +4337,6 @@ bool expression_op_func__passign(
 
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
-      VSUPPL_CLR_NZ_AND_UNK( expr->value->suppl );
       retval = vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width );
       vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
       break;
@@ -5559,6 +5555,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.7  2008/04/23 05:20:44  phase1geo
+ Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
+
  Revision 1.329.2.6  2008/04/22 23:01:42  phase1geo
  More updates.  Completed initial pass of expr.c and fsm_arg.c.  Working
  on memory.c.  Checkpointing.

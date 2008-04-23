@@ -162,6 +162,7 @@ vector* vector_create(
           int          num  = vector_type_sizes[type];
           int          size = VECTOR_SIZE32(width);
           unsigned int i;
+          printf( "num: %d\n", num );
           value = (uint32**)malloc_safe( sizeof( uint32* ) * num );
           for( i=0; i<num; i++ ) {
             value[i] = (uint32*)malloc_safe( sizeof( uint32 ) * size );
@@ -207,6 +208,42 @@ void vector_copy(
       }
       break;
     default:  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Copies the entire contents of a bit range from from_vec to to_vec,
+ aligning the stored value starting at bit 0.
+*/
+void vector_copy_range(
+  vector*       to_vec,    /*!< Vector to copy to */
+  const vector* from_vec,  /*!< Vector to copy from */
+  int           lsb        /*!< LSB of bit range to copy */
+) { PROFILE(VECTOR_COPY_RANGE);
+
+  assert( from_vec != NULL );
+  assert( to_vec != NULL );
+  assert( from_vec->suppl.part.type == to_vec->suppl.part.type );
+  assert( from_vec->suppl.part.data_type == to_vec->suppl.part.data_type );
+
+  switch( to_vec->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        unsigned int i, j;
+        for( i=0; i<to_vec->width; i++ ) {
+          for( j=0; j<vector_type_sizes[to_vec->suppl.part.type]; j++ ) {
+            if( (i & 0x1f) == 0 ) {
+              to_vec->value.u32[j][i>>5] = 0;
+            }
+            to_vec->value.u32[j][i>>5] |= (((from_vec->value.u32[j][(i+lsb)>>5] >> ((i+lsb) & 0x1f)) & 0x1) << i);
+          }
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -1132,10 +1169,10 @@ bool vector_set_assigned(
   switch( vec->suppl.part.data_type ) {
     case VDATA_U32 :
       for( i=lsb; i<=msb; i++ ) {
-        if( ((vec->value.u32[VTYPE_INDEX_SIG_MISC][i/32] >> (i % 32)) & 0x1) == 1 ) {
+        if( ((vec->value.u32[VTYPE_INDEX_SIG_MISC][i>>5] >> (i & 0x1f)) & 0x1) == 1 ) {
           prev_assigned = TRUE;
         }
-        vec->value.u32[VTYPE_INDEX_SIG_MISC][i] |= (0x1 << (i % 32));
+        vec->value.u32[VTYPE_INDEX_SIG_MISC][i] |= (0x1 << (i & 0x1f));
       }
       break;
     default :  assert( 0 );  break;
@@ -1160,7 +1197,7 @@ bool vector_set_assigned(
  function calculates the vector coverage information based on the vector type and performs the assignment
  from the SCRATCH array to the 
 */
-static bool vector_set_coverage_and_assign_uint32(
+bool vector_set_coverage_and_assign_uint32(
   vector* vec,
   uint32* scratchl,
   uint32* scratchh,
@@ -3831,10 +3868,10 @@ bool vector_unary_inv(
 
  Performs unary AND operation on specified vector value.
 */
-bool vector_unary_and_op(
+bool vector_unary_and(
   vector* tgt,
   vector* src
-) { PROFILE(VECTOR_UNARY_OP);
+) { PROFILE(VECTOR_UNARY_AND);
 
   bool retval;  /* Return value for this function */
 
@@ -3857,6 +3894,126 @@ bool vector_unary_and_op(
       break;
     default :  assert( 0 );  break;
   }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt  Target vector for operation result storage.
+ \param src  Source vector to be operated on.
+
+ \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
+
+ Performs unary NAND operation on specified vector value.
+*/
+bool vector_unary_nand(
+  vector* tgt,
+  vector* src
+) { PROFILE(VECTOR_UNARY_NAND);
+
+  bool retval;
+
+  /* TBD */
+  assert( 0 );
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt  Target vector for operation result storage.
+ \param src  Source vector to be operated on.
+
+ \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
+
+ Performs unary OR operation on specified vector value.
+*/
+bool vector_unary_or(
+  vector* tgt,
+  vector* src
+) { PROFILE(VECTOR_UNARY_OR);
+
+  bool retval;
+
+  /* TBD */
+  assert( 0 );
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt  Target vector for operation result storage.
+ \param src  Source vector to be operated on.
+
+ \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
+
+ Performs unary NOR operation on specified vector value.
+*/
+bool vector_unary_nor(
+  vector* tgt,
+  vector* src
+) { PROFILE(VECTOR_UNARY_NOR);
+
+  bool retval;
+
+  /* TBD */
+  assert( 0 );
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt  Target vector for operation result storage.
+ \param src  Source vector to be operated on.
+
+ \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
+
+ Performs unary XOR operation on specified vector value.
+*/
+bool vector_unary_xor(
+  vector* tgt,
+  vector* src
+) { PROFILE(VECTOR_UNARY_XOR);
+
+  bool retval;
+
+  /* TBD */
+  assert( 0 );
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt  Target vector for operation result storage.
+ \param src  Source vector to be operated on.
+
+ \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
+
+ Performs unary NXOR operation on specified vector value.
+*/
+bool vector_unary_nxor(
+  vector* tgt,
+  vector* src
+) { PROFILE(VECTOR_UNARY_NXOR);
+
+  bool retval;
+
+  /* TBD */
+  assert( 0 );
 
   PROFILE_END;
 
@@ -4063,6 +4220,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.13  2008/04/23 05:20:45  phase1geo
+ Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
+
  Revision 1.138.2.12  2008/04/22 23:01:43  phase1geo
  More updates.  Completed initial pass of expr.c and fsm_arg.c.  Working
  on memory.c.  Checkpointing.
