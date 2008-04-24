@@ -906,14 +906,6 @@ void vector_display_value_uint32(
   int i, j;  /* Loop iterator */
   int bits_left = ((width - 1) & 0x1f);
 
-/*
-  printf( "RAW: " );
-  for( i=0; i<VECTOR_SIZE32(width); i++ ) {
-    printf( "(%x %x) ", value[VTYPE_INDEX_VAL_VALH][i], value[VTYPE_INDEX_VAL_VALL][i] );
-  }
-  printf( " " );
-*/
-
   printf( "value: %d'b", width );
 
   for( i=VECTOR_SIZE32(width); i--; ) {
@@ -949,7 +941,6 @@ void vector_display_nibble_uint32(
 
   int i, j;  /* Loop iterator */
 
-  printf( "\n" );
   printf( "      raw value:" );
   
   for( i=0; i<vector_type_sizes[type]; i++ ) {
@@ -1344,7 +1335,7 @@ bool vector_set_value_uint32(
 
   /* Get some information from the vector */
   v2st = vec->suppl.part.is_2state << 1;
-  size = VECTOR_SIZE32( width ) - 1;
+  size = VECTOR_SIZE32( width );
 
   /* Calculate the new values and place them in the scratch arrays */
   for( i=size; i--; ) {
@@ -1949,7 +1940,7 @@ static void vector_set_static(
           case VDATA_U32 :
             for( i=0; i<bits_per_char; i++ ) {
               if( (i + pos) < vec->width ) {
-                vec->value.u32[VTYPE_INDEX_VAL_VALL][(i+pos)>>5] |= (1 << ((i+pos) & 0x1f));
+                vec->value.u32[VTYPE_INDEX_VAL_VALH][(i+pos)>>5] |= (1 << ((i+pos) & 0x1f));
               }
             }
             break;
@@ -3414,105 +3405,73 @@ bool vector_op_add(
   vector* right
 ) { PROFILE(VECTOR_OP_ADD);
 
-#ifdef OBSOLETE
-  int    i;               /* Loop iterator */
-  int    tgt_width = tgt->width;
-  nibble v2st      = tgt->suppl.part.is_2state;
-  nibble carry     = 0;
-  nibble ored      = 0;
+  bool retval;  /* Return value for this function */
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
-    
-  switch( tgt->suppl.part.type ) {
-    case VTYPE_EXP :
-      for( i=0; i<tgt_width; i++ ) {
-        nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
-        nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
-        if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
-          tgt->value[i].part.exp.value = v2st ? 0 : 2;
-          carry                        = v2st ? 0 : 2;
+  printf( "LEFT:  " );  vector_display( left );
+  printf( "RIGHT: " );  vector_display( right );
+
+  /* If either the left or right vector is unknown, set the entire value to X */
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  /* Otherwise, perform the addition operation */
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        /* If both the left and right vectors are less than 32 bits, optimize by using built-in addition operator */
+        if( (left->width <= 32) && (right->width <= 32) ) {
+
+          uint32 vall = (uint32)vector_to_int( left ) + (uint32)vector_to_int( right );
+          uint32 valh = 0;
+          retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, (tgt->width - 1) );
+
+        /* Otherwise, we need to do the addition in a bitwise fashion */
         } else {
-          nibble val = carry + lbit + rbit;
-          tgt->value[i].part.exp.value = val & 0x1;
-          carry                        = val >> 1;
-        }
-        tgt->value[i].part.exp.set = 1;
-        ored |= tgt->value[i].part.exp.value;
-      }
-      break;
-    case VTYPE_SIG :
-      for( i=0; i<tgt_width; i++ ) {
-        nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
-        nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
-        if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
-          tgt->value[i].part.sig.value = v2st ? 0 : 2;
-          carry                        = v2st ? 0 : 2;
-        } else {
-          nibble val = carry + lbit + rbit;
-          if( tgt->value[i].part.sig.set ) {
-            if( (tgt->value[i].part.sig.value == 0) && ((val & 0x1) == 1) ) {
-              tgt->value[i].part.sig.tog01 = 1;
-            } else if ( (tgt->value[i].part.sig.value == 1) && ((val & 0x1) == 0) ) {
-              tgt->value[i].part.sig.tog10 = 1;
+
+          unsigned int i, j;
+          uint32       vall[MAX_BIT_WIDTH>>5];
+          uint32       valh[MAX_BIT_WIDTH>>5];
+          uint32       carry = 0;
+          uint32       lval;
+          uint32       rval;
+
+          for( i=0; i<(VECTOR_SIZE32(tgt->width) - 1); i++ ) {
+            lval = (VECTOR_SIZE32(left->width)  < i) ? 0 : left->value.u32[VTYPE_INDEX_EXP_VALL][i];  
+            rval = (VECTOR_SIZE32(right->width) < i) ? 0 : right->value.u32[VTYPE_INDEX_EXP_VALL][i]; 
+            vall[i] = 0;
+            valh[i] = 0;
+            for( j=0; j<32; j++ ) {
+              uint32 bit = ((lval >> j) & 0x1) + ((rval >> j) & 0x1) + carry;
+              carry      = bit >> 1;
+              vall[i]   |= (bit & 0x1) << j;
             }
           }
-          tgt->value[i].part.sig.value = val & 0x1;
-          carry                        = val >> 1;
-        }
-        tgt->value[i].part.sig.set = 1;
-        ored |= tgt->value[i].part.sig.value;
-      }
-      break;
-    case VTYPE_VAL :
-      for( i=0; i<tgt_width; i++ ) { 
-        nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
-        nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
-        if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
-          tgt->value[i].part.val.value = v2st ? 0 : 2;
-          carry                        = v2st ? 0 : 2;
-        } else {
-          nibble val = carry + lbit + rbit;
-          tgt->value[i].part.val.value = val & 0x1;
-          carry                        = val >> 1;
-        }
-        ored |= tgt->value[i].part.val.value;
-      }
-      break;
-    case VTYPE_MEM :
-      for( i=0; i<tgt_width; i++ ) {
-        nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
-        nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
-        if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
-          tgt->value[i].part.mem.value = v2st ? 0 : 2;
-          carry                        = v2st ? 0 : 2;
-        } else {
-          nibble val = carry + lbit + rbit;
-          if( (tgt->value[i].part.sig.value == 0) && ((val & 0x1) == 1) ) {
-            tgt->value[i].part.mem.tog01 = 1;
-          } else if ( (tgt->value[i].part.sig.value == 1) && ((val & 0x1) == 0) ) {
-            tgt->value[i].part.mem.tog10 = 1;
+          lval = (VECTOR_SIZE32(left->width)  < i) ? 0 : left->value.u32[VTYPE_INDEX_EXP_VALL][i];
+          rval = (VECTOR_SIZE32(right->width) < i) ? 0 : right->value.u32[VTYPE_INDEX_EXP_VALL][i];
+          vall[i] = 0;
+          valh[i] = 0;
+          for( j=0; j<(tgt->width - (i << 5)); j++ ) {
+            uint32 bit = ((lval >> j) & 0x1) + ((rval >> j) & 0x1) + carry;
+            carry      = bit >> 1;
+            vall[i]   |= (bit & 0x1) << j;
           }
-          tgt->value[i].part.mem.value = val & 0x1;
-          carry                        = val >> 1;
+
+          retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+
         }
-        tgt->value[i].part.mem.wr = 1;
-        ored |= tgt->value[i].part.mem.value;
-      }
-      break;
+        break;
+      default :  assert( 0 );  break;
+    }
+
   }
-
-  /* Update the unknown and not_zero bits */
-  tgt->suppl.all |= (ored << 2);
-#endif
-
-  assert( 0 );
 
   PROFILE_END;
 
-  return( TRUE );
+  return( retval );
 
-}
+}    
 
 /*!
  \param tgt  Pointer to vector that will be assigned the new value.
@@ -4170,17 +4129,15 @@ bool vector_op_list(
 
         /* Load left vector a bit at at time */
         for( i=0; i<lwidth; i++ ) {
-          printf( "i: %d\n", i );
           if( (pos & 0x1f) == 0 ) {
             vall[pos>>5] = 0;
             valh[pos>>5] = 0;
           }
           vall[pos>>5] |= ((lvall[i>>5] >> (i & 0x1f)) & 0x1) << (pos & 0x1f);
           valh[pos>>5] |= ((lvalh[i>>5] >> (i & 0x1f)) & 0x1) << (pos & 0x1f);
-          printf( "  vall[%d]: %x, valh[%d]: %x\n", (pos>>5), vall[pos>>5], (pos>>5), valh[pos>>5] );
           pos++;
         }
-        retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+        retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, ((left->width + right->width) - 1) );
       }
       break;
     default :  assert( 0 );  break;
@@ -4247,6 +4204,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.18  2008/04/24 05:23:08  phase1geo
+ Fixing various vector-related bugs.  Added vector_op_add functionality.
+
  Revision 1.138.2.17  2008/04/23 23:06:03  phase1geo
  More bug fixes to vector functionality.  Bitwise operators appear to be
  working correctly when 2-state values are used.  Checkpointing.
