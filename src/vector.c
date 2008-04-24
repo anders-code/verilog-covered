@@ -941,9 +941,6 @@ void vector_display_nibble_uint32(
 
   int i, j;  /* Loop iterator */
 
-  printf( "HERE B, " );
-  printf( "      raw value:" );
-  
   for( i=0; i<vector_type_sizes[type]; i++ ) {
     for( j=VECTOR_SIZE32(width); j--; ) {
       /*@-formatcode@*/
@@ -3075,15 +3072,16 @@ bool vector_op_ne(
         do {
           i--;
           lvall = (i<lsize) ? left->value.u32[VTYPE_INDEX_VAL_VALL][i]  : 0;
-          lvalh = (i<lsize) ? left->value.u32[VTYPE_INDEX_VAL_VALH][i]  : 0xffffffff;
+          lvalh = (i<lsize) ? left->value.u32[VTYPE_INDEX_VAL_VALH][i]  : 0;
           rvall = (i<rsize) ? right->value.u32[VTYPE_INDEX_VAL_VALL][i] : 0;
-          rvalh = (i<rsize) ? right->value.u32[VTYPE_INDEX_VAL_VALH][i] : 0xffffffff;
+          rvalh = (i<rsize) ? right->value.u32[VTYPE_INDEX_VAL_VALH][i] : 0;
         } while( (i >= 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
         } else {
           scratchl = (lvall != rvall);
         }
+        //printf( "In vector_op_ne, scratchl: %x, scratchh: %x\n", scratchl, scratchh );
         retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
@@ -3408,8 +3406,10 @@ bool vector_op_add(
 
   bool retval;  /* Return value for this function */
 
+/*
   printf( "LEFT:  " );  vector_display( left );
   printf( "RIGHT: " );  vector_display( right );
+*/
 
   /* If either the left or right vector is unknown, set the entire value to X */
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
@@ -3533,8 +3533,10 @@ bool vector_op_subtract(
 
   bool retval;  /* Return value for this function */
 
+/*
   printf( "LEFT:  " );  vector_display( left );
   printf( "RIGHT: " );  vector_display( right );
+*/
 
   /* If either the left or right vector is unknown, set the entire value to X */
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
@@ -3557,35 +3559,36 @@ bool vector_op_subtract(
         } else {
 
           unsigned int i, j;
+          unsigned int size   = VECTOR_SIZE32(tgt->width);
+          unsigned int lsize  = VECTOR_SIZE32(left->width);
+          unsigned int rsize  = VECTOR_SIZE32(right->width);
           uint32       vall[MAX_BIT_WIDTH>>5];
           uint32       valh[MAX_BIT_WIDTH>>5];
-          uint32       one    = 1;
-          uint32       carryA = 0;
+          uint32       carryA = 1;
           uint32       carryB = 0;
           uint32       lval;
           uint32       rval;
 
-          for( i=0; i<(VECTOR_SIZE32(tgt->width) - 1); i++ ) {
-            lval    = (VECTOR_SIZE32(left->width)  < i) ? 0          : left->value.u32[VTYPE_INDEX_EXP_VALL][i];  
-            rval    = (VECTOR_SIZE32(right->width) < i) ? 0xffffffff : ~right->value.u32[VTYPE_INDEX_EXP_VALL][i]; 
+          for( i=0; i<(size - 1); i++ ) {
+            lval    = (lsize <= i) ? 0          :  left->value.u32[VTYPE_INDEX_EXP_VALL][i];  
+            rval    = (rsize <= i) ? 0xffffffff : ~right->value.u32[VTYPE_INDEX_EXP_VALL][i]; 
             vall[i] = 0;
             valh[i] = 0;
             for( j=0; j<32; j++ ) {
-              uint32 bitA = ((rval >> j) & 0x1) + ((one >> j) & 0x1) + carryA;
-              uint32 bitB = ((lval >> j) & 0x1) + (bitA & 0x1)       + carryB;
+              uint32 bitA = ((rval >> j) & 0x1) + carryA;
+              uint32 bitB = ((lval >> j) & 0x1) + (bitA & 0x1) + carryB;
               carryA      = bitA >> 1;
               carryB      = bitB >> 1;
               vall[i]    |= (bitB & 0x1) << j;
             }
-            one = 0;
           }
-          lval = (VECTOR_SIZE32(left->width)  < i) ? 0 : left->value.u32[VTYPE_INDEX_EXP_VALL][i];
-          rval = (VECTOR_SIZE32(right->width) < i) ? 0 : right->value.u32[VTYPE_INDEX_EXP_VALL][i];
+          lval = (lsize <= i) ? 0           :  left->value.u32[VTYPE_INDEX_EXP_VALL][i];
+          rval = (rsize <= i) ? 0xfffffffff : ~right->value.u32[VTYPE_INDEX_EXP_VALL][i];
           vall[i] = 0;
           valh[i] = 0;
           for( j=0; j<(tgt->width - (i << 5)); j++ ) {
-            uint32 bitA = ((rval >> j) & 0x1) + ((one >> j) & 0x1) + carryA;
-            uint32 bitB = ((lval >> j) & 0x1) + (bitA & 0x1)       + carryB;
+            uint32 bitA = ((rval >> j) & 0x1) + carryA;
+            uint32 bitB = ((lval >> j) & 0x1) + (bitA & 0x1) + carryB;
             carryA      = bitA >> 1;
             carryB      = bitB >> 1;
             vall[i]    |= (bitB & 0x1) << j;
@@ -4260,6 +4263,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.21  2008/04/24 23:09:40  phase1geo
+ Fixing bug 1950946.  Fixing other various bugs in vector code.  Checkpointing.
+
  Revision 1.138.2.20  2008/04/24 13:20:34  phase1geo
  Completing initial pass of vector_op_subtract function.  Checkpointing.
 
