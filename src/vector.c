@@ -941,6 +941,7 @@ void vector_display_nibble_uint32(
 
   int i, j;  /* Loop iterator */
 
+  printf( "HERE B, " );
   printf( "      raw value:" );
   
   for( i=0; i<vector_type_sizes[type]; i++ ) {
@@ -3558,29 +3559,36 @@ bool vector_op_subtract(
           unsigned int i, j;
           uint32       vall[MAX_BIT_WIDTH>>5];
           uint32       valh[MAX_BIT_WIDTH>>5];
-          uint32       carry = 0;
+          uint32       one    = 1;
+          uint32       carryA = 0;
+          uint32       carryB = 0;
           uint32       lval;
           uint32       rval;
 
           for( i=0; i<(VECTOR_SIZE32(tgt->width) - 1); i++ ) {
-            lval = (VECTOR_SIZE32(left->width)  < i) ? 0 : left->value.u32[VTYPE_INDEX_EXP_VALL][i];  
-            rval = (VECTOR_SIZE32(right->width) < i) ? 0 : right->value.u32[VTYPE_INDEX_EXP_VALL][i]; 
+            lval    = (VECTOR_SIZE32(left->width)  < i) ? 0          : left->value.u32[VTYPE_INDEX_EXP_VALL][i];  
+            rval    = (VECTOR_SIZE32(right->width) < i) ? 0xffffffff : ~right->value.u32[VTYPE_INDEX_EXP_VALL][i]; 
             vall[i] = 0;
             valh[i] = 0;
             for( j=0; j<32; j++ ) {
-              uint32 bit = ((lval >> j) & 0x1) + ((rval >> j) & 0x1) + carry;
-              carry      = bit >> 1;
-              vall[i]   |= (bit & 0x1) << j;
+              uint32 bitA = ((rval >> j) & 0x1) + ((one >> j) & 0x1) + carryA;
+              uint32 bitB = ((lval >> j) & 0x1) + (bitA & 0x1)       + carryB;
+              carryA      = bitA >> 1;
+              carryB      = bitB >> 1;
+              vall[i]    |= (bitB & 0x1) << j;
             }
+            one = 0;
           }
           lval = (VECTOR_SIZE32(left->width)  < i) ? 0 : left->value.u32[VTYPE_INDEX_EXP_VALL][i];
           rval = (VECTOR_SIZE32(right->width) < i) ? 0 : right->value.u32[VTYPE_INDEX_EXP_VALL][i];
           vall[i] = 0;
           valh[i] = 0;
           for( j=0; j<(tgt->width - (i << 5)); j++ ) {
-            uint32 bit = ((lval >> j) & 0x1) + ((rval >> j) & 0x1) + carry;
-            carry      = bit >> 1;
-            vall[i]   |= (bit & 0x1) << j;
+            uint32 bitA = ((rval >> j) & 0x1) + ((one >> j) & 0x1) + carryA;
+            uint32 bitB = ((lval >> j) & 0x1) + (bitA & 0x1)       + carryB;
+            carryA      = bitA >> 1;
+            carryB      = bitB >> 1;
+            vall[i]    |= (bitB & 0x1) << j;
           }
 
           retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
@@ -4252,6 +4260,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.20  2008/04/24 13:20:34  phase1geo
+ Completing initial pass of vector_op_subtract function.  Checkpointing.
+
  Revision 1.138.2.19  2008/04/24 05:51:46  phase1geo
  Added body of subtraction function, although this function does not work at this point.
  Checkpointing.
