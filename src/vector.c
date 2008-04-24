@@ -3530,19 +3530,67 @@ bool vector_op_subtract(
   vecblk* tvb
 ) { PROFILE(VECTOR_OP_SUBTRACT);
 
-  bool    retval = FALSE;                      /* Return value for this function */
+  bool retval;  /* Return value for this function */
 
-#ifdef OBSOLETE
-  vector* vec    = &(tvb->vec[tvb->index++]);  /* Temporary vector holder */
+  printf( "LEFT:  " );  vector_display( left );
+  printf( "RIGHT: " );  vector_display( right );
 
-  /* Negate the value on the right */
-  (void)vector_op_negate( vec, right, tvb );
+  /* If either the left or right vector is unknown, set the entire value to X */
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
 
-  /* Add new value to left value */
-  retval = vector_op_add( tgt, left, vec );
-#endif
+    retval = vector_set_to_x( tgt );
 
-  assert( 0 );
+  /* Otherwise, perform the subtraction operation */
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        /* If both the left and right vectors are less than 32 bits, optimize by using built-in subtraction operator */
+        if( (left->width <= 32) && (right->width <= 32) ) {
+
+          uint32 vall = (uint32)vector_to_int( left ) - (uint32)vector_to_int( right );
+          uint32 valh = 0;
+          retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, (tgt->width - 1) );
+
+        /* Otherwise, we need to do the subtraction in a bitwise fashion */
+        } else {
+
+          unsigned int i, j;
+          uint32       vall[MAX_BIT_WIDTH>>5];
+          uint32       valh[MAX_BIT_WIDTH>>5];
+          uint32       carry = 0;
+          uint32       lval;
+          uint32       rval;
+
+          for( i=0; i<(VECTOR_SIZE32(tgt->width) - 1); i++ ) {
+            lval = (VECTOR_SIZE32(left->width)  < i) ? 0 : left->value.u32[VTYPE_INDEX_EXP_VALL][i];  
+            rval = (VECTOR_SIZE32(right->width) < i) ? 0 : right->value.u32[VTYPE_INDEX_EXP_VALL][i]; 
+            vall[i] = 0;
+            valh[i] = 0;
+            for( j=0; j<32; j++ ) {
+              uint32 bit = ((lval >> j) & 0x1) + ((rval >> j) & 0x1) + carry;
+              carry      = bit >> 1;
+              vall[i]   |= (bit & 0x1) << j;
+            }
+          }
+          lval = (VECTOR_SIZE32(left->width)  < i) ? 0 : left->value.u32[VTYPE_INDEX_EXP_VALL][i];
+          rval = (VECTOR_SIZE32(right->width) < i) ? 0 : right->value.u32[VTYPE_INDEX_EXP_VALL][i];
+          vall[i] = 0;
+          valh[i] = 0;
+          for( j=0; j<(tgt->width - (i << 5)); j++ ) {
+            uint32 bit = ((lval >> j) & 0x1) + ((rval >> j) & 0x1) + carry;
+            carry      = bit >> 1;
+            vall[i]   |= (bit & 0x1) << j;
+          }
+
+          retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
 
   PROFILE_END;
 
@@ -4204,6 +4252,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.19  2008/04/24 05:51:46  phase1geo
+ Added body of subtraction function, although this function does not work at this point.
+ Checkpointing.
+
  Revision 1.138.2.18  2008/04/24 05:23:08  phase1geo
  Fixing various vector-related bugs.  Added vector_op_add functionality.
 
