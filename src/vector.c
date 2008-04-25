@@ -841,7 +841,7 @@ void vector_display_toggle01_uint32(
 
   for( i=VECTOR_SIZE32(width); i--; ) {
     for( j=bits_left; j>=0; j-- ) {
-      nib |= (((value[VTYPE_INDEX_SIG_TOG01][i] >> j) & 0x1) << ((unsigned)j % 4));
+      nib |= (((value[i][VTYPE_INDEX_SIG_TOG01] >> j) & 0x1) << ((unsigned)j % 4));
       if( (j % 4) == 0 ) {
         fprintf( ofile, "%1x", nib );
         nib = 0;
@@ -879,7 +879,7 @@ void vector_display_toggle10_uint32(
       
   for( i=VECTOR_SIZE32(width); i--; ) {
     for( j=bits_left; j>=0; j-- ) {
-      nib |= (((value[VTYPE_INDEX_SIG_TOG10][i] >> j) & 0x1) << ((unsigned)j % 4));
+      nib |= (((value[i][VTYPE_INDEX_SIG_TOG10] >> j) & 0x1) << ((unsigned)j % 4));
       if( (j % 4) == 0 ) {
         fprintf( ofile, "%1x", nib );
         nib = 0;
@@ -913,10 +913,10 @@ void vector_display_value_uint32(
 
   for( i=VECTOR_SIZE32(width); i--; ) {
     for( j=bits_left; j>=0; j-- ) {
-      if( ((value[VTYPE_INDEX_VAL_VALH][i] >> j) & 0x1) == 0 ) {
-        printf( "%d", ((value[VTYPE_INDEX_VAL_VALL][i] >> j) & 0x1) );
+      if( ((value[i][VTYPE_INDEX_VAL_VALH] >> j) & 0x1) == 0 ) {
+        printf( "%d", ((value[i][VTYPE_INDEX_VAL_VALL] >> j) & 0x1) );
       } else {
-        if( ((value[VTYPE_INDEX_VAL_VALL][i] >> j) & 0x1) == 0 ) {
+        if( ((value[i][VTYPE_INDEX_VAL_VALL] >> j) & 0x1) == 0 ) {
           printf( "x" );
         } else {
           printf( "z" );
@@ -972,7 +972,7 @@ void vector_display_nibble_uint32(
       printf( ", set: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[VTYPE_INDEX_SIG_SET][i] );
+        printf( "%x", value[i][VTYPE_INDEX_SIG_SET] );
         /*@=formatcode@*/
       }
 
@@ -984,7 +984,7 @@ void vector_display_nibble_uint32(
       printf( ", a: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[VTYPE_INDEX_EXP_EVAL_A][i] );
+        printf( "%x", value[i][VTYPE_INDEX_EXP_EVAL_A] );
         /*@=formatcode@*/
       }
 
@@ -992,7 +992,7 @@ void vector_display_nibble_uint32(
       printf( ", b: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[VTYPE_INDEX_EXP_EVAL_B][i] );
+        printf( "%x", value[i][VTYPE_INDEX_EXP_EVAL_B] );
         /*@=formatcode@*/
       }
 
@@ -1000,7 +1000,7 @@ void vector_display_nibble_uint32(
       printf( ", c: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[VTYPE_INDEX_EXP_EVAL_C][i] );
+        printf( "%x", value[i][VTYPE_INDEX_EXP_EVAL_C] );
         /*@=formatcode@*/
       }
 
@@ -1008,7 +1008,7 @@ void vector_display_nibble_uint32(
       printf( ", d: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[VTYPE_INDEX_EXP_EVAL_D][i] );
+        printf( "%x", value[i][VTYPE_INDEX_EXP_EVAL_D] );
         /*@=formatcode@*/
       }
 
@@ -1016,7 +1016,7 @@ void vector_display_nibble_uint32(
       printf( ", set: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[VTYPE_INDEX_EXP_SET][i] );
+        printf( "%x", value[i][VTYPE_INDEX_EXP_SET] );
         /*@=formatcode@*/
       }
 
@@ -1036,7 +1036,7 @@ void vector_display_nibble_uint32(
       printf( ", wr: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[VTYPE_INDEX_MEM_WR][i]);
+        printf( "%x", value[i][VTYPE_INDEX_MEM_WR] );
         /*@=formatcode@*/
       }
 
@@ -1044,7 +1044,7 @@ void vector_display_nibble_uint32(
       printf( ", rd: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[VTYPE_INDEX_MEM_RD][i] );
+        printf( "%x", value[i][VTYPE_INDEX_MEM_RD] );
         /*@=formatcode@*/
       }
 
@@ -2332,25 +2332,25 @@ bool vector_vcd_assign(
       {
         uint32 scratchl[MAX_BIT_WIDTH>>5];
         uint32 scratchh[MAX_BIT_WIDTH>>5];
-        unsigned int index  = (i >> 5);
-        unsigned int offset = (i & 0x1f);
-        scratchl[index] = 0;
-        scratchh[index] = 0;
         while( ptr >= value ) {
-          uint32 bit = (1 << offset);
-          scratchl[index] |= ((*ptr == '1') || (*ptr == 'z')) ? bit : 0;
-          scratchh[index] |= ((*ptr == 'x') || (*ptr == 'z')) ? bit : 0;
-          ptr--;
-          i++;
+          unsigned int index  = (i >> 5);
+          unsigned int offset = (i & 0x1f);
+          uint32       bit    = (1 << offset);
           if( offset == 0 ) {
             scratchl[index] = 0;
             scratchh[index] = 0;
           }
+          scratchl[index] |= ((*ptr == '1') || (*ptr == 'z')) ? bit : 0;
+          scratchh[index] |= ((*ptr == 'x') || (*ptr == 'z')) ? bit : 0;
+          ptr--;
+          i++;
         }
         ptr++;
         /* Bit-fill */
         for( ; i<=msb; i++ ) {
-          uint32 bit = (1 << offset);
+          unsigned int index  = (i >> 5);
+          unsigned int offset = (i & 0x1f);
+          uint32       bit    = (1 << offset);
           if( offset == 0 ) {
             scratchl[index] = 0;
             scratchh[index] = 0;
@@ -3519,23 +3519,59 @@ bool vector_op_negate(
   vecblk* tvb
 ) { PROFILE(VECTOR_OP_NEGATE);
 
-  bool    retval = FALSE;                      /* Return value for this function */
+  bool retval;  /* Return value for this function */
 
-#ifdef OBSOLETE
-  vector* vec1   = &(tvb->vec[tvb->index++]);  /* Temporary vector holder */
-  vector* vec2   = &(tvb->vec[tvb->index++]);  /* Temporary vector holder */
+  if( vector_is_unknown( src ) ) {
+   
+    retval = vector_set_to_x( tgt );
 
-  /* Create vector with a value of 1 */
-  vec2->value[0].part.val.value = 1;
+  } else {
 
-  /* Perform twos complement inversion on right expression */
-  (void)vector_unary_inv( vec1, src );
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          if( src->width <= 32 ) {
+            uint32 vall;
+            uint32 valh = 0;
 
-  /* Add one to the inverted value */
-  retval = vector_op_add( tgt, vec1, vec2 );
-#endif
+            vall   = ~src->value.u32[0][VTYPE_INDEX_EXP_VALL] + 1;
 
-  assert( 0 );
+            retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, (tgt->width - 1) );
+          } else {
+            uint32       vall[MAX_BIT_WIDTH>>5];
+            uint32       valh[MAX_BIT_WIDTH>>5];
+            unsigned int i, j;
+            unsigned int size  = VECTOR_SIZE32( src->width );
+            uint32       carry = 1;
+            uint32       val;
+
+            for( i=0; i<(size - 1); i++ ) {
+              val     = ~src->value.u32[i][VTYPE_INDEX_EXP_VALL];
+              vall[i] = 0;
+              valh[i] = 0;
+              for( j=0; j<32; j++ ) {
+                uint32 bit = ((val >> j) & 0x1) + carry;
+                carry      = bit >> 1;
+                vall[i]   |= (bit & 0x1) << j;
+              }
+            }
+            val     = ~src->value.u32[i][VTYPE_INDEX_EXP_VALL];
+            vall[i] = 0;
+            valh[i] = 0;
+            for( j=0; j<(tgt->width - (i << 5)); j++ ) {
+              uint32 bit = ((val >> j) & 0x1) + carry;
+              carry      = bit >> 1;
+              vall[i]   |= (bit & 0x1) << j;
+            }
+
+            retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+          }
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
 
   PROFILE_END;
 
@@ -3906,27 +3942,32 @@ bool vector_unary_inv(
   vector* src
 ) { PROFILE(VECTOR_UNARY_INV);
 
-  bool     retval = FALSE;  /* Return value for this function */
+  bool retval;  /* Return value for this function */
 
-#ifdef OBSOLETE
-  nibble   bit;             /* Selected bit from source vector */
-  vec_data vec_val;         /* Temporary value */
-  int      i;               /* Loop iterator */
-  int      swidth;          /* Smallest width between tgt and src */
-  nibble   vals[4] = {1, 0, 2, 2};
+  switch( src->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        uint32       vall[MAX_BIT_WIDTH>>5];
+        uint32       valh[MAX_BIT_WIDTH>>5];
+        uint32       mask = 0xffffffff >> (31 - (src->width - 1) & 0x1f);
+        uint32       tvalh;
+        unsigned int i;
+        unsigned int size = VECTOR_SIZE32( src->width );
 
-  swidth = (tgt->width < src->width) ? tgt->width : src->width;
+        for( i=0; i<(size-1); i++ ) {
+          tvalh   = src->value.u32[i][VTYPE_INDEX_EXP_VALH];
+          vall[i] = ~tvalh & ~src->value.u32[i][VTYPE_INDEX_EXP_VALL];
+          valh[i] = tvalh;
+        }
+        tvalh   = src->value.u32[i][VTYPE_INDEX_EXP_VALH];
+        vall[i] = ~tvalh & ~src->value.u32[i][VTYPE_INDEX_EXP_VALL] & mask;
+        valh[i] = tvalh & mask;
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
-
-  for( i=0; i<swidth; i++ ) {
-    vec_val.part.val.value = vals[src->value[i].part.val.value];
-    retval                |= vector_set_value( tgt, &vec_val, 1, 0, i );
+        retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
   }
-#endif
-
-  assert( 0 );
 
   PROFILE_END;
 
@@ -4295,6 +4336,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.25  2008/04/25 17:39:50  phase1geo
+ Fixing several vector issues.  Coded up vector_unary_inv and vector_op_negate.
+ Starting to update passing regression files.
+
  Revision 1.138.2.24  2008/04/25 14:12:35  phase1geo
  Coding left shift vector function.  Checkpointing.
 
