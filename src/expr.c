@@ -3605,13 +3605,10 @@ bool expression_op_func__pedge(
 ) { PROFILE(EXPRESSION_OP_FUNC__PEDGE);
 
   bool    retval;   /* Return value for this function */
-  uint32  nvall = expr->right->value->value.u32[VTYPE_INDEX_EXP_VALL][0];
-  uint32  nvalh = expr->right->value->value.u32[VTYPE_INDEX_EXP_VALH][0];
-  uint32* ovall = &(expr->elem.tvecs->vec[0].value.u32[VTYPE_INDEX_EXP_VALL][0]);
-  uint32* ovalh = &(expr->elem.tvecs->vec[0].value.u32[VTYPE_INDEX_EXP_VALH][0]);
-
-//  if( (( (*ovalh) ^    nvalh)  | ( (*ovall) ^ nvall)) &&
-//      ((~(*ovalh) & ~(*ovall)) | (  ~nvalh  & nvall)) &&
+  uint32  nvall = expr->right->value->value.u32[0][VTYPE_INDEX_EXP_VALL];
+  uint32  nvalh = expr->right->value->value.u32[0][VTYPE_INDEX_EXP_VALH];
+  uint32* ovall = &(expr->elem.tvecs->vec[0].value.u32[0][VTYPE_INDEX_EXP_VALL]);
+  uint32* ovalh = &(expr->elem.tvecs->vec[0].value.u32[0][VTYPE_INDEX_EXP_VALH]);
 
   if( ((~(*ovalh) & ~(*ovall)) | (~nvalh & nvall)) && thr->suppl.part.exec_first ) {
     expr->suppl.part.true   = 1;
@@ -3648,13 +3645,10 @@ bool expression_op_func__nedge(
 ) { PROFILE(EXPRESSION_OP_FUNC__NEDGE);
 
   bool    retval;   /* Return value for this function */
-  uint32  nvall = expr->right->value->value.u32[VTYPE_INDEX_EXP_VALL][0];
-  uint32  nvalh = expr->right->value->value.u32[VTYPE_INDEX_EXP_VALH][0];
-  uint32* ovall = &(expr->elem.tvecs->vec[0].value.u32[VTYPE_INDEX_EXP_VALL][0]);
-  uint32* ovalh = &(expr->elem.tvecs->vec[0].value.u32[VTYPE_INDEX_EXP_VALH][0]);
-
-//  if( (( (*ovalh) ^   nvalh)  | ( (*ovall) ^  nvall)) &&
-//      ((~(*ovalh) & (*ovall)) | (  ~nvalh  & ~nvall)) &&
+  uint32  nvall = expr->right->value->value.u32[0][VTYPE_INDEX_EXP_VALL];
+  uint32  nvalh = expr->right->value->value.u32[0][VTYPE_INDEX_EXP_VALH];
+  uint32* ovall = &(expr->elem.tvecs->vec[0].value.u32[0][VTYPE_INDEX_EXP_VALL]);
+  uint32* ovalh = &(expr->elem.tvecs->vec[0].value.u32[0][VTYPE_INDEX_EXP_VALH]);
 
   if( ((~(*ovalh) & (*ovall)) | (~nvalh & ~nvall)) && thr->suppl.part.exec_first ) {
     expr->suppl.part.true   = 1;
@@ -4237,7 +4231,7 @@ bool expression_op_func__repeat(
 
   retval = vector_op_lt( expr->value, expr->left->value, expr->right->value );
 
-  if( expr->value->value.u32[VTYPE_INDEX_VAL_VALL][0] == 0 ) {
+  if( expr->value->value.u32[0][VTYPE_INDEX_VAL_VALL] == 0 ) {
     vector_from_int( expr->left->value, 0 );
   } else {
     vector_from_int( expr->left->value, (vector_to_int( expr->left->value ) + 1) );
@@ -4758,7 +4752,7 @@ bool expression_op_func__repeat_dly(
     (void)expression_op_func__repeat( expr->left, thr, time );
 
     /* If the repeat operation evaluated to TRUE, perform delay operation */
-    if( expr->left->value->value.u32[VTYPE_INDEX_VAL_VALL][0] == 1 ) {
+    if( expr->left->value->value.u32[0][VTYPE_INDEX_VAL_VALL] == 1 ) {
       (void)exp_op_info[expr->right->op].func( expr->right, thr, time );
       expr->suppl.part.eval_t = 0;
 
@@ -5556,6 +5550,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.11  2008/04/25 05:22:45  phase1geo
+ Finished restructuring of vector data.  Continuing to test new code.  Checkpointing.
+
  Revision 1.329.2.10  2008/04/23 23:06:03  phase1geo
  More bug fixes to vector functionality.  Bitwise operators appear to be
  working correctly when 2-state values are used.  Checkpointing.

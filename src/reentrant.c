@@ -96,9 +96,10 @@ static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, unsigne
           {
             unsigned int i;
             for( i=0; i<sigl->sig->value->width; i++ ) {
-              ren->data[curr_bit>>3] |= (((sigl->sig->value->value.u32[VTYPE_INDEX_VAL_VALL][i] >> (i & 0x1f)) & 0x1) << (curr_bit & 0x7));
+              uint32* entry = sigl->sig->value->value.u32[i];
+              ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> (i & 0x1f)) & 0x1) << (curr_bit & 0x7));
               curr_bit++;
-              ren->data[curr_bit>>3] |= (((sigl->sig->value->value.u32[VTYPE_INDEX_VAL_VALH][i] >> (i & 0x1f)) & 0x1) << (curr_bit & 0x7));
+              ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> (i & 0x1f)) & 0x1) << (curr_bit & 0x7));
               curr_bit++;
             }
           }
@@ -116,9 +117,10 @@ static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, unsigne
           case VDATA_U32 :
             {
               for( i=0; i<expl->exp->value->width; i++ ) {
-                ren->data[curr_bit>>3] |= (((expl->exp->value->value.u32[VTYPE_INDEX_VAL_VALL][i] >> (i & 0x1f)) & 0x1) << (curr_bit & 0x7));
+                uint32* entry = expl->exp->value->value.u32[i];
+                ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> (i & 0x1f)) & 0x1) << (curr_bit & 0x7));
                 curr_bit++;
-                ren->data[curr_bit>>3] |= (((expl->exp->value->value.u32[VTYPE_INDEX_VAL_VALH][i] >> (i & 0x1f)) & 0x1) << (curr_bit & 0x7));
+                ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> (i & 0x1f)) & 0x1) << (curr_bit & 0x7));
                 curr_bit++;
               }
             }
@@ -179,13 +181,14 @@ static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsig
           {
             unsigned int i;
             for( i=0; i<sigl->sig->value->width; i++ ) {
+              uint32* entry = sigl->sig->value->value.u32[i];
               if( (i & 0x1f) == 0 ) {
-                sigl->sig->value->value.u32[VTYPE_INDEX_VAL_VALL][i] = 0;
-                sigl->sig->value->value.u32[VTYPE_INDEX_VAL_VALH][i] = 0;
+                entry[VTYPE_INDEX_VAL_VALL] = 0;
+                entry[VTYPE_INDEX_VAL_VALH] = 0;
               }
-              sigl->sig->value->value.u32[VTYPE_INDEX_VAL_VALL][i] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << (i & 0x1f);
+              entry[VTYPE_INDEX_VAL_VALL] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << (i & 0x1f);
               curr_bit++;
-              sigl->sig->value->value.u32[VTYPE_INDEX_VAL_VALH][i] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << (i & 0x1f);
+              entry[VTYPE_INDEX_VAL_VALH] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << (i & 0x1f);
               curr_bit++;
             }
           }
@@ -207,13 +210,14 @@ static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsig
               {
                 unsigned int i;
                 for( i=0; i<expl->exp->value->width; i++ ) {
+                  uint32* entry = expl->exp->value->value.u32[i];
                   if( (i & 0x1f) == 0 ) {
-                    expl->exp->value->value.u32[VTYPE_INDEX_VAL_VALL][i] = 0;
-                    expl->exp->value->value.u32[VTYPE_INDEX_VAL_VALH][i] = 0;
+                    entry[VTYPE_INDEX_VAL_VALL] = 0;
+                    entry[VTYPE_INDEX_VAL_VALH] = 0;
                   }
-                  expl->exp->value->value.u32[VTYPE_INDEX_VAL_VALL][i] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << (i & 0x1f);
+                  entry[VTYPE_INDEX_VAL_VALL] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << (i & 0x1f);
                   curr_bit++;
-                  expl->exp->value->value.u32[VTYPE_INDEX_VAL_VALH][i] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << (i & 0x1f);
+                  entry[VTYPE_INDEX_VAL_VALH] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << (i & 0x1f);
                   curr_bit++;
                 }
               }
@@ -328,6 +332,9 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
 
 /*
  $Log$
+ Revision 1.17.2.2  2008/04/25 05:22:46  phase1geo
+ Finished restructuring of vector data.  Continuing to test new code.  Checkpointing.
+
  Revision 1.17.2.1  2008/04/23 05:20:45  phase1geo
  Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
 
