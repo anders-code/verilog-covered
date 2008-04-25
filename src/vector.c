@@ -2330,29 +2330,33 @@ bool vector_vcd_assign(
   switch( vec->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        static uint32 scratchl[MAX_BIT_WIDTH>>5];
-        static uint32 scratchh[MAX_BIT_WIDTH>>5];
-        scratchl[i>>5] = 0;
-        scratchh[i>>5] = 0;
+        uint32 scratchl[MAX_BIT_WIDTH>>5];
+        uint32 scratchh[MAX_BIT_WIDTH>>5];
+        unsigned int index  = (i >> 5);
+        unsigned int offset = (i & 0x1f);
+        scratchl[index] = 0;
+        scratchh[index] = 0;
         while( ptr >= value ) {
-          scratchl[i>>5] |= ((*ptr == '1') || (*ptr == 'z')) ? (1 << (i & 0x1f)) : 0;
-          scratchh[i>>5] |= ((*ptr == 'x') || (*ptr == 'z')) ? (1 << (i & 0x1f)) : 0;
+          uint32 bit = (1 << offset);
+          scratchl[index] |= ((*ptr == '1') || (*ptr == 'z')) ? bit : 0;
+          scratchh[index] |= ((*ptr == 'x') || (*ptr == 'z')) ? bit : 0;
           ptr--;
           i++;
-          if( (i & 0x1f) == 0 ) {
-            scratchl[i>>5] = 0;
-            scratchh[i>>5] = 0;
+          if( offset == 0 ) {
+            scratchl[index] = 0;
+            scratchh[index] = 0;
           }
         }
         ptr++;
         /* Bit-fill */
         for( ; i<=msb; i++ ) {
-          if( (i & 0x1f) == 0 ) {
-            scratchl[i>>5] = 0;
-            scratchh[i>>5] = 0;
+          uint32 bit = (1 << offset);
+          if( offset == 0 ) {
+            scratchl[index] = 0;
+            scratchh[index] = 0;
           }
-          scratchl[i>>5] |= (*ptr == 'z') ? (1 << (i & 0x1f)) : 0;
-          scratchh[i>>5] |= ((*ptr == 'x') || (*ptr == 'z')) ? (1 << (i & 0x1f)) : 0;
+          scratchl[index] |= (*ptr == 'z') ? bit : 0;
+          scratchh[index] |= ((*ptr == 'x') || (*ptr == 'z')) ? bit : 0;
         }
         retval = vector_set_coverage_and_assign_uint32( vec, scratchl, scratchh, lsb, msb );
       }
@@ -3254,43 +3258,39 @@ bool vector_op_lshift(
   vector* right
 ) { PROFILE(VECTOR_OP_LSHIFT);
 
-  bool     retval  = FALSE;  /* Return value for this function */
+  bool retval;  /* Return value for this function */
 
-#ifdef OBSOLETE
-  int      shift_val;        /* Number of bits to shift left */
-  vec_data zero;             /* Zero value for zero-fill */
-  vec_data unknown;          /* X-value for unknown fill */
-  int      i;                /* Loop iterator */
+  if( vector_is_unknown( right ) ) {
 
-  zero.all    = 0;
-  unknown.all = 2;
+    retval = vector_set_to_x( tgt );
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
-    
-  if( right->suppl.part.unknown ) {
+  } else { 
 
-    for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
-    }
+    int shift_val = vector_to_int( right );
 
-  } else {
-
-    /* Zero-fill LSBs */
-    for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &zero, 1, 0, i );
-    }
-
-    shift_val = vector_to_int( right );
-
-    if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), 0, shift_val );
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32       vall[MAX_BIT_WIDTH>>5];
+          uint32       valh[MAX_BIT_WIDTH>>5];
+          unsigned int i;
+          unsigned int size = VECTOR_SIZE32( tgt->width );
+          for( i=0; i<size; i++ ) {
+            vall[i] = 0;
+            valh[i] = 0;
+          }
+          for( i=0; i<left->width; i++ ) {
+            uint32* entry = left->value.u32[i>>5];
+            vall[shift_val>>5] |= ((entry[VTYPE_INDEX_EXP_VALL] >> (i & 0x1f)) & 0x1) << (shift_val & 0x1f);
+            valh[shift_val>>5] |= ((entry[VTYPE_INDEX_EXP_VALH] >> (i & 0x1f)) & 0x1) << (shift_val & 0x1f);
+          }
+          retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
-#endif
-
-  assert( 0 );
 
   PROFILE_END;
 
@@ -4295,6 +4295,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.24  2008/04/25 14:12:35  phase1geo
+ Coding left shift vector function.  Checkpointing.
+
  Revision 1.138.2.23  2008/04/25 05:22:46  phase1geo
  Finished restructuring of vector data.  Continuing to test new code.  Checkpointing.
 
