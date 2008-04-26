@@ -1346,8 +1346,8 @@ bool vector_set_value_uint32(
 
   /* Calculate the new values and place them in the scratch arrays */
   for( i=size; i--; ) {
-    scratchl[i] = v2st ? (~value[VTYPE_INDEX_VAL_VALH][i] & value[VTYPE_INDEX_VAL_VALL][i]) : value[VTYPE_INDEX_VAL_VALL][i];
-    scratchh[i] = v2st ? 0 : value[VTYPE_INDEX_VAL_VALH][i];
+    scratchl[i] = v2st ? (~value[i][VTYPE_INDEX_VAL_VALH] & value[i][VTYPE_INDEX_VAL_VALL]) : value[i][VTYPE_INDEX_VAL_VALL];
+    scratchh[i] = v2st ? 0 : value[i][VTYPE_INDEX_VAL_VALH];
   }
 
   /* Calculate the coverage and perform the actual assignment */
@@ -2024,9 +2024,9 @@ char* vector_to_string(
 
   if( base == QSTRING ) {
 
-    unsigned int i, j;
-    int          vec_size  = ((vec->width & 0x7) == 0) ? ((vec->width >> 3) + 1) : ((vec->width >> 3) + 2);
-    int          pos       = 0;
+    int i, j;
+    int vec_size  = ((vec->width & 0x7) == 0) ? ((vec->width >> 3) + 1) : ((vec->width >> 3) + 2);
+    int pos       = 0;
 
     /* Allocate memory for string from the heap */
     str = (char*)malloc_safe( vec_size );
@@ -2034,9 +2034,9 @@ char* vector_to_string(
     switch( vec->suppl.part.data_type ) {
       case VDATA_U32 :
         {
-          int offset = (vec->width >> 3) % 4;
+          int offset = (vec->width >> 3) & 0x3;
           for( i=VECTOR_SIZE32(vec->width); i--; ) {
-            uint32 val    = vec->value.u32[i][VTYPE_INDEX_VAL_VALL]; 
+            uint32 val = vec->value.u32[i][VTYPE_INDEX_VAL_VALL]; 
             for( j=(offset - 1); j>=0; j-- ) {
               str[pos] = (val >> (j * 8)) & 0xff;
               pos++;
@@ -2205,7 +2205,7 @@ void vector_from_string(
       pos   = 0;
 
       for( i=(strlen( *str ) - 1); i>=0; i-- ) {
-        (*vec)->value.u32[pos>>2][VTYPE_INDEX_VAL_VALL] |= (uint32)((*str)[i]) << (pos & 0x3);
+        (*vec)->value.u32[pos>>2][VTYPE_INDEX_VAL_VALL] |= (uint32)((*str)[i]) << ((pos & 0x3) << 3);
         pos++;
       }
 
@@ -4336,6 +4336,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.26  2008/04/26 12:45:07  phase1geo
+ Fixing bug in from_string for string types.  Updated regressions.  Checkpointing.
+
  Revision 1.138.2.25  2008/04/25 17:39:50  phase1geo
  Fixing several vector issues.  Coded up vector_unary_inv and vector_op_negate.
  Starting to update passing regression files.
