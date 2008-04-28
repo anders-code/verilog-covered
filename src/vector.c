@@ -1308,6 +1308,98 @@ bool vector_set_coverage_and_assign_uint32(
 }
 
 /*!
+ Performs a fast left-shift of 0-bit-aligned data in vector and stores the result in the vall/h
+ value arrays.
+*/
+static void vector_lshift_uint32(
+            vector*       vec,    /*!< Pointer to vector containing value that we want to left-shift */
+            uint32*       vall,   /*!< Pointer to intermediate value array containing lower bits of shifted value */
+            uint32*       valh,   /*!< Pointer to intermediate value array containing upper bits of shifted value */
+            unsigned int  shift,  /*!< Number of bits to shift */
+  /*@out@*/ unsigned int* msb     /*!< Pointer to calculated MSB */
+) { PROFILE(VECTOR_LSHIFT_UINT32);
+
+  unsigned int diff;
+
+  *msb = ((vec->width + shift) - 1);
+  diff = (*msb >> 5) - ((vec->width - 1) >> 5);
+
+  if( (shift >> 5) == (*msb >> 5) ) {
+
+    vall[0] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALL] << shift);
+    valh[0] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALH] << shift);
+
+  } else if( (shift & 0x1f) == 0 ) {
+
+    int i;
+
+    for( i=((vec->width >> 5) - 1); i>=0; i-- ) {
+      vall[i+diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
+      valh[i+diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALH];
+    }
+
+    for( i=((shift >> 5)-1); i>=0; i-- ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  } else if( (*msb & 0x1f) > (vec->width & 0x1f) ) {
+
+    unsigned int mask_bits1  = (vec->width & 0x1f);
+    unsigned int shift_bits1 = (*msb & 0x1f) - (vec->width & 0x1f);
+    uint32       mask1       = 0xffffffff >> (32 - mask_bits1);
+    uint32       mask2       = 0xffffffff << (32 - shift_bits1);
+    uint32       mask3       = ~mask2;
+    int          i;
+
+    printf( "HERE A, msb: %d, vec->width: %d, mask1: %x, shift_bits1: %d\n", *msb, vec->width, mask1, shift_bits1 );
+    vall[*msb>>5] = (vec->value.u32[vec->width>>5][VTYPE_INDEX_VAL_VALL] & mask1) << shift_bits1;
+    valh[*msb>>5] = (vec->value.u32[vec->width>>5][VTYPE_INDEX_VAL_VALH] & mask1) << shift_bits1;
+
+    for( i=((vec->width >> 5) - 1); i>=0; i-- ) {
+      vall[((i+1)+diff)>>5] |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask2) >> (32 - shift_bits1));
+      valh[((i+1)+diff)>>5] |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask2) >> (32 - shift_bits1));
+      vall[(i+diff)>>5]      = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask3) << shift_bits1);
+      valh[(i+diff)>>5]      = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask3) << shift_bits1);
+    }
+
+    for( i=((shift >> 5)-1); i>=0; i-- ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  } else {
+
+    unsigned int mask_bits1  = (vec->width & 0x1f);
+    unsigned int shift_bits1 = (*msb & 0x1f) - (vec->width & 0x1f);
+    uint32       mask1       = 0xffffffff << mask_bits1;
+    uint32       mask2       = 0xffffffff >> (32 - shift_bits1);
+    uint32       mask3       = ~mask2;
+    int          i;
+
+    printf( "HERE B\n" );
+    vall[*msb>>5] = (vec->value.u32[vec->width>>5][VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits1;
+    valh[*msb>>5] = (vec->value.u32[vec->width>>5][VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits1;
+
+    for( i=(vec->width >> 5); i>=0; i-- ) {
+      vall[((i-1)+diff)>>5]  = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask2) << shift_bits1);
+      valh[((i-1)+diff)>>5]  = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask2) << shift_bits1);
+      vall[((i-1)+diff)>>5] |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask3) >> (32 - shift_bits1));
+      valh[((i-1)+diff)>>5] |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask3) >> (32 - shift_bits1));
+    }
+
+    for( i=((shift >> 5)-1); i>=0; i-- ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \param vec    Pointer to vector to set value to.
  \param value  New value to set vector value to.
  \param width  Width of new value.
@@ -3273,17 +3365,8 @@ bool vector_op_lshift(
         {
           uint32       vall[MAX_BIT_WIDTH>>5];
           uint32       valh[MAX_BIT_WIDTH>>5];
-          unsigned int i;
-          unsigned int size = VECTOR_SIZE32( tgt->width );
-          for( i=0; i<size; i++ ) {
-            vall[i] = 0;
-            valh[i] = 0;
-          }
-          for( i=0; i<left->width; i++ ) {
-            uint32* entry = left->value.u32[i>>5];
-            vall[shift_val>>5] |= ((entry[VTYPE_INDEX_EXP_VALL] >> (i & 0x1f)) & 0x1) << (shift_val & 0x1f);
-            valh[shift_val>>5] |= ((entry[VTYPE_INDEX_EXP_VALH] >> (i & 0x1f)) & 0x1) << (shift_val & 0x1f);
-          }
+          unsigned int msb;
+          vector_lshift_uint32( left, vall, valh, shift_val, &msb );
           retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
         }
         break;
@@ -4336,6 +4419,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.27  2008/04/28 05:16:35  phase1geo
+ Working on initial version of vector_lshift_uint32 functionality.  More testing
+ and debugging to do here.  Checkpointing.
+
  Revision 1.138.2.26  2008/04/26 12:45:07  phase1geo
  Fixing bug in from_string for string types.  Updated regressions.  Checkpointing.
 

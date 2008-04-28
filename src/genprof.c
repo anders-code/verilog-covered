@@ -855,6 +855,7 @@ profiler profiles[NUM_PROFILES] = {
   {"vector_mem_rw_count", NULL, 0, 0, 0, TRUE},
   {"vector_set_assigned", NULL, 0, 0, 0, TRUE},
   {"vector_set_coverage_and_assign", NULL, 0, 0, 0, TRUE},
+  {"vector_lshift_uint32", NULL, 0, 0, 0, TRUE},
   {"vector_set_value", NULL, 0, 0, 0, TRUE},
   {"vector_part_select", NULL, 0, 0, 0, TRUE},
   {"vector_set_unary_evals", NULL, 0, 0, 0, TRUE},
