@@ -1324,6 +1324,8 @@ static void vector_lshift_uint32(
   *msb = ((vec->width + shift) - 1);
   diff = (*msb >> 5) - ((vec->width - 1) >> 5);
 
+  printf( "(msb & 0x1f): %d, ((vec->width - 1) & 0x1f): %d\n", (*msb & 0x1f), ((vec->width - 1) & 0x1f) );
+
   if( (shift >> 5) == (*msb >> 5) ) {
 
     vall[0] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALL] << shift);
@@ -1343,24 +1345,23 @@ static void vector_lshift_uint32(
       valh[i] = 0;
     }
 
-  } else if( (*msb & 0x1f) > (vec->width & 0x1f) ) {
+  } else if( (*msb & 0x1f) > ((vec->width - 1) & 0x1f) ) {
 
     unsigned int mask_bits1  = (vec->width & 0x1f);
-    unsigned int shift_bits1 = (*msb & 0x1f) - (vec->width & 0x1f);
+    unsigned int shift_bits1 = (*msb & 0x1f) - ((vec->width - 1) & 0x1f);
     uint32       mask1       = 0xffffffff >> (32 - mask_bits1);
     uint32       mask2       = 0xffffffff << (32 - shift_bits1);
     uint32       mask3       = ~mask2;
     int          i;
 
-    printf( "HERE A, msb: %d, vec->width: %d, mask1: %x, shift_bits1: %d\n", *msb, vec->width, mask1, shift_bits1 );
-    vall[*msb>>5] = (vec->value.u32[vec->width>>5][VTYPE_INDEX_VAL_VALL] & mask1) << shift_bits1;
-    valh[*msb>>5] = (vec->value.u32[vec->width>>5][VTYPE_INDEX_VAL_VALH] & mask1) << shift_bits1;
+    vall[*msb>>5] = (vec->value.u32[(vec->width-1)>>5][VTYPE_INDEX_VAL_VALL] & mask1) << shift_bits1;
+    valh[*msb>>5] = (vec->value.u32[(vec->width-1)>>5][VTYPE_INDEX_VAL_VALH] & mask1) << shift_bits1;
 
-    for( i=((vec->width >> 5) - 1); i>=0; i-- ) {
-      vall[((i+1)+diff)>>5] |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask2) >> (32 - shift_bits1));
-      valh[((i+1)+diff)>>5] |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask2) >> (32 - shift_bits1));
-      vall[(i+diff)>>5]      = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask3) << shift_bits1);
-      valh[(i+diff)>>5]      = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask3) << shift_bits1);
+    for( i=(((vec->width - 1) >> 5) - 1); i>=0; i-- ) {
+      vall[i+diff+1] |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask2) >> (32 - shift_bits1));
+      valh[i+diff+1] |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask2) >> (32 - shift_bits1));
+      vall[i+diff]    = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask3) << shift_bits1);
+      valh[i+diff]    = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask3) << shift_bits1);
     }
 
     for( i=((shift >> 5)-1); i>=0; i-- ) {
@@ -1370,14 +1371,14 @@ static void vector_lshift_uint32(
 
   } else {
 
-    unsigned int mask_bits1  = (vec->width & 0x1f);
-    unsigned int shift_bits1 = (*msb & 0x1f) - (vec->width & 0x1f);
+    unsigned int mask_bits1  = ((vec->width - 1) & 0x1f);
+    unsigned int shift_bits1 = (*msb & 0x1f) - ((vec->width - 1) & 0x1f);
     uint32       mask1       = 0xffffffff << mask_bits1;
     uint32       mask2       = 0xffffffff >> (32 - shift_bits1);
     uint32       mask3       = ~mask2;
     int          i;
 
-    printf( "HERE B\n" );
+    printf( "HERE B, msb: %d, vec->width: %d, mask1: %x, shift_bits1: %d, mask2: %x, mask3: %x\n", *msb, vec->width, mask1, shift_bits1, mask2, mask3 );
     vall[*msb>>5] = (vec->value.u32[vec->width>>5][VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits1;
     valh[*msb>>5] = (vec->value.u32[vec->width>>5][VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits1;
 
@@ -4419,6 +4420,12 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.28  2008/04/28 21:08:53  phase1geo
+ Fixing memory deallocation issue when CDD file is not present when report
+ command is issued.  Fixing issues with left-shift function (still have one
+ section to go).  Added new tests to regression suite to verify the new
+ left-shift functionality.
+
  Revision 1.138.2.27  2008/04/28 05:16:35  phase1geo
  Working on initial version of vector_lshift_uint32 functionality.  More testing
  and debugging to do here.  Checkpointing.
