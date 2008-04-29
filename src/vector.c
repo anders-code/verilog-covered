@@ -1400,6 +1400,98 @@ static void vector_lshift_uint32(
 }
 
 /*!
+ Performs a fast right-shift to zero-align data in vector and stores the result in the vall/h
+ value arrays.
+*/
+static void vector_rshift_uint32(
+            vector*       vec,    /*!< Pointer to vector containing value that we want to left-shift */
+            uint32*       vall,   /*!< Pointer to intermediate value array containing lower bits of shifted value */
+            uint32*       valh,   /*!< Pointer to intermediate value array containing upper bits of shifted value */
+            unsigned int  shift,  /*!< Number of bits to shift */
+  /*@out@*/ unsigned int* msb     /*!< Pointer to calculated MSB */
+) { PROFILE(VECTOR_LSHIFT_UINT32);
+
+  unsigned int diff;
+
+  *msb = ((vec->width + shift) - 1);
+  diff = (*msb >> 5) - ((vec->width - 1) >> 5);
+
+  if( (shift >> 5) == (*msb >> 5) ) {
+
+    vall[0] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALL] << shift);
+    valh[0] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALH] << shift);
+
+  } else if( (shift & 0x1f) == 0 ) {
+
+    int i;
+
+    for( i=((vec->width >> 5) - 1); i>=0; i-- ) {
+      vall[i+diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
+      valh[i+diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALH];
+    }
+
+    for( i=((shift >> 5)-1); i>=0; i-- ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  } else if( (*msb & 0x1f) > ((vec->width - 1) & 0x1f) ) {
+
+    unsigned int mask_bits1  = (vec->width & 0x1f);
+    unsigned int shift_bits1 = (*msb & 0x1f) - ((vec->width - 1) & 0x1f);
+    uint32       mask1       = 0xffffffff >> (32 - mask_bits1);
+    uint32       mask2       = 0xffffffff << (32 - shift_bits1);
+    uint32       mask3       = ~mask2;
+    int          i;
+
+    vall[*msb>>5] = (vec->value.u32[(vec->width-1)>>5][VTYPE_INDEX_VAL_VALL] & mask1) << shift_bits1;
+    valh[*msb>>5] = (vec->value.u32[(vec->width-1)>>5][VTYPE_INDEX_VAL_VALH] & mask1) << shift_bits1;
+
+    for( i=(((vec->width - 1) >> 5) - 1); i>=0; i-- ) {
+      vall[i+diff+1] |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask2) >> (32 - shift_bits1));
+      valh[i+diff+1] |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask2) >> (32 - shift_bits1));
+      vall[i+diff]    = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask3) << shift_bits1);
+      valh[i+diff]    = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask3) << shift_bits1);
+    }
+
+    for( i=((shift >> 5)-1); i>=0; i-- ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  } else {
+
+    unsigned int mask_bits1  = ((vec->width - 1) & 0x1f);
+    unsigned int shift_bits1 = mask_bits1 - (*msb & 0x1f);
+    uint32       mask1       = 0xffffffff << mask_bits1;
+    uint32       mask2       = 0xffffffff >> (32 - shift_bits1);
+    uint32       mask3       = ~mask2;
+    int          i;
+
+    vall[*msb>>5] = (vec->value.u32[(vec->width-1)>>5][VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits1;
+    valh[*msb>>5] = (vec->value.u32[(vec->width-1)>>5][VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits1;
+
+    for( i=((vec->width - 1) >> 5); i>=0; i-- ) {
+      vall[(i+diff)-1]  = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask2) << (32 - shift_bits1));
+      valh[(i+diff)-1]  = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask2) << (32 - shift_bits1));
+      if( i > 0 ) {
+        vall[(i+diff)-1] |= ((vec->value.u32[i-1][VTYPE_INDEX_VAL_VALL] & mask3) >> shift_bits1);
+        valh[(i+diff)-1] |= ((vec->value.u32[i-1][VTYPE_INDEX_VAL_VALH] & mask3) >> shift_bits1);
+      }
+    }
+
+    for( i=((shift >> 5)-1); i>=0; i-- ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \param vec    Pointer to vector to set value to.
  \param value  New value to set vector value to.
  \param width  Width of new value.
@@ -4421,6 +4513,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.30  2008/04/29 05:50:50  phase1geo
+ Created body of right-shift function (although this code is just a copy of the
+ left-shift code at the current time).  Checkpointing.
+
  Revision 1.138.2.29  2008/04/29 05:45:28  phase1geo
  Completing debug and testing of left-shift operator.  Added new diagnostics
  to verify the rest of the functionality.
