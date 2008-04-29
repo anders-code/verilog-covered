@@ -947,7 +947,7 @@ void vector_display_nibble_uint32(
   for( i=0; i<vector_type_sizes[type]; i++ ) {
     for( j=VECTOR_SIZE32(width); j--; ) {
       /*@-formatcode@*/
-      printf( " %x", value[i][j] );
+      printf( " %x", value[j][i] );
       /*@=formatcode@*/
     }
   }
@@ -1324,8 +1324,6 @@ static void vector_lshift_uint32(
   *msb = ((vec->width + shift) - 1);
   diff = (*msb >> 5) - ((vec->width - 1) >> 5);
 
-  printf( "(msb & 0x1f): %d, ((vec->width - 1) & 0x1f): %d\n", (*msb & 0x1f), ((vec->width - 1) & 0x1f) );
-
   if( (shift >> 5) == (*msb >> 5) ) {
 
     vall[0] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALL] << shift);
@@ -1372,21 +1370,22 @@ static void vector_lshift_uint32(
   } else {
 
     unsigned int mask_bits1  = ((vec->width - 1) & 0x1f);
-    unsigned int shift_bits1 = (*msb & 0x1f) - ((vec->width - 1) & 0x1f);
+    unsigned int shift_bits1 = mask_bits1 - (*msb & 0x1f);
     uint32       mask1       = 0xffffffff << mask_bits1;
     uint32       mask2       = 0xffffffff >> (32 - shift_bits1);
     uint32       mask3       = ~mask2;
     int          i;
 
-    printf( "HERE B, msb: %d, vec->width: %d, mask1: %x, shift_bits1: %d, mask2: %x, mask3: %x\n", *msb, vec->width, mask1, shift_bits1, mask2, mask3 );
-    vall[*msb>>5] = (vec->value.u32[vec->width>>5][VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits1;
-    valh[*msb>>5] = (vec->value.u32[vec->width>>5][VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits1;
+    vall[*msb>>5] = (vec->value.u32[(vec->width-1)>>5][VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits1;
+    valh[*msb>>5] = (vec->value.u32[(vec->width-1)>>5][VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits1;
 
-    for( i=(vec->width >> 5); i>=0; i-- ) {
-      vall[((i-1)+diff)>>5]  = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask2) << shift_bits1);
-      valh[((i-1)+diff)>>5]  = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask2) << shift_bits1);
-      vall[((i-1)+diff)>>5] |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask3) >> (32 - shift_bits1));
-      valh[((i-1)+diff)>>5] |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask3) >> (32 - shift_bits1));
+    for( i=((vec->width - 1) >> 5); i>=0; i-- ) {
+      vall[(i+diff)-1]  = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask2) << (32 - shift_bits1));
+      valh[(i+diff)-1]  = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask2) << (32 - shift_bits1));
+      if( i > 0 ) {
+        vall[(i+diff)-1] |= ((vec->value.u32[i-1][VTYPE_INDEX_VAL_VALL] & mask3) >> shift_bits1);
+        valh[(i+diff)-1] |= ((vec->value.u32[i-1][VTYPE_INDEX_VAL_VALH] & mask3) >> shift_bits1);
+      }
     }
 
     for( i=((shift >> 5)-1); i>=0; i-- ) {
@@ -2193,7 +2192,7 @@ char* vector_to_string(
         {
           uint32 value = 0;
           int    i;
-          for( i=(vec->width - 1); i--; ) {
+          for( i=(vec->width - 1); i>=0; i-- ) {
             uint32* entry = vec->value.u32[i>>5];
             if( ((entry[VTYPE_INDEX_VAL_VALH] >> (i & 0x1f)) & 0x1) == 1 ) {
               value = ((entry[VTYPE_INDEX_VAL_VALL] >> (i & 0x1f)) & 0x1) + 16;
@@ -2792,12 +2791,14 @@ bool vector_op_lt(
           lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
           rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
+          printf( "i: %d, lvall: %x, rvall: %x, lvalh: %x, rvalh: %x\n", i, lvall, rvall, lvalh, rvalh );
         } while( (i >= 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
         } else {
           scratchl = (lvall < rvall);
         }
+        printf( "scratchl: %d, scratchh: %d\n", scratchl, scratchh );
         retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
@@ -4420,6 +4421,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.29  2008/04/29 05:45:28  phase1geo
+ Completing debug and testing of left-shift operator.  Added new diagnostics
+ to verify the rest of the functionality.
+
  Revision 1.138.2.28  2008/04/28 21:08:53  phase1geo
  Fixing memory deallocation issue when CDD file is not present when report
  command is issued.  Fixing issues with left-shift function (still have one
