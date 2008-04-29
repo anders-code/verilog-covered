@@ -1404,39 +1404,42 @@ static void vector_lshift_uint32(
  value arrays.
 */
 static void vector_rshift_uint32(
-            vector*       vec,    /*!< Pointer to vector containing value that we want to left-shift */
-            uint32*       vall,   /*!< Pointer to intermediate value array containing lower bits of shifted value */
-            uint32*       valh,   /*!< Pointer to intermediate value array containing upper bits of shifted value */
-            unsigned int  shift,  /*!< Number of bits to shift */
-  /*@out@*/ unsigned int* msb     /*!< Pointer to calculated MSB */
-) { PROFILE(VECTOR_LSHIFT_UINT32);
+  vector*      vec,   /*!< Pointer to vector containing value that we want to right-shift */
+  uint32*      vall,  /*!< Pointer to intermediate value array containing lower bits of shifted value */
+  uint32*      valh,  /*!< Pointer to intermediate value array containing upper bits of shifted value */
+  unsigned int lsb,   /*!< LSB of vec range to shift */
+  unsigned int msb    /*!< MSB of vec range to shift */
+) { PROFILE(VECTOR_RSHIFT_UINT32);
 
-  unsigned int diff;
+  unsigned int diff   = (lsb >> 5);
+  unsigned int rwidth = (msb - lsb) + 1;
 
-  *msb = ((vec->width + shift) - 1);
-  diff = (*msb >> 5) - ((vec->width - 1) >> 5);
+  if( (lsb >> 5) == (msb >> 5) ) {
 
-  if( (shift >> 5) == (*msb >> 5) ) {
+    printf( "HERE A, lsb: %d, msb: %d, diff: %d\n", lsb, msb, diff );
+    vall[0] = (vec->value.u32[diff][VTYPE_INDEX_VAL_VALL] >> (lsb & 0x1f));
+    valh[0] = (vec->value.u32[diff][VTYPE_INDEX_VAL_VALH] >> (lsb & 0x1f));
 
-    vall[0] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALL] << shift);
-    valh[0] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALH] << shift);
+  } else if( (lsb & 0x1f) == 0 ) {
 
-  } else if( (shift & 0x1f) == 0 ) {
+    unsigned int i;
+    uint32       lmask = 0xffffffff >> (31 - (msb & 0x1f));
 
-    int i;
-
-    for( i=((vec->width >> 5) - 1); i>=0; i-- ) {
-      vall[i+diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
-      valh[i+diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALH];
+    for( i=diff; i<(msb >> 5); i++ ) {
+      vall[i-diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
+      valh[i-diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALH];
     }
+    vall[i-diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & lmask;
+    valh[i-diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & lmask;
 
-    for( i=((shift >> 5)-1); i>=0; i-- ) {
+    for( ; i<(vec->width >> 5); i++ ) {
       vall[i] = 0;
       valh[i] = 0;
     }
 
-  } else if( (*msb & 0x1f) > ((vec->width - 1) & 0x1f) ) {
+  } else if( (msb & 0x1f) > ((rwidth - 1) & 0x1f) ) {
 
+#ifdef SKIP
     unsigned int mask_bits1  = (vec->width & 0x1f);
     unsigned int shift_bits1 = (*msb & 0x1f) - ((vec->width - 1) & 0x1f);
     uint32       mask1       = 0xffffffff >> (32 - mask_bits1);
@@ -1458,9 +1461,13 @@ static void vector_rshift_uint32(
       vall[i] = 0;
       valh[i] = 0;
     }
+#endif
+
+    assert( 0 );
 
   } else {
 
+#ifdef SKIP
     unsigned int mask_bits1  = ((vec->width - 1) & 0x1f);
     unsigned int shift_bits1 = mask_bits1 - (*msb & 0x1f);
     uint32       mask1       = 0xffffffff << mask_bits1;
@@ -1484,6 +1491,9 @@ static void vector_rshift_uint32(
       vall[i] = 0;
       valh[i] = 0;
     }
+#endif
+
+    assert( 0 );
 
   }
 
@@ -3491,43 +3501,29 @@ bool vector_op_rshift(
   vector* right
 ) { PROFILE(VECTOR_OP_RSHIFT);
 
-  bool     retval = FALSE;  /* Return value for this function */
+  bool retval;  /* Return value for this function */
 
-#ifdef OBSOLETE
-  int      shift_val;       /* Number of bits to shift left */
-  vec_data zero;            /* Zero value for zero-fill */
-  vec_data unknown;         /* X-value for unknown fill */
-  int      i;               /* Loop iterator */
+  if( vector_is_unknown( right ) ) {
 
-  zero.all    = 0;
-  unknown.all = 2;
-
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
-    
-  if( right->suppl.part.unknown ) {
-
-    for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
-    }
+    retval = vector_set_to_x( tgt );
 
   } else {
 
-    /* Perform zero-fill */
-    for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &zero, 1, 0, i );
-    }
+    int shift_val = vector_to_int( right );
 
-    shift_val = vector_to_int( right );
-
-    if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32 vall[MAX_BIT_WIDTH>>5];
+          uint32 valh[MAX_BIT_WIDTH>>5];
+          vector_rshift_uint32( left, vall, valh, shift_val, (right->width - 1) );
+          retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
-#endif
-
-  assert( 0 );
 
   PROFILE_END;
 
@@ -4513,6 +4509,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.31  2008/04/29 22:55:10  phase1geo
+ Starting to work on right-shift functionality in vector.c.  Added some new
+ diagnostics to regression suite to verify this new code.  More to do.
+ Checkpointing.
+
  Revision 1.138.2.30  2008/04/29 05:50:50  phase1geo
  Created body of right-shift function (although this code is just a copy of the
  left-shift code at the current time).  Checkpointing.
