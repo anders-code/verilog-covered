@@ -80,9 +80,14 @@
 #define INTEGER_WIDTH	   (SIZEOF_INT * 8)
 
 /*!
+ Specifies the maximum number of bits that a vector can hold.
+*/
+#define MAX_BIT_WIDTH      65536
+
+/*!
  Length of user_msg global string (used for inputs to snprintf calls).
 */
-#define USER_MSG_LENGTH    4096
+#define USER_MSG_LENGTH    (MAX_BIT_WIDTH * 2)
 
 /*!
  If -w option is specified to report command, specifies number of characters of width
@@ -933,7 +938,6 @@ typedef enum exp_op_type_e {
  @{
 */
 
-#define MAX_BIT_WIDTH           65536   /*!< Maximum number of bits that a vector can hold */
 #define DECIMAL			0	/*!< String in format [dD][0-9]+ */
 #define BINARY			1	/*!< String in format [bB][01xXzZ_\?]+ */
 #define OCTAL			2	/*!< String in format [oO][0-7xXzZ_\?]+ */
@@ -2694,6 +2698,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.7  2008/04/30 23:12:31  phase1geo
+ Fixing simulation issues.
+
  Revision 1.294.2.6  2008/04/23 23:06:03  phase1geo
  More bug fixes to vector functionality.  Bitwise operators appear to be
  working correctly when 2-state values are used.  Checkpointing.

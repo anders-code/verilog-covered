@@ -1330,7 +1330,7 @@ static void vector_lshift_uint32(
 
     int i;
 
-    for( i=(vec->width >> 5); i>=0; i-- ) {
+    for( i=((vec->width - 1) >> 5); i>=0; i-- ) {
       vall[i+diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
       valh[i+diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALH];
     }
@@ -4526,6 +4526,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.36  2008/04/30 23:12:31  phase1geo
+ Fixing simulation issues.
+
  Revision 1.138.2.35  2008/04/30 21:59:56  phase1geo
  Finishing initial work on right-shift functionality.  Added the rest of the
  diagnostics to verify this work.
