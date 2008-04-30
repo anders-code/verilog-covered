@@ -1414,16 +1414,37 @@ static void vector_rshift_uint32(
   unsigned int diff   = (lsb >> 5);
   unsigned int rwidth = (msb - lsb) + 1;
 
-  if( (lsb >> 5) == (msb >> 5) ) {
+  if( lsb > msb ) {
 
-    printf( "HERE A, lsb: %d, msb: %d, diff: %d\n", lsb, msb, diff );
+    unsigned int i;
+
+    printf( "HERE A\n" );
+
+    for( i=0; i<VECTOR_SIZE32( vec->width ); i++ ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  } else if( (lsb >> 5) == (msb >> 5) ) {
+
+    unsigned int i;
+
+    printf( "HERE B, lsb: %d, msb: %d, diff: %d\n", lsb, msb, diff );
+
     vall[0] = (vec->value.u32[diff][VTYPE_INDEX_VAL_VALL] >> (lsb & 0x1f));
     valh[0] = (vec->value.u32[diff][VTYPE_INDEX_VAL_VALH] >> (lsb & 0x1f));
+
+    for( i=1; i<=(vec->width >> 5); i++ ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
 
   } else if( (lsb & 0x1f) == 0 ) {
 
     unsigned int i;
     uint32       lmask = 0xffffffff >> (31 - (msb & 0x1f));
+
+    printf( "HERE C, lmask: %x, diff: %d, msb: %d\n", lmask, diff, msb );
 
     for( i=diff; i<(msb >> 5); i++ ) {
       vall[i-diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
@@ -1432,7 +1453,7 @@ static void vector_rshift_uint32(
     vall[i-diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & lmask;
     valh[i-diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & lmask;
 
-    for( ; i<(vec->width >> 5); i++ ) {
+    for( i=((i-diff)+1); i<=(vec->width >> 5); i++ ) {
       vall[i] = 0;
       valh[i] = 0;
     }
@@ -3516,7 +3537,7 @@ bool vector_op_rshift(
         {
           uint32 vall[MAX_BIT_WIDTH>>5];
           uint32 valh[MAX_BIT_WIDTH>>5];
-          vector_rshift_uint32( left, vall, valh, shift_val, (right->width - 1) );
+          vector_rshift_uint32( left, vall, valh, shift_val, (left->width - 1) );
           retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
         }
         break;
@@ -4509,6 +4530,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.32  2008/04/30 04:15:03  phase1geo
+ More work on right-shift operator.  Adding diagnostics to verify functionality.
+ Checkpointing.
+
  Revision 1.138.2.31  2008/04/29 22:55:10  phase1geo
  Starting to work on right-shift functionality in vector.c.  Added some new
  diagnostics to regression suite to verify this new code.  More to do.

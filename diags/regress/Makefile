@@ -81,7 +81,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 param14         param15         param16         port1           port3 \
                 pulldown1       pullup1         rassign1        real1           repeat1 \
                 repeat2         report1         rshift1         rshift1.1       rshift1.2 \
-                rshift1.3       sbit_sel1       sbit_sel1.1     sbit_sel2 \
+                rshift1.3       rshift2         rshift2.1       rshift2.2       rshift2.3 \
+                sbit_sel1       sbit_sel1.1     sbit_sel2 \
                 sbit_sel2.1     sbit_sel3       sbit_sel3.1     signed1         signed3 \
                 signed3.1       signed3.2 \
                 signed3.3       signed3.4       signed3.5       signed3.6       signed4 \
