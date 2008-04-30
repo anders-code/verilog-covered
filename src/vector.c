@@ -1476,9 +1476,9 @@ static void vector_rshift_uint32(
   } else {
 
 #ifdef SKIP
-    unsigned int mask_bits1  = ((vec->width - 1) & 0x1f);
-    unsigned int shift_bits1 = mask_bits1 - (*msb & 0x1f);
-    uint32       mask1       = 0xffffffff << mask_bits1;
+    unsigned int mask_bits1  = (rwidth & 0x1f);
+    unsigned int shift_bits1 = mask_bits1 - (msb & 0x1f);
+    uint32       mask1       = 0xffffffff >> mask_bits1;
     uint32       mask2       = 0xffffffff >> (32 - shift_bits1);
     uint32       mask3       = ~mask2;
     int          i;
@@ -4530,6 +4530,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.34  2008/04/30 06:07:12  phase1geo
+ Adding new diagnostic that will be used to test final portion of right-shift
+ functionality.  Checkpointing.
+
  Revision 1.138.2.33  2008/04/30 05:56:21  phase1geo
  More work on right-shift function.  Added and connected part_select_push and part_select_pull
  functionality.  Also added new right-shift diagnostics.  Checkpointing.
