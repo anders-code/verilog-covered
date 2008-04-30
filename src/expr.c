@@ -3402,13 +3402,13 @@ bool expression_op_func__sbit(
           retval = vector_set_to_x( expr->value );
         } else {
           int lsb = vwidth - (intval + expr->value->width);
-          retval = vector_part_select( expr->value, src, lsb, lsb, set_mem_rd );
+          retval = vector_part_select_pull( expr->value, src, lsb, lsb, set_mem_rd );
         }
       } else {
         if( intval >= vwidth ) {
           retval = vector_set_to_x( expr->value );
         } else {
-          retval = vector_part_select( expr->value, src, intval, intval, set_mem_rd );
+          retval = vector_part_select_pull( expr->value, src, intval, intval, set_mem_rd );
         }
       }
     }
@@ -3484,10 +3484,10 @@ bool expression_op_func__mbit(
     int lsb = vwidth - (intval1 + expr->value->width);
     int msb = vwidth - (intval2 + expr->value->width);
     assert( intval1 <= vwidth );
-    retval = vector_part_select( expr->value, src, lsb, msb, set_mem_rd );
+    retval = vector_part_select_pull( expr->value, src, lsb, msb, set_mem_rd );
   } else {
     assert( intval1 < vwidth );
-    retval = vector_part_select( expr->value, src, intval1, intval2, set_mem_rd );
+    retval = vector_part_select_pull( expr->value, src, intval1, intval2, set_mem_rd );
   }
 
   /* Gather coverage information */
@@ -4399,7 +4399,7 @@ bool expression_op_func__mbit_pos(
 
     assert( intval >= 0 );
     assert( intval < expr->sig->value->width );
-    retval = vector_part_select( expr->value, src, intval, ((intval + vector_to_int( expr->right->value )) - 1), set_mem_rd );
+    retval = vector_part_select_pull( expr->value, src, intval, ((intval + vector_to_int( expr->right->value )) - 1), set_mem_rd );
 
   /* Otherwise, set our value to X */
   } else {
@@ -4457,7 +4457,7 @@ bool expression_op_func__mbit_neg(
     intval2 = vector_to_int( expr->right->value );
     assert( intval1 < expr->sig->value->width );
     assert( ((intval1 - intval2) + 1) >= 0 );
-    retval = vector_part_select( expr->value, src, ((intval1 - intval2) + 1), intval1, set_mem_rd );
+    retval = vector_part_select_pull( expr->value, src, ((intval1 - intval2) + 1), intval1, set_mem_rd );
 
   /* Otherwise, set our expression value to X */
   } else {
@@ -5224,7 +5224,7 @@ void expression_assign(
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
             int msb = (*lsb + rhs->value->width) - 1;
-            (void)vector_part_select( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
+            (void)vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
             if( rhs->value->width < lhs->value->width ) {
               (void)vector_bit_fill( lhs->value, msb );
             }
@@ -5251,13 +5251,13 @@ void expression_assign(
               if( dim_be ) {
                 if( intval1 <= vwidth ) {  // Only perform assignment if selected bit is within range
                   int lsb = vwidth - (intval1 + lhs->value->width);
-                  (void)vector_part_select( lhs->value, src, lsb, lsb, FALSE /* TBD */ );
+                  (void)vector_part_select_push( lhs->value, src, lsb, lsb, FALSE /* TBD */ );
                 } else {
                   assign = FALSE;
                 }
               } else {
                 if( intval1 < vwidth ) {   // Only perform assignment if selected bit is within range
-                  (void)vector_part_select( lhs->value, src, intval1, intval1, FALSE /* TBD */ );
+                  (void)vector_part_select_push( lhs->value, src, intval1, intval1, FALSE /* TBD */ );
                 } else {
                   assign = FALSE;
                 }
@@ -5268,7 +5268,7 @@ void expression_assign(
           }
           if( assign ) {
             int msb = (*lsb + rhs->value->width) - 1;
-            (void)vector_part_select( lhs->value, rhs->value, *lsb, msb, FALSE );
+            (void)vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE );
             if( rhs->value->width < lhs->value->width ) {
               (void)vector_bit_fill( lhs->value, msb );
             }
@@ -5291,14 +5291,14 @@ void expression_assign(
           if( dim_be ) {
             int lsb = vwidth - (intval1 + lhs->value->width);
             assert( intval1 <= vwidth );
-            (void)vector_part_select( lhs->value, src, (vwidth - (intval1 + lhs->value->width)), (vwidth - intval1), FALSE /*TBD*/ );
+            (void)vector_part_select_push( lhs->value, src, (vwidth - (intval1 + lhs->value->width)), (vwidth - intval1), FALSE /*TBD*/ );
           } else {
             assert( intval1 < vwidth );
-            (void)vector_part_select( lhs->value, src, intval1, (intval1 + lhs->value->width), FALSE /*TBD*/ );
+            (void)vector_part_select_push( lhs->value, src, intval1, (intval1 + lhs->value->width), FALSE /*TBD*/ );
           }
           if( assign ) {
             int msb = (*lsb + rhs->value->width) - 1;
-            (void)vector_part_select( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
+            (void)vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
             if( rhs->value->width < lhs->value->width ) {
               (void)vector_bit_fill( lhs->value, msb );
             }
@@ -5550,6 +5550,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.12  2008/04/30 05:56:21  phase1geo
+ More work on right-shift function.  Added and connected part_select_push and part_select_pull
+ functionality.  Also added new right-shift diagnostics.  Checkpointing.
+
  Revision 1.329.2.11  2008/04/25 05:22:45  phase1geo
  Finished restructuring of vector data.  Continuing to test new code.  Checkpointing.
 

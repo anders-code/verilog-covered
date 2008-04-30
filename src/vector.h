@@ -183,7 +183,16 @@ bool vector_set_value_uint32(
 );
 
 /*! \brief Sets specified target vector to bit range of source vector. */
-bool vector_part_select(
+bool vector_part_select_pull(
+  vector* tgt,
+  vector* src,
+  int     lsb,
+  int     msb,
+  bool    set_mem_rd
+);
+
+/*! \brief Sets specified target vector to bit range of source vector. */
+bool vector_part_select_push(
   vector* tgt,
   vector* src,
   int     lsb,
@@ -470,6 +479,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.12  2008/04/30 05:56:21  phase1geo
+ More work on right-shift function.  Added and connected part_select_push and part_select_pull
+ functionality.  Also added new right-shift diagnostics.  Checkpointing.
+
  Revision 1.58.2.11  2008/04/23 21:27:06  phase1geo
  Fixing several bugs found in initial testing.  Checkpointing.
 
