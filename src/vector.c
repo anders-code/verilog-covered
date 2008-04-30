@@ -1330,7 +1330,7 @@ static void vector_lshift_uint32(
 
     int i;
 
-    for( i=((vec->width >> 5) - 1); i>=0; i-- ) {
+    for( i=(vec->width >> 5); i>=0; i-- ) {
       vall[i+diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
       valh[i+diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALH];
     }
@@ -1408,7 +1408,7 @@ static void vector_rshift_uint32(
   unsigned int msb    /*!< MSB of vec range to shift */
 ) { PROFILE(VECTOR_RSHIFT_UINT32);
 
-  unsigned int diff   = (lsb >> 5);
+  int diff   = (lsb >> 5);
   unsigned int rwidth = (msb - lsb) + 1;
 
   if( lsb > msb ) {
@@ -1475,33 +1475,29 @@ static void vector_rshift_uint32(
 
   } else {
 
-#ifdef SKIP
     unsigned int mask_bits1  = (rwidth & 0x1f);
-    unsigned int shift_bits1 = mask_bits1 - (msb & 0x1f);
-    uint32       mask1       = 0xffffffff >> mask_bits1;
-    uint32       mask2       = 0xffffffff >> (32 - shift_bits1);
+    unsigned int shift_bits1 = ((msb - lsb) & 0x1f) - (msb & 0x1f);
+    uint32       mask1       = 0xffffffff >> (32 - mask_bits1);
+    uint32       mask2       = 0xffffffff << (32 - shift_bits1);
     uint32       mask3       = ~mask2;
     int          i;
 
-    vall[*msb>>5] = (vec->value.u32[(vec->width-1)>>5][VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits1;
-    valh[*msb>>5] = (vec->value.u32[(vec->width-1)>>5][VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits1;
+    vall[(msb-lsb)>>5] = (vec->value.u32[msb>>5][VTYPE_INDEX_VAL_VALL] & mask1) << shift_bits1;
+    valh[(msb-lsb)>>5] = (vec->value.u32[msb>>5][VTYPE_INDEX_VAL_VALH] & mask1) << shift_bits1;
 
-    for( i=((vec->width - 1) >> 5); i>=0; i-- ) {
-      vall[(i+diff)-1]  = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask2) << (32 - shift_bits1));
-      valh[(i+diff)-1]  = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask2) << (32 - shift_bits1));
-      if( i > 0 ) {
-        vall[(i+diff)-1] |= ((vec->value.u32[i-1][VTYPE_INDEX_VAL_VALL] & mask3) >> shift_bits1);
-        valh[(i+diff)-1] |= ((vec->value.u32[i-1][VTYPE_INDEX_VAL_VALH] & mask3) >> shift_bits1);
+    for( i=((msb >> 5) - 1); i>=0; i-- ) {
+      vall[i+diff]    |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask2) >> (32 - shift_bits1));
+      valh[i+diff]    |= ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask2) >> (32 - shift_bits1));
+      if( ((i+diff)-1) >= 0 ) {
+        vall[(i+diff)-1] = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALL] & mask3) << shift_bits1);
+        valh[(i+diff)-1] = ((vec->value.u32[i][VTYPE_INDEX_VAL_VALH] & mask3) << shift_bits1);
       }
     }
 
-    for( i=((shift >> 5)-1); i>=0; i-- ) {
+    for( i=((lsb >> 5) - 1); i>=0; i-- ) {
       vall[i] = 0;
       valh[i] = 0;
     }
-#endif
-
-    assert( 0 );
 
   }
 
@@ -1614,8 +1610,8 @@ bool vector_part_select_push(
   switch( src->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        uint32       valh[MAX_BIT_WIDTH>>5];
-        uint32       vall[MAX_BIT_WIDTH>>5];
+        uint32 valh[MAX_BIT_WIDTH>>5];
+        uint32 vall[MAX_BIT_WIDTH>>5];
         vector_lshift_uint32( src, vall, valh, lsb, msb );
         retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
       }
@@ -1815,7 +1811,7 @@ bool vector_bit_fill(
   int      i;                           /* Loop iterator */
 
   assert( vec != NULL );
-  assert( last > 0 );
+  assert( last >= 0 );
   assert( last < vec->width ); 
 
   switch( vec->suppl.part.data_type ) {
@@ -4530,6 +4526,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.35  2008/04/30 21:59:56  phase1geo
+ Finishing initial work on right-shift functionality.  Added the rest of the
+ diagnostics to verify this work.
+
  Revision 1.138.2.34  2008/04/30 06:07:12  phase1geo
  Adding new diagnostic that will be used to test final portion of right-shift
  functionality.  Checkpointing.
