@@ -3445,8 +3445,7 @@ bool expression_op_func__mbit(
 ) { PROFILE(EXPRESSION_OP_FUNC__MBIT);
 
   bool    retval;      /* Return value for this function */
-  int     intval1;     /* LSB of range to copy */
-  int     intval2;     /* MSB of range to copy */
+  int     intval;      /* LSB of range to copy */
   vector* src;         /* Source vector for bit range to retrieve */
   int     vwidth;      /* Width of vector to use */
   int     dim_lsb;     /* LSB of current signal dimension */
@@ -3476,23 +3475,24 @@ bool expression_op_func__mbit(
   dim_width = vsignal_calc_width_for_expr( expr, expr->sig );
 
   /* Calculate the LSB and MSB and copy the bit range */
-  intval1 = ((dim_be ? vector_to_int( expr->left->value )  : vector_to_int( expr->right->value )) - dim_lsb) * dim_width;
-  intval2 = ((dim_be ? vector_to_int( expr->right->value ) : vector_to_int( expr->left->value ))  - dim_lsb) * dim_width;
-  assert( intval1 >= 0 );
+  intval = ((dim_be ? vector_to_int( expr->left->value )  : vector_to_int( expr->right->value )) - dim_lsb) * dim_width;
+  assert( intval >= 0 );
   set_mem_rd = (expr->sig->value->suppl.part.type == VTYPE_MEM) && ((exp_dim + 1) == expr->sig->udim_num);
   if( dim_be ) {
-    int lsb = vwidth - (intval1 + expr->value->width);
-    int msb = vwidth - (intval2 + expr->value->width);
-    assert( intval1 <= vwidth );
+    int lsb = vwidth - (intval + expr->value->width);
+    int msb = vwidth - intval;
+    assert( intval <= vwidth );
     retval = vector_part_select_pull( expr->value, src, lsb, msb, set_mem_rd );
   } else {
-    assert( intval1 < vwidth );
-    retval = vector_part_select_pull( expr->value, src, intval1, intval2, set_mem_rd );
+    assert( intval < vwidth );
+    retval = vector_part_select_pull( expr->value, src, intval, ((intval + expr->value->width) - 1), set_mem_rd );
   }
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
   expression_set_eval_NN( expr );
+
+  printf( "MBIT expr value: " );  vector_display( expr->value );
 
   PROFILE_END;
 
@@ -5225,6 +5225,7 @@ void expression_assign(
           if( assign ) {
             int  msb     = (*lsb + rhs->value->width) - 1;
             bool changed = vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
+            vector_display( lhs->value );
             if( rhs->value->width < lhs->value->width ) {
               printf( "lsb: %d, msb: %d\n", *lsb, msb );
               changed |= vector_bit_fill( lhs->value, msb );
@@ -5299,7 +5300,7 @@ void expression_assign(
             (void)vector_part_select_push( lhs->value, src, (vwidth - (intval1 + lhs->value->width)), (vwidth - intval1), FALSE /*TBD*/ );
           } else {
             assert( intval1 < vwidth );
-            (void)vector_part_select_push( lhs->value, src, intval1, (intval1 + lhs->value->width), FALSE /*TBD*/ );
+            (void)vector_part_select_push( lhs->value, src, intval1, ((intval1 + lhs->value->width) - 1), FALSE /*TBD*/ );
           }
           if( assign ) {
             int  msb     = (*lsb + rhs->value->width) - 1;
@@ -5557,6 +5558,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.16  2008/05/01 23:10:20  phase1geo
+ Fix endianness issues and attempting to fix assignment bit-fill functionality.
+ Checkpointing.
+
  Revision 1.329.2.15  2008/05/01 17:51:17  phase1geo
  Fixing bit_fill bug and a few other vector/expression bugs and updating regressions.
 

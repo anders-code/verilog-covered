@@ -1460,6 +1460,8 @@ static void vector_rshift_uint32(
     unsigned int i;
     uint32       lmask = 0xffffffff >> (31 - (msb & 0x1f));
 
+    printf( "lmask: %x, diff: %d, msb: %d\n", lmask, diff, msb );
+
     for( i=diff; i<(msb >> 5); i++ ) {
       vall[i-diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
       valh[i-diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALH];
@@ -1630,12 +1632,22 @@ bool vector_part_select_push(
 
   bool retval;  /* Return value for this function */
 
+  printf( "In vector_part_select_push, lsb: %d, msb: %d\n", lsb, msb );
+
   switch( src->suppl.part.data_type ) {
     case VDATA_U32 :
       {
         uint32 valh[MAX_BIT_WIDTH>>5];
         uint32 vall[MAX_BIT_WIDTH>>5];
+
+        /* Shift data into place */
         vector_lshift_uint32( src, vall, valh, lsb, msb );
+
+        /* Perform bit-fill */
+        for( i=(msb >> 5); i<VECTOR_SIZE32( tgt->width ); i++ ) {
+          
+        }
+
         retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
       }
       break;
@@ -4275,12 +4287,10 @@ bool vector_unary_or(
         unsigned int i    = 0;
         unsigned int size = VECTOR_SIZE32( src->width );
         uint32       x    = 0;
-        printf( "In vector_unary_or, size: %d\n", size );
         while( (i < size) && ((~src->value.u32[i][VTYPE_INDEX_VAL_VALH] & src->value.u32[i][VTYPE_INDEX_VAL_VALL]) == 0) ) {
           x |= src->value.u32[i][VTYPE_INDEX_VAL_VALH];
           i++;
         }
-        printf( "  i: %d, size: %d\n", i, size );
         if( i < size ) {
           vall = 1;
           valh = 0;
@@ -4296,8 +4306,10 @@ bool vector_unary_or(
 
   PROFILE_END;
 
+/*
   printf( "SRC: " );  vector_display( src );
   printf( "TGT: " );  vector_display( tgt );
+*/
 
   return( retval );
 
@@ -4388,20 +4400,33 @@ bool vector_unary_not(
   vector* src
 ) { PROFILE(VECTOR_UNARY_NOT);
 
-  bool     retval;   /* Return value of this function */
+  bool retval;  /* Return value of this function */
 
-#ifdef OBSOLETE
-  vector   vec;      /* Temporary vector value */
-  vec_data vec_val;  /* Temporary value */
-
-  vector_init( &vec, &vec_val, 0x0, FALSE, 1, VTYPE_VAL );
-  vec_val.part.val.value = src->suppl.part.unknown ? 2 : src->suppl.part.not_zero;
-  retval = vector_unary_inv( tgt, &vec );
-#endif
-
-  assert( 0 );
+  switch( src->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        uint32       vall;
+        uint32       valh;
+        unsigned int size = VECTOR_SIZE32( src->width );
+        unsigned int i    = 0;
+        while( (i < size) && (src->value.u32[i][VTYPE_INDEX_VAL_VALH] == 0) && (src->value.u32[i][VTYPE_INDEX_VAL_VALL] == 0) ) i++;
+        if( i < size ) {
+          vall = 0;
+          valh = (src->value.u32[i][VTYPE_INDEX_VAL_VALH] != 0);
+        } else {
+          vall = 1;
+          valh = 0;
+        }
+        retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
 
   PROFILE_END;
+
+  printf( "SRC: " );  vector_display( src );
+  printf( "TGT: " );  vector_display( tgt );
 
   return( retval );
 
@@ -4575,6 +4600,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.42  2008/05/01 23:10:20  phase1geo
+ Fix endianness issues and attempting to fix assignment bit-fill functionality.
+ Checkpointing.
+
  Revision 1.138.2.41  2008/05/01 19:40:18  phase1geo
  Fixing bug in unary_or operation.
 
