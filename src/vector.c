@@ -4265,10 +4265,29 @@ bool vector_unary_or(
   vector* src
 ) { PROFILE(VECTOR_UNARY_OR);
 
-  bool retval;
+  bool retval;  /* Return value for this function */
 
-  /* TBD */
-  assert( 0 );
+  switch( src->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        uint32       vall;
+        uint32       valh;
+        unsigned int i    = 0;
+        unsigned int size = (src->width - 1) >> 5;
+        uint32       x    = 0;
+        while( (i < size) && ((~(x |= src->value.u32[i][VTYPE_INDEX_VAL_VALH]) & src->value.u32[i][VTYPE_INDEX_VAL_VALL]) == 0) ) i++;
+        if( i < size ) {
+          vall = 1;
+          valh = 0;
+        } else {
+          vall = 0;
+          valh = (x != 0);
+        }
+        retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
 
   PROFILE_END;
 
@@ -4548,6 +4567,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.40  2008/05/01 18:18:49  phase1geo
+ Implemented initial version of unary (reduction) inclusive OR function.
+ Updated regressions.
+
  Revision 1.138.2.39  2008/05/01 17:51:17  phase1geo
  Fixing bit_fill bug and a few other vector/expression bugs and updating regressions.
 
