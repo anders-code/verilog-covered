@@ -3610,7 +3610,7 @@ bool expression_op_func__pedge(
   uint32* ovall = &(expr->elem.tvecs->vec[0].value.u32[0][VTYPE_INDEX_EXP_VALL]);
   uint32* ovalh = &(expr->elem.tvecs->vec[0].value.u32[0][VTYPE_INDEX_EXP_VALH]);
 
-  if( ((~(*ovalh) & ~(*ovall)) | (~nvalh & nvall)) && thr->suppl.part.exec_first ) {
+  if( ((*ovalh | ~(*ovall)) & (~nvalh & nvall)) && thr->suppl.part.exec_first ) {
     expr->suppl.part.true   = 1;
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
@@ -3650,7 +3650,7 @@ bool expression_op_func__nedge(
   uint32* ovall = &(expr->elem.tvecs->vec[0].value.u32[0][VTYPE_INDEX_EXP_VALL]);
   uint32* ovalh = &(expr->elem.tvecs->vec[0].value.u32[0][VTYPE_INDEX_EXP_VALH]);
 
-  if( ((~(*ovalh) & (*ovall)) | (~nvalh & ~nvall)) && thr->suppl.part.exec_first ) {
+  if( ((*ovalh | *ovall) & (~nvalh & ~nvall)) && thr->suppl.part.exec_first ) {
     expr->suppl.part.true   = 1;
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
@@ -5556,6 +5556,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.14  2008/05/01 04:55:32  phase1geo
+ Fixing issue with PEDGE and NEDGE.
+
  Revision 1.329.2.13  2008/05/01 04:08:29  phase1geo
  Fixing bugs with assignment propagation.
 
