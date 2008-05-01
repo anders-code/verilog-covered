@@ -60,12 +60,12 @@
 /*!
  Returns the number of 32-bit elements are required to store a vector with a bit width of width.
 */
-#define VECTOR_SIZE32(width)      (((width & 0x1f) == 0) ? (width >> 5) : ((width >> 5) + 1))
+#define VECTOR_SIZE32(width)      (((width - 1) >> 5) + 1)
 
 /*!
  Returns the number of 64-bit elements are required to store a vector with a bit width of width.
 */
-#define VECTOR_SIZE64(width)      (((width & 0x3f) == 0) ? (width >> 6) : ((width >> 6) + 1))
+#define VECTOR_SIZE64(width)      (((width - 1) >> 6) + 1)
 
 
 /*! Contains the structure sizes for the various vector types (vector "type" supplemental field is the index to this array */
@@ -4273,9 +4273,14 @@ bool vector_unary_or(
         uint32       vall;
         uint32       valh;
         unsigned int i    = 0;
-        unsigned int size = (src->width - 1) >> 5;
+        unsigned int size = VECTOR_SIZE32( src->width );
         uint32       x    = 0;
-        while( (i < size) && ((~(x |= src->value.u32[i][VTYPE_INDEX_VAL_VALH]) & src->value.u32[i][VTYPE_INDEX_VAL_VALL]) == 0) ) i++;
+        printf( "In vector_unary_or, size: %d\n", size );
+        while( (i < size) && ((~src->value.u32[i][VTYPE_INDEX_VAL_VALH] & src->value.u32[i][VTYPE_INDEX_VAL_VALL]) == 0) ) {
+          x |= src->value.u32[i][VTYPE_INDEX_VAL_VALH];
+          i++;
+        }
+        printf( "  i: %d, size: %d\n", i, size );
         if( i < size ) {
           vall = 1;
           valh = 0;
@@ -4290,6 +4295,9 @@ bool vector_unary_or(
   }
 
   PROFILE_END;
+
+  printf( "SRC: " );  vector_display( src );
+  printf( "TGT: " );  vector_display( tgt );
 
   return( retval );
 
@@ -4567,6 +4575,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.41  2008/05/01 19:40:18  phase1geo
+ Fixing bug in unary_or operation.
+
  Revision 1.138.2.40  2008/05/01 18:18:49  phase1geo
  Implemented initial version of unary (reduction) inclusive OR function.
  Updated regressions.
