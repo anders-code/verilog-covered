@@ -1249,6 +1249,7 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  tvall = entry[VTYPE_INDEX_SIG_VALL];
         uint32  tvalh = entry[VTYPE_INDEX_SIG_VALH];
         uint32  set   = entry[VTYPE_INDEX_SIG_SET];
+#ifdef OBSOLETE
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) || ((set & mask) == 0) ) {
           if( (set & mask) != 0 ) {
             uint32 cmp = ((~fvalh & fvall) ^ ((~tvalh & tvall) & mask));
@@ -1260,6 +1261,19 @@ bool vector_set_coverage_and_assign_uint32(
           entry[VTYPE_INDEX_SIG_VALH] = (tvalh & ~mask) | fvalh;
           changed = TRUE;
         }
+#else
+        if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
+          if( (set & mask) != 0 ) {
+            uint32 cmp = ((~fvalh & fvall) ^ ((~tvalh & tvall) & mask));
+            entry[VTYPE_INDEX_SIG_TOG01] |= cmp & (~fvalh &  fvall);
+            entry[VTYPE_INDEX_SIG_TOG10] |= cmp & ( fvalh | ~fvall);
+          }
+          entry[VTYPE_INDEX_SIG_SET] |= mask;
+          entry[VTYPE_INDEX_SIG_VALL] = (tvall & ~mask) | fvall;
+          entry[VTYPE_INDEX_SIG_VALH] = (tvalh & ~mask) | fvalh;
+          changed = TRUE;
+        }
+#endif
       }
       break;
     case VTYPE_MEM :
@@ -1289,6 +1303,7 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  fvalh = scratchh[i] & mask;
         uint32  tvall = entry[VTYPE_INDEX_EXP_VALL];
         uint32  tvalh = entry[VTYPE_INDEX_EXP_VALH];
+#ifdef OBSOLETE
         uint32  set   = entry[VTYPE_INDEX_EXP_SET];
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) || ((set & mask) == 0) ) {
           entry[VTYPE_INDEX_EXP_SET] |= mask;
@@ -1296,6 +1311,14 @@ bool vector_set_coverage_and_assign_uint32(
           entry[VTYPE_INDEX_EXP_VALH] = (tvalh & ~mask) | fvalh;
           changed = TRUE;
         }
+#else
+        if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
+          entry[VTYPE_INDEX_EXP_SET] |= mask;
+          entry[VTYPE_INDEX_EXP_VALL] = (tvall & ~mask) | fvall;
+          entry[VTYPE_INDEX_EXP_VALH] = (tvalh & ~mask) | fvalh;
+          changed = TRUE;
+        }
+#endif
       }
       break;
     default :  assert( 0 );  break;
@@ -1847,8 +1870,15 @@ bool vector_bit_fill(
   switch( vec->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        uint32 vall[MAX_BIT_WIDTH>>5];
-        uint32 valh[MAX_BIT_WIDTH>>5];
+        uint32       vall[MAX_BIT_WIDTH>>5];
+        uint32       valh[MAX_BIT_WIDTH>>5];
+        unsigned int i;
+
+        /* Copy the needed data from the vector to the temporary value arrays */
+        for( i=(last >> 5); i<=((vec->width - 1) >> 5); i++ ) {
+          vall[i] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
+          valh[i] = vec->value.u32[i][VTYPE_INDEX_VAL_VALH];
+        }
 
         /* Perform bit fill */
         vector_bit_fill_uint32( vall, valh, last, vec->width );
@@ -4518,6 +4548,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.39  2008/05/01 17:51:17  phase1geo
+ Fixing bit_fill bug and a few other vector/expression bugs and updating regressions.
+
  Revision 1.138.2.38  2008/05/01 06:09:34  phase1geo
  Adding arshift operation functionality and reworking the bit_fill code.
  Updating regression files accordingly.  Checkpointing.

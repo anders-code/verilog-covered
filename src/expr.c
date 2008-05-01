@@ -5226,6 +5226,7 @@ void expression_assign(
             int  msb     = (*lsb + rhs->value->width) - 1;
             bool changed = vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
             if( rhs->value->width < lhs->value->width ) {
+              printf( "lsb: %d, msb: %d\n", *lsb, msb );
               changed |= vector_bit_fill( lhs->value, msb );
             }
 #ifdef DEBUG_MODE
@@ -5556,6 +5557,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.15  2008/05/01 17:51:17  phase1geo
+ Fixing bit_fill bug and a few other vector/expression bugs and updating regressions.
+
  Revision 1.329.2.14  2008/05/01 04:55:32  phase1geo
  Fixing issue with PEDGE and NEDGE.
 
