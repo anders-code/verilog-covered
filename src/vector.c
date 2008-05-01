@@ -1569,7 +1569,7 @@ bool vector_part_select_pull(
   int     lsb,        /*!< LSB offset */
   int     msb,        /*!< MSB offset */
   bool    set_mem_rd  /*!< If TRUE, set the memory read bit in the source */
-) { PROFILE(VECTOR_PART_SELECT);
+) { PROFILE(VECTOR_PART_SELECT_PULL);
 
   bool retval;  /* Return value for this function */
 
@@ -1603,7 +1603,7 @@ bool vector_part_select_push(
   int     lsb,        /*!< LSB offset */
   int     msb,        /*!< MSB offset */
   bool    set_mem_rd  /*!< If TRUE, set the memory read bit in the source */
-) { PROFILE(VECTOR_PART_SELECT);
+) { PROFILE(VECTOR_PART_SELECT_PUSH);
 
   bool retval;  /* Return value for this function */
 
@@ -1793,6 +1793,37 @@ void vector_set_other_comb_evals(
 } 
 
 /*!
+ Performs signedness bit fill for the given value arrays.
+*/
+static void vector_bit_fill_uint32(
+  uint32* vall,  /*!< Pointer to lower value array to bit fill */
+  uint32* valh,  /*!< Pointer to upper value array to bit fill */
+  int     last,  /*!< Index of last bit in vall/h to evalulate for bit fill */
+  int     width  /*!< Width of vall/h to fill */
+) { PROFILE(VECTOR_BIT_FILL_UINT32);
+
+  unsigned int msb_pos  = 1 << (last & 0x1f);
+  unsigned int msb_elem = last >> 5;
+  uint32       signl    = (vall[msb_elem] & msb_pos) ? 0xffffffff : 0;
+  uint32       signh    = (valh[msb_elem] & msb_pos) ? 0xffffffff : 0;
+
+  /* If any special sign-extension is necessary, handle it now */
+  if( (signl != 0) || (signh != 0) ) {
+    unsigned int i     = ((last + 1) >> 5);
+    uint32       fmask = 0xffffffff << ((last + 1) & 0x1f);
+    vall[i] |= signl & fmask;
+    valh[i] |= signh & fmask;
+    for( i++; i<((width - 1) >> 5); i++ ) {
+      vall[i] = signl;
+      valh[i] = signh;
+    }
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \param vec   Pointer to vector to bit-fill
  \param last  Bit position of last set value
 
@@ -1807,8 +1838,7 @@ bool vector_bit_fill(
   int     last
 ) { PROFILE(VECTOR_BIT_FILL);
 
-  bool     changed = FALSE;             /* Return value for this function */
-  int      i;                           /* Loop iterator */
+  bool changed = FALSE;  /* Return value for this function */
 
   assert( vec != NULL );
   assert( last >= 0 );
@@ -1817,41 +1847,14 @@ bool vector_bit_fill(
   switch( vec->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        unsigned int last_index = (last >> 5);
-        unsigned int next_index = ((last + 1) >> 5);
-        unsigned int bit_pos    = (last & 0x1f);
-        uint32       valh       = vec->value.u32[last_index][VTYPE_INDEX_VAL_VALH];
-        uint32       mask       = 0xffffffff << (bit_pos + 1);
-        uint32       scratchl[MAX_BIT_WIDTH >> 5];
-        uint32       scratchh[MAX_BIT_WIDTH >> 5];
-        if( (valh & (1 << bit_pos)) == 0 ) {
-          for( i=next_index; i<VECTOR_SIZE32(vec->width); i++ ) {
-            uint32* entry = vec->value.u32[i];
-            scratchl[i] = (entry[VTYPE_INDEX_VAL_VALL] & ~mask);
-            scratchh[i] = (entry[VTYPE_INDEX_VAL_VALH] & ~mask);
-            mask        = 0xffffffff;
-          }
-        } else {
-          uint32 vall = vec->value.u32[last_index][VTYPE_INDEX_VAL_VALL];
-          if( (vall & (1 << bit_pos)) == 0 ) {
-            for( i=next_index; i<VECTOR_SIZE32(vec->width); i++ ) {
-              uint32* entry = vec->value.u32[i];
-              scratchl[i] = (entry[VTYPE_INDEX_VAL_VALL] & ~mask);
-              scratchh[i] = (entry[VTYPE_INDEX_VAL_VALH] & ~mask) | mask;
-              mask        = 0xffffffff;
-            }
-          } else {
-            for( i=next_index; i<VECTOR_SIZE32(vec->width); i++ ) {
-              uint32* entry = vec->value.u32[i];
-              scratchl[i] = (entry[VTYPE_INDEX_VAL_VALL] & ~mask) | mask;
-              scratchh[i] = (entry[VTYPE_INDEX_VAL_VALH] & ~mask) | mask;
-              mask        = 0xffffffff;
-            }
-          }
-        }
+        uint32 vall[MAX_BIT_WIDTH>>5];
+        uint32 valh[MAX_BIT_WIDTH>>5];
+
+        /* Perform bit fill */
+        vector_bit_fill_uint32( vall, valh, last, vec->width );
 
         /* Get coverage information and perform assign */
-        vector_set_coverage_and_assign_uint32( vec, scratchl, scratchh, (last + 1), (vec->width - 1) );
+        (void)vector_set_coverage_and_assign_uint32( vec, vall, valh, (last + 1), (vec->width - 1) );
       }
       break;
     default :  assert( 0 );  break;
@@ -3564,44 +3567,33 @@ bool vector_op_arshift(
   vector* right
 ) { PROFILE(VECTOR_OP_ARSHIFT);
 
-  bool     retval = FALSE;  /* Return value for this function */
+  bool retval;  /* Return value for this function */
 
-#ifdef OBSOLETE
-  int      shift_val;       /* Number of bits to shift left */
-  vec_data sign;            /* Sign extended value for zero-fill */
-  vec_data unknown;         /* X-value for unknown fill */
-  int      i;               /* Loop iterator */
-
-  sign.all            = 0;
-  sign.part.val.value = left->value[left->width - 1].part.val.value;
-  unknown.all         = 2;
-
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+  if( vector_is_unknown( right ) ) {
+  
+    retval = vector_set_to_x( tgt );
     
-  if( right->suppl.part.unknown ) {
-
-    for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
-    }
-
   } else {
+  
+    int shift_val = vector_to_int( right );
+    
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32       vall[MAX_BIT_WIDTH>>5];
+          uint32       valh[MAX_BIT_WIDTH>>5];
+          unsigned int msb = left->width - 1;
 
-    /* Perform sign extend-fill */
-    for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &sign, 1, 0, i );
-    }
-
-    shift_val = vector_to_int( right );
-
-    if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
+          vector_rshift_uint32( left, vall, valh, shift_val, msb );
+          vector_bit_fill_uint32( vall, valh, (msb - shift_val), tgt->width );
+        
+          retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
-#endif
-
-  assert( 0 );
 
   PROFILE_END;
 
@@ -4526,6 +4518,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.38  2008/05/01 06:09:34  phase1geo
+ Adding arshift operation functionality and reworking the bit_fill code.
+ Updating regression files accordingly.  Checkpointing.
+
  Revision 1.138.2.37  2008/05/01 04:08:30  phase1geo
  Fixing bugs with assignment propagation.
 
