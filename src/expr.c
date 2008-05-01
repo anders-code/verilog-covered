@@ -5223,17 +5223,19 @@ void expression_assign(
       case EXP_OP_SIG      :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
-            int msb = (*lsb + rhs->value->width) - 1;
-            (void)vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
+            int  msb     = (*lsb + rhs->value->width) - 1;
+            bool changed = vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
             if( rhs->value->width < lhs->value->width ) {
-              (void)vector_bit_fill( lhs->value, msb );
+              changed |= vector_bit_fill( lhs->value, msb );
             }
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-            vsignal_propagate( lhs->sig, time );
+            if( changed ) {
+              vsignal_propagate( lhs->sig, time );
+            }
           }
         }
         if( assign ) {
@@ -5267,17 +5269,19 @@ void expression_assign(
             }
           }
           if( assign ) {
-            int msb = (*lsb + rhs->value->width) - 1;
-            (void)vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE );
+            int  msb     = (*lsb + rhs->value->width) - 1;
+            bool changed = vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE );
             if( rhs->value->width < lhs->value->width ) {
-              (void)vector_bit_fill( lhs->value, msb );
+              changed |= vector_bit_fill( lhs->value, msb );
             }
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-            vsignal_propagate( lhs->sig, time );
+            if( changed ) {
+              vsignal_propagate( lhs->sig, time );
+            }
           }
         }
         if( assign ) {
@@ -5297,17 +5301,19 @@ void expression_assign(
             (void)vector_part_select_push( lhs->value, src, intval1, (intval1 + lhs->value->width), FALSE /*TBD*/ );
           }
           if( assign ) {
-            int msb = (*lsb + rhs->value->width) - 1;
-            (void)vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
+            int  msb     = (*lsb + rhs->value->width) - 1;
+            bool changed = vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
             if( rhs->value->width < lhs->value->width ) {
-              (void)vector_bit_fill( lhs->value, msb );
+              changed |= vector_bit_fill( lhs->value, msb );
             }
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-    	    vsignal_propagate( lhs->sig, time );
+            if( changed ) {
+              vsignal_propagate( lhs->sig, time );
+            }
           }
         }
         if( assign ) {
@@ -5326,15 +5332,15 @@ void expression_assign(
             lhs->value->value.u32 = vstart + intval1;
           }
           if( assign ) {
-            VSUPPL_CLR_NZ_AND_UNK( lhs->value->suppl );
-            (void)vector_set_value( lhs->value, rhs->value->value.u32, intval2, *lsb, 0 );
-            vector_sync_nz_and_unk( lhs->sig->value );
+            bool changed = vector_set_value( lhs->value, rhs->value->value.u32, intval2, *lsb, 0 );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-            vsignal_propagate( lhs->sig, time );
+            if( changed ) {
+              vsignal_propagate( lhs->sig, time );
+            }
           }
         }
         if( assign ) {
@@ -5352,15 +5358,15 @@ void expression_assign(
             lhs->value->value.u32 = vstart + ((intval1 - intval2) + 1);
           }
           if( assign ) {
-            VSUPPL_CLR_NZ_AND_UNK( lhs->value->suppl );
-            (void)vector_set_value( lhs->value, rhs->value->value.u32, intval2, *lsb, 0 );
-            vector_sync_nz_and_unk( lhs->sig->value );
+            bool changed = vector_set_value( lhs->value, rhs->value->value.u32, intval2, *lsb, 0 );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
-            vsignal_propagate( lhs->sig, time );
+            if( changed ) {
+              vsignal_propagate( lhs->sig, time );
+            }
           }
         }
         if( assign ) {
@@ -5550,6 +5556,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.13  2008/05/01 04:08:29  phase1geo
+ Fixing bugs with assignment propagation.
+
  Revision 1.329.2.12  2008/04/30 05:56:21  phase1geo
  More work on right-shift function.  Added and connected part_select_push and part_select_pull
  functionality.  Also added new right-shift diagnostics.  Checkpointing.

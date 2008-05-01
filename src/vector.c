@@ -2317,7 +2317,7 @@ char* vector_to_string(
             uint32* entry = vec->value.u32[i>>5];
             if( ((entry[VTYPE_INDEX_VAL_VALH] >> (i & 0x1f)) & 0x1) == 1 ) {
               value = ((entry[VTYPE_INDEX_VAL_VALL] >> (i & 0x1f)) & 0x1) + 16;
-            } else {
+            } else if( ((entry[VTYPE_INDEX_VAL_VALL] >> (i & 0x1f)) & 0x1) == 1 ) {
               value = (value < 16) ? ((1 << ((i & 0x1f) % group)) | value) : value;
             }
             assert( pos < vec_size );
@@ -4526,6 +4526,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.37  2008/05/01 04:08:30  phase1geo
+ Fixing bugs with assignment propagation.
+
  Revision 1.138.2.36  2008/04/30 23:12:31  phase1geo
  Fixing simulation issues.
 
