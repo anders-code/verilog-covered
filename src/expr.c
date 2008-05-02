@@ -5224,12 +5224,7 @@ void expression_assign(
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
             int  msb     = (*lsb + rhs->value->width) - 1;
-            bool changed = vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
-            vector_display( lhs->value );
-            if( rhs->value->width < lhs->value->width ) {
-              printf( "lsb: %d, msb: %d\n", *lsb, msb );
-              changed |= vector_bit_fill( lhs->value, msb );
-            }
+            bool changed = vector_part_select_push( lhs->value, rhs->value, *lsb, msb, lhs->value->width, FALSE /*TBD*/ );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5255,13 +5250,13 @@ void expression_assign(
               if( dim_be ) {
                 if( intval1 <= vwidth ) {  // Only perform assignment if selected bit is within range
                   int lsb = vwidth - (intval1 + lhs->value->width);
-                  (void)vector_part_select_push( lhs->value, src, lsb, lsb, FALSE /* TBD */ );
+                  (void)vector_part_select_push( lhs->sig->value, src, lsb, lsb, 1, FALSE /* TBD */ );
                 } else {
                   assign = FALSE;
                 }
               } else {
                 if( intval1 < vwidth ) {   // Only perform assignment if selected bit is within range
-                  (void)vector_part_select_push( lhs->value, src, intval1, intval1, FALSE /* TBD */ );
+                  (void)vector_part_select_push( lhs->value, src, intval1, intval1, 1, FALSE /* TBD */ );
                 } else {
                   assign = FALSE;
                 }
@@ -5272,10 +5267,7 @@ void expression_assign(
           }
           if( assign ) {
             int  msb     = (*lsb + rhs->value->width) - 1;
-            bool changed = vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE );
-            if( rhs->value->width < lhs->value->width ) {
-              changed |= vector_bit_fill( lhs->value, msb );
-            }
+            bool changed = vector_part_select_push( lhs->sig->value, rhs->value, *lsb, msb, lhs->value->width, FALSE );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5297,17 +5289,14 @@ void expression_assign(
           if( dim_be ) {
             int lsb = vwidth - (intval1 + lhs->value->width);
             assert( intval1 <= vwidth );
-            (void)vector_part_select_push( lhs->value, src, (vwidth - (intval1 + lhs->value->width)), (vwidth - intval1), FALSE /*TBD*/ );
+            (void)vector_part_select_push( lhs->value, src, (vwidth - (intval1 + lhs->value->width)), (vwidth - intval1), 1, FALSE /*TBD*/ );
           } else {
             assert( intval1 < vwidth );
-            (void)vector_part_select_push( lhs->value, src, intval1, ((intval1 + lhs->value->width) - 1), FALSE /*TBD*/ );
+            (void)vector_part_select_push( lhs->value, src, intval1, ((intval1 + lhs->value->width) - 1), 1, FALSE /*TBD*/ );
           }
           if( assign ) {
             int  msb     = (*lsb + rhs->value->width) - 1;
-            bool changed = vector_part_select_push( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
-            if( rhs->value->width < lhs->value->width ) {
-              changed |= vector_bit_fill( lhs->value, msb );
-            }
+            bool changed = vector_part_select_push( lhs->sig->value, rhs->value, *lsb, msb, lhs->value->width, FALSE /*TBD*/ );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5558,6 +5547,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.17  2008/05/02 05:02:20  phase1geo
+ Completed initial pass of bit-fill code in vector_part_select_push function.
+ Updating regression files.  Checkpointing.
+
  Revision 1.329.2.16  2008/05/01 23:10:20  phase1geo
  Fix endianness issues and attempting to fix assignment bit-fill functionality.
  Checkpointing.

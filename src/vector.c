@@ -1623,29 +1623,54 @@ bool vector_part_select_pull(
  LSB and MSB range.
 */
 bool vector_part_select_push(
-  vector* tgt,        /*!< Pointer to vector that will store the result */
-  vector* src,        /*!< Pointer to vector containing data to store */
-  int     lsb,        /*!< LSB offset */
-  int     msb,        /*!< MSB offset */
-  bool    set_mem_rd  /*!< If TRUE, set the memory read bit in the source */
+  vector* tgt,         /*!< Pointer to vector that will store the result */
+  vector* src,         /*!< Pointer to vector containing data to store */
+  int     lsb,         /*!< LSB offset */
+  int     msb,         /*!< MSB offset */
+  int     fill_width,  /*!< Width of value to bit-fill */
+  bool    set_mem_rd   /*!< If TRUE, set the memory read bit in the source */
 ) { PROFILE(VECTOR_PART_SELECT_PUSH);
 
   bool retval;  /* Return value for this function */
-
-  printf( "In vector_part_select_push, lsb: %d, msb: %d\n", lsb, msb );
 
   switch( src->suppl.part.data_type ) {
     case VDATA_U32 :
       {
         uint32 valh[MAX_BIT_WIDTH>>5];
         uint32 vall[MAX_BIT_WIDTH>>5];
+        uint32 msb_mask = (1 << (msb & 0x1f));
 
         /* Shift data into place */
         vector_lshift_uint32( src, vall, valh, lsb, msb );
 
-        /* Perform bit-fill */
-        for( i=(msb >> 5); i<VECTOR_SIZE32( tgt->width ); i++ ) {
-          
+        /* If the msb bit is an X or Z, bit-fill with that value */
+        if( (valh[msb>>5] & msb_mask) != 0 ) {
+
+          uint32       lmask       = 0xffffffff << ((msb + 1) & 0x1f);
+          uint32       hmask       = 0xffffffff >> (31 - ((fill_width - 1) & 0x1f));
+          uint32       lfill       = ((vall[msb>>5] & msb_mask) != 0) ? 0xffffffff : 0x0;
+          uint32       hfill       = 0xffffffff;
+          unsigned int lfill_index = (msb + 1) >> 5;
+          unsigned int hfill_index = (fill_width - 1) >> 5;
+
+          if( lfill_index == hfill_index ) {
+            uint32 mask = lmask & hmask;
+
+            vall[lfill_index] |= lfill & mask;
+            valh[lfill_index] |= hfill & mask;
+          } else {
+            unsigned int i;
+
+            vall[lfill_index] |= lfill & lmask;
+            valh[hfill_index] |= hfill & lmask;
+            for( i=(lfill_index + 1); i<hfill_index; i++ ) {
+              vall[i] = lfill;
+              valh[i] = hfill;
+            }
+            vall[lfill_index] = lfill & hmask;
+            valh[hfill_index] = hfill & hmask;
+          }
+
         }
 
         retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
@@ -4600,6 +4625,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.43  2008/05/02 05:02:20  phase1geo
+ Completed initial pass of bit-fill code in vector_part_select_push function.
+ Updating regression files.  Checkpointing.
+
  Revision 1.138.2.42  2008/05/01 23:10:20  phase1geo
  Fix endianness issues and attempting to fix assignment bit-fill functionality.
  Checkpointing.

@@ -197,6 +197,7 @@ bool vector_part_select_push(
   vector* src,
   int     lsb,
   int     msb,
+  int     fill_width,
   bool    set_mem_rd
 );
 
@@ -479,6 +480,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.13  2008/05/02 05:02:20  phase1geo
+ Completed initial pass of bit-fill code in vector_part_select_push function.
+ Updating regression files.  Checkpointing.
+
  Revision 1.58.2.12  2008/04/30 05:56:21  phase1geo
  More work on right-shift function.  Added and connected part_select_push and part_select_pull
  functionality.  Also added new right-shift diagnostics.  Checkpointing.
