@@ -352,6 +352,9 @@ bool vector_op_ge( vector* tgt, vector* left, vector* right );
 /*! \brief Performs equal comparison of two vectors. */
 bool vector_op_eq( vector* tgt, vector* left, vector* right );
 
+/*! \brief Performs case equal comparison of two vectors and returns result. */
+bool vector_ceq_uint32( const vector* left, const vector* right );
+
 /*! \brief Performs case equal comparison of two vectors. */
 bool vector_op_ceq( vector* tgt, vector* left, vector* right );
 
@@ -480,6 +483,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.14  2008/05/02 22:06:13  phase1geo
+ Updating arc code for new data structure.  This code is completely untested
+ but does compile and has been completely rewritten.  Checkpointing.
+
  Revision 1.58.2.13  2008/05/02 05:02:20  phase1geo
  Completed initial pass of bit-fill code in vector_part_select_push function.
  Updating regression files.  Checkpointing.

@@ -1547,7 +1547,7 @@ union vsuppl_u;
 typedef union vsuppl_u vsuppl;
 
 /*!
- Supplemental field for information line in CDD file.
+ Supplemental field for vector structure.
 */
 union vsuppl_u {
   nibble   all;                    /*!< Allows us to set all bits in the suppl field */
@@ -1558,6 +1558,48 @@ union vsuppl_u {
     nibble owns_data :1;           /*!< Specifies if this vector owns its data array or not */
     nibble is_signed :1;           /*!< Specifies that this vector should be treated as a signed value */
     nibble is_2state :1;           /*!< Specifies that this vector should be treated as a 2-state value */
+  } part;
+};
+
+/*------------------------------------------------------------------------------*/
+
+union fsuppl_u;
+
+/*!
+ Renaming fsuppl_u field for convenience.
+*/
+typedef union fsuppl_u fsuppl;
+
+/*!
+ Supplemental field for FSM table structure.
+*/
+union fsuppl_u {
+  nibble all;                      /*!< Allows us to set all bits in the suppl field */
+  struct {
+    nibble known : 1;              /*!< Specifies if the possible state transitions are known */
+  } part;
+};
+
+/*------------------------------------------------------------------------------*/
+
+union asuppl_u;
+
+/*!
+ Renaming asuppl_u field for convenience.
+*/
+typedef union asuppl_u asuppl;
+
+/*!
+ Supplemental field for FSM table structure.
+*/
+union asuppl_u {
+  nibble all;                      /*!< Allows us to set all bits in the suppl field */
+  struct {
+    nibble hit_f      : 1;         /*!< Specifies if from->to arc was hit */
+    nibble hit_r      : 1;         /*!< Specifies if to->from arc was hit */
+    nibble bidir      : 1;         /*!< Specifies if both from->to and to->from transition is valid */
+    nibble excluded_f : 1;         /*!< Specifies if from->to transition should be excluded from coverage consideration */
+    nibble excluded_r : 1;         /*!< Specifies if to->from transition should be excluded from coverage consideration */
   } part;
 };
 
@@ -1573,6 +1615,8 @@ struct vecblk_s;
 struct expression_s;
 struct vsignal_s;
 struct fsm_s;
+struct fsm_table_arc_s;
+struct fsm_table_s;
 struct statement_s;
 struct sig_link_s;
 struct stmt_iter_s;
@@ -1673,6 +1717,16 @@ typedef struct vsignal_s     vsignal;
  Renaming FSM structure for convenience.
 */
 typedef struct fsm_s fsm;
+
+/*!
+ Renaming FSM table arc structure for convenience.
+*/
+typedef struct fsm_table_arc_s fsm_table_arc;
+
+/*!
+ Renaming FSM table structure for convenience.
+*/
+typedef struct fsm_table_s fsm_table;
 
 /*!
  Renaming statement structure for convenience.
@@ -2059,8 +2113,28 @@ struct fsm_s {
   expression* to_state;              /*!< Pointer to to_state expression */
   fsm_arc*    arc_head;              /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
   fsm_arc*    arc_tail;              /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
-  char*       table;                 /*!< FSM arc traversal table */
+  fsm_table*  table;                 /*!< FSM arc traversal table */
   bool        exclude;               /*!< Set to TRUE if the states/transitions of this table should be excluded as determined by pragmas */
+};
+
+/*!
+ Stores information for a uni-/bi-directional state transition.
+*/
+struct fsm_table_arc_s {
+  asuppl       suppl;                /*!< Supplemental field for this state transition entry */
+  unsigned int from;                 /*!< Index to from_state vector value in fsm_table vector array */
+  unsigned int to;                   /*!< Index to to_state vector value in fsm_table vector array */
+};
+
+/*!
+ Stores information for an FSM table (including states and state transitions).
+*/
+struct fsm_table_s {
+  fsuppl          suppl;             /*!< Supplemental field for FSM table */
+  vector**        states;            /*!< Contains list FSM state vectors that are valid for this FSM (VTYPE_VAL) */
+  unsigned int    num_states;        /*!< Contains the number of states stored in this table */
+  fsm_table_arc** arcs;              /*!< List of FSM state transitions */
+  unsigned int    num_arcs;          /*!< Contains the number of arcs stored in this table */
 };
 
 /*!
@@ -2698,6 +2772,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.8  2008/05/02 22:06:10  phase1geo
+ Updating arc code for new data structure.  This code is completely untested
+ but does compile and has been completely rewritten.  Checkpointing.
+
  Revision 1.294.2.7  2008/04/30 23:12:31  phase1geo
  Fixing simulation issues.
 

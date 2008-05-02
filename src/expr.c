@@ -3492,8 +3492,6 @@ bool expression_op_func__mbit(
   expression_set_tf_preclear( expr );
   expression_set_eval_NN( expr );
 
-  printf( "MBIT expr value: " );  vector_display( expr->value );
-
   PROFILE_END;
 
   return( retval );
@@ -5250,13 +5248,13 @@ void expression_assign(
               if( dim_be ) {
                 if( intval1 <= vwidth ) {  // Only perform assignment if selected bit is within range
                   int lsb = vwidth - (intval1 + lhs->value->width);
-                  (void)vector_part_select_push( lhs->sig->value, src, lsb, lsb, 1, FALSE /* TBD */ );
+                  (void)vector_part_select_push( lhs->value, rhs->value, lsb, lsb, 1, FALSE /* TBD */ );
                 } else {
                   assign = FALSE;
                 }
               } else {
                 if( intval1 < vwidth ) {   // Only perform assignment if selected bit is within range
-                  (void)vector_part_select_push( lhs->value, src, intval1, intval1, 1, FALSE /* TBD */ );
+                  (void)vector_part_select_push( lhs->value, rhs->value, intval1, intval1, 1, FALSE /* TBD */ );
                 } else {
                   assign = FALSE;
                 }
@@ -5267,7 +5265,7 @@ void expression_assign(
           }
           if( assign ) {
             int  msb     = (*lsb + rhs->value->width) - 1;
-            bool changed = vector_part_select_push( lhs->sig->value, rhs->value, *lsb, msb, lhs->value->width, FALSE );
+            bool changed = vector_part_select_push( src, lhs->value, *lsb, msb, lhs->value->width, FALSE );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5547,6 +5545,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.18  2008/05/02 22:06:11  phase1geo
+ Updating arc code for new data structure.  This code is completely untested
+ but does compile and has been completely rewritten.  Checkpointing.
+
  Revision 1.329.2.17  2008/05/02 05:02:20  phase1geo
  Completed initial pass of bit-fill code in vector_part_select_push function.
  Updating regression files.  Checkpointing.

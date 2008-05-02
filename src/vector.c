@@ -3213,6 +3213,37 @@ bool vector_op_eq(
 }
 
 /*!
+ \return Returns TRUE if the two input vectors are four-state bitwise-equal to each other; otherwise,
+         returns FALSE.
+*/
+bool vector_ceq_uint32(
+  const vector* left,   /*!< Pointer to left vector to compare */
+  const vector* right   /*!< Pointer to right vector to compare */
+) { PROFILE(VECTOR_CEQ_UINT32);
+
+  unsigned int lsize = VECTOR_SIZE32(left->width);
+  unsigned int rsize = VECTOR_SIZE32(right->width);
+  int          i     = ((lsize < rsize) ? rsize : lsize);
+  uint32       lvall;
+  uint32       lvalh;
+  uint32       rvall;
+  uint32       rvalh;
+
+  do {
+    i--;
+    lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
+    lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
+    rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
+    rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
+  } while( (i >= 0) && ((lvall & ~lvalh) == (rvall & ~rvalh)) );
+
+  PROFILE_END;
+
+  return( lvall == rvall );
+
+}
+
+/*!
  \param tgt    Target vector for storage of results.
  \param left   Expression on left of greater-than-or-equal sign.
  \param right  Expression on right of greater-than-or-equal sign.
@@ -3232,24 +3263,9 @@ bool vector_op_ceq(
   switch( tgt->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        uint32       scratchl = 0;
-        uint32       scratchh = 0;
-        unsigned int lsize = VECTOR_SIZE32(left->width);
-        unsigned int rsize = VECTOR_SIZE32(right->width);
-        int          i     = ((lsize < rsize) ? rsize : lsize);
-        uint32       lvall;
-        uint32       lvalh;
-        uint32       rvall;
-        uint32       rvalh;
-        do {
-          i--;
-          lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-          lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
-          rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-          rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-        } while( (i >= 0) && ((lvall & ~lvalh) == (rvall & ~rvalh)) );
-        scratchl = (lvall == rvall);
-        retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
+        uint32 scratchl = vector_ceq_uint32( left, right );
+        uint32 scratchh = 0;
+        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -4121,7 +4137,7 @@ bool vector_op_inc(
   vecblk* tvb
 ) { PROFILE(VECTOR_OP_INC);
 
-#ifdef OBSOLETE
+#ifdef SKIP
   vector* tmp1 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the same contents as the target */
   vector* tmp2 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the value of 1 */
 
@@ -4129,13 +4145,16 @@ bool vector_op_inc(
   vector_copy( tgt, tmp1 );
 
   /* Create a vector containing the value of 1 */
-  tmp2->value[0].part.val.value = 1;
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_U32 :  tmp2->value.u32[0][VTYPE_INDEX_VAL_VALL] = 1;  break;
+    default        :  assert( 0 );  break;
+  }
   
   /* Finally add the values and assign them back to the target */
   (void)vector_op_add( tgt, tmp1, tmp2 );
-#endif
-
+#else
   assert( 0 );
+#endif
 
   PROFILE_END;
 
@@ -4156,7 +4175,7 @@ bool vector_op_dec(
   vecblk* tvb
 ) { PROFILE(VECTOR_OP_DEC);
 
-#ifdef OBSOLETE
+#ifdef SKIP
   vector* tmp1 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the same contents as the target */
   vector* tmp2 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the value of 1 */
 
@@ -4164,13 +4183,16 @@ bool vector_op_dec(
   vector_copy( tgt, tmp1 );
 
   /* Create a vector containing the value of 1 */
-  tmp2->value[0].part.val.value = 1;
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_U32 :  tmp2->value.u32[0][VTYPE_INDEX_VAL_VALL] = 1;  break;
+    default        :  assert( 0 );  break;
+  }
 
   /* Finally add the values and assign them back to the target */
   (void)vector_op_subtract( tgt, tmp1, tmp2, tvb );
-#endif
-
+#else
   assert( 0 );
+#endif
 
   PROFILE_END;
 
@@ -4278,10 +4300,31 @@ bool vector_unary_nand(
   vector* src
 ) { PROFILE(VECTOR_UNARY_NAND);
 
-  bool retval;
+  bool retval;  /* Return value for this function */
 
-  /* TBD */
+#ifdef SKIP
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        unsigned int i;
+        unsigned int ssize = VECTOR_SIZE32( src->width );
+        uint32       valh  = 0;
+        uint32       vall  = 0;
+        uint32       lmask = 0xffffffff >> (31 - ((src->width - 1) & 0x1f));
+        for( i=0; i<(ssize-1); i++ ) {
+          valh |= (src->value.u32[i][VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
+          vall |= ~valh & ((src->value.u32[i][VTYPE_INDEX_VAL_VALL] == 0xffffffff) ? 0 : 1);
+        }
+        valh |= (src->value.u32[i][VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
+        vall |= ~valh & ((src->value.u32[i][VTYPE_INDEX_VAL_VALL] == lmask) ? 0 : 1);
+        retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  } 
+#else
   assert( 0 );
+#endif 
 
   PROFILE_END;
 
@@ -4353,10 +4396,36 @@ bool vector_unary_nor(
   vector* src
 ) { PROFILE(VECTOR_UNARY_NOR);
 
-  bool retval;
+  bool retval;  /* Return value for this function */
 
-  /* TBD */
+#ifdef SKIP
+  switch( src->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        uint32       vall;
+        uint32       valh;
+        unsigned int i    = 0;
+        unsigned int size = VECTOR_SIZE32( src->width );
+        uint32       x    = 0;
+        while( (i < size) && ((~src->value.u32[i][VTYPE_INDEX_VAL_VALH] & src->value.u32[i][VTYPE_INDEX_VAL_VALL]) == 0) ) {
+          x |= src->value.u32[i][VTYPE_INDEX_VAL_VALH];
+          i++;
+        }
+        if( i < size ) {
+          vall = 0;
+          valh = 0;
+        } else {
+          vall = (x == 0);
+          valh = (x != 0);
+        }
+        retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+#else
   assert( 0 );
+#endif
 
   PROFILE_END;
 
@@ -4377,10 +4446,38 @@ bool vector_unary_xor(
   vector* src
 ) { PROFILE(VECTOR_UNARY_XOR);
 
-  bool retval;
+  bool retval;  /* Return value for this function */
 
-  /* TBD */
+#ifdef SKIP
+  switch( src->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        uint32       vall = 0;
+        uint32       valh = 0;
+        unsigned int i    = 0;
+        unsigned int size = VECTOR_SIZE32( src->width );
+        do {
+          if( src->value.u32[i][VTYPE_INDEX_VAL_VALH] != 0 ) {
+            vall = 0;
+            valh = 1;
+          } else {
+            unsigned int j;
+            uint32       tval = src->value.u32[i][VTYPE_INDEX_VAL_VALL];
+            for( j=1; j<32; j<<=1 ) {
+              tval = tval ^ (tval >> j);
+            }
+            vall = (vall ^ tval) & 0x1;
+          }
+          i++;
+        } while( (i < size) && (valh == 0) );
+        retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+#else
   assert( 0 );
+#endif
 
   PROFILE_END;
 
@@ -4401,10 +4498,38 @@ bool vector_unary_nxor(
   vector* src
 ) { PROFILE(VECTOR_UNARY_NXOR);
 
-  bool retval;
+  bool retval;  /* Return value for this function */
 
-  /* TBD */
+#ifdef SKIP
+  switch( src->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        uint32       vall = 1;
+        uint32       valh = 0;
+        unsigned int i    = 0;
+        unsigned int size = VECTOR_SIZE32( src->width );
+        do {
+          if( src->value.u32[i][VTYPE_INDEX_VAL_VALH] != 0 ) {
+            vall = 0;
+            valh = 1;
+          } else {
+            unsigned int j;
+            uint32       tval = src->value.u32[i][VTYPE_INDEX_VAL_VALL];
+            for( j=1; j<32; j<<=1 ) {
+              tval = tval ^ (tval >> j);
+            }
+            vall = (vall ^ tval) & 0x1;
+          }
+          i++;
+        } while( (i < size) && (valh == 0) );
+        retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+#else
   assert( 0 );
+#endif
 
   PROFILE_END;
 
@@ -4625,6 +4750,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.44  2008/05/02 22:06:13  phase1geo
+ Updating arc code for new data structure.  This code is completely untested
+ but does compile and has been completely rewritten.  Checkpointing.
+
  Revision 1.138.2.43  2008/05/02 05:02:20  phase1geo
  Completed initial pass of bit-fill code in vector_part_select_push function.
  Updating regression files.  Checkpointing.
