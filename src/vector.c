@@ -4262,7 +4262,6 @@ bool vector_unary_nand(
 
   bool retval;  /* Return value for this function */
 
-#ifdef SKIP
   switch( tgt->suppl.part.data_type ) {
     case VDATA_U32 :
       {
@@ -4282,9 +4281,6 @@ bool vector_unary_nand(
       break;
     default :  assert( 0 );  break;
   } 
-#else
-  assert( 0 );
-#endif 
 
   PROFILE_END;
 
@@ -4358,7 +4354,6 @@ bool vector_unary_nor(
 
   bool retval;  /* Return value for this function */
 
-#ifdef SKIP
   switch( src->suppl.part.data_type ) {
     case VDATA_U32 :
       {
@@ -4383,9 +4378,6 @@ bool vector_unary_nor(
       break;
     default :  assert( 0 );  break;
   }
-#else
-  assert( 0 );
-#endif
 
   PROFILE_END;
 
@@ -4408,7 +4400,6 @@ bool vector_unary_xor(
 
   bool retval;  /* Return value for this function */
 
-#ifdef SKIP
   switch( src->suppl.part.data_type ) {
     case VDATA_U32 :
       {
@@ -4435,9 +4426,6 @@ bool vector_unary_xor(
       break;
     default :  assert( 0 );  break;
   }
-#else
-  assert( 0 );
-#endif
 
   PROFILE_END;
 
@@ -4460,7 +4448,6 @@ bool vector_unary_nxor(
 
   bool retval;  /* Return value for this function */
 
-#ifdef SKIP
   switch( src->suppl.part.data_type ) {
     case VDATA_U32 :
       {
@@ -4487,9 +4474,6 @@ bool vector_unary_nxor(
       break;
     default :  assert( 0 );  break;
   }
-#else
-  assert( 0 );
-#endif
 
   PROFILE_END;
 
@@ -4710,6 +4694,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.47  2008/05/03 23:58:22  phase1geo
+ Removing skipped vector functions and updating regression suite files
+ accordingly.  Checkpointing.
+
  Revision 1.138.2.46  2008/05/03 20:10:38  phase1geo
  Fixing some bugs, completing initial pass of vector_op_multiply and updating
  regression files accordingly.  Checkpointing.
