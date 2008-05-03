@@ -303,6 +303,8 @@ void arc_add(
 
   assert( table != NULL );
 
+  printf( "IN arc_add...\n" );
+
   /* Attempt to find the state transition */
   side = arc_find( table, fr_st, to_st, &from_index, &to_index, &arcs_index );
 
@@ -316,13 +318,15 @@ void arc_add(
 
     /* Add new state(s) */
     if( from_index == -1 ) {
-      vector_clone( fr_st, &(table->states[table->num_states]) );
       from_index = table->num_states;
+      table->states[from_index] = vector_create( fr_st->width, VTYPE_VAL, fr_st->suppl.part.data_type, TRUE );
+      vector_copy( fr_st, table->states[from_index] );
       table->num_states++;
     }
     if( to_index == -1 ) {
-      vector_clone( to_st, &(table->states[table->num_states]) );
       to_index = table->num_states;
+      table->states[to_index] = vector_create( to_st->width, VTYPE_VAL, to_st->suppl.part.data_type, TRUE );
+      vector_copy( to_st, table->states[to_index] );
       table->num_states++;
     }
 
@@ -874,6 +878,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.60.2.5  2008/05/03 20:10:37  phase1geo
+ Fixing some bugs, completing initial pass of vector_op_multiply and updating
+ regression files accordingly.  Checkpointing.
+
  Revision 1.60.2.4  2008/05/03 04:06:54  phase1geo
  Fixing some arc bugs and updating regressions accordingly.  Checkpointing.
 

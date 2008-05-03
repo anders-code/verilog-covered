@@ -4887,6 +4887,9 @@ bool expression_operate(
       fsm_table_set( expr->table );
       /* If from_state was not specified, we need to copy the current contents of to_state to from_state */
       if( expr->table->from_state->id == expr->id ) {
+        printf( "BEFORE COPY: " );
+        expression_display( expr );  vector_display( expr->value );
+        expression_display( expr->table->from_state );  vector_display( expr->table->from_state->value );
         vector_copy( expr->value, expr->table->from_state->value );
       }
     }
@@ -5545,6 +5548,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.19  2008/05/03 20:10:37  phase1geo
+ Fixing some bugs, completing initial pass of vector_op_multiply and updating
+ regression files accordingly.  Checkpointing.
+
  Revision 1.329.2.18  2008/05/02 22:06:11  phase1geo
  Updating arc code for new data structure.  This code is completely untested
  but does compile and has been completely rewritten.  Checkpointing.

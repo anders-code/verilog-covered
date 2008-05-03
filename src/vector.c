@@ -202,14 +202,17 @@ void vector_copy(
   assert( from_vec != NULL );
   assert( to_vec != NULL );
   assert( from_vec->width == to_vec->width );
-  assert( from_vec->suppl.part.type == to_vec->suppl.part.type );
   assert( from_vec->suppl.part.data_type == to_vec->suppl.part.data_type );
 
   switch( to_vec->suppl.part.data_type ) {
     case VDATA_U32 :
-      for( i=0; i<VECTOR_SIZE32(from_vec->width); i++ ) {
-        for( j=0; j<vector_type_sizes[to_vec->suppl.part.type]; j++ ) {
-          to_vec->value.u32[i][j] = from_vec->value.u32[i][j];
+      {
+        unsigned int size      = VECTOR_SIZE32( from_vec->width );
+        unsigned int type_size = (from_vec->suppl.part.type != to_vec->suppl.part.type) ? 2 : vector_type_sizes[to_vec->suppl.part.type];
+        for( i=0; i<size; i++ ) {
+          for( j=0; j<type_size; j++ ) {
+            to_vec->value.u32[i][j] = from_vec->value.u32[i][j];
+          }
         }
       }
       break;
@@ -3960,69 +3963,26 @@ bool vector_op_multiply(
   vector* right
 ) { PROFILE(VECTOR_OP_MULTIPLY);
 
-  bool     retval   = FALSE;                      /* Return value for this function */
+  bool retval;  /* Return value for this function */
 
-#ifdef OBSOLETE
-  vector   vec;                                   /* Intermediate vector */
-  vec_data vec_val[32];                           /* Intermediate value */
-  nibble   lunknown = left->suppl.part.unknown;   /* Set to 1 if left vector is unknown */
-  nibble   runknown = right->suppl.part.unknown;  /* Set to 1 if right vector is unknown */
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
 
-  /* Initialize temporary vectors */
-  vector_init( &vec, vec_val, 0x0, FALSE, 32, VTYPE_VAL );
-
-  /* Perform 4-state multiplication */
-  if( !lunknown && !runknown ) {
-
-    vector_from_int( &vec, (vector_to_int( left ) * vector_to_int( right )) );
-
-  } else if( lunknown ) {
-
-    if( runknown ) {
-
-      int i;
-      for( i=0; i<vec.width; i++ ) {
-        vec.value[i].part.val.value = 2;
-      }
-
-    } else {
-
-      if( vector_to_int( right ) == 0 ) {
-        vector_from_int( &vec, 0 );
-      } else if( vector_to_int( right ) == 1 ) {
-        (void)vector_set_value( &vec, left->value, left->width, 0, 0 );
-      } else {
-        int i;
-        for( i=0; i<vec.width; i++ ) {
-          vec.value[i].part.val.value = 2;
-        }
-      }
-
-    }
+    retval = vector_set_to_x( tgt );
 
   } else {
 
-    if( vector_to_int( left ) == 0 ) {
-      vector_from_int( &vec, 0 );
-    } else if( vector_to_int( left ) == 1 ) {
-      (void)vector_set_value( &vec, right->value, right->width, 0, 0 );
-    } else {
-      int i;
-      for( i=0; i<vec.width; i++ ) {
-        vec.value[i].part.val.value = 2;
-      }
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32 vall = left->value.u32[0][VTYPE_INDEX_VAL_VALL] * right->value.u32[0][VTYPE_INDEX_VAL_VALL];
+          uint32 valh = 0;
+          retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, (tgt->width - 1) );
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
-
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
-
-  /* Set target value */
-  retval = vector_set_value( tgt, vec.value, vec.width, 0, 0 );
-#endif
-
-  assert( 0 );
 
   PROFILE_END;
 
@@ -4750,6 +4710,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.46  2008/05/03 20:10:38  phase1geo
+ Fixing some bugs, completing initial pass of vector_op_multiply and updating
+ regression files accordingly.  Checkpointing.
+
  Revision 1.138.2.45  2008/05/03 04:06:54  phase1geo
  Fixing some arc bugs and updating regressions accordingly.  Checkpointing.
 

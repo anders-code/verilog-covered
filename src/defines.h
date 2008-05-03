@@ -947,30 +947,6 @@ typedef enum exp_op_type_e {
 /*! @} */
 
 /*!
- \addtogroup arc_fields
-
- The following defines specify the bit fields in a state transition arc entry.
-
- @{
-*/
-
-#define ARC_HIT_F               0       /*!< From state -> to state hit - forward */
-#define ARC_HIT_R               1       /*!< To state -> from state hit - reverse */
-#define ARC_BIDIR               2       /*!< Entry is bidirectional */
-#define ARC_NOT_UNIQUE_R        3       /*!< Right state is not unique */
-#define ARC_NOT_UNIQUE_L        4       /*!< Left state is not unique */
-#define ARC_EXCLUDED_F          5       /*!< Specifies if the forward transition is excluded or not */
-#define ARC_EXCLUDED_R          6       /*!< Specifies if the backward transition is excluded or not */
-#define ARC_ENTRY_SUPPL_SIZE    7       /*!< Number of bits comprising entry supplemental field */
-#define ARC_ENTRY_SUPPL_MASK    0x7f    /*!< Value to mask off entry supplement field */
-
-#define ARC_STATUS_SIZE         7       /*!< Number of characters comprising arc status */
-
-#define ARC_TRANS_KNOWN         0       /*!< Bit position of transitions known field in suppl */
-
-/*! @} */
-
-/*!
  \addtogroup attribute_types Attribute Types
 
  The following defines specify the attribute types that are parseable by Covered.
@@ -2772,6 +2748,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.9  2008/05/03 20:10:37  phase1geo
+ Fixing some bugs, completing initial pass of vector_op_multiply and updating
+ regression files accordingly.  Checkpointing.
+
  Revision 1.294.2.8  2008/05/02 22:06:10  phase1geo
  Updating arc code for new data structure.  This code is completely untested
  but does compile and has been completely rewritten.  Checkpointing.
