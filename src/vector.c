@@ -266,8 +266,8 @@ void vector_copy_range(
  Copies the contents of the from_vec to the to_vec, allocating new memory.
 */
 void vector_clone(
-            const vector*  from_vec,
-  /*@out@*/ vector**       to_vec
+            const vector* from_vec,
+  /*@out@*/ vector**      to_vec
 ) { PROFILE(VECTOR_CLONE);
 
   if( from_vec == NULL ) {
@@ -4750,6 +4750,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.45  2008/05/03 04:06:54  phase1geo
+ Fixing some arc bugs and updating regressions accordingly.  Checkpointing.
+
  Revision 1.138.2.44  2008/05/02 22:06:13  phase1geo
  Updating arc code for new data structure.  This code is completely untested
  but does compile and has been completely rewritten.  Checkpointing.

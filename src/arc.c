@@ -296,13 +296,10 @@ void arc_add(
   bool          exclude
 ) { PROFILE(ARC_ADD);
 
-  char* tmp;          /* Temporary char array holder */
-  int   entry_width;  /* Width of a signal entry in the arc array */
-  int   i;            /* Loop iterator */
-  int   from_index;   /* Index of found from_state in states array */
-  int   to_index;     /* Index of found to_state in states array */
-  int   arcs_index;   /* Index of found state transition in arcs array */
-  int   side;         /* Specifies the direction of matched entry */
+  int from_index;  /* Index of found from_state in states array */
+  int to_index;    /* Index of found to_state in states array */
+  int arcs_index;  /* Index of found state transition in arcs array */
+  int side;        /* Specifies the direction of matched entry */
 
   assert( table != NULL );
 
@@ -333,8 +330,6 @@ void arc_add(
 
   /* If we need to add a new arc, do so now */
   if( arcs_index == -1 ) {
-
-    int new_arcs = table->num_arcs++;
 
     /* Reallocate new memory */
     table->arcs = (fsm_table_arc**)realloc_safe( table->arcs, (sizeof( fsm_table_arc* ) * table->num_arcs), (sizeof( fsm_table_arc* ) * (table->num_arcs + 1)) );
@@ -529,18 +524,18 @@ void arc_db_write(
 
   assert( table != NULL );
 
-  fprintf( file, "%x %d ", table->suppl.all, table->num_states );
+  fprintf( file, " %x %d  ", table->suppl.all, table->num_states );
 
   /* Output state information */
   for( i=0; i<table->num_states; i++ ) {
     vector_db_write( table->states[i], file, TRUE );
-    fprintf( file, " " );
+    fprintf( file, "  " );
   }
 
   /* Output arc information */
   fprintf( file, " %d", table->num_arcs );
   for( i=0; i<table->num_arcs; i++ ) {
-    fprintf( file, " %d %d %x", table->arcs[i]->from, table->arcs[i]->to, table->arcs[i]->suppl.all );
+    fprintf( file, "  %d %d %x", table->arcs[i]->from, table->arcs[i]->to, table->arcs[i]->suppl.all );
   }
 
 }
@@ -579,6 +574,8 @@ void arc_db_read(
       unsigned int i;
       int          num_arcs;
 
+      *line += chars_read;
+
       /* Allocate state array */
       (*table)->states     = (vector**)malloc_safe( sizeof( vector* ) * num_states );
       (*table)->num_states = num_states;
@@ -592,6 +589,8 @@ void arc_db_read(
 
       if( sscanf( *line, "%d%n", &num_arcs, &chars_read ) == 1 ) {
 
+        *line += chars_read;
+
         /* Allocate arcs array */
         (*table)->arcs     = (fsm_table_arc**)malloc_safe( sizeof( fsm_table_arc* ) * num_arcs );
         (*table)->num_arcs = num_arcs;
@@ -604,10 +603,12 @@ void arc_db_read(
           /* Allocate fsm_table_arc */
           (*table)->arcs[i] = (fsm_table_arc*)malloc_safe( sizeof( fsm_table_arc ) );
 
-          if( sscanf( *line, "%d %d %x%n", &((*table)->arcs[i]->from), &((*table)->arcs[i]->to), &((*table)->arcs[i]->suppl.all) ) != 3 ) {
+          if( sscanf( *line, "%d %d %x%n", &((*table)->arcs[i]->from), &((*table)->arcs[i]->to), &((*table)->arcs[i]->suppl.all), &chars_read ) != 3 ) {
             print_output( "Unable to parse FSM table information from database.  Unable to read.", FATAL, __FILE__, __LINE__ );
             printf( "arc Throw A\n" );
             Throw 0;
+          } else {
+            *line += chars_read;
           }
 
         }
@@ -873,6 +874,9 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.60.2.4  2008/05/03 04:06:54  phase1geo
+ Fixing some arc bugs and updating regressions accordingly.  Checkpointing.
+
  Revision 1.60.2.3  2008/05/02 22:06:10  phase1geo
  Updating arc code for new data structure.  This code is completely untested
  but does compile and has been completely rewritten.  Checkpointing.
