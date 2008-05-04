@@ -194,10 +194,11 @@ bool vector_part_select_pull(
 /*! \brief Sets specified target vector to bit range of source vector. */
 bool vector_part_select_push(
   vector* tgt,
+  int     tgt_lsb,
+  int     tgt_msb,
   vector* src,
-  int     lsb,
-  int     msb,
-  int     fill_width,
+  int     src_lsb,
+  int     src_msb,
   bool    set_mem_rd
 );
 
@@ -238,7 +239,7 @@ void vector_set_other_comb_evals(
 );
 
 /*! \brief Bit fills the given vector with the appropriate value starting at the last bit */
-bool vector_bit_fill(
+bool vector_sign_extend(
   vector* vec,
   int     last
 );
@@ -483,6 +484,12 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.15  2008/05/04 22:05:29  phase1geo
+ Adding bit-fill in vector_set_static and changing name of old bit-fill functions
+ in vector.c to sign_extend to reflect their true nature.  Added new diagnostics
+ to regression suite to verify single-bit select bit-fill (these tests do not work
+ at this point).  Checkpointing.
+
  Revision 1.58.2.14  2008/05/02 22:06:13  phase1geo
  Updating arc code for new data structure.  This code is completely untested
  but does compile and has been completely rewritten.  Checkpointing.

@@ -84,7 +84,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 rshift1.3       rshift2         rshift2.1       rshift2.2       rshift2.3 \
                 rshift3         rshift3.1       rshift4         rshift4.1       rshift4.2 \
                 sbit_sel1       sbit_sel1.1     sbit_sel2       sbit_sel2.1     sbit_sel3 \
-                sbit_sel3.1     signed1         signed3         signed3.1       signed3.2 \
+                sbit_sel3.1     sbit_sel4       sbit_sel4.1     sbit_sel4.2     sbit_sel4.3 \
+                signed1         signed3         signed3.1       signed3.2 \
                 signed3.3       signed3.4       signed3.5       signed3.6       signed4 \
                 signed4.2       slist1          slist1.1        slist1.2        slist1.3 \
                 slist2          slist3          slist3.2        slist4          static1 \
