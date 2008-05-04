@@ -2311,7 +2311,7 @@ char* vector_to_string(
   if( base == QSTRING ) {
 
     int i, j;
-    int vec_size  = ((vec->width & 0x7) == 0) ? ((vec->width >> 3) + 1) : ((vec->width >> 3) + 2);
+    int vec_size  = ((vec->width - 1) >> 3) + 2;
     int pos       = 0;
 
     /* Allocate memory for string from the heap */
@@ -2320,7 +2320,7 @@ char* vector_to_string(
     switch( vec->suppl.part.data_type ) {
       case VDATA_U32 :
         {
-          int offset = (vec->width >> 3) & 0x3;
+          int offset = (((vec->width >> 3) & 0x3) == 0) ? 4 : ((vec->width >> 3) & 0x3);
           for( i=VECTOR_SIZE32(vec->width); i--; ) {
             uint32 val = vec->value.u32[i][VTYPE_INDEX_VAL_VALL]; 
             for( j=(offset - 1); j>=0; j-- ) {
@@ -4694,6 +4694,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.48  2008/05/04 04:22:11  phase1geo
+ Fixing vector_to_string bug for quoted strings and updating regression files.
+ Checkpointing.
+
  Revision 1.138.2.47  2008/05/03 23:58:22  phase1geo
  Removing skipped vector functions and updating regression suite files
  accordingly.  Checkpointing.
