@@ -5242,6 +5242,11 @@ void expression_assign(
         break;
       case EXP_OP_SBIT_SEL :
         if( lhs->sig->suppl.part.assigned == 1 ) {
+          bool changed = FALSE;
+          if( assign ) {
+            int msb = (*lsb + rhs->value->width) - 1;
+            (void)vector_part_select_pull( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
+          }
           if( eval_lhs ) {
             sim_expression( lhs->left, thr, time, TRUE );
           }
@@ -5251,13 +5256,13 @@ void expression_assign(
               if( dim_be ) {
                 if( intval1 <= vwidth ) {  // Only perform assignment if selected bit is within range
                   int lsb = vwidth - (intval1 + lhs->value->width);
-                  (void)vector_part_select_push( lhs->value, rhs->value, lsb, lsb, 1, FALSE /* TBD */ );
+                  changed = vector_part_select_push( src, lhs->value, lsb, lsb, 1, FALSE /* TBD */ );
                 } else {
                   assign = FALSE;
                 }
               } else {
                 if( intval1 < vwidth ) {   // Only perform assignment if selected bit is within range
-                  (void)vector_part_select_push( lhs->value, rhs->value, intval1, intval1, 1, FALSE /* TBD */ );
+                  changed = vector_part_select_push( src, lhs->value, intval1, intval1, 1, FALSE /* TBD */ );
                 } else {
                   assign = FALSE;
                 }
@@ -5267,8 +5272,6 @@ void expression_assign(
             }
           }
           if( assign ) {
-            int  msb     = (*lsb + rhs->value->width) - 1;
-            bool changed = vector_part_select_push( src, lhs->value, *lsb, msb, lhs->value->width, FALSE );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5285,19 +5288,20 @@ void expression_assign(
         break;
       case EXP_OP_MBIT_SEL :
         if( lhs->sig->suppl.part.assigned == 1 ) {
-          intval1 = ((dim_be ? vector_to_int( lhs->left->value ) : vector_to_int( lhs->right->value )) - dim_lsb) * dim_width;
-          assert( intval1 >= 0 );
-          if( dim_be ) {
-            int lsb = vwidth - (intval1 + lhs->value->width);
-            assert( intval1 <= vwidth );
-            (void)vector_part_select_push( lhs->value, src, (vwidth - (intval1 + lhs->value->width)), (vwidth - intval1), 1, FALSE /*TBD*/ );
-          } else {
-            assert( intval1 < vwidth );
-            (void)vector_part_select_push( lhs->value, src, intval1, ((intval1 + lhs->value->width) - 1), 1, FALSE /*TBD*/ );
-          }
+          bool changed = FALSE;
           if( assign ) {
-            int  msb     = (*lsb + rhs->value->width) - 1;
-            bool changed = vector_part_select_push( lhs->sig->value, rhs->value, *lsb, msb, lhs->value->width, FALSE /*TBD*/ );
+            int msb = (*lsb + rhs->value->width) - 1;
+            (void)vector_part_select_pull( lhs->value, rhs->value, *lsb, msb, FALSE /*TBD*/ );
+            intval1 = ((dim_be ? vector_to_int( lhs->left->value ) : vector_to_int( lhs->right->value )) - dim_lsb) * dim_width;
+            assert( intval1 >= 0 );
+            if( dim_be ) {
+              int lsb = vwidth - (intval1 + lhs->value->width);
+              assert( intval1 <= vwidth );
+              changed = vector_part_select_push( src, lhs->value, (vwidth - (intval1 + lhs->value->width)), (vwidth - intval1), 1, FALSE /*TBD*/ );
+            } else {
+              assert( intval1 < vwidth );
+              changed = vector_part_select_push( src, lhs->value, intval1, ((intval1 + lhs->value->width) - 1), 1, FALSE /*TBD*/ );
+            }
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5548,6 +5552,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.20  2008/05/04 05:48:40  phase1geo
+ Attempting to fix expression_assign.  Updated regression files.
+
  Revision 1.329.2.19  2008/05/03 20:10:37  phase1geo
  Fixing some bugs, completing initial pass of vector_op_multiply and updating
  regression files accordingly.  Checkpointing.

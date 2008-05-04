@@ -1463,8 +1463,6 @@ static void vector_rshift_uint32(
     unsigned int i;
     uint32       lmask = 0xffffffff >> (31 - (msb & 0x1f));
 
-    printf( "lmask: %x, diff: %d, msb: %d\n", lmask, diff, msb );
-
     for( i=diff; i<(msb >> 5); i++ ) {
       vall[i-diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
       valh[i-diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALH];
@@ -1661,16 +1659,16 @@ bool vector_part_select_push(
 
             vall[lfill_index] |= lfill & mask;
             valh[lfill_index] |= hfill & mask;
-          } else {
+          } else if( lfill_index < hfill_index ) {
             unsigned int i;
 
             vall[lfill_index] |= lfill & lmask;
-            valh[hfill_index] |= hfill & lmask;
+            valh[lfill_index] |= hfill & lmask;
             for( i=(lfill_index + 1); i<hfill_index; i++ ) {
               vall[i] = lfill;
               valh[i] = hfill;
             }
-            vall[lfill_index] = lfill & hmask;
+            vall[hfill_index] = lfill & hmask;
             valh[hfill_index] = hfill & hmask;
           }
 
@@ -4519,8 +4517,10 @@ bool vector_unary_not(
 
   PROFILE_END;
 
+/*
   printf( "SRC: " );  vector_display( src );
   printf( "TGT: " );  vector_display( tgt );
+*/
 
   return( retval );
 
@@ -4694,6 +4694,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.49  2008/05/04 05:48:40  phase1geo
+ Attempting to fix expression_assign.  Updated regression files.
+
  Revision 1.138.2.48  2008/05/04 04:22:11  phase1geo
  Fixing vector_to_string bug for quoted strings and updating regression files.
  Checkpointing.

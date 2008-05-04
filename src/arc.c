@@ -303,8 +303,6 @@ void arc_add(
 
   assert( table != NULL );
 
-  printf( "IN arc_add...\n" );
-
   /* Attempt to find the state transition */
   side = arc_find( table, fr_st, to_st, &from_index, &to_index, &arcs_index );
 
@@ -878,6 +876,9 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.60.2.6  2008/05/04 05:48:40  phase1geo
+ Attempting to fix expression_assign.  Updated regression files.
+
  Revision 1.60.2.5  2008/05/03 20:10:37  phase1geo
  Fixing some bugs, completing initial pass of vector_op_multiply and updating
  regression files accordingly.  Checkpointing.
