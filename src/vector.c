@@ -1641,21 +1641,21 @@ bool vector_part_select_push(
   switch( src->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        uint32 valh[MAX_BIT_WIDTH>>5];
-        uint32 vall[MAX_BIT_WIDTH>>5];
-        uint32 msb_mask = (1 << (tgt_msb & 0x1f));
+        uint32       valh[MAX_BIT_WIDTH>>5];
+        uint32       vall[MAX_BIT_WIDTH>>5];
+        unsigned int diff;
+        uint32       msb_mask;
 
         /* Left-shift the source vector to match up with target LSB */
         if( src_lsb < tgt_lsb ) {
-          unsigned int diff = (tgt_lsb - src_lsb);
+          diff = (tgt_lsb - src_lsb);
           vector_lshift_uint32( src, vall, valh, diff, ((src_msb - src_lsb) + diff) );
         /* Otherwise, right-shift the source vector to match up */
         } else {
-          unsigned int diff = (src_lsb - tgt_lsb);
+          diff = (src_lsb - tgt_lsb);
           vector_rshift_uint32( src, vall, valh, diff, ((src_msb - src_lsb) + diff) );
         }
 
-#ifdef SKIP
         /* If the msb bit is an X or Z, bit-fill with that value */
         if( (valh[tgt_msb>>5] & msb_mask) != 0 ) {
 
@@ -1665,6 +1665,8 @@ bool vector_part_select_push(
           uint32       hfill       = 0xffffffff;
           unsigned int lfill_index = (tgt_msb + 1) >> 5;
           unsigned int hfill_index = tgt_msb >> 5;
+
+          printf( "  bit-filling...\n" );
 
           if( lfill_index == hfill_index ) {
             uint32 mask = lmask & hmask;
@@ -1685,7 +1687,6 @@ bool vector_part_select_push(
           }
 
         }
-#endif
 
         retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
       }
@@ -4736,6 +4737,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.51  2008/05/05 12:57:04  phase1geo
+ Checkpointing some changes for bit-filling in vector_part_select_push (this is
+ not complete at this time).
+
  Revision 1.138.2.50  2008/05/04 22:05:29  phase1geo
  Adding bit-fill in vector_set_static and changing name of old bit-fill functions
  in vector.c to sign_extend to reflect their true nature.  Added new diagnostics
