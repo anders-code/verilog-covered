@@ -5225,7 +5225,6 @@ void expression_assign(
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
             int  msb     = (*lsb + rhs->value->width) - 1;
-            printf( "lsb: %d, msb: %d\n", *lsb, msb );
             bool changed = vector_part_select_push( lhs->value, 0, (lhs->value->width - 1), rhs->value, *lsb, msb, FALSE /*TBD*/ );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -5548,6 +5547,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.22  2008/05/05 19:49:59  phase1geo
+ Updating regressions, fixing bugs and added new diagnostics.  Checkpointing.
+
  Revision 1.329.2.21  2008/05/04 22:05:28  phase1geo
  Adding bit-fill in vector_set_static and changing name of old bit-fill functions
  in vector.c to sign_extend to reflect their true nature.  Added new diagnostics

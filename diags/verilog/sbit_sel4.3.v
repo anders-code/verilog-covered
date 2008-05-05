@@ -14,7 +14,7 @@ reg [31:0] a;
 reg [3:0]  b;
 
 initial begin
-	a = 32'h0;
+	a = 32'hffffffff;
 	b = 4'bzx10;
 	#5;
 	a = b[3];

@@ -150,8 +150,8 @@
 
   for( i=0; i<table->num_arcs; i++ ) {
 
-    char* lvec = vector_to_string( table->states[table->arcs[i]->from], BINARY );
-    char* rvec = vector_to_string( table->states[table->arcs[i]->to],   BINARY );
+    char* lvec = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL );
+    char* rvec = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL );
 
     printf( "       entry %u: ", i );
 
@@ -748,12 +748,12 @@ void arc_get_states(
   for( i=0; i<table->num_arcs; i++ ) {
     if( (state_hits[table->arcs[i]->from]++ == 0) && (any || (table->arcs[i]->suppl.part.hit_f == hit) || (table->arcs[i]->suppl.part.hit_r == hit)) ) {
       *states                  = (char**)realloc_safe( *states, (sizeof( char* ) * (*state_size)), (sizeof( char* ) * ((*state_size) + 1)) );
-      (*states)[(*state_size)] = vector_to_string( table->states[table->arcs[i]->from], BINARY );
+      (*states)[(*state_size)] = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL );
       (*state_size)++;
     }
     if( (state_hits[table->arcs[i]->to]++ == 0) && (any || (table->arcs[i]->suppl.part.hit_f == hit) || (table->arcs[i]->suppl.part.hit_r == hit)) ) {
       *states                  = (char**)realloc_safe( *states, (sizeof( char* ) * (*state_size)), (sizeof( char* ) * ((*state_size) + 1)) );
-      (*states)[(*state_size)] = vector_to_string( table->states[table->arcs[i]->to], BINARY );
+      (*states)[(*state_size)] = vector_to_string( table->states[table->arcs[i]->to], HEXIDECIMAL );
       (*state_size)++;
     }
   }
@@ -799,8 +799,8 @@ void arc_get_transitions(
         *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
         (*excludes)[(*arc_size)] = table->arcs[i]->suppl.part.excluded_f;
       }
-      (*from_states)[(*arc_size)] = vector_to_string( table->states[table->arcs[i]->from], BINARY );
-      (*to_states)[(*arc_size)]   = vector_to_string( table->states[table->arcs[i]->to],   BINARY );
+      (*from_states)[(*arc_size)] = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL );
+      (*to_states)[(*arc_size)]   = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL );
       (*arc_size)++;
     }
 
@@ -812,8 +812,8 @@ void arc_get_transitions(
         *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
         (*excludes)[(*arc_size)] = table->arcs[i]->suppl.part.excluded_r;
       }
-      (*from_states)[(*arc_size)] = vector_to_string( table->states[table->arcs[i]->from], BINARY );
-      (*to_states)[(*arc_size)]   = vector_to_string( table->states[table->arcs[i]->to],   BINARY );
+      (*from_states)[(*arc_size)] = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL );
+      (*to_states)[(*arc_size)]   = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL );
       (*arc_size)++;
     }
 
@@ -876,6 +876,9 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.60.2.7  2008/05/05 19:49:59  phase1geo
+ Updating regressions, fixing bugs and added new diagnostics.  Checkpointing.
+
  Revision 1.60.2.6  2008/05/04 05:48:40  phase1geo
  Attempting to fix expression_assign.  Updated regression files.
 

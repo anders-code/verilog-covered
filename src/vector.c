@@ -1252,31 +1252,17 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  tvall = entry[VTYPE_INDEX_SIG_VALL];
         uint32  tvalh = entry[VTYPE_INDEX_SIG_VALH];
         uint32  set   = entry[VTYPE_INDEX_SIG_SET];
-#ifdef OBSOLETE
-        if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) || ((set & mask) == 0) ) {
-          if( (set & mask) != 0 ) {
-            uint32 cmp = ((~fvalh & fvall) ^ ((~tvalh & tvall) & mask));
-            entry[VTYPE_INDEX_SIG_TOG01] |= cmp & (~fvalh &  fvall);
-            entry[VTYPE_INDEX_SIG_TOG10] |= cmp & ( fvalh | ~fvall);
-          }
-          entry[VTYPE_INDEX_SIG_SET] |= mask;
-          entry[VTYPE_INDEX_SIG_VALL] = (tvall & ~mask) | fvall;
-          entry[VTYPE_INDEX_SIG_VALH] = (tvalh & ~mask) | fvalh;
-          changed = TRUE;
-        }
-#else
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
           if( (set & mask) != 0 ) {
             uint32 cmp = ((~fvalh & fvall) ^ ((~tvalh & tvall) & mask));
             entry[VTYPE_INDEX_SIG_TOG01] |= cmp & (~fvalh &  fvall);
-            entry[VTYPE_INDEX_SIG_TOG10] |= cmp & ( fvalh | ~fvall);
+            entry[VTYPE_INDEX_SIG_TOG10] |= cmp & (~fvalh & ~fvall);
           }
           entry[VTYPE_INDEX_SIG_SET] |= mask;
           entry[VTYPE_INDEX_SIG_VALL] = (tvall & ~mask) | fvall;
           entry[VTYPE_INDEX_SIG_VALH] = (tvalh & ~mask) | fvalh;
           changed = TRUE;
         }
-#endif
       }
       break;
     case VTYPE_MEM :
@@ -1289,8 +1275,8 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  tvalh = entry[VTYPE_INDEX_MEM_VALH];
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
           uint32 cmp = ((~fvalh & fvall) ^ ((~tvalh & tvall) & mask));
-          entry[VTYPE_INDEX_MEM_TOG01] |= cmp & ~(~fvalh & fvall);
-          entry[VTYPE_INDEX_MEM_TOG10] |= cmp &  (~fvalh & fvall);
+          entry[VTYPE_INDEX_MEM_TOG01] |= cmp & (~fvalh &  fvall);
+          entry[VTYPE_INDEX_MEM_TOG10] |= cmp & (~fvalh & ~fvall);
           entry[VTYPE_INDEX_MEM_WR]     = mask;
           entry[VTYPE_INDEX_MEM_VALL]   = (tvall & ~mask) | fvall;
           entry[VTYPE_INDEX_MEM_VALH]   = (tvalh & ~mask) | fvalh;
@@ -1306,22 +1292,12 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  fvalh = scratchh[i] & mask;
         uint32  tvall = entry[VTYPE_INDEX_EXP_VALL];
         uint32  tvalh = entry[VTYPE_INDEX_EXP_VALH];
-#ifdef OBSOLETE
-        uint32  set   = entry[VTYPE_INDEX_EXP_SET];
-        if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) || ((set & mask) == 0) ) {
-          entry[VTYPE_INDEX_EXP_SET] |= mask;
-          entry[VTYPE_INDEX_EXP_VALL] = (tvall & ~mask) | fvall;
-          entry[VTYPE_INDEX_EXP_VALH] = (tvalh & ~mask) | fvalh;
-          changed = TRUE;
-        }
-#else
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
           entry[VTYPE_INDEX_EXP_SET] |= mask;
           entry[VTYPE_INDEX_EXP_VALL] = (tvall & ~mask) | fvall;
           entry[VTYPE_INDEX_EXP_VALH] = (tvalh & ~mask) | fvalh;
           changed = TRUE;
         }
-#endif
       }
       break;
     default :  assert( 0 );  break;
@@ -1635,16 +1611,12 @@ bool vector_part_select_push(
 
   bool retval;  /* Return value for this function */
 
-  printf( "In vector_part_select_push... tgt_lsb: %d, tgt_msb: %d, src_lsb: %d, src_msb: %d\n", tgt_lsb, tgt_msb, src_lsb, src_msb );
-  vector_display( src );
-
   switch( src->suppl.part.data_type ) {
     case VDATA_U32 :
       {
         uint32       valh[MAX_BIT_WIDTH>>5];
         uint32       vall[MAX_BIT_WIDTH>>5];
         unsigned int diff;
-        uint32       msb_mask;
 
         /* Left-shift the source vector to match up with target LSB */
         if( src_lsb < tgt_lsb ) {
@@ -1654,38 +1626,6 @@ bool vector_part_select_push(
         } else {
           diff = (src_lsb - tgt_lsb);
           vector_rshift_uint32( src, vall, valh, diff, ((src_msb - src_lsb) + diff) );
-        }
-
-        /* If the msb bit is an X or Z, bit-fill with that value */
-        if( (valh[tgt_msb>>5] & msb_mask) != 0 ) {
-
-          uint32       lmask       = 0xffffffff << ((tgt_msb + 1) & 0x1f);
-          uint32       hmask       = 0xffffffff >> (31 - (tgt_msb & 0x1f));
-          uint32       lfill       = ((vall[tgt_msb>>5] & msb_mask) != 0) ? 0xffffffff : 0x0;
-          uint32       hfill       = 0xffffffff;
-          unsigned int lfill_index = (tgt_msb + 1) >> 5;
-          unsigned int hfill_index = tgt_msb >> 5;
-
-          printf( "  bit-filling...\n" );
-
-          if( lfill_index == hfill_index ) {
-            uint32 mask = lmask & hmask;
-
-            vall[lfill_index] |= lfill & mask;
-            valh[lfill_index] |= hfill & mask;
-          } else if( lfill_index < hfill_index ) {
-            unsigned int i;
-
-            vall[lfill_index] |= lfill & lmask;
-            valh[lfill_index] |= hfill & lmask;
-            for( i=(lfill_index + 1); i<hfill_index; i++ ) {
-              vall[i] = lfill;
-              valh[i] = hfill;
-            }
-            vall[hfill_index] = lfill & hmask;
-            valh[hfill_index] = hfill & hmask;
-          }
-
         }
 
         retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
@@ -2304,8 +2244,8 @@ static void vector_set_static(
     switch( data_type ) {
       case VDATA_U32 :
         {
-          uint32 lfill = (vec->value.u32[pos>>5][VTYPE_INDEX_VAL_VALL] & (1 << ((pos - 1) & 0x1f))) ? 0xffffffff : 0x0;
           uint32 hfill = (vec->value.u32[pos>>5][VTYPE_INDEX_VAL_VALH] & (1 << ((pos - 1) & 0x1f))) ? 0xffffffff : 0x0;
+          uint32 lfill = (vec->value.u32[pos>>5][VTYPE_INDEX_VAL_VALL] & (1 << ((pos - 1) & 0x1f))) ? hfill      : 0x0;
           uint32 lmask = 0xffffffff << (pos & 0x1f);
           uint32 hmask = 0xffffffff >> (31 - ((vec->width - 1) & 0x1f));
           if( (pos >> 5) == ((vec->width - 1) >> 5) ) {
@@ -3026,7 +2966,7 @@ bool vector_op_lt(
           lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
           rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-        } while( (i >= 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
+        } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
         } else {
@@ -3079,7 +3019,7 @@ bool vector_op_le(
           lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
           rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-        } while( (i >= 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
+        } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
         } else {
@@ -3132,7 +3072,7 @@ bool vector_op_gt(
           lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
           rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-        } while( (i >= 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
+        } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
         } else {
@@ -3185,7 +3125,7 @@ bool vector_op_ge(
           lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
           rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-        } while( (i >= 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
+        } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
         } else {
@@ -3238,7 +3178,7 @@ bool vector_op_eq(
           lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
           rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-        } while( (i >= 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
+        } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
         } else {
@@ -3279,7 +3219,7 @@ bool vector_ceq_uint32(
     lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
     rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
     rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-  } while( (i >= 0) && ((lvall & ~lvalh) == (rvall & ~rvalh)) );
+  } while( (i > 0) && ((lvall & ~lvalh) == (rvall & ~rvalh)) );
 
   PROFILE_END;
 
@@ -3356,7 +3296,7 @@ bool vector_op_cxeq(
           lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
           rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-        } while( (i >= 0) && ((lvall == rvall) || (lvalh == 0) || (rvall == 0)) );
+        } while( (i > 0) && ((lvall == rvall) || (lvalh == 0) || (rvall == 0)) );
         scratchl = (lvall == rvall);
         retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
@@ -3405,7 +3345,7 @@ bool vector_op_czeq(
           lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
           rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-        } while( (i >= 0) && ((lvall == rvall) || ~(lvalh & lvall) || ~(rvalh & rvall)) );
+        } while( (i > 0) && ((lvall == rvall) || ~(lvalh & lvall) || ~(rvalh & rvall)) );
         scratchl = (lvall == rvall);
         retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
@@ -3454,7 +3394,7 @@ bool vector_op_ne(
           lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
           rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0;
-        } while( (i >= 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
+        } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
         } else {
@@ -3507,7 +3447,7 @@ bool vector_op_cne(
           lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
           rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-        } while( (i >= 0) && ((lvall & ~lvalh) == (rvall & ~rvalh)) );
+        } while( (i > 0) && ((lvall & ~lvalh) == (rvall & ~rvalh)) );
         scratchl = (lvall != rvall); 
         retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
@@ -4050,7 +3990,7 @@ bool vector_op_divide(
 
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
 
-    vector_set_to_x( tgt );
+    retval = vector_set_to_x( tgt );
 
   } else {
 
@@ -4076,6 +4016,8 @@ bool vector_op_divide(
 
   PROFILE_END;
 
+  return( retval );
+
 }
 
 /*!
@@ -4097,7 +4039,7 @@ bool vector_op_modulus(
 
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
 
-    vector_set_to_x( tgt );
+    retval = vector_set_to_x( tgt );
 
   } else {
 
@@ -4122,6 +4064,8 @@ bool vector_op_modulus(
   }
 
   PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -4737,6 +4681,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.52  2008/05/05 19:49:59  phase1geo
+ Updating regressions, fixing bugs and added new diagnostics.  Checkpointing.
+
  Revision 1.138.2.51  2008/05/05 12:57:04  phase1geo
  Checkpointing some changes for bit-filling in vector_part_select_push (this is
  not complete at this time).

@@ -14,7 +14,7 @@ reg [31:0] a;
 reg [3:0]  b;
 
 initial begin
-	a = 32'hz;
+	a = 32'hffffffff;
 	b = 4'bzx10;
 	#5;
 	a = b[2];
