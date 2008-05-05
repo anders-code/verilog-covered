@@ -3219,11 +3219,11 @@ bool vector_ceq_uint32(
     lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
     rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
     rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-  } while( (i > 0) && ((lvall & ~lvalh) == (rvall & ~rvalh)) );
+  } while( (i > 0) && (lvall == rvall) && (lvalh == rvalh) );
 
   PROFILE_END;
 
-  return( lvall == rvall );
+  return( (lvall == rvall) && (lvalh == rvalh) );
 
 }
 
@@ -4681,6 +4681,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.53  2008/05/05 23:49:52  phase1geo
+ Fixing case equality function and updating regressions accordingly.  Checkpointing.
+
  Revision 1.138.2.52  2008/05/05 19:49:59  phase1geo
  Updating regressions, fixing bugs and added new diagnostics.  Checkpointing.
 
