@@ -1254,9 +1254,8 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  set   = entry[VTYPE_INDEX_SIG_SET];
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
           if( (set & mask) != 0 ) {
-            uint32 cmp = ((~fvalh & fvall) ^ ((~tvalh & tvall) & mask));
-            entry[VTYPE_INDEX_SIG_TOG01] |= cmp & (~fvalh &  fvall);
-            entry[VTYPE_INDEX_SIG_TOG10] |= cmp & (~fvalh & ~fvall);
+            entry[VTYPE_INDEX_SIG_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall);
+            entry[VTYPE_INDEX_SIG_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall);
           }
           entry[VTYPE_INDEX_SIG_SET] |= mask;
           entry[VTYPE_INDEX_SIG_VALL] = (tvall & ~mask) | fvall;
@@ -1274,9 +1273,8 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  tvall = entry[VTYPE_INDEX_MEM_VALL];
         uint32  tvalh = entry[VTYPE_INDEX_MEM_VALH];
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
-          uint32 cmp = ((~fvalh & fvall) ^ ((~tvalh & tvall) & mask));
-          entry[VTYPE_INDEX_MEM_TOG01] |= cmp & (~fvalh &  fvall);
-          entry[VTYPE_INDEX_MEM_TOG10] |= cmp & (~fvalh & ~fvall);
+          entry[VTYPE_INDEX_MEM_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall);
+          entry[VTYPE_INDEX_MEM_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall);
           entry[VTYPE_INDEX_MEM_WR]     = mask;
           entry[VTYPE_INDEX_MEM_VALL]   = (tvall & ~mask) | fvall;
           entry[VTYPE_INDEX_MEM_VALH]   = (tvalh & ~mask) | fvalh;
@@ -4681,6 +4679,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.54  2008/05/06 04:51:38  phase1geo
+ Fixing issue with toggle coverage.  Updating regression files.  Checkpointing.
+
  Revision 1.138.2.53  2008/05/05 23:49:52  phase1geo
  Fixing case equality function and updating regressions accordingly.  Checkpointing.
 

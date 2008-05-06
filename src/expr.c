@@ -4887,9 +4887,6 @@ bool expression_operate(
       fsm_table_set( expr->table );
       /* If from_state was not specified, we need to copy the current contents of to_state to from_state */
       if( expr->table->from_state->id == expr->id ) {
-        printf( "BEFORE COPY: " );
-        expression_display( expr );  vector_display( expr->value );
-        expression_display( expr->table->from_state );  vector_display( expr->table->from_state->value );
         vector_copy( expr->value, expr->table->from_state->value );
       }
     }
@@ -5547,6 +5544,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.23  2008/05/06 04:51:37  phase1geo
+ Fixing issue with toggle coverage.  Updating regression files.  Checkpointing.
+
  Revision 1.329.2.22  2008/05/05 19:49:59  phase1geo
  Updating regressions, fixing bugs and added new diagnostics.  Checkpointing.
 

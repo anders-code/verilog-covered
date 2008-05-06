@@ -1,5 +1,5 @@
 5 e 41 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd ovl1.3.vcd -o ovl1.3.cdd -v ovl1.3.v -A ovl -D OVL_COVER_DEFAULT=15 +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95 -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd ovl1.3.vcd -o ovl1.3.cdd -v ovl1.3.v -A ovl -D OVL_COVER_DEFAULT=15 +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95 -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" ovl1.3.v 1 34 1
 1 width 0 80000 1 0 31 0 32 17 4 0 0 0 0 0
@@ -41,7 +41,7 @@
 2 25 9 27002f 6 1 100c 0 0 4 1 test_expr
 2 26 9 270057 7 7 128c 24 25 4 18 0 f 0 0 0 0 0
 2 27 9 150021 0 1 1410 0 0 4 1 dec_test_expr
-2 28 9 150057 6 36 e 26 27
+2 28 9 150057 7 36 e 26 27
 2 29 10 4c004f 1 0 21004 0 0 1 16 0 0
 2 30 10 46004a 1 32 1008 0 0 32 1 width
 2 31 10 450051 1 25 1104 29 30 4 18 0 f ffffffff 0 0 0 0
@@ -145,7 +145,7 @@
 4 93 f 93 93
 3 3 assert_zero_one_hot.ovl_cover_t "main.foo.ovl_cover_t" std_ovl_task.h 117 135 1
 2 94 119 20006 7 3d 5002 0 0 1 18 0 1 0 0 0 0 0 $u19
-1 cvr_msg 118 800015 1 0 511 0 512 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 6110a13 20d0205 0 0 0 ffffffff 2d2c1f1f 331f230d 0 0 0 ffffffff 301a0f03 1f0d2812 0 0 0 ffffffff 1b1b042b 1b211227 0 0 0 ffffffff 100120 8080c 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+1 cvr_msg 118 800015 1 0 511 0 512 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 6110a13 20d0205 0 0 0 ffffffff 2d2c1f1f 331f230d 0 0 0 ffffffff 301a0f03 1f0d2812 0 0 0 ffffffff 1b1b042b 1b211227 0 0 0 ffffffff 100120 6108080c 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
 4 94 11 0 0
 3 1 assert_zero_one_hot.ovl_cover_t.$u19 "main.foo.ovl_cover_t.$u19" std_ovl_task.h 0 134 1
 2 95 122 210021 1 0 1008 0 0 32 48 1 0
