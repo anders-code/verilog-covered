@@ -1227,8 +1227,6 @@ bool vector_set_coverage_and_assign_uint32(
   uint32       hmask   = (0xffffffff >> (31-(msb & 0x1f)));  /* Mask to be used in upper element */
   unsigned int i;                                            /* Loop iterator */
 
-  printf( "In vector_set_coverage_and_assign_uint32, lindex: %d, hindex: %d, vec->width: %d\n", lindex, hindex, vec->width );
-
   /* If the lindex and hindex are the same, set lmask to the AND of the high and low masks */
   if( lindex == hindex ) {
     lmask &= hmask;
@@ -1544,7 +1542,6 @@ bool vector_set_value_uint32(
 
   /* Set upper bits to 0 */
   for( i=((vec->width - 1) >> 5); i>((width - 1) >> 5); i-- ) {
-    printf( "Setting scratchx[%d] to 0\n", i );
     scratchl[i] = 0;
     scratchh[i] = 0;
   }
@@ -1553,7 +1550,6 @@ bool vector_set_value_uint32(
   for( ; i>=0; i-- ) {
     scratchl[i] = v2st ? (~value[i][VTYPE_INDEX_VAL_VALH] & value[i][VTYPE_INDEX_VAL_VALL]) : value[i][VTYPE_INDEX_VAL_VALL];
     scratchh[i] = v2st ? 0 : value[i][VTYPE_INDEX_VAL_VALH];
-    printf( "Setting scratchl[%d] to %x\n", scratchl[i] );
   }
 
   /* Calculate the coverage and perform the actual assignment */
@@ -2593,7 +2589,6 @@ bool vector_vcd_assign(
 
   assert( vec != NULL );
   assert( value != NULL );
-  printf( "msb: %d, vec->width: %d\n", msb, vec->width );
   assert( msb <= vec->width );
 
   /* Set pointer to LSB */
@@ -4688,6 +4683,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.57  2008/05/06 06:33:13  phase1geo
+ Updating regression files per latest submission of vector.c.  Checkpointing.
+
  Revision 1.138.2.56  2008/05/06 06:17:01  phase1geo
  Fixing memory errors in vector_set_value_uint32.  Checkpointing.
 

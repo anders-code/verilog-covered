@@ -4,7 +4,7 @@
 3 0 main "main" func2.v 1 32 1
 2 1 4 110011 2 1 100c 0 0 1 1 b
 2 2 4 110011 2 47 c 1 0 invert.a
-2 3 4 90013 2 3a 500c 0 2 1 18 0 1 ffffffff 0 0 0 0 invert
+2 3 4 90013 2 3a 500c 0 2 1 18 0 1 ffffffff 1 0 0 0 invert
 2 4 4 50005 0 1 1410 0 0 1 1 a
 2 5 4 50013 2 36 e 3 4
 1 b 3 30005 1 0 0 0 1 17 0 1 1 0 0 0
@@ -19,8 +19,8 @@
 3 1 main.invert.$u1 "main.invert.$u1" func2.v 0 22 1
 2 7 21 140014 2 1 180c 0 0 1 1 a
 2 8 21 140014 2 47 80c 7 0 buffer.c
-2 9 21 c0016 2 3a 580c 0 8 1 18 0 1 fffffffe 1 0 0 0 buffer
-2 10 21 b000b 2 1b 180c 9 0 1 18 0 1 ffffffff 0 0 0 0
+2 9 21 c0016 2 3a 580c 0 8 1 18 0 1 ffffffff 1 0 0 0 buffer
+2 10 21 b000b 2 1b 180c 9 0 1 18 0 1 ffffffff 1 0 0 0
 2 11 21 20007 0 1 1c10 0 0 1 1 invert
 2 12 21 20016 2 37 81e 10 11
 4 12 11 0 0
