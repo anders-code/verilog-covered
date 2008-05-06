@@ -1525,7 +1525,6 @@ bool vector_set_value_uint32(
 ) { PROFILE(VECTOR_SET_VALUE);
 
   bool   retval = FALSE;                /* Return value for this function */
-  int    size;                          /* Size of vector value array */
   int    i;                             /* Loop iterator */
   int    v2st;                          /* Value to AND with from value bit if the target is a 2-state value */
   uint32 scratchl[MAX_BIT_WIDTH >> 5];  /* Lower scratch array */
@@ -1540,16 +1539,21 @@ bool vector_set_value_uint32(
 
   /* Get some information from the vector */
   v2st = vec->suppl.part.is_2state << 1;
-  size = VECTOR_SIZE32( width );
+
+  /* Set upper bits to 0 */
+  for( i=((vec->width - 1) >> 5); i>((width - 1) >> 5); i-- ) {
+    scratchl[i] = 0;
+    scratchh[i] = 0;
+  }
 
   /* Calculate the new values and place them in the scratch arrays */
-  for( i=size; i--; ) {
+  for( ; i--; ) {
     scratchl[i] = v2st ? (~value[i][VTYPE_INDEX_VAL_VALH] & value[i][VTYPE_INDEX_VAL_VALL]) : value[i][VTYPE_INDEX_VAL_VALL];
     scratchh[i] = v2st ? 0 : value[i][VTYPE_INDEX_VAL_VALH];
   }
 
   /* Calculate the coverage and perform the actual assignment */
-  retval = vector_set_coverage_and_assign_uint32( vec, scratchl, scratchh, 0, (width - 1) );
+  retval = vector_set_coverage_and_assign_uint32( vec, scratchl, scratchh, 0, (vec->width - 1) );
 
   PROFILE_END;
 
@@ -1656,8 +1660,8 @@ void vector_set_unary_evals(
           uint32* entry = vec->value.u32[i];
           uint32  lval  = entry[VTYPE_INDEX_EXP_VALL];
           uint32  nhval = ~entry[VTYPE_INDEX_EXP_VALH];
-          entry[VTYPE_INDEX_EXP_EVAL_A] = nhval & ~lval;
-          entry[VTYPE_INDEX_EXP_EVAL_B] = nhval &  lval;
+          entry[VTYPE_INDEX_EXP_EVAL_A] |= nhval & ~lval;
+          entry[VTYPE_INDEX_EXP_EVAL_B] |= nhval &  lval;
         }
       }
       break;
@@ -2585,6 +2589,7 @@ bool vector_vcd_assign(
 
   assert( vec != NULL );
   assert( value != NULL );
+  printf( "msb: %d, vec->width: %d\n", msb, vec->width );
   assert( msb <= vec->width );
 
   /* Set pointer to LSB */
@@ -4679,6 +4684,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.55  2008/05/06 05:45:44  phase1geo
+ Attempting to add bit-fill to vector_set_value_uint32 function but it seems
+ that I have possibly created a memory overflow.  Checkpointing.
+
  Revision 1.138.2.54  2008/05/06 04:51:38  phase1geo
  Fixing issue with toggle coverage.  Updating regression files.  Checkpointing.
 
