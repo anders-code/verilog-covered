@@ -1227,6 +1227,8 @@ bool vector_set_coverage_and_assign_uint32(
   uint32       hmask   = (0xffffffff >> (31-(msb & 0x1f)));  /* Mask to be used in upper element */
   unsigned int i;                                            /* Loop iterator */
 
+  printf( "In vector_set_coverage_and_assign_uint32, lindex: %d, hindex: %d, vec->width: %d\n", lindex, hindex, vec->width );
+
   /* If the lindex and hindex are the same, set lmask to the AND of the high and low masks */
   if( lindex == hindex ) {
     lmask &= hmask;
@@ -1542,14 +1544,16 @@ bool vector_set_value_uint32(
 
   /* Set upper bits to 0 */
   for( i=((vec->width - 1) >> 5); i>((width - 1) >> 5); i-- ) {
+    printf( "Setting scratchx[%d] to 0\n", i );
     scratchl[i] = 0;
     scratchh[i] = 0;
   }
 
   /* Calculate the new values and place them in the scratch arrays */
-  for( ; i--; ) {
+  for( ; i>=0; i-- ) {
     scratchl[i] = v2st ? (~value[i][VTYPE_INDEX_VAL_VALH] & value[i][VTYPE_INDEX_VAL_VALL]) : value[i][VTYPE_INDEX_VAL_VALL];
     scratchh[i] = v2st ? 0 : value[i][VTYPE_INDEX_VAL_VALH];
+    printf( "Setting scratchl[%d] to %x\n", scratchl[i] );
   }
 
   /* Calculate the coverage and perform the actual assignment */
@@ -4684,6 +4688,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.56  2008/05/06 06:17:01  phase1geo
+ Fixing memory errors in vector_set_value_uint32.  Checkpointing.
+
  Revision 1.138.2.55  2008/05/06 05:45:44  phase1geo
  Attempting to add bit-fill to vector_set_value_uint32 function but it seems
  that I have possibly created a memory overflow.  Checkpointing.
