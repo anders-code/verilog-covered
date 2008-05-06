@@ -3288,18 +3288,19 @@ bool vector_op_cxeq(
         unsigned int lsize = VECTOR_SIZE32(left->width);
         unsigned int rsize = VECTOR_SIZE32(right->width);
         int          i     = ((lsize < rsize) ? rsize : lsize);
-        uint32       lvall;
-        uint32       lvalh;
-        uint32       rvall;
-        uint32       rvalh;
+        uint32       mask  = (left->width < right->width) ? (0xffffffff >> (31 - ((left->width - 1) & 0x1f))) : (0xffffffff >> (31 - ((right->width - 1) & 0x1f)));
+        uint32       lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
+        uint32       lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : mask;
+        uint32       rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
+        uint32       rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : mask;
         do {
           i--;
           lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
           lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
           rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-        } while( (i > 0) && ((lvall == rvall) || (lvalh == 0) || (rvall == 0)) );
-        scratchl = (lvall == rvall);
+        } while( (i > 0) && (((~(lvall ^ rvall) | lvalh | rvalh) & mask) == mask) );
+        scratchl = (((~(lvall ^ rvall) | lvalh | rvalh) & mask) == mask);
         retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
@@ -3334,21 +3335,27 @@ bool vector_op_czeq(
       {
         uint32       scratchl = 0;
         uint32       scratchh = 0;
-        unsigned int lsize = VECTOR_SIZE32(left->width);
-        unsigned int rsize = VECTOR_SIZE32(right->width);
-        int          i     = ((lsize < rsize) ? rsize : lsize);
-        uint32       lvall;
-        uint32       lvalh;
-        uint32       rvall;
-        uint32       rvalh;
-        do {
+        unsigned int lsize    = VECTOR_SIZE32(left->width);
+        unsigned int rsize    = VECTOR_SIZE32(right->width);
+        int          i        = ((lsize < rsize) ? rsize : lsize) - 1;
+        uint32       mask     = (left->width < right->width) ? (0xffffffff >> (31 - ((left->width - 1) & 0x1f))) : (0xffffffff >> (31 - ((right->width - 1) & 0x1f)));
+        uint32       lvall    = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
+        uint32       lvalh    = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : mask;
+        uint32       rvall    = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
+        uint32       rvalh    = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : mask;
+        printf( "i: %d, mask: %x, lvall: %x, lvalh: %x, rvall: %x, rvalh: %x [ (~(lvall ^ rvall) & ~(lvalh ^ rvalh)): %x, (lvalh & lvall): %x, (rvalh & rvall): %x\n",
+                i, mask, lvall, lvalh, rvall, rvalh, (~(lvall ^ rvall) & ~(lvalh ^ rvalh)), (lvalh & lvall), (rvalh & rvall) );
+        while( (i > 0) && ((((~(lvall ^ rvall) & ~(lvalh ^ rvalh)) | (lvalh & lvall) | (rvalh & rvall)) & mask) == mask) ) {
+          mask  = 0xffffffff;
           i--;
           lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-          lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
+          lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : mask;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-          rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
-        } while( (i > 0) && ((lvall == rvall) || ~(lvalh & lvall) || ~(rvalh & rvall)) );
-        scratchl = (lvall == rvall);
+          rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : mask;
+          printf( "i: %d, mask: %x, lvall: %x, lvalh: %x, rvall: %x, rvalh: %x [ (~(lvall ^ rvall) & ~(lvalh ^ rvalh)): %x, (lvalh & lvall): %x, (rvalh & rvall): %x\n",
+                  i, mask, lvall, lvalh, rvall, rvalh, (~(lvall ^ rvall) & ~(lvalh ^ rvalh)), (lvalh & lvall), (rvalh & rvall) );
+        }
+        scratchl = ((((~(lvall ^ rvall) & ~(lvalh ^ rvalh)) | (lvalh & lvall) | (rvalh & rvall)) & mask) == mask);
         retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
@@ -4683,6 +4690,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.58  2008/05/06 20:51:58  phase1geo
+ Fixing bugs with casex and casez.  Checkpointing.
+
  Revision 1.138.2.57  2008/05/06 06:33:13  phase1geo
  Updating regression files per latest submission of vector.c.  Checkpointing.
 
