@@ -3335,6 +3335,7 @@ bool expression_op_func__sig(
   if( expr->op != EXP_OP_PARAM ) {
     expression_set_tf_preclear( expr );
   } else {
+    printf( "HERE!\n" );
     expression_set_tf( expr );
   }
 
@@ -3687,6 +3688,8 @@ bool expression_op_func__aedge(
   /* If our signal is an event that has been triggered, automatically set ourselves to true */
   if( (expr->right->sig != NULL) && (expr->right->sig->suppl.part.type == SSUPPL_TYPE_EVENT) ) {
 
+    printf( "HERE!  eval_t: %d\n", expr->right->suppl.part.eval_t );
+
     if( expr->right->suppl.part.eval_t == 1 ) {
       if( thr->suppl.part.exec_first ) {
         expr->suppl.part.true   = 1;
@@ -3871,7 +3874,9 @@ bool expression_op_func__trigger(
 ) { PROFILE(EXPRESSION_OP_FUNC__TRIGGER);
 
   /* Indicate that we have triggered */
-  expr->suppl.part.eval_t = 1;
+  expr->sig->value->value.u32[0][VTYPE_INDEX_SIG_VALL] = 1;
+  expr->sig->value->value.u32[0][VTYPE_INDEX_SIG_VALH] = 0;
+  //expr->suppl.part.eval_t = 1;
 
   /* Propagate event */
   vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
@@ -5544,6 +5549,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.24  2008/05/06 23:06:26  phase1geo
+ Fixing bug with event triggering.  Updating regression files.  Checkpointing.
+
  Revision 1.329.2.23  2008/05/06 04:51:37  phase1geo
  Fixing issue with toggle coverage.  Updating regression files.  Checkpointing.
 
