@@ -213,34 +213,40 @@ int arc_find(
   /* First, check to see if from_st exists in the states array */
   i = 0;
   while( (i < table->num_states) && !vector_ceq_uint32( from_st, table->states[i] ) ) i++;
-
-  /* If the state exists, continue on */
   if( i < table->num_states ) {
-
     *from_index = i;
+  }
+
+  /* Then, check to see if to_st exists in the states array (and it is not the same value as from_st) */
+  if( vector_ceq_uint32( from_st, to_st ) ) {
+
+    *to_index = (*from_index == -1) ? -2 : *from_index;
+
+  } else {
 
     /* Now see if to_st exists in the states array */
     i = 0;
     while( (i < table->num_states) && !vector_ceq_uint32( to_st, table->states[i] ) ) i++;
-    
-    /* If the to_state exists, continue on */
     if( i < table->num_states ) {
-
       *to_index = i;
+    }
+    
+  }
 
-      /* Now search for the matching transition in the arcs array */
-      i = 0;
-      while( (i < table->num_arcs) && (retval == 2) ) {
-        if( (table->arcs[i]->from == *from_index) && (table->arcs[i]->to == *to_index) ) {
-          *arcs_index = i;
-          retval      = 0;
-        } else if( (table->arcs[i]->to == *from_index) && (table->arcs[i]->from == *to_index ) ) {
-          *arcs_index = i;
-          retval      = 1;
-        }
-        i++;
+  /* If we were able to find both states, search for the arc */
+  if( (*from_index != -1) && (*to_index != -1) ) {
+
+    /* Now search for the matching transition in the arcs array */
+    i = 0;
+    while( (i < table->num_arcs) && (retval == 2) ) {
+      if( (table->arcs[i]->from == *from_index) && (table->arcs[i]->to == *to_index) ) {
+        *arcs_index = i;
+        retval      = 0;
+      } else if( (table->arcs[i]->to == *from_index) && (table->arcs[i]->from == *to_index ) ) {
+        *arcs_index = i;
+        retval      = 1;
       }
-      
+      i++;
     }
 
   }
@@ -303,72 +309,83 @@ void arc_add(
 
   assert( table != NULL );
 
-  /* Attempt to find the state transition */
-  side = arc_find( table, fr_st, to_st, &from_index, &to_index, &arcs_index );
+  if( (hit == 0) || (!vector_is_unknown( fr_st ) && !vector_is_unknown( to_st )) ) {
 
-  /* If we need to add new states, do so now */
-  if( (from_index == -1) || (to_index == -1) ) {
+    // printf( "FR_ST: " );  vector_display( fr_st );
+    // printf( "TO_ST: " );  vector_display( to_st );
 
-    int new_states = table->num_states + ((from_index == -1) ? 1 : 0) + ((to_index == -1) ? 1 : 0);
+    /* Attempt to find the state transition */
+    side = arc_find( table, fr_st, to_st, &from_index, &to_index, &arcs_index );
 
-    /* Allocate new memory */
-    table->states = (vector**)realloc_safe( table->states, (sizeof( vector* ) * table->num_states), (sizeof( vector* ) * new_states) );
+    // printf( "from_index: %d, to_index: %d\n", from_index, to_index );
 
-    /* Add new state(s) */
-    if( from_index == -1 ) {
-      from_index = table->num_states;
-      table->states[from_index] = vector_create( fr_st->width, VTYPE_VAL, fr_st->suppl.part.data_type, TRUE );
-      vector_copy( fr_st, table->states[from_index] );
-      table->num_states++;
+    /* If we need to add new states, do so now */
+    if( (from_index == -1) || (to_index == -1) ) {
+
+      int new_states = table->num_states + ((from_index == -1) ? 1 : 0) + ((to_index == -1) ? 1 : 0);
+
+      /* Allocate new memory */
+      table->states = (vector**)realloc_safe( table->states, (sizeof( vector* ) * table->num_states), (sizeof( vector* ) * new_states) );
+
+      /* Add new state(s) */
+      if( from_index == -1 ) {
+        from_index = table->num_states;
+        table->states[from_index] = vector_create( fr_st->width, VTYPE_VAL, fr_st->suppl.part.data_type, TRUE );
+        vector_copy( fr_st, table->states[from_index] );
+        table->num_states++;
+      }
+      if( to_index == -1 ) {
+        to_index = table->num_states;
+        table->states[to_index] = vector_create( to_st->width, VTYPE_VAL, to_st->suppl.part.data_type, TRUE );
+        vector_copy( to_st, table->states[to_index] );
+        table->num_states++;
+      } else if( to_index == -2 ) {
+        to_index = from_index;
+      }
+
     }
-    if( to_index == -1 ) {
-      to_index = table->num_states;
-      table->states[to_index] = vector_create( to_st->width, VTYPE_VAL, to_st->suppl.part.data_type, TRUE );
-      vector_copy( to_st, table->states[to_index] );
-      table->num_states++;
+
+    /* If we need to add a new arc, do so now */
+    if( arcs_index == -1 ) {
+
+      /* Reallocate new memory */
+      table->arcs = (fsm_table_arc**)realloc_safe( table->arcs, (sizeof( fsm_table_arc* ) * table->num_arcs), (sizeof( fsm_table_arc* ) * (table->num_arcs + 1)) );
+
+      /* Add new state transition */
+      table->arcs[table->num_arcs] = (fsm_table_arc*)malloc_safe( sizeof( fsm_table_arc ) );
+      table->arcs[table->num_arcs]->suppl.all             = 0;
+      table->arcs[table->num_arcs]->suppl.part.hit_f      = hit;
+      table->arcs[table->num_arcs]->suppl.part.excluded_f = exclude;
+      table->arcs[table->num_arcs]->from                  = from_index;
+      table->arcs[table->num_arcs]->to                    = to_index;
+      table->num_arcs++;
+
     }
 
-  }
+    /* If we found a match in the forward direction, adjust hit and exclude information */
+    if( side == 0 ) { 
 
-  /* If we need to add a new arc, do so now */
-  if( arcs_index == -1 ) {
+      assert( arcs_index != -1 );
 
-    /* Reallocate new memory */
-    table->arcs = (fsm_table_arc**)realloc_safe( table->arcs, (sizeof( fsm_table_arc* ) * table->num_arcs), (sizeof( fsm_table_arc* ) * (table->num_arcs + 1)) );
+      table->arcs[arcs_index]->suppl.part.hit_f      |= hit;
+      table->arcs[arcs_index]->suppl.part.excluded_f |= exclude;
 
-    /* Add new state transition */
-    table->arcs[table->num_arcs] = (fsm_table_arc*)malloc_safe( sizeof( fsm_table_arc ) );
-    table->arcs[table->num_arcs]->suppl.all             = 0;
-    table->arcs[table->num_arcs]->suppl.part.hit_f      = hit;
-    table->arcs[table->num_arcs]->suppl.part.excluded_f = exclude;
-    table->arcs[table->num_arcs]->from                  = from_index;
-    table->arcs[table->num_arcs]->to                    = to_index;
-    table->num_arcs++;
+    /* Or, if we found a match in the reverse direction, adjust hit and exclude information */
+    } else if( side == 1 ) {
 
-  }
+      assert( arcs_index != -1 );
 
-  /* If we found a match in the forward direction, adjust hit and exclude information */
-  if( side == 0 ) { 
+      table->arcs[arcs_index]->suppl.part.hit_r      |= hit;
+      table->arcs[arcs_index]->suppl.part.excluded_r |= exclude;
+      table->arcs[arcs_index]->suppl.part.bidir       = 1;
 
-    assert( arcs_index != -1 );
+    }
 
-    table->arcs[arcs_index]->suppl.part.hit_f      |= hit;
-    table->arcs[arcs_index]->suppl.part.excluded_f |= exclude;
+    /* If we have set a side with hit equal to 0, we are specifying a known transition. */
+    if( hit == 0 ) {
+      table->suppl.part.known = 1;
+    }
 
-  /* Or, if we found a match in the reverse direction, adjust hit and exclude information */
-  } else if( side == 1 ) {
-
-    assert( arcs_index != -1 );
-
-    table->arcs[arcs_index]->suppl.part.hit_r      |= hit;
-    table->arcs[arcs_index]->suppl.part.excluded_r |= exclude;
-    table->arcs[arcs_index]->suppl.part.bidir       = 1;
-
-  }
-
-  /* If we have set a side with hit equal to 0, we are specifying a known transition. */
-  if( hit == 0 ) {
-    table->suppl.part.known = 1;
   }
 
 }
@@ -876,6 +893,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.60.2.8  2008/05/07 05:57:25  phase1geo
+ First attempt to fix FSM reporting issues.  Updating regression files and
+ checkpointing.
+
  Revision 1.60.2.7  2008/05/05 19:49:59  phase1geo
  Updating regressions, fixing bugs and added new diagnostics.  Checkpointing.
 
