@@ -1275,7 +1275,7 @@ bool vector_set_coverage_and_assign_uint32(
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
           entry[VTYPE_INDEX_MEM_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall) & mask;
           entry[VTYPE_INDEX_MEM_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall) & mask;
-          entry[VTYPE_INDEX_MEM_WR]     = mask;
+          entry[VTYPE_INDEX_MEM_WR]    |= mask;
           entry[VTYPE_INDEX_MEM_VALL]   = (tvall & ~mask) | fvall;
           entry[VTYPE_INDEX_MEM_VALH]   = (tvalh & ~mask) | fvalh;
           changed = TRUE;
@@ -1630,7 +1630,7 @@ bool vector_part_select_push(
           vector_rshift_uint32( src, vall, valh, diff, ((src_msb - src_lsb) + diff) );
         }
 
-        retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+        retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, tgt_lsb, tgt_msb );
       }
       break;
     default :  assert( 0 );  break;
@@ -4688,6 +4688,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.63  2008/05/07 19:27:15  phase1geo
+ Fixing vector_part_select_push functionality to only set coverage and assign
+ information within the target range (not the entire target vector).  Updating
+ regression files and checkpointing.
+
  Revision 1.138.2.62  2008/05/07 18:09:50  phase1geo
  Fixing issue with VCD assign functionality.  Updating regression files
  per this change.  Checkpointing.
