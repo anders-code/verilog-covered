@@ -1134,6 +1134,8 @@ void vector_toggle_count(
 */
 void vector_mem_rw_count(
   vector* vec,
+  int     lsb,
+  int     msb,
   int*    wr_cnt,
   int*    rd_cnt
 ) { PROFILE(VECTOR_MEM_RW_COUNT);
@@ -1142,10 +1144,20 @@ void vector_mem_rw_count(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_U32 :
-      for( i=0; i<VECTOR_SIZE32(vec->width); i++ ) {
-        for( j=0; j<32; j++ ) {
-          *wr_cnt += vec->value.u32[i][VTYPE_INDEX_MEM_WR];
-          *rd_cnt += vec->value.u32[i][VTYPE_INDEX_MEM_RD];
+      { 
+        uint32 lmask = 0xffffffff << (lsb & 0x1f);
+        uint32 hmask = 0xffffffff >> (31 - (msb & 0x1f));
+        if( (lsb >> 5) == (msb >> 5) ) {
+          lmask &= hmask;
+        }
+        for( i=(lsb >> 5); i<=(msb >> 5); i++ ) {
+          uint32 mask = (i == (lsb >> 5)) ? lmask : ((i == (msb >> 5)) ? hmask : 0xffffffff);
+          uint32 wr   = vec->value.u32[i][VTYPE_INDEX_MEM_WR] & mask;
+          uint32 rd   = vec->value.u32[i][VTYPE_INDEX_MEM_RD] & mask;
+          for( j=0; j<32; j++ ) {
+            *wr_cnt += (wr >> j) & 0x1;
+            *rd_cnt += (rd >> j) & 0x1;
+          }
         }
       }
       break;
@@ -4692,6 +4704,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.66  2008/05/07 23:09:11  phase1geo
+ Fixing vector_mem_wr_count function and calling code.  Updating regression
+ files accordingly.  Checkpointing.
+
  Revision 1.138.2.65  2008/05/07 21:09:10  phase1geo
  Added functionality to allow to_string to output full vector bits (even
  non-significant bits) for purposes of reporting for FSMs (matches original

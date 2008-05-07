@@ -307,7 +307,13 @@ bool vector_vcd_assign(
 void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
 
 /*! \brief Counts memory write and read information from specified vector. */
-void vector_mem_rw_count( vector* vec, int* wr_cnt, int* rd_cnt );
+void vector_mem_rw_count(
+            vector* vec,
+            int     lsb,
+            int     msb,
+  /*@out@*/ int*    wr_cnt,
+  /*@out@*/ int*    rd_cnt
+);
 
 /*! \brief Sets all assigned bits in vector bit value array within specified range. */
 bool vector_set_assigned( vector* vec, int msb, int lsb );
@@ -485,6 +491,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.17  2008/05/07 23:09:11  phase1geo
+ Fixing vector_mem_wr_count function and calling code.  Updating regression
+ files accordingly.  Checkpointing.
+
  Revision 1.58.2.16  2008/05/07 21:09:10  phase1geo
  Added functionality to allow to_string to output full vector bits (even
  non-significant bits) for purposes of reporting for FSMs (matches original

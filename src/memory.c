@@ -93,7 +93,7 @@ void memory_get_stat(
     } else {
       wr = 0;
       rd = 0;
-      vector_mem_rw_count( sig->value, &wr, &rd );
+      vector_mem_rw_count( sig->value, i, ((i + pwidth) - 1), &wr, &rd );
       if( wr > 0 ) {
         (*wr_hit)++;
       }
@@ -351,7 +351,7 @@ static void memory_get_mem_coverage(
       /* Get write/read information */
       wr = 0;
       rd = 0;
-      vector_mem_rw_count( vec, &wr, &rd );
+      vector_mem_rw_count( vec, 0, (vec->width - 1), &wr, &rd );
 
       /* Output the addressable memory element if it is found to be lacking in coverage */
       if( (tog01 < dim_width) || (tog10 < dim_width) || (wr == 0) || (rd == 0) ) {
@@ -1029,7 +1029,7 @@ static void memory_display_memory(
       /* Get write/read information */
       wr = 0;
       rd = 0;
-      vector_mem_rw_count( vec, &wr, &rd );
+      vector_mem_rw_count( vec, 0, (vec->width - 1), &wr, &rd );
 
       /* Output the addressable memory element if it is found to be lacking in coverage */
       if( (tog01 < dim_width) || (tog10 < dim_width) || (wr == 0) || (rd == 0) ) {
@@ -1350,6 +1350,10 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.28.2.3  2008/05/07 23:09:10  phase1geo
+ Fixing vector_mem_wr_count function and calling code.  Updating regression
+ files accordingly.  Checkpointing.
+
  Revision 1.28.2.2  2008/04/23 05:20:44  phase1geo
  Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
 
