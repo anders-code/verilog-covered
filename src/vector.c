@@ -3521,7 +3521,7 @@ bool vector_op_land(
     case VDATA_U32 :
       {
         uint32 valh = (lunknown && runknown) ? 1 : 0;
-        uint32 vall = ((!lunknown && !vector_is_not_zero( left )) || (!runknown && !vector_is_not_zero( right ))) ? 1 : 0;
+        uint32 vall = ((!lunknown && vector_is_not_zero( left )) && (!runknown && vector_is_not_zero( right ))) ? 1 : 0;
         retval      = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 0 );
       }
       break;
@@ -4690,6 +4690,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.60  2008/05/07 04:08:51  phase1geo
+ Fixing bug with logical AND functionality.  Updating regression files.
+ Checkpointing.
+
  Revision 1.138.2.59  2008/05/07 03:48:21  phase1geo
  Fixing bug with bitwise OR function.  Updating regression files.  Checkpointing.
 
