@@ -3343,8 +3343,6 @@ bool vector_op_czeq(
         uint32       lvalh    = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : mask;
         uint32       rvall    = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
         uint32       rvalh    = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : mask;
-        printf( "i: %d, mask: %x, lvall: %x, lvalh: %x, rvall: %x, rvalh: %x [ (~(lvall ^ rvall) & ~(lvalh ^ rvalh)): %x, (lvalh & lvall): %x, (rvalh & rvall): %x\n",
-                i, mask, lvall, lvalh, rvall, rvalh, (~(lvall ^ rvall) & ~(lvalh ^ rvalh)), (lvalh & lvall), (rvalh & rvall) );
         while( (i > 0) && ((((~(lvall ^ rvall) & ~(lvalh ^ rvalh)) | (lvalh & lvall) | (rvalh & rvall)) & mask) == mask) ) {
           mask  = 0xffffffff;
           i--;
@@ -3352,8 +3350,6 @@ bool vector_op_czeq(
           lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : mask;
           rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
           rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : mask;
-          printf( "i: %d, mask: %x, lvall: %x, lvalh: %x, rvall: %x, rvalh: %x [ (~(lvall ^ rvall) & ~(lvalh ^ rvalh)): %x, (lvalh & lvall): %x, (rvalh & rvall): %x\n",
-                  i, mask, lvall, lvalh, rvall, rvalh, (~(lvall ^ rvall) & ~(lvalh ^ rvalh)), (lvalh & lvall), (rvalh & rvall) );
         }
         scratchl = ((((~(lvall ^ rvall) & ~(lvalh ^ rvalh)) | (lvalh & lvall) | (rvalh & rvall)) & mask) == mask);
         retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
@@ -4690,6 +4686,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.61  2008/05/07 05:22:51  phase1geo
+ Fixing reporting bug with line coverage for continuous assignments.  Updating
+ regression files and checkpointing.
+
  Revision 1.138.2.60  2008/05/07 04:08:51  phase1geo
  Fixing bug with logical AND functionality.  Updating regression files.
  Checkpointing.

@@ -1330,7 +1330,7 @@ void expression_db_write(
     expression_get_id( expr, parse_mode ),
     expr->line,
     expr->col,
-    expr->exec_num,
+    ((((expr->op == EXP_OP_DASSIGN) || (expr->op == EXP_OP_ASSIGN)) && (expr->exec_num == 0)) ? 1 : expr->exec_num),
     expr->op,
     (expr->suppl.all & ESUPPL_MERGE_MASK),
     ((expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right, parse_mode )),
@@ -5155,6 +5155,31 @@ void expression_set_assigned(
 }
 
 /*!
+ Recursively iterates down expression tree, setting the left/right changed bits in each expression.  This
+ is necessary to get continuous assignments and FSM statements to simulate (even if their driving signals
+ have not changed).
+*/
+void expression_set_changed(
+  expression* expr
+) { PROFILE(EXPRESSION_SET_CHANGED);
+
+  if( expr != NULL ) {
+
+    /* Set the children expressions */
+    expression_set_changed( expr->left );
+    expression_set_changed( expr->right );
+
+    /* Now set our bits */
+    expr->suppl.part.left_changed  = 1;
+    expr->suppl.part.right_changed = 1;
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \param lhs       Pointer to current expression on left-hand-side of assignment to calculate for.
  \param rhs       Pointer to the right-hand-expression that will be assigned from.
  \param lsb       Current least-significant bit in rhs value to start assigning.
@@ -5546,6 +5571,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.26  2008/05/07 05:22:50  phase1geo
+ Fixing reporting bug with line coverage for continuous assignments.  Updating
+ regression files and checkpointing.
+
  Revision 1.329.2.25  2008/05/07 03:48:20  phase1geo
  Fixing bug with bitwise OR function.  Updating regression files.  Checkpointing.
 
