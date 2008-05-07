@@ -1254,8 +1254,8 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  set   = entry[VTYPE_INDEX_SIG_SET];
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
           if( (set & mask) != 0 ) {
-            entry[VTYPE_INDEX_SIG_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall);
-            entry[VTYPE_INDEX_SIG_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall);
+            entry[VTYPE_INDEX_SIG_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall) & mask;
+            entry[VTYPE_INDEX_SIG_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall) & mask;
           }
           entry[VTYPE_INDEX_SIG_SET] |= mask;
           entry[VTYPE_INDEX_SIG_VALL] = (tvall & ~mask) | fvall;
@@ -1273,8 +1273,8 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  tvall = entry[VTYPE_INDEX_MEM_VALL];
         uint32  tvalh = entry[VTYPE_INDEX_MEM_VALH];
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
-          entry[VTYPE_INDEX_MEM_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall);
-          entry[VTYPE_INDEX_MEM_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall);
+          entry[VTYPE_INDEX_MEM_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall) & mask;
+          entry[VTYPE_INDEX_MEM_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall) & mask;
           entry[VTYPE_INDEX_MEM_WR]     = mask;
           entry[VTYPE_INDEX_MEM_VALL]   = (tvall & ~mask) | fvall;
           entry[VTYPE_INDEX_MEM_VALH]   = (tvalh & ~mask) | fvalh;
@@ -2601,6 +2601,8 @@ bool vector_vcd_assign(
       {
         uint32 scratchl[MAX_BIT_WIDTH>>5];
         uint32 scratchh[MAX_BIT_WIDTH>>5];
+        scratchl[i>>5] = 0;
+        scratchh[i>>5] = 0;
         while( ptr >= value ) {
           unsigned int index  = (i >> 5);
           unsigned int offset = (i & 0x1f);
@@ -4686,6 +4688,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.62  2008/05/07 18:09:50  phase1geo
+ Fixing issue with VCD assign functionality.  Updating regression files
+ per this change.  Checkpointing.
+
  Revision 1.138.2.61  2008/05/07 05:22:51  phase1geo
  Fixing reporting bug with line coverage for continuous assignments.  Updating
  regression files and checkpointing.
