@@ -5268,7 +5268,7 @@ void expression_assign(
         if( lhs->sig->suppl.part.assigned == 1 ) {
           bool changed = FALSE;
           if( assign ) {
-            if( eval_lhs ) {
+            if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
               sim_expression( lhs->left, thr, time, TRUE );
             }
             if( !vector_is_unknown( lhs->left->value ) ) {
@@ -5338,7 +5338,9 @@ void expression_assign(
 #ifdef NOT_SUPPORTED
       case EXP_OP_MBIT_POS :
         if( lhs->sig->suppl.part.assigned == 1 ) {
-          sim_expression( lhs->left, thr, time, TRUE );
+          if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
+            sim_expression( lhs->left, thr, time, TRUE );
+          }
           if( !lhs->left->value->suppl.part.unknown ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
             intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
@@ -5364,7 +5366,9 @@ void expression_assign(
         break;
       case EXP_OP_MBIT_NEG :
         if( lhs->sig->suppl.part.assigned == 1 ) {
-          sim_expression( lhs->left, thr, time, TRUE );
+          if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
+            sim_expression( lhs->left, thr, time, TRUE );
+          }
           if( !lhs->left->value->part.unknown ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
             intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
@@ -5571,6 +5575,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.27  2008/05/07 21:59:47  phase1geo
+ Coding optimization for LHS single-bit selects such that if the index value
+ has not changed, don't attempt to recalculate its value.  Updated regression
+ files.  Checkpointing.
+
  Revision 1.329.2.26  2008/05/07 05:22:50  phase1geo
  Fixing reporting bug with line coverage for continuous assignments.  Updating
  regression files and checkpointing.
