@@ -2771,8 +2771,8 @@ bool vector_bitwise_or_op(
           uint32  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
           uint32  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
           uint32  val2_h = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALH] : 0;
-          scratchl[i] = ~(val1_h | val2_h) & (val1_l |  val2_l);
-          scratchh[i] =  (val1_h & val2_h) | (val1_h & ~val2_l) | (val2_h & ~val1_l);
+          scratchl[i] = (val1_l & ~val1_h) | (val2_l & ~val2_h);
+          scratchh[i] = ~scratchl[i] & (val1_h | val2_h);
         }
         retval = vector_set_coverage_and_assign_uint32( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
       }
@@ -4690,6 +4690,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.59  2008/05/07 03:48:21  phase1geo
+ Fixing bug with bitwise OR function.  Updating regression files.  Checkpointing.
+
  Revision 1.138.2.58  2008/05/06 20:51:58  phase1geo
  Fixing bugs with casex and casez.  Checkpointing.
 

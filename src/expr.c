@@ -3335,7 +3335,6 @@ bool expression_op_func__sig(
   if( expr->op != EXP_OP_PARAM ) {
     expression_set_tf_preclear( expr );
   } else {
-    printf( "HERE!\n" );
     expression_set_tf( expr );
   }
 
@@ -3687,8 +3686,6 @@ bool expression_op_func__aedge(
 
   /* If our signal is an event that has been triggered, automatically set ourselves to true */
   if( (expr->right->sig != NULL) && (expr->right->sig->suppl.part.type == SSUPPL_TYPE_EVENT) ) {
-
-    printf( "HERE!  eval_t: %d\n", expr->right->suppl.part.eval_t );
 
     if( expr->right->suppl.part.eval_t == 1 ) {
       if( thr->suppl.part.exec_first ) {
@@ -5549,6 +5546,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.25  2008/05/07 03:48:20  phase1geo
+ Fixing bug with bitwise OR function.  Updating regression files.  Checkpointing.
+
  Revision 1.329.2.24  2008/05/06 23:06:26  phase1geo
  Fixing bug with event triggering.  Updating regression files.  Checkpointing.
 
