@@ -1619,6 +1619,12 @@ bool vector_part_select_push(
         uint32       valh[MAX_BIT_WIDTH>>5];
         uint32       vall[MAX_BIT_WIDTH>>5];
         unsigned int diff;
+        unsigned int i; 
+
+        /* First, initialize the vall/h arrays to zero */
+        for( i=(tgt_lsb >> 5); i<=(tgt_msb >> 5); i++ ) {
+          vall[i] = valh[i] = 0;
+        }
 
         /* Left-shift the source vector to match up with target LSB */
         if( src_lsb < tgt_lsb ) {
@@ -4688,6 +4694,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.64  2008/05/07 20:50:21  phase1geo
+ Fixing bit-fill bug in vector_part_select_push function.  Updated regression
+ files.  Checkpointing.
+
  Revision 1.138.2.63  2008/05/07 19:27:15  phase1geo
  Fixing vector_part_select_push functionality to only set coverage and assign
  information within the target range (not the entire target vector).  Updating
