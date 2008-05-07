@@ -557,7 +557,7 @@ static void fsm_arg_parse_trans(
   assert( expr != NULL );
 
   /* Convert expression value to a string */
-  tmp = str = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ) );
+  tmp = str = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ), FALSE );
 
   Try {
 
@@ -646,7 +646,7 @@ void fsm_arg_parse_attr(
     } else if( (index == 2) && (strcmp( curr->name, "is" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
         int slen;
-        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ) );
+        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE );
         slen = strlen( tmp );
         Try {
           if( (in_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
@@ -673,7 +673,7 @@ void fsm_arg_parse_attr(
     } else if( (index == 2) && (strcmp( curr->name, "os" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
         int slen;
-        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ) );
+        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE );
         slen = strlen( tmp );
         Try {
           if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
@@ -704,7 +704,7 @@ void fsm_arg_parse_attr(
                (in_state != NULL) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
         int slen;
-        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ) );
+        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE );
         slen = strlen( tmp );
         Try {
           if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
@@ -744,7 +744,7 @@ void fsm_arg_parse_attr(
       }
     } else {
       unsigned int rv;
-      tmp = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ) );
+      tmp = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE );
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Invalid covered_fsm attribute parameter (%s=%s), file: %s",
                      curr->name, tmp, obf_file( funit->filename ) );
       assert( rv < USER_MSG_LENGTH );
@@ -765,6 +765,11 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.51.2.2  2008/05/07 21:09:10  phase1geo
+ Added functionality to allow to_string to output full vector bits (even
+ non-significant bits) for purposes of reporting for FSMs (matches original
+ behavior).
+
  Revision 1.51.2.1  2008/04/22 23:01:42  phase1geo
  More updates.  Completed initial pass of expr.c and fsm_arg.c.  Working
  on memory.c.  Checkpointing.

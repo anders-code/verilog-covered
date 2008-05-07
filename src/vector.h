@@ -283,7 +283,8 @@ void vector_from_uint64(
 /*! \brief Converts vector into a string value in specified format. */
 char* vector_to_string(
   vector* vec, 
-  int     base
+  int     base,
+  bool    show_all
 );
 
 /*! \brief Converts character string value into vector. */
@@ -484,6 +485,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.16  2008/05/07 21:09:10  phase1geo
+ Added functionality to allow to_string to output full vector bits (even
+ non-significant bits) for purposes of reporting for FSMs (matches original
+ behavior).
+
  Revision 1.58.2.15  2008/05/04 22:05:29  phase1geo
  Adding bit-fill in vector_set_static and changing name of old bit-fill functions
  in vector.c to sign_extend to reflect their true nature.  Added new diagnostics

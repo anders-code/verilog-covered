@@ -391,7 +391,7 @@ void codegen_gen_expr(
       } else if( ESUPPL_STATIC_BASE( expr->suppl ) == QSTRING ) {
 
         unsigned int slen;
-        tmpstr = vector_to_string( expr->value, QSTRING );
+        tmpstr = vector_to_string( expr->value, QSTRING, FALSE );
         slen   = strlen( tmpstr ) + 3;
         (*code)[0] = (char*)malloc_safe( slen );
         rv = snprintf( (*code)[0], slen, "\"%s\"", tmpstr );
@@ -400,7 +400,7 @@ void codegen_gen_expr(
 
       } else { 
 
-        (*code)[0] = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ) );
+        (*code)[0] = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ), FALSE );
 
       }
 
@@ -982,6 +982,11 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.95.2.2  2008/05/07 21:09:10  phase1geo
+ Added functionality to allow to_string to output full vector bits (even
+ non-significant bits) for purposes of reporting for FSMs (matches original
+ behavior).
+
  Revision 1.95.2.1  2008/05/05 19:49:59  phase1geo
  Updating regressions, fixing bugs and added new diagnostics.  Checkpointing.
 

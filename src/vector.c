@@ -2281,9 +2281,6 @@ static void vector_set_static(
 }
 
 /*!
- \param vec   Pointer to vector to convert.
- \param base  Base type of vector value.
-
  \return Returns pointer to the allocated/coverted string.
 
  Converts a vector value into a string, allocating the memory for the string in this
@@ -2291,8 +2288,9 @@ static void vector_set_static(
  value to change vector into.
 */
 char* vector_to_string(
-  vector* vec,
-  int     base
+  vector* vec,      /*!< Pointer to vector to convert */
+  int     base,     /*!< Base type of vector value */
+  bool    show_all  /*!< Set to TRUE causes all bits in vector to be displayed (otherwise, only significant bits are displayed) */
 ) { PROFILE(VECTOR_TO_STRING);
 
   char* str = NULL;  /* Pointer to allocated string */
@@ -2385,7 +2383,7 @@ char* vector_to_string(
             assert( pos < vec_size );
             if( (i % group) == 0 ) {
               switch( value ) {
-                case 0x0 :  if( (pos > 0) || (i == 0) ) { tmp[pos] = '0';  pos++; }  break;
+                case 0x0 :  if( (pos > 0) || (i == 0) || show_all ) { tmp[pos] = '0';  pos++; }  break;
                 case 0x1 :  tmp[pos] = '1';  pos++;  break;
                 case 0x2 :  tmp[pos] = '2';  pos++;  break;
                 case 0x3 :  tmp[pos] = '3';  pos++;  break;
@@ -4694,6 +4692,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.65  2008/05/07 21:09:10  phase1geo
+ Added functionality to allow to_string to output full vector bits (even
+ non-significant bits) for purposes of reporting for FSMs (matches original
+ behavior).
+
  Revision 1.138.2.64  2008/05/07 20:50:21  phase1geo
  Fixing bit-fill bug in vector_part_select_push function.  Updated regression
  files.  Checkpointing.

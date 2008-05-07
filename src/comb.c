@@ -921,7 +921,7 @@ static void combination_underline_tree(
       
       } else {
 
-        tmpstr = vector_to_string( exp->value, ESUPPL_STATIC_BASE( exp->suppl ) );
+        tmpstr = vector_to_string( exp->value, ESUPPL_STATIC_BASE( exp->suppl ), FALSE );
         *size  = strlen( tmpstr );
         free_safe( tmpstr, (strlen( tmpstr ) + 1) );
 
@@ -3001,6 +3001,11 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.193.2.3  2008/05/07 21:09:10  phase1geo
+ Added functionality to allow to_string to output full vector bits (even
+ non-significant bits) for purposes of reporting for FSMs (matches original
+ behavior).
+
  Revision 1.193.2.2  2008/04/21 23:13:04  phase1geo
  More work to update other files per vector changes.  Currently in the middle
  of updating expr.c.  Checkpointing.

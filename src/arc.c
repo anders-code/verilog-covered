@@ -150,8 +150,8 @@
 
   for( i=0; i<table->num_arcs; i++ ) {
 
-    char* lvec = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL );
-    char* rvec = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL );
+    char* lvec = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
+    char* rvec = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
 
     printf( "       entry %u: ", i );
 
@@ -765,12 +765,12 @@ void arc_get_states(
   for( i=0; i<table->num_arcs; i++ ) {
     if( (state_hits[table->arcs[i]->from]++ == 0) && (any || (table->arcs[i]->suppl.part.hit_f == hit) || (table->arcs[i]->suppl.part.hit_r == hit)) ) {
       *states                  = (char**)realloc_safe( *states, (sizeof( char* ) * (*state_size)), (sizeof( char* ) * ((*state_size) + 1)) );
-      (*states)[(*state_size)] = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL );
+      (*states)[(*state_size)] = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
       (*state_size)++;
     }
     if( (state_hits[table->arcs[i]->to]++ == 0) && (any || (table->arcs[i]->suppl.part.hit_f == hit) || (table->arcs[i]->suppl.part.hit_r == hit)) ) {
       *states                  = (char**)realloc_safe( *states, (sizeof( char* ) * (*state_size)), (sizeof( char* ) * ((*state_size) + 1)) );
-      (*states)[(*state_size)] = vector_to_string( table->states[table->arcs[i]->to], HEXIDECIMAL );
+      (*states)[(*state_size)] = vector_to_string( table->states[table->arcs[i]->to], HEXIDECIMAL, TRUE );
       (*state_size)++;
     }
   }
@@ -816,8 +816,8 @@ void arc_get_transitions(
         *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
         (*excludes)[(*arc_size)] = table->arcs[i]->suppl.part.excluded_f;
       }
-      (*from_states)[(*arc_size)] = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL );
-      (*to_states)[(*arc_size)]   = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL );
+      (*from_states)[(*arc_size)] = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
+      (*to_states)[(*arc_size)]   = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
       (*arc_size)++;
     }
 
@@ -829,8 +829,8 @@ void arc_get_transitions(
         *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
         (*excludes)[(*arc_size)] = table->arcs[i]->suppl.part.excluded_r;
       }
-      (*from_states)[(*arc_size)] = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL );
-      (*to_states)[(*arc_size)]   = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL );
+      (*from_states)[(*arc_size)] = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
+      (*to_states)[(*arc_size)]   = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
       (*arc_size)++;
     }
 
@@ -893,6 +893,11 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.60.2.9  2008/05/07 21:09:10  phase1geo
+ Added functionality to allow to_string to output full vector bits (even
+ non-significant bits) for purposes of reporting for FSMs (matches original
+ behavior).
+
  Revision 1.60.2.8  2008/05/07 05:57:25  phase1geo
  First attempt to fix FSM reporting issues.  Updating regression files and
  checkpointing.
