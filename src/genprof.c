@@ -18,7 +18,8 @@
 #ifdef DEBUG
 profiler profiles[NUM_PROFILES] = {
   {"unregistered", NULL, 0, 0, 0, FALSE},
-  {"arc_find", NULL, 0, 0, 0, FALSE},
+  {"arc_find_state", NULL, 0, 0, 0, FALSE},
+  {"arc_find_arc", NULL, 0, 0, 0, FALSE},
   {"arc_create", NULL, 0, 0, 0, FALSE},
   {"arc_add", NULL, 0, 0, 0, FALSE},
   {"arc_state_hits", NULL, 0, 0, 0, FALSE},

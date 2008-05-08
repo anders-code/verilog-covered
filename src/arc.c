@@ -191,67 +191,53 @@
  will either modify the supplemental data that is associated with this function's return
  value or it will check to see if another arc entry is required to be added.
 */
-int arc_find(
-            const fsm_table* table,       /*!< Pointer to FSM table to search in */
-            const vector*    from_st,     /*!< From state to use for matching */
-            const vector*    to_st,       /*!< To state to use for matching */
-  /*@out@*/ int*             from_index,  /*!< Pointer to index of matched from_state in states array (-1 if not found) */
-  /*@out@*/ int*             to_index,    /*!< Pointer to index of matched to_state in states array (-1 if not found) */
-  /*@out@*/ int*             arcs_index   /*!< Pointer to index of matched arcs entry (-1 if not found) */
-) { PROFILE(ARC_FIND);
+int arc_find_state(
+  const fsm_table* table,  /*!< Pointer to FSM table to search in */
+  const vector*    st      /*!< State to search for */
+) { PROFILE(ARC_FIND_STATE);
 
-  int retval = 2;  /* Return value for this function */
-  int i;           /* Loop iterator */
+  int index = -1;  /* Return value for this function */
+  int i     = 0;  /* Loop iterator */
 
   assert( table != NULL );
 
-  /* Initialize the return pointers */
-  *from_index = -1;
-  *to_index   = -1;
-  *arcs_index = -1;
-
-  /* First, check to see if from_st exists in the states array */
-  i = 0;
-  while( (i < table->num_states) && !vector_ceq_uint32( from_st, table->states[i] ) ) i++;
+  while( (i < table->num_states) && !vector_ceq_uint32( st, table->states[i] ) ) i++;
   if( i < table->num_states ) {
-    *from_index = i;
+    index = i;
   }
 
-  /* Then, check to see if to_st exists in the states array (and it is not the same value as from_st) */
-  if( vector_ceq_uint32( from_st, to_st ) ) {
+  return( index );
 
-    *to_index = (*from_index == -1) ? -2 : *from_index;
+}
 
-  } else {
+/*!
+ \return Returns the index of the found arc in the arcs array if it is found, otherwise, returns -1.
 
-    /* Now see if to_st exists in the states array */
-    i = 0;
-    while( (i < table->num_states) && !vector_ceq_uint32( to_st, table->states[i] ) ) i++;
-    if( i < table->num_states ) {
-      *to_index = i;
+ Searches for the arc in the arcs array of the given FSM table specified by the given state indices.
+*/
+int arc_find_arc(
+            const fsm_table* table,      /*!< Pointer to FSM table to search in */
+            int              st1_index,  /*!< Index of first state to find */
+            int              st2_index,  /*!< Index of second state to find */
+  /*@out@*/ bool*            forward     /*!< Set to TRUE if found in the forward direction (only set if
+                                              return value is not -1. */
+) { PROFILE(ARC_FIND_ARC);
+
+  int index = -1;
+  int i     = 0;
+
+  while( (i < table->num_arcs) && (index == -1) ) {
+    if( (table->arcs[i]->from == st1_index) && (table->arcs[i]->to == st2_index) ) {
+      index    = i;
+      *forward = TRUE;
+    } else if( (table->arcs[i]->to == st1_index) && (table->arcs[i]->from == st2_index ) ) {
+      index    = i;
+      *forward = FALSE;
     }
-    
+    i++;
   }
 
-  /* If we were able to find both states, search for the arc */
-  if( (*from_index != -1) && (*to_index != -1) ) {
-
-    /* Now search for the matching transition in the arcs array */
-    i = 0;
-    while( (i < table->num_arcs) && (retval == 2) ) {
-      if( (table->arcs[i]->from == *from_index) && (table->arcs[i]->to == *to_index) ) {
-        *arcs_index = i;
-        retval      = 0;
-      } else if( (table->arcs[i]->to == *from_index) && (table->arcs[i]->from == *to_index ) ) {
-        *arcs_index = i;
-        retval      = 1;
-      }
-      i++;
-    }
-
-  }
-
-  return( retval );
+  return( index );
 
 }
 
@@ -311,59 +297,44 @@ void arc_add(
 
   if( (hit == 0) || (!vector_is_unknown( fr_st ) && !vector_is_unknown( to_st )) ) {
 
+    bool forward;
+
     // printf( "FR_ST: " );  vector_display( fr_st );
     // printf( "TO_ST: " );  vector_display( to_st );
 
-    /* Attempt to find the state transition */
-    side = arc_find( table, fr_st, to_st, &from_index, &to_index, &arcs_index );
+    /* Search for the from_state vector in the states array */
+    if( (from_index = arc_find_state( table, fr_st )) == -1 ) {
+      table->states = (vector**)realloc_safe( table->states, (sizeof( vector* ) * table->num_states), (sizeof( vector* ) * (table->num_states + 1)) );
+      from_index    = table->num_states;
+      table->states[from_index] = vector_create( fr_st->width, VTYPE_VAL, fr_st->suppl.part.data_type, TRUE );
+      vector_copy( fr_st, table->states[from_index] );
+      table->num_states++;
+    }
 
-    // printf( "from_index: %d, to_index: %d\n", from_index, to_index );
-
-    /* If we need to add new states, do so now */
-    if( (from_index == -1) || (to_index == -1) ) {
-
-      int new_states = table->num_states + ((from_index == -1) ? 1 : 0) + ((to_index == -1) ? 1 : 0);
-
-      /* Allocate new memory */
-      table->states = (vector**)realloc_safe( table->states, (sizeof( vector* ) * table->num_states), (sizeof( vector* ) * new_states) );
-
-      /* Add new state(s) */
-      if( from_index == -1 ) {
-        from_index = table->num_states;
-        table->states[from_index] = vector_create( fr_st->width, VTYPE_VAL, fr_st->suppl.part.data_type, TRUE );
-        vector_copy( fr_st, table->states[from_index] );
-        table->num_states++;
-      }
-      if( to_index == -1 ) {
-        to_index = table->num_states;
-        table->states[to_index] = vector_create( to_st->width, VTYPE_VAL, to_st->suppl.part.data_type, TRUE );
-        vector_copy( to_st, table->states[to_index] );
-        table->num_states++;
-      } else if( to_index == -2 ) {
-        to_index = from_index;
-      }
-
+    if( (to_index = arc_find_state( table, to_st )) == -1 ) {
+      table->states = (vector**)realloc_safe( table->states, (sizeof( vector* ) * table->num_states), (sizeof( vector* ) * (table->num_states + 1)) );
+      to_index      = table->num_states;
+      table->states[to_index] = vector_create( to_st->width, VTYPE_VAL, to_st->suppl.part.data_type, TRUE );
+      vector_copy( to_st, table->states[to_index] );
+      table->num_states++;
     }
 
     /* If we need to add a new arc, do so now */
-    if( arcs_index == -1 ) {
-
-      /* Reallocate new memory */
+    if( (arcs_index = arc_find_arc( table, from_index, to_index, &forward )) == -1 ) {
       table->arcs = (fsm_table_arc**)realloc_safe( table->arcs, (sizeof( fsm_table_arc* ) * table->num_arcs), (sizeof( fsm_table_arc* ) * (table->num_arcs + 1)) );
-
-      /* Add new state transition */
       table->arcs[table->num_arcs] = (fsm_table_arc*)malloc_safe( sizeof( fsm_table_arc ) );
       table->arcs[table->num_arcs]->suppl.all             = 0;
       table->arcs[table->num_arcs]->suppl.part.hit_f      = hit;
       table->arcs[table->num_arcs]->suppl.part.excluded_f = exclude;
       table->arcs[table->num_arcs]->from                  = from_index;
       table->arcs[table->num_arcs]->to                    = to_index;
+      forward    = TRUE;
+      arcs_index = table->num_arcs;
       table->num_arcs++;
-
     }
 
     /* If we found a match in the forward direction, adjust hit and exclude information */
-    if( side == 0 ) { 
+    if( forward ) { 
 
       assert( arcs_index != -1 );
 
@@ -371,7 +342,7 @@ void arc_add(
       table->arcs[arcs_index]->suppl.part.excluded_f |= exclude;
 
     /* Or, if we found a match in the reverse direction, adjust hit and exclude information */
-    } else if( side == 1 ) {
+    } else {
 
       assert( arcs_index != -1 );
 
@@ -829,8 +800,8 @@ void arc_get_transitions(
         *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
         (*excludes)[(*arc_size)] = table->arcs[i]->suppl.part.excluded_r;
       }
-      (*from_states)[(*arc_size)] = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
-      (*to_states)[(*arc_size)]   = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
+      (*from_states)[(*arc_size)] = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
+      (*to_states)[(*arc_size)]   = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
       (*arc_size)++;
     }
 
@@ -893,6 +864,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.60.2.10  2008/05/08 03:56:38  phase1geo
+ Updating regression files and reworking arc_find and arc_add functionality.
+ Checkpointing.
+
  Revision 1.60.2.9  2008/05/07 21:09:10  phase1geo
  Added functionality to allow to_string to output full vector bits (even
  non-significant bits) for purposes of reporting for FSMs (matches original

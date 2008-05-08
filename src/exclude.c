@@ -392,14 +392,11 @@ bool exclude_set_fsm_exclude(
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link */
-  int         find_val;        /* Value from return of arc_find function */
-  int         found_index;     /* Index of found arc entry */
-  vector*     from_vec;        /* Vector form of from_state */
-  vector*     to_vec;          /* Vector form of to_state */
-  fsm_link*   curr_fsm;        /* Pointer to the current FSM to search on */
 
   /* Find the functional unit instance that matches the functional unit description */
   if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+
+    fsm_link* curr_fsm;
 
     /* Find the corresponding table */
     curr_fsm = funitl->funit->fsm_head;
@@ -409,16 +406,19 @@ bool exclude_set_fsm_exclude(
 
     if( curr_fsm != NULL ) {
 
-      int from_base, to_base;
-      int found_from, found_to;
+      vector* from_vec;
+      vector* to_vec;
+      int     found_index;
+      bool    forward;
+      int     from_base, to_base;
 
       /* Convert from/to state strings into vector values */
       vector_from_string( &from_state, FALSE, &from_vec, &from_base );
       vector_from_string( &to_state, FALSE, &to_vec, &to_base );
 
       /* Find the arc entry and perform the exclusion assignment and coverage recalculation */
-      if( (find_val = arc_find( curr_fsm->table->table, from_vec, to_vec, &found_from, &found_to, &found_index )) != 2 ) {
-        exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, (find_val == 0), funitl->funit, (value == 1) );
+      if( (found_index = arc_find_arc( curr_fsm->table->table, arc_find_state( curr_fsm->table->table, from_vec ), arc_find_state( curr_fsm->table->table, to_vec ), &forward )) != -1 ) {
+        exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, forward, funitl->funit, (value == 1) );
         retval = TRUE;
       }
 
@@ -481,6 +481,10 @@ bool exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.23.2.2  2008/05/08 03:56:38  phase1geo
+ Updating regression files and reworking arc_find and arc_add functionality.
+ Checkpointing.
+
  Revision 1.23.2.1  2008/05/02 22:06:10  phase1geo
  Updating arc code for new data structure.  This code is completely untested
  but does compile and has been completely rewritten.  Checkpointing.

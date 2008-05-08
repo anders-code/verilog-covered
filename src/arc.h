@@ -41,13 +41,17 @@ void arc_add(
 );
 
 /*! \brief Finds the specified state transition in the given arc array */
-int arc_find(
+int arc_find_state(
             const fsm_table* table,
-            const vector*    from_st,
-            const vector*    to_st,
-  /*@out@*/ int*             from_index,
-  /*@out@*/ int*             to_index,
-  /*@out@*/ int*             arcs_index
+            const vector*    st
+);
+
+/*! \brief Finds the specified state transition in the given FSM table */
+int arc_find_arc(
+            const fsm_table* table,
+            int              st1_index,
+            int              st2_index,
+  /*@out@*/ bool*            forward
 );
 
 /*! \brief Calculates all state and state transition values for reporting purposes. */
@@ -116,6 +120,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.27.2.2  2008/05/08 03:56:38  phase1geo
+ Updating regression files and reworking arc_find and arc_add functionality.
+ Checkpointing.
+
  Revision 1.27.2.1  2008/05/02 22:06:10  phase1geo
  Updating arc code for new data structure.  This code is completely untested
  but does compile and has been completely rewritten.  Checkpointing.
