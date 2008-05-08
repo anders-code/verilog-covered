@@ -1,5 +1,5 @@
 5 e 1 main 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t fsm -i main.fsm -vcd fsm2b.vcd -o fsm2b.cdd -y lib -v fsm2b.v -F fsm=state,next_state -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog -t fsm -i main.fsm -vcd fsm2b.vcd -o fsm2b.cdd -y lib -v fsm2b.v -F fsm=state,next_state -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 fsm "fsm" lib/fsm.v 1 37 1
 2 1 23 110015 24 1 100c 0 0 1 1 clock
@@ -42,7 +42,7 @@
 4 2 1 9 0
 4 21 6 20 0
 4 20 1 21 0
-6 23 22 1  0 3 3 2 16 0 0  2 16 1 0  2 16 3 0  2 16 0 0  2 16 1 0  2 16 3 0   4  0 0 29  0 1 29  1 2 b9  2 0 1
+6 23 22 1  0 3 3 2 16 0 0  2 16 1 0  2 16 3 0  2 16 0 0  2 16 1 0  2 16 3 0   4  0 0 1  0 1 1  1 2 1  2 0 1
 3 1 fsm.$u0 "fsm.$u0" lib/fsm.v 0 34 1
 2 24 29 5000e 1 32 1004 0 0 2 1 STATE_IDLE
 2 25 28 9000d d 1 100e 0 0 2 1 state

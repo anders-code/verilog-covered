@@ -1,5 +1,5 @@
 5 e 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd fsm9.2.vcd -o fsm9.2.cdd -y ./lib -v fsm9.2.v -F fsm=state,next_state -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd fsm9.2.vcd -o fsm9.2.cdd -y ./lib -v fsm9.2.v -F fsm=state,next_state -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" fsm9.2.v 1 67 1
 2 1 16 110013 25 1 100c 0 0 1 1 clk
@@ -44,7 +44,7 @@
 4 21 6 20 0
 4 20 1 21 0
 4 22 1 0 0
-6 24 23 1  0 3 3 2 16 0 0  2 16 1 0  2 16 3 0  2 16 0 0  2 16 1 0  2 16 3 0   4  0 0 b9  0 1 b9  1 2 29  2 0 1
+6 24 23 1  0 3 3 2 16 0 0  2 16 1 0  2 16 3 0  2 16 0 0  2 16 1 0  2 16 3 0   4  0 0 1  0 1 1  1 2 1  2 0 1
 3 1 main.$u0 "main.$u0" fsm9.2.v 0 27 1
 2 25 22 5000e 1 32 1004 0 0 2 1 STATE_IDLE
 2 26 21 9000d d 1 100e 0 0 2 1 state
@@ -140,7 +140,7 @@
 4 71 1 78 0
 4 90 6 89 0
 4 89 1 90 0
-6 92 91 1  0 3 3 2 16 0 0  2 16 1 0  2 16 3 0  2 16 0 0  2 16 1 0  2 16 3 0   4  0 0 29  0 1 b9  1 2 b9  2 0 1
+6 92 91 1  0 3 3 2 16 0 0  2 16 1 0  2 16 3 0  2 16 0 0  2 16 1 0  2 16 3 0   4  0 0 1  0 1 1  1 2 1  2 0 1
 3 1 fsm.$u3 "main.fsm1.$u3" ./lib/fsm.v 0 34 1
 2 93 29 5000e 1 32 1004 0 0 2 1 STATE_IDLE
 2 94 28 9000d d 1 100e 0 0 2 1 state
