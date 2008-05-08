@@ -1,5 +1,5 @@
 5 e 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd fsm5.2.vcd -o fsm5.2.cdd -v fsm5.2.v -F main=state,next_state[1] -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd fsm5.2.vcd -o fsm5.2.cdd -v fsm5.2.v -F main=state,next_state[1] -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" fsm5.2.v 1 51 1
 2 1 14 110015 2d 1 100c 0 0 1 1 clock
@@ -27,9 +27,9 @@
 2 23 24 7000c 0 1 1410 0 0 1 1 msg_ip
 2 24 24 7001d 4 35 e 22 23
 2 25 46 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 0 $u2
-2 26 0 0 4 0 1008 0 0 32 48 1 0
-2 27 0 0 4 23 100e 0 26 1 18 0 1 0 0 0 0 0 next_state
-2 28 0 0 3 1 100e 0 0 1 1 state
+2 26 0 0 5 0 1008 0 0 32 48 1 0
+2 27 0 0 5 23 100e 0 26 1 18 0 1 0 0 0 0 0 next_state
+2 28 0 0 4 1 100e 0 0 1 1 state
 1 STATE_IDLE 0 80000 1 0 31 0 1 17 0 0 0 0 0 0
 1 STATE_SEND 0 80000 1 0 31 0 1 17 1 0 0 0 0 0
 1 clock 6 83000f 1 0 0 0 1 17 0 1 1 1 0 0
@@ -47,7 +47,7 @@
 4 18 1 19 0
 4 24 f 24 24
 4 25 1 0 0
-6 28 27 1  0 2  1 16 0 0  1 16 1 0   2  0 0 1  0 1 7
+6 28 27 1  0 2 2 1 16 0 0  1 16 1 0  1 16 0 0  1 16 1 0   3  0 0 29  0 1 29  1 0 29
 3 1 main.$u0 "main.$u0" fsm5.2.v 0 22 1
 2 29 19 5000e 1 32 1004 0 0 1 1 STATE_IDLE
 2 30 18 9000d 7 1 100e 0 0 1 1 state

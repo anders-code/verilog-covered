@@ -545,7 +545,7 @@ void sim_expr_changed( expression* expr, const sim_time* time ) { PROFILE(SIM_EX
       }
 
     /* Otherwise, we assume that we match the right side */
-    } else {   // TBD - This is a bit different than before
+    } else {
 
       /* If the bit we need to set is already set, stop iterating up tree */
       if( ESUPPL_IS_RIGHT_CHANGED( parent->suppl ) == 1 ) {
@@ -1226,6 +1226,10 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.126.2.2  2008/05/08 23:12:43  phase1geo
+ Fixing several bugs and reworking code in arc to get FSM diagnostics
+ to pass.  Checkpointing.
+
  Revision 1.126.2.1  2008/05/07 05:22:51  phase1geo
  Fixing reporting bug with line coverage for continuous assignments.  Updating
  regression files and checkpointing.

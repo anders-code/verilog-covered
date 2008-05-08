@@ -4886,11 +4886,7 @@ bool expression_operate(
 
     /* If this expression is attached to an FSM, perform the FSM calculation now */
     if( expr->table != NULL ) {
-      fsm_table_set( expr->table );
-      /* If from_state was not specified, we need to copy the current contents of to_state to from_state */
-      if( expr->table->from_state->id == expr->id ) {
-        vector_copy( expr->value, expr->table->from_state->value );
-      }
+      fsm_table_set( expr, time );
     }
 
     /* Specify that we have executed this expression */
@@ -5575,6 +5571,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.28  2008/05/08 23:12:41  phase1geo
+ Fixing several bugs and reworking code in arc to get FSM diagnostics
+ to pass.  Checkpointing.
+
  Revision 1.329.2.27  2008/05/07 21:59:47  phase1geo
  Coding optimization for LHS single-bit selects such that if the index value
  has not changed, don't attempt to recalculate its value.  Updated regression

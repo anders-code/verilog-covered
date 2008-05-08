@@ -40,8 +40,14 @@ void arc_add(
   bool          exclude
 );
 
-/*! \brief Finds the specified state transition in the given arc array */
-int arc_find_state(
+/*! \brief Finds the specified FROM state in the given FSM table */
+int arc_find_from_state(
+            const fsm_table* table,
+            const vector*    st
+);
+
+/*! \brief Finds the specified TO state in the given FSM table */
+int arc_find_to_state(
             const fsm_table* table,
             const vector*    st
 );
@@ -49,9 +55,8 @@ int arc_find_state(
 /*! \brief Finds the specified state transition in the given FSM table */
 int arc_find_arc(
             const fsm_table* table,
-            int              st1_index,
-            int              st2_index,
-  /*@out@*/ bool*            forward
+            int              fr_index,
+            int              to_index
 );
 
 /*! \brief Calculates all state and state transition values for reporting purposes. */
@@ -90,8 +95,10 @@ void arc_merge(
 
 /*! \brief Stores arc array state values to specified string array. */
 void arc_get_states(
-  char***          states,
-  int*             state_size,
+  char***          fr_states,
+  int*             fr_state_size,
+  char***          to_states,
+  int*             to_state_size,
   const fsm_table* table,
   bool             hit,
   bool             any
@@ -120,6 +127,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.27.2.3  2008/05/08 23:12:41  phase1geo
+ Fixing several bugs and reworking code in arc to get FSM diagnostics
+ to pass.  Checkpointing.
+
  Revision 1.27.2.2  2008/05/08 03:56:38  phase1geo
  Updating regression files and reworking arc_find and arc_add functionality.
  Checkpointing.

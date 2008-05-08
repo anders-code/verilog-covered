@@ -211,22 +211,14 @@ static void exclude_sig_assign_and_recalc(
 static void exclude_arc_assign_and_recalc(
   fsm_table* table,      /*!< Pointer FSM table */
   int        arc_index,  /*!< Specifies the index of the entry containing the transition */
-  bool       forward,    /*!< Specifies if the direction of the transition is forward or backward for the given arc entry */
   func_unit* funit,      /*!< Pointer to functional unit containing the FSM */
   bool       exclude     /*!< Specifies if we are excluding or including coverage */
 ) { PROFILE(EXCLUDE_ARC_ASSIGN_AND_RECALC);
 
   /* Set the excluded bit in the specified entry and adjust coverage numbers, if necessary */
-  if( forward ) {
-    table->arcs[arc_index]->suppl.part.excluded_f = (exclude ? 1 : 0);
-    if( table->arcs[arc_index]->suppl.part.hit_f == 0 ) {
-      funit->stat->arc_hit += exclude ? 1 : -1;
-    }
-  } else {
-    table->arcs[arc_index]->suppl.part.excluded_r = (exclude ? 1 : 0);
-    if( table->arcs[arc_index]->suppl.part.hit_r == 0 ) {
-      funit->stat->arc_hit += exclude ? 1 : -1;
-    }
+  table->arcs[arc_index]->suppl.part.excluded = (exclude ? 1 : 0);
+  if( table->arcs[arc_index]->suppl.part.hit == 0 ) {
+    funit->stat->arc_hit += exclude ? 1 : -1;
   }
 
   PROFILE_END;
@@ -409,7 +401,6 @@ bool exclude_set_fsm_exclude(
       vector* from_vec;
       vector* to_vec;
       int     found_index;
-      bool    forward;
       int     from_base, to_base;
 
       /* Convert from/to state strings into vector values */
@@ -417,8 +408,8 @@ bool exclude_set_fsm_exclude(
       vector_from_string( &to_state, FALSE, &to_vec, &to_base );
 
       /* Find the arc entry and perform the exclusion assignment and coverage recalculation */
-      if( (found_index = arc_find_arc( curr_fsm->table->table, arc_find_state( curr_fsm->table->table, from_vec ), arc_find_state( curr_fsm->table->table, to_vec ), &forward )) != -1 ) {
-        exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, forward, funitl->funit, (value == 1) );
+      if( (found_index = arc_find_arc( curr_fsm->table->table, arc_find_from_state( curr_fsm->table->table, from_vec ), arc_find_to_state( curr_fsm->table->table, to_vec ) )) != -1 ) {
+        exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, funitl->funit, (value == 1) );
         retval = TRUE;
       }
 
@@ -481,6 +472,10 @@ bool exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.23.2.3  2008/05/08 23:12:41  phase1geo
+ Fixing several bugs and reworking code in arc to get FSM diagnostics
+ to pass.  Checkpointing.
+
  Revision 1.23.2.2  2008/05/08 03:56:38  phase1geo
  Updating regression files and reworking arc_find and arc_add functionality.
  Checkpointing.

@@ -1571,11 +1571,8 @@ typedef union asuppl_u asuppl;
 union asuppl_u {
   nibble all;                      /*!< Allows us to set all bits in the suppl field */
   struct {
-    nibble hit_f      : 1;         /*!< Specifies if from->to arc was hit */
-    nibble hit_r      : 1;         /*!< Specifies if to->from arc was hit */
-    nibble bidir      : 1;         /*!< Specifies if both from->to and to->from transition is valid */
-    nibble excluded_f : 1;         /*!< Specifies if from->to transition should be excluded from coverage consideration */
-    nibble excluded_r : 1;         /*!< Specifies if to->from transition should be excluded from coverage consideration */
+    nibble hit      : 1;           /*!< Specifies if from->to arc was hit */
+    nibble excluded : 1;           /*!< Specifies if from->to transition should be excluded from coverage consideration */
   } part;
 };
 
@@ -2107,8 +2104,10 @@ struct fsm_table_arc_s {
 */
 struct fsm_table_s {
   fsuppl          suppl;             /*!< Supplemental field for FSM table */
-  vector**        states;            /*!< Contains list FSM state vectors that are valid for this FSM (VTYPE_VAL) */
-  unsigned int    num_states;        /*!< Contains the number of states stored in this table */
+  vector**        fr_states;         /*!< List of FSM from state vectors that are valid for this FSM (VTYPE_VAL) */
+  unsigned int    num_fr_states;     /*!< Contains the number of from states stored in this table */
+  vector**        to_states;         /*!< List of FSM to state vectors that are valid for this FSM (VTYPE_VAL) */
+  unsigned int    num_to_states;     /*!< Contains the number of to states stored in this table */
   fsm_table_arc** arcs;              /*!< List of FSM state transitions */
   unsigned int    num_arcs;          /*!< Contains the number of arcs stored in this table */
 };
@@ -2748,6 +2747,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.10  2008/05/08 23:12:41  phase1geo
+ Fixing several bugs and reworking code in arc to get FSM diagnostics
+ to pass.  Checkpointing.
+
  Revision 1.294.2.9  2008/05/03 20:10:37  phase1geo
  Fixing some bugs, completing initial pass of vector_op_multiply and updating
  regression files accordingly.  Checkpointing.

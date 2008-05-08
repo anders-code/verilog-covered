@@ -150,26 +150,20 @@
 
   for( i=0; i<table->num_arcs; i++ ) {
 
-    char* lvec = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
-    char* rvec = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
+    char* lvec = vector_to_string( table->fr_states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
+    char* rvec = vector_to_string( table->to_states[table->arcs[i]->to],     HEXIDECIMAL, TRUE );
 
     printf( "       entry %u: ", i );
 
     /* Output the state transition */
     printf( "%s", lvec );
-    if( table->arcs[i]->suppl.part.bidir == 1 ) {
-      printf( " <-> " );
-    } else {
-      printf( " --> " );
-    }
+    printf( " --> " );
     printf( "%s", rvec );
 
     /* Now output the relevant supplemental information */
-    printf( "  (%s %s %s %s)\n",
-            ((table->arcs[i]->suppl.part.excluded_r == 1) ? "RE" : "  "),
-            ((table->arcs[i]->suppl.part.excluded_f == 1) ? "FE" : "  "),
-            ((table->arcs[i]->suppl.part.hit_r      == 1) ? "RH" : "  "),
-            ((table->arcs[i]->suppl.part.hit_f      == 1) ? "FH" : "  ") );
+    printf( "  (%s %s)\n",
+            ((table->arcs[i]->suppl.part.excluded == 1) ? "E" : "  "),
+            ((table->arcs[i]->suppl.part.hit      == 1) ? "H" : "  ") );
 
     
     /* Deallocate strings */
@@ -181,28 +175,49 @@
 }
 
 /*!
- \return Returns a value of 0 if the match was from_st/to_st, returns a value of
-         1 indicating that the match was to_st/from_st, or returns a value of 2 indicating
-         that no match occurred.
+ \return Returns the index of the found from_state in the fr_states array if one is found; otherwise,
+         returns -1 to indicate that a match could not be found.
 
- Searches specified arc array for an entry that matches the from_st/to_st combination.
- Because from/to combinations are only stored once in an arc array, we need to check
- for matches with from/to and to/from.  Once a match has been found, the calling function
- will either modify the supplemental data that is associated with this function's return
- value or it will check to see if another arc entry is required to be added.
+ Searches the list of FROM states for a match to the given vector value.
 */
-int arc_find_state(
+int arc_find_from_state(
   const fsm_table* table,  /*!< Pointer to FSM table to search in */
   const vector*    st      /*!< State to search for */
-) { PROFILE(ARC_FIND_STATE);
+) { PROFILE(ARC_FIND_FROM_STATE);
 
   int index = -1;  /* Return value for this function */
   int i     = 0;  /* Loop iterator */
 
   assert( table != NULL );
 
-  while( (i < table->num_states) && !vector_ceq_uint32( st, table->states[i] ) ) i++;
-  if( i < table->num_states ) {
+  while( (i < table->num_fr_states) && !vector_ceq_uint32( st, table->fr_states[i] ) ) i++;
+  if( i < table->num_fr_states ) {
+    index = i;
+  }
+
+  return( index );
+
+}
+
+/*!
+ \return Returns the index of the found to_state in the to_states array if one is found; otherwise,
+         returns -1 to indicate that a match could not be found.
+         that no match occurred.
+
+ Searches the list of TO states for a match to the given vector value.
+*/
+int arc_find_to_state(
+  const fsm_table* table,  /*!< Pointer to FSM table to search in */
+  const vector*    st      /*!< State to search for */
+) { PROFILE(ARC_FIND_TO_STATE);
+
+  int index = -1;  /* Return value for this function */
+  int i     = 0;  /* Loop iterator */
+
+  assert( table != NULL );
+
+  while( (i < table->num_to_states) && !vector_ceq_uint32( st, table->to_states[i] ) ) i++;
+  if( i < table->num_to_states ) {
     index = i;
   }
 
@@ -216,23 +231,17 @@ int arc_find_state(
  Searches for the arc in the arcs array of the given FSM table specified by the given state indices.
 */
 int arc_find_arc(
-            const fsm_table* table,      /*!< Pointer to FSM table to search in */
-            int              st1_index,  /*!< Index of first state to find */
-            int              st2_index,  /*!< Index of second state to find */
-  /*@out@*/ bool*            forward     /*!< Set to TRUE if found in the forward direction (only set if
-                                              return value is not -1. */
+  const fsm_table* table,     /*!< Pointer to FSM table to search in */
+  int              fr_index,  /*!< Index of from state to find */
+  int              to_index   /*!< Index of to state to find */
 ) { PROFILE(ARC_FIND_ARC);
 
   int index = -1;
   int i     = 0;
 
   while( (i < table->num_arcs) && (index == -1) ) {
-    if( (table->arcs[i]->from == st1_index) && (table->arcs[i]->to == st2_index) ) {
-      index    = i;
-      *forward = TRUE;
-    } else if( (table->arcs[i]->to == st1_index) && (table->arcs[i]->from == st2_index ) ) {
-      index    = i;
-      *forward = FALSE;
+    if( (table->arcs[i]->from == fr_index) && (table->arcs[i]->to == to_index) ) {
+      index = i;
     }
     i++;
   }
@@ -255,11 +264,13 @@ fsm_table* arc_create() { PROFILE(ARC_CREATE);
   table = (fsm_table*)malloc_safe( sizeof( fsm_table ) );
 
   /* Initialize */
-  table->suppl.all  = 0;
-  table->states     = NULL;
-  table->num_states = 0;
-  table->arcs       = NULL;
-  table->num_arcs   = 0;
+  table->suppl.all     = 0;
+  table->fr_states     = NULL;
+  table->num_fr_states = 0;
+  table->to_states     = NULL;
+  table->num_to_states = 0;
+  table->arcs          = NULL;
+  table->num_arcs      = 0;
 
   return( table );
 
@@ -297,60 +308,47 @@ void arc_add(
 
   if( (hit == 0) || (!vector_is_unknown( fr_st ) && !vector_is_unknown( to_st )) ) {
 
-    bool forward;
-
-    // printf( "FR_ST: " );  vector_display( fr_st );
-    // printf( "TO_ST: " );  vector_display( to_st );
+/*
+    printf( "**** In arc_add...\n" );
+    printf( "FR_ST: " );  vector_display( fr_st );
+    printf( "TO_ST: " );  vector_display( to_st );
+*/
 
     /* Search for the from_state vector in the states array */
-    if( (from_index = arc_find_state( table, fr_st )) == -1 ) {
-      table->states = (vector**)realloc_safe( table->states, (sizeof( vector* ) * table->num_states), (sizeof( vector* ) * (table->num_states + 1)) );
-      from_index    = table->num_states;
-      table->states[from_index] = vector_create( fr_st->width, VTYPE_VAL, fr_st->suppl.part.data_type, TRUE );
-      vector_copy( fr_st, table->states[from_index] );
-      table->num_states++;
+    if( (from_index = arc_find_from_state( table, fr_st )) == -1 ) {
+      table->fr_states = (vector**)realloc_safe( table->fr_states, (sizeof( vector* ) * table->num_fr_states), (sizeof( vector* ) * (table->num_fr_states + 1)) );
+      from_index    = table->num_fr_states;
+      table->fr_states[from_index] = vector_create( fr_st->width, VTYPE_VAL, fr_st->suppl.part.data_type, TRUE );
+      vector_copy( fr_st, table->fr_states[from_index] );
+      table->num_fr_states++;
     }
 
-    if( (to_index = arc_find_state( table, to_st )) == -1 ) {
-      table->states = (vector**)realloc_safe( table->states, (sizeof( vector* ) * table->num_states), (sizeof( vector* ) * (table->num_states + 1)) );
-      to_index      = table->num_states;
-      table->states[to_index] = vector_create( to_st->width, VTYPE_VAL, to_st->suppl.part.data_type, TRUE );
-      vector_copy( to_st, table->states[to_index] );
-      table->num_states++;
+    /* Search for the to_state vector in the states array */
+    if( (to_index = arc_find_to_state( table, to_st )) == -1 ) {
+      table->to_states = (vector**)realloc_safe( table->to_states, (sizeof( vector* ) * table->num_to_states), (sizeof( vector* ) * (table->num_to_states + 1)) );
+      to_index      = table->num_to_states;
+      table->to_states[to_index] = vector_create( to_st->width, VTYPE_VAL, to_st->suppl.part.data_type, TRUE );
+      vector_copy( to_st, table->to_states[to_index] );
+      table->num_to_states++;
     }
 
     /* If we need to add a new arc, do so now */
-    if( (arcs_index = arc_find_arc( table, from_index, to_index, &forward )) == -1 ) {
+    if( (arcs_index = arc_find_arc( table, from_index, to_index )) == -1 ) {
       table->arcs = (fsm_table_arc**)realloc_safe( table->arcs, (sizeof( fsm_table_arc* ) * table->num_arcs), (sizeof( fsm_table_arc* ) * (table->num_arcs + 1)) );
       table->arcs[table->num_arcs] = (fsm_table_arc*)malloc_safe( sizeof( fsm_table_arc ) );
-      table->arcs[table->num_arcs]->suppl.all             = 0;
-      table->arcs[table->num_arcs]->suppl.part.hit_f      = hit;
-      table->arcs[table->num_arcs]->suppl.part.excluded_f = exclude;
-      table->arcs[table->num_arcs]->from                  = from_index;
-      table->arcs[table->num_arcs]->to                    = to_index;
-      forward    = TRUE;
+      table->arcs[table->num_arcs]->suppl.part.hit      = hit;
+      table->arcs[table->num_arcs]->suppl.part.excluded = exclude;
+      table->arcs[table->num_arcs]->from                = from_index;
+      table->arcs[table->num_arcs]->to                  = to_index;
       arcs_index = table->num_arcs;
       table->num_arcs++;
     }
 
-    /* If we found a match in the forward direction, adjust hit and exclude information */
-    if( forward ) { 
+    /* Adjust hit and exclude information */
+    assert( arcs_index != -1 );
 
-      assert( arcs_index != -1 );
-
-      table->arcs[arcs_index]->suppl.part.hit_f      |= hit;
-      table->arcs[arcs_index]->suppl.part.excluded_f |= exclude;
-
-    /* Or, if we found a match in the reverse direction, adjust hit and exclude information */
-    } else {
-
-      assert( arcs_index != -1 );
-
-      table->arcs[arcs_index]->suppl.part.hit_r      |= hit;
-      table->arcs[arcs_index]->suppl.part.excluded_r |= exclude;
-      table->arcs[arcs_index]->suppl.part.bidir       = 1;
-
-    }
+    table->arcs[arcs_index]->suppl.part.hit      |= hit;
+    table->arcs[arcs_index]->suppl.part.excluded |= exclude;
 
     /* If we have set a side with hit equal to 0, we are specifying a known transition. */
     if( hit == 0 ) {
@@ -384,58 +382,22 @@ static int arc_state_hits(
   assert( table != NULL );
 
   /* First, create and intialize a state table to hold hit counts */
-  state_hits = (int*)malloc_safe( sizeof( int ) * table->num_states );
-  for( i=0; i<table->num_states; i++ ) {
+  state_hits = (int*)malloc_safe( sizeof( int ) * table->num_fr_states );
+  for( i=0; i<table->num_fr_states; i++ ) {
     state_hits[i] = 0;
   }
   
   /* Iterate through arc transition array and count unique hits */
   for( i=0; i<table->num_arcs; i++ ) {
-    if( (table->arcs[i]->suppl.part.hit_f || table->arcs[i]->suppl.part.excluded_f) ||
-        (table->arcs[i]->suppl.part.hit_r || table->arcs[i]->suppl.part.excluded_r) ) {
+    if( (table->arcs[i]->suppl.part.hit || table->arcs[i]->suppl.part.excluded) ) {
       hit += (state_hits[table->arcs[i]->from]++ == 0) ? 1 : 0; 
-      hit += (state_hits[table->arcs[i]->to]++   == 0) ? 1 : 0; 
     }
   }
 
   /* Deallocate state_hits */
-  free_safe( state_hits, (sizeof( int ) * table->num_states) );
+  free_safe( state_hits, (sizeof( int ) * table->num_fr_states) );
 
   return( hit );
-
-}
-
-/*!
- \param arcs  Pointer to state transition arc array.
-
- \return Returns the total number of state transitions found in
-         the specified arc array.
-
- Accumulates the total number of state transitions specified in
- the given state transition arc array.  This function should only
- be called if the ARC_TRANS_KNOWN bit is set in the supplemental
- field of the arc array; otherwise, its value will be incorrect.
- For consistency, this function should be called after calling
- arc_transition_hits().
-*/
-static float arc_transition_total(
-  const fsm_table* table
-) { PROFILE(ARC_TRANSITION_TOTAL);
-
-  float total;  /* Number of total state transitions in arc array */
-  int   i;      /* Loop iterator */
-
-  assert( table != NULL );
-
-  /* To start, get the current number of entries in the arc */
-  total = table->num_arcs;
-
-  /* Now just add to it the number of bidirectional entries */
-  for( i=0; i<table->num_arcs; i++ ) {
-    total += table->arcs[i]->suppl.part.bidir;
-  }
-
-  return( total );
 
 }
 
@@ -458,8 +420,7 @@ static int arc_transition_hits(
   assert( table != NULL );
 
   for( i=0; i<table->num_arcs; i++ ) {
-    hit += table->arcs[i]->suppl.part.hit_f | table->arcs[i]->suppl.part.excluded_f;
-    hit += table->arcs[i]->suppl.part.bidir & (table->arcs[i]->suppl.part.hit_f | table->arcs[i]->suppl.part.excluded_f);
+    hit += table->arcs[i]->suppl.part.hit | table->arcs[i]->suppl.part.excluded;
   }
 
   return( hit );
@@ -491,8 +452,8 @@ void arc_get_stats(
     *state_total = -1;
     *arc_total   = -1;
   } else {
-    *state_total += table->num_states;
-    *arc_total   += arc_transition_total( table );
+    *state_total += table->num_fr_states;
+    *arc_total   += table->num_arcs;
   }
 
 }
@@ -514,11 +475,15 @@ void arc_db_write(
 
   assert( table != NULL );
 
-  fprintf( file, " %x %d  ", table->suppl.all, table->num_states );
+  fprintf( file, " %x %d %d ", table->suppl.all, table->num_fr_states, table->num_to_states );
 
   /* Output state information */
-  for( i=0; i<table->num_states; i++ ) {
-    vector_db_write( table->states[i], file, TRUE );
+  for( i=0; i<table->num_fr_states; i++ ) {
+    vector_db_write( table->fr_states[i], file, TRUE );
+    fprintf( file, "  " );
+  }
+  for( i=0; i<table->num_to_states; i++ ) {
+    vector_db_write( table->to_states[i], file, TRUE );
     fprintf( file, "  " );
   }
 
@@ -556,25 +521,39 @@ void arc_db_read(
 
   Try {
 
-    int num_states;
+    int num_fr_states;
+    int num_to_states;
     int chars_read;
 
-    if( sscanf( *line, "%x %d%n", &((*table)->suppl.all), &num_states, &chars_read ) == 2 ) {
+    if( sscanf( *line, "%x %d %d%n", &((*table)->suppl.all), &num_fr_states, &num_to_states, &chars_read ) == 3 ) {
 
       unsigned int i;
       int          num_arcs;
 
       *line += chars_read;
 
-      /* Allocate state array */
-      (*table)->states     = (vector**)malloc_safe( sizeof( vector* ) * num_states );
-      (*table)->num_states = num_states;
-      for( i=0; i<num_states; i++ ) {
-        (*table)->states[i] = NULL;
+      /* Allocate and initialize fr_states array */
+      (*table)->fr_states     = (vector**)malloc_safe( sizeof( vector* ) * num_fr_states );
+      (*table)->num_fr_states = num_fr_states;
+      for( i=0; i<num_fr_states; i++ ) {
+        (*table)->fr_states[i] = NULL;
       }
 
-      for( i=0; i<num_states; i++ ) {
-        vector_db_read( &((*table)->states[i]), line );
+      /* Read in from vectors */
+      for( i=0; i<num_fr_states; i++ ) {
+        vector_db_read( &((*table)->fr_states[i]), line );
+      }
+
+      /* Allocate and initialize to_states array */
+      (*table)->to_states     = (vector**)malloc_safe( sizeof( vector* ) * num_to_states );
+      (*table)->num_to_states = num_to_states;
+      for( i=0; i<num_to_states; i++ ) {
+        (*table)->to_states[i] = NULL;
+      }
+
+      /* Read in vectors */
+      for( i=0; i<num_to_states; i++ ) {
+        vector_db_read( &((*table)->to_states[i]), line );
       }
 
       if( sscanf( *line, "%d%n", &num_arcs, &chars_read ) == 1 ) {
@@ -651,12 +630,7 @@ void arc_db_merge(
 
   /* Merge state transitions */
   for( i=0; i<table->num_arcs; i++ ) {
-
-    arc_add( base, table->states[table->arcs[i]->from], table->states[table->arcs[i]->to], table->arcs[i]->suppl.part.hit_f, FALSE );
-    if( table->arcs[i]->suppl.part.bidir ) {
-      arc_add( base, table->states[table->arcs[i]->from], table->states[table->arcs[i]->to], table->arcs[i]->suppl.part.hit_f, FALSE );
-    }
-
+    arc_add( base, table->fr_states[table->arcs[i]->from], table->to_states[table->arcs[i]->to], table->arcs[i]->suppl.part.hit, FALSE );
   }
 
   /* Deallocate the merged table */
@@ -689,12 +663,7 @@ void arc_merge(
 
   /* Merge state transitions */
   for( i=0; i<other->num_arcs; i++ ) {
-
-    arc_add( base, other->states[other->arcs[i]->from], other->states[other->arcs[i]->to], other->arcs[i]->suppl.part.hit_f, FALSE );
-    if( other->arcs[i]->suppl.part.bidir ) {
-      arc_add( base, other->states[other->arcs[i]->from], other->states[other->arcs[i]->to], other->arcs[i]->suppl.part.hit_f, FALSE );
-    }
-
+    arc_add( base, other->fr_states[other->arcs[i]->from], other->to_states[other->arcs[i]->to], other->arcs[i]->suppl.part.hit, FALSE );
   }
 
   PROFILE_END;
@@ -707,47 +676,59 @@ void arc_merge(
  (if hit parameter is false or the any parameter is true).
 */
 void arc_get_states(
-  /*@out@*/ char***          states,      /*!< Pointer to string array containing stringified state information */
-  /*@out@*/ int*             state_size,  /*!< Pointer to number of elements stored in states array */
-            const fsm_table* table,       /*!< Pointer to FSM table */
-            bool             hit,         /*!< Specifies if hit or missed transitions should be gathered */
-            bool             any          /*!< Specifies if we should gather any transition or only the type specified by hit */
+  /*@out@*/ char***          fr_states,      /*!< Pointer to string array containing stringified state information */
+  /*@out@*/ int*             fr_state_size,  /*!< Pointer to number of elements stored in states array */
+  /*@out@*/ char***          to_states,      /*!< Pointer to string array containing stringified state information */
+  /*@out@*/ int*             to_state_size,  /*!< Pointer to number of elements stored in states array */
+            const fsm_table* table,          /*!< Pointer to FSM table */
+            bool             hit,            /*!< Specifies if hit or missed transitions should be gathered */
+            bool             any             /*!< Specifies if we should gather any transition or only the type specified by hit */
 ) { PROFILE(ARC_GET_STATES);
 
-  int* state_hits;  /* Temporary array containing hit states */
-  int  i;           /* Loop iterator */
+  int  i, j;  /* Loop iterator */
 
   /*@-nullstate@*/
 
-  assert( states != NULL );
-  assert( state_size != NULL );
+  assert( fr_states != NULL );
+  assert( fr_state_size != NULL );
+  assert( to_states != NULL );
+  assert( to_state_size != NULL );
 
-  /* Allocate temporary state_hits array and initialize it to 0 */
-  state_hits = (int*)malloc_safe( sizeof( int ) * table->num_states );
-  for( i=0; i<table->num_states; i++ ) {
-    state_hits[i] = 0;
+  /* Initialize states array pointers and sizes */
+  *fr_states     = NULL;
+  *fr_state_size = 0;
+  *to_states     = NULL;
+  *to_state_size = 0;
+
+  /* Iterate through the fr_states array, gathering all matching states */
+  for( i=0; i<table->num_fr_states; i++ ) {
+    bool state_hit = any;
+    for( j=0; j<table->num_arcs; j++ ) {
+      if( table->arcs[j]->from == i ) {
+        state_hit = state_hit || (table->arcs[j]->suppl.part.hit == 1);
+      }
+    }
+    if( state_hit == hit ) {
+      *fr_states                     = (char**)realloc_safe( *fr_states, (sizeof( char* ) * (*fr_state_size)), (sizeof( char* ) * ((*fr_state_size) + 1)) );
+      (*fr_states)[(*fr_state_size)] = vector_to_string( table->fr_states[i], HEXIDECIMAL, TRUE );
+      (*fr_state_size)++;
+    }
   }
 
-  /* Allocate states array */
-  *states     = NULL;
-  *state_size = 0;
-
-  /* Iterate through the arc transitions, gathering all matching states */
-  for( i=0; i<table->num_arcs; i++ ) {
-    if( (state_hits[table->arcs[i]->from]++ == 0) && (any || (table->arcs[i]->suppl.part.hit_f == hit) || (table->arcs[i]->suppl.part.hit_r == hit)) ) {
-      *states                  = (char**)realloc_safe( *states, (sizeof( char* ) * (*state_size)), (sizeof( char* ) * ((*state_size) + 1)) );
-      (*states)[(*state_size)] = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
-      (*state_size)++;
+  /* Iterate through the to_states array, gathering all matching states */
+  for( i=0; i<table->num_to_states; i++ ) {
+    bool state_hit = any;
+    for( j=0; j<table->num_arcs; j++ ) { 
+      if( table->arcs[j]->to == i ) {
+        state_hit = state_hit || (table->arcs[j]->suppl.part.hit == 1);
+      }
     }
-    if( (state_hits[table->arcs[i]->to]++ == 0) && (any || (table->arcs[i]->suppl.part.hit_f == hit) || (table->arcs[i]->suppl.part.hit_r == hit)) ) {
-      *states                  = (char**)realloc_safe( *states, (sizeof( char* ) * (*state_size)), (sizeof( char* ) * ((*state_size) + 1)) );
-      (*states)[(*state_size)] = vector_to_string( table->states[table->arcs[i]->to], HEXIDECIMAL, TRUE );
-      (*state_size)++;
+    if( state_hit == hit ) {
+      *to_states                     = (char**)realloc_safe( *to_states, (sizeof( char* ) * (*to_state_size)), (sizeof( char* ) * ((*to_state_size) + 1)) );
+      (*to_states)[(*to_state_size)] = vector_to_string( table->to_states[i], HEXIDECIMAL, TRUE );
+      (*to_state_size)++;
     }
   }
-
-  /* Deallocate temporary state_hits array */
-  free_safe( state_hits, (sizeof( int ) * table->num_states) );
 
 }
 
@@ -779,29 +760,15 @@ void arc_get_transitions(
   /* Iterate through arc transitions */
   for( i=0; i<table->num_arcs; i++ ) {
 
-    /* Check forward */
-    if( (table->arcs[i]->suppl.part.hit_f == hit) || any ) {
+    if( (table->arcs[i]->suppl.part.hit == hit) || any ) {
       *from_states                = (char**)realloc_safe( *from_states, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       *to_states                  = (char**)realloc_safe( *to_states,   (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       if( any ) {
         *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
-        (*excludes)[(*arc_size)] = table->arcs[i]->suppl.part.excluded_f;
+        (*excludes)[(*arc_size)] = table->arcs[i]->suppl.part.excluded;
       }
-      (*from_states)[(*arc_size)] = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
-      (*to_states)[(*arc_size)]   = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
-      (*arc_size)++;
-    }
-
-    /* Check reverse */
-    if( (table->arcs[i]->suppl.part.bidir == 1) && ((table->arcs[i]->suppl.part.hit_r == hit) || any) ) {
-      *from_states                = (char**)realloc_safe( *from_states, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
-      *to_states                  = (char**)realloc_safe( *to_states,   (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
-      if( any ) {
-        *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
-        (*excludes)[(*arc_size)] = table->arcs[i]->suppl.part.excluded_r;
-      }
-      (*from_states)[(*arc_size)] = vector_to_string( table->states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
-      (*to_states)[(*arc_size)]   = vector_to_string( table->states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
+      (*from_states)[(*arc_size)] = vector_to_string( table->fr_states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
+      (*to_states)[(*arc_size)]   = vector_to_string( table->to_states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
       (*arc_size)++;
     }
 
@@ -823,7 +790,7 @@ bool arc_are_any_excluded(
 
   assert( table != NULL );
 
-  while( (i < table->num_arcs) && (table->arcs[i]->suppl.part.excluded_f == 0) && (table->arcs[i]->suppl.part.excluded_r == 0) ) i++;
+  while( (i < table->num_arcs) && (table->arcs[i]->suppl.part.excluded == 0) ) i++;
 
   return( i < table->num_arcs );
 
@@ -843,11 +810,17 @@ void arc_dealloc(
 
     unsigned int i;
 
-    /* Deallocate states */
-    for( i=0; i<table->num_states; i++ ) {
-      vector_dealloc( table->states[i] );
+    /* Deallocate fr_states */
+    for( i=0; i<table->num_fr_states; i++ ) {
+      vector_dealloc( table->fr_states[i] );
     }
-    free_safe( table->states, (sizeof( vector* ) * table->num_states) );
+    free_safe( table->fr_states, (sizeof( vector* ) * table->num_fr_states) );
+
+    /* Deallocate to_states */
+    for( i=0; i<table->num_to_states; i++ ) {
+      vector_dealloc( table->to_states[i] );
+    }
+    free_safe( table->to_states, (sizeof( vector* ) * table->num_to_states) );
 
     /* Deallocate arcs */
     for( i=0; i<table->num_arcs; i++ ) {
@@ -864,6 +837,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.60.2.11  2008/05/08 23:12:38  phase1geo
+ Fixing several bugs and reworking code in arc to get FSM diagnostics
+ to pass.  Checkpointing.
+
  Revision 1.60.2.10  2008/05/08 03:56:38  phase1geo
  Updating regression files and reworking arc_find and arc_add functionality.
  Checkpointing.
