@@ -1187,19 +1187,26 @@ bool vector_set_assigned(
 
   bool          prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
   unsigned int  i;                      /* Loop iterator */
+  unsigned int  assigned_index;         /* Index of vector value array to use for setting "assigned" bits */
 
   assert( vec != NULL );
   assert( (msb - lsb) < vec->width );
-  assert( vec->suppl.part.type == VTYPE_SIG );
+
+  /* Figure out which value to choose */
+  switch( vec->suppl.part.type ) {
+    case VTYPE_SIG :  assigned_index = VTYPE_INDEX_SIG_MISC;    break;
+    case VTYPE_EXP :  assigned_index = VTYPE_INDEX_EXP_EVAL_A;  break;
+    default        :  assert( 0 );  break;
+  }
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_U32 :
       for( i=lsb; i<=msb; i++ ) {
         unsigned int offset = (i >> 5);
-        if( ((vec->value.u32[offset][VTYPE_INDEX_SIG_MISC] >> (i & 0x1f)) & 0x1) == 1 ) {
+        if( ((vec->value.u32[offset][assigned_index] >> (i & 0x1f)) & 0x1) == 1 ) {
           prev_assigned = TRUE;
         }
-        vec->value.u32[offset][VTYPE_INDEX_SIG_MISC] |= (0x1 << (i & 0x1f));
+        vec->value.u32[offset][assigned_index] |= (0x1 << (i & 0x1f));
       }
       break;
     default :  assert( 0 );  break;
@@ -4096,7 +4103,6 @@ bool vector_op_inc(
   vecblk* tvb
 ) { PROFILE(VECTOR_OP_INC);
 
-#ifdef SKIP
   vector* tmp1 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the same contents as the target */
   vector* tmp2 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the value of 1 */
 
@@ -4111,9 +4117,6 @@ bool vector_op_inc(
   
   /* Finally add the values and assign them back to the target */
   (void)vector_op_add( tgt, tmp1, tmp2 );
-#else
-  assert( 0 );
-#endif
 
   PROFILE_END;
 
@@ -4134,7 +4137,6 @@ bool vector_op_dec(
   vecblk* tvb
 ) { PROFILE(VECTOR_OP_DEC);
 
-#ifdef SKIP
   vector* tmp1 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the same contents as the target */
   vector* tmp2 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the value of 1 */
 
@@ -4149,9 +4151,6 @@ bool vector_op_dec(
 
   /* Finally add the values and assign them back to the target */
   (void)vector_op_subtract( tgt, tmp1, tmp2, tvb );
-#else
-  assert( 0 );
-#endif
 
   PROFILE_END;
 
@@ -4695,6 +4694,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.69  2008/05/09 22:07:50  phase1geo
+ Updates for VCS regressions.  Fixing some issues found in that regression
+ suite.  Checkpointing.
+
  Revision 1.138.2.68  2008/05/09 16:47:51  phase1geo
  Recoding vector_rshift_uint32 function and updating the LAST of the IV
  failures!  Moving onto VCS regression diagnostics...  Checkpointing.
