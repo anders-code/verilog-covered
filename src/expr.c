@@ -5312,7 +5312,7 @@ void expression_assign(
             assert( intval1 >= 0 );
             if( dim_be ) {
               assert( intval1 <= vwidth );
-              changed = vector_part_select_push( src, (vwidth - (intval1 + lhs->value->width)), (vwidth - intval1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE /*TBD*/ );
+              changed = vector_part_select_push( src, (vwidth - (intval1 + lhs->value->width)), ((vwidth - intval1) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE /*TBD*/ );
             } else {
               assert( intval1 < vwidth );
               changed = vector_part_select_push( src, intval1, ((intval1 + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE /*TBD*/ );
@@ -5571,6 +5571,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.29  2008/05/09 05:04:47  phase1geo
+ Fixing big endianness assignment when MBIT select is being assigned.
+ Updating regress files.  Checkpointing.
+
  Revision 1.329.2.28  2008/05/08 23:12:41  phase1geo
  Fixing several bugs and reworking code in arc to get FSM diagnostics
  to pass.  Checkpointing.
