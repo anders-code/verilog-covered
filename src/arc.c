@@ -334,21 +334,24 @@ void arc_add(
 
     /* If we need to add a new arc, do so now */
     if( (arcs_index = arc_find_arc( table, from_index, to_index )) == -1 ) {
+
       table->arcs = (fsm_table_arc**)realloc_safe( table->arcs, (sizeof( fsm_table_arc* ) * table->num_arcs), (sizeof( fsm_table_arc* ) * (table->num_arcs + 1)) );
       table->arcs[table->num_arcs] = (fsm_table_arc*)malloc_safe( sizeof( fsm_table_arc ) );
+      table->arcs[table->num_arcs]->suppl.all           = 0;
       table->arcs[table->num_arcs]->suppl.part.hit      = hit;
       table->arcs[table->num_arcs]->suppl.part.excluded = exclude;
       table->arcs[table->num_arcs]->from                = from_index;
       table->arcs[table->num_arcs]->to                  = to_index;
       arcs_index = table->num_arcs;
       table->num_arcs++;
+
+    /* Otherwise, adjust hit and exclude information */
+    } else {
+
+      table->arcs[arcs_index]->suppl.part.hit      |= hit;
+      table->arcs[arcs_index]->suppl.part.excluded |= exclude;
+
     }
-
-    /* Adjust hit and exclude information */
-    assert( arcs_index != -1 );
-
-    table->arcs[arcs_index]->suppl.part.hit      |= hit;
-    table->arcs[arcs_index]->suppl.part.excluded |= exclude;
 
     /* If we have set a side with hit equal to 0, we are specifying a known transition. */
     if( hit == 0 ) {
@@ -837,6 +840,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.60.2.12  2008/05/09 15:22:25  phase1geo
+ Fixing memory initialization issue in arc.c that leads to inconsistent
+ results.  Checkpointing.
+
  Revision 1.60.2.11  2008/05/08 23:12:38  phase1geo
  Fixing several bugs and reworking code in arc to get FSM diagnostics
  to pass.  Checkpointing.
