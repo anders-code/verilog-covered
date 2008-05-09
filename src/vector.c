@@ -2952,6 +2952,20 @@ bool vector_bitwise_nxor_op(
 }
 
 /*!
+ \return Returns TRUE if vectors need to be reversed for comparison purposes; otherwise, returns FALSE.
+*/
+inline static bool vector_reverse_for_cmp_uint32(
+  const vector* left,  /*!< Pointer to left vector that is being compared */
+  const vector* right  /*!< Pointer to right vector that is being compared */
+) {
+
+  return( left->suppl.part.is_signed && right->suppl.part.is_signed &&
+          (((left->value.u32[(left->width-1)>>5][VTYPE_INDEX_VAL_VALL]   >> ((left->width  - 1) & 0x1f)) & 0x1) !=
+           ((right->value.u32[(right->width-1)>>5][VTYPE_INDEX_VAL_VALL] >> ((right->width - 1) & 0x1f)) & 0x1)) );
+
+}
+
+/*!
  \param tgt    Target vector for storage of results.
  \param left   Expression on left of less than sign.
  \param right  Expression on right of less than sign.
@@ -2990,7 +3004,7 @@ bool vector_op_lt(
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
         } else {
-          scratchl = (lvall < rvall);
+          scratchl = vector_reverse_for_cmp_uint32( left, right ) ? (rvall < lvall) : (lvall < rvall);
         }
         retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
@@ -3043,7 +3057,7 @@ bool vector_op_le(
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
         } else {
-          scratchl = (lvall <= rvall);
+          scratchl = vector_reverse_for_cmp_uint32( left, right ) ? (rvall <= lvall) : (lvall <= rvall);
         }
         retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
@@ -3096,7 +3110,7 @@ bool vector_op_gt(
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
         } else {
-          scratchl = (lvall > rvall);
+          scratchl = vector_reverse_for_cmp_uint32( left, right ) ? (rvall > lvall) : (lvall > rvall);
         }
         retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
@@ -3149,7 +3163,7 @@ bool vector_op_ge(
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
         } else {
-          scratchl = (lvall >= rvall);
+          scratchl = vector_reverse_for_cmp_uint32( left, right ) ? (rvall >= lvall) : (lvall >= rvall);
         }
         retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
       }
@@ -4704,6 +4718,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.67  2008/05/09 04:46:10  phase1geo
+ Fixing signedness handling for comparison operations.  Updating regression files.
+ Checkpointing.
+
  Revision 1.138.2.66  2008/05/07 23:09:11  phase1geo
  Fixing vector_mem_wr_count function and calling code.  Updating regression
  files accordingly.  Checkpointing.
