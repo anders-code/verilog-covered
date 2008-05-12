@@ -526,6 +526,12 @@ expression* expression_create(
 
   // printf( "Allocated expression: " );  expression_display( new_expr );
 
+  if( EXPR_OP_HAS_DIM( op ) ) {
+    new_expr->elem.dim           = (exp_dim*)malloc_safe( sizeof( exp_dim ) );
+    new_expr->elem.dim->prev_lsb = -1;
+    new_expr->elem.dim->curr_lsb = -1;
+  }
+
   if( right != NULL ) {
 
     /* Get information from right */
@@ -691,8 +697,24 @@ void expression_set_value(
   /* Otherwise, create our own vector to store the part select */
   } else {
 
-    /* Calculate expression dimensional width */
-    exp_width = vsignal_calc_width_for_expr( exp, sig );
+    int edim      = expression_get_curr_dimension( exp );
+    int exp_width = vsignal_calc_width_for_expr( exp, sig );
+
+    /* Allocate dimensional structure (if needed) and populate it with static information */
+    if( exp->elem.dim == NULL ) {
+      exp->elem.dim = (exp_dim*)malloc_safe( sizeof( exp_dim ) );
+    }
+    exp->elem.dim->prev_lsb = -1;
+    exp->elem.dim->curr_lsb = -1;
+    if( sig->dim[edim].lsb < sig->dim[edim].msb ) {
+      exp->elem.dim->dim_lsb = sig->dim[edim].lsb;
+      exp->elem.dim->dim_be  = FALSE;
+    } else {
+      exp->elem.dim->dim_lsb = sig->dim[edim].msb;
+      exp->elem.dim->dim_be  = TRUE;
+    }
+    exp->elem.dim->dim_width  = exp_width;
+    exp->elem.dim->set_mem_rd = (sig->value->suppl.part.type == VTYPE_MEM) && ((edim + 1) == sig->udim_num);
 
     /* Set the expression width */
     switch( exp->op ) {
@@ -1513,9 +1535,9 @@ void expression_db_read(
           (op == EXP_OP_RASSIGN)    ||
           (op == EXP_OP_NASSIGN)    ||
           (op == EXP_OP_DLY_ASSIGN) ||
-          (op == EXP_OP_DIM)        ||
           (op == EXP_OP_IF)         ||
-          (op == EXP_OP_WHILE) ) {
+          (op == EXP_OP_WHILE)      ||
+          (op == EXP_OP_DIM) ) {
 
         vector_dealloc( expr->value );
         expr->value = right->value;
@@ -3307,7 +3329,7 @@ bool expression_op_func__unxor(
  No operation is performed -- expression value is assumed to be changed.
 */
 bool expression_op_func__null(
-  /*@unused@*/ expression*     expr,
+               expression*     expr,
   /*@unused@*/ thread*         thr,
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__NULL);
@@ -3370,65 +3392,46 @@ bool expression_op_func__sbit(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__SBIT);
 
-  bool    retval;     /* Return value for this function */
-  vector* src;        /* Vector that is the source of the bit range to copy */
-  int     intval;     /* Integer value */
-  int     vwidth;     /* Width of current vector */
-  int     dim_lsb;    /* LSB of current signal dimension */
-  bool    dim_be;     /* Big endianness of this dimension */
-  int     dim_width;  /* Width of current dimension */
-  int     exp_dim;    /* Expression dimension */
+  bool     retval     = TRUE;            /* Return value for this function */
+  exp_dim* dim        = expr->elem.dim;  /* Pointer to current dimension information */
 
   /* If the part select is known, calculate the vector */
   if( !vector_is_unknown( expr->left->value ) ) {
 
+    int intval = (vector_to_int( expr->left->value ) - dim->dim_lsb) * dim->dim_width;
+    int vwidth;
+
     /* Calculate starting bit position and width */
     if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-      src    = expr->parent->expr->left->value;
       vwidth = expr->parent->expr->left->value->width;
     } else {
-      src    = expr->sig->value;
       vwidth = expr->sig->value->width;
     }
 
-    /* Calculate dimensional information */
-    exp_dim = expression_get_curr_dimension( expr );
-    if( expr->sig->dim[exp_dim].lsb < expr->sig->dim[exp_dim].msb ) {
-      dim_lsb = expr->sig->dim[exp_dim].lsb;
-      dim_be  = FALSE;
-    } else {
-      dim_lsb = expr->sig->dim[exp_dim].msb;
-      dim_be  = TRUE;
-    }
-    dim_width = vsignal_calc_width_for_expr( expr, expr->sig );
-
-    /* Adjust this expression's vector data pointer to point to correct bits in signal */
-    intval = (vector_to_int( expr->left->value ) - dim_lsb) * dim_width;
+    /* Calculate current LSB */
     if( intval < 0 ) {
-      retval = vector_set_to_x( expr->value );
+      dim->curr_lsb = -1;
     } else {
-      bool set_mem_rd = (expr->sig->value->suppl.part.type == VTYPE_MEM) && ((exp_dim + 1) == expr->sig->udim_num);
-      if( dim_be ) {
-        if( intval > vwidth ) {
-          retval = vector_set_to_x( expr->value );
-        } else {
-          int lsb = vwidth - (intval + expr->value->width);
-          retval = vector_part_select_pull( expr->value, src, lsb, lsb, set_mem_rd );
-        }
+      if( dim->dim_be ) {
+        dim->curr_lsb = ((intval >  vwidth) || (dim->prev_lsb == -1)) ? -1 : (dim->prev_lsb + (vwidth - (intval + expr->value->width)));
       } else {
-        if( intval >= vwidth ) {
-          retval = vector_set_to_x( expr->value );
-        } else {
-          retval = vector_part_select_pull( expr->value, src, intval, intval, set_mem_rd );
-        }
+        dim->curr_lsb = ((intval >= vwidth) || (dim->prev_lsb == -1)) ? -1 : (dim->prev_lsb + intval);
       }
     }
 
-  /* Otherwise, set the value to X */
   } else {
 
-    retval = vector_set_to_x( expr->value );
+    dim->curr_lsb = -1;
 
+  }
+
+  /* If we are the last dimension to be calculated, perform the bit pull */
+  if( dim->last ) {
+    if( dim->curr_lsb == -1 ) {
+      retval = vector_set_to_x( expr->value );
+    } else {
+      retval = vector_part_select_pull( expr->value, expr->sig->value, dim->curr_lsb, (dim->curr_lsb + expr->value->width), dim->set_mem_rd );
+    }
   }
 
   /* Gather coverage information */
@@ -3455,48 +3458,35 @@ bool expression_op_func__mbit(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__MBIT);
 
-  bool    retval;      /* Return value for this function */
-  int     intval;      /* LSB of range to copy */
-  vector* src;         /* Source vector for bit range to retrieve */
-  int     vwidth;      /* Width of vector to use */
-  int     dim_lsb;     /* LSB of current signal dimension */
-  int     exp_dim;     /* Expression dimension */
-  bool    dim_be;      /* Big endianness of this dimension */
-  int     dim_width;   /* Width of the current dimension */
-  bool    set_mem_rd;  /* Set to TRUE if we need to set the memory read coverage bits */
+  bool     retval;      /* Return value for this function */
+  int      intval;      /* LSB of range to copy */
+  int      vwidth;      /* Width of vector to use */
+  exp_dim* dim = expr->elem.dim;
 
   /* Calculate starting bit position */
   if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-    src    = expr->parent->expr->left->value;
     vwidth = expr->parent->expr->left->value->width;
   } else {
-    src    = expr->sig->value;
     vwidth = expr->sig->value->width;
   }
 
-  /* Calculate signal LSB and big endianness */
-  exp_dim = expression_get_curr_dimension( expr );
-  if( expr->sig->dim[exp_dim].lsb < expr->sig->dim[exp_dim].msb ) {
-    dim_lsb = expr->sig->dim[exp_dim].lsb;
-    dim_be  = FALSE;
-  } else {
-    dim_lsb = expr->sig->dim[exp_dim].msb;
-    dim_be  = TRUE;
-  }
-  dim_width = vsignal_calc_width_for_expr( expr, expr->sig );
-
   /* Calculate the LSB and MSB and copy the bit range */
-  intval = ((dim_be ? vector_to_int( expr->left->value )  : vector_to_int( expr->right->value )) - dim_lsb) * dim_width;
+  intval = ((dim->dim_be ? vector_to_int( expr->left->value ) : vector_to_int( expr->right->value )) - dim->dim_lsb) * dim->dim_width;
   assert( intval >= 0 );
-  set_mem_rd = (expr->sig->value->suppl.part.type == VTYPE_MEM) && ((exp_dim + 1) == expr->sig->udim_num);
-  if( dim_be ) {
-    int lsb = vwidth - (intval + expr->value->width);
-    int msb = vwidth - intval;
+  if( dim->dim_be ) {
     assert( intval <= vwidth );
-    retval = vector_part_select_pull( expr->value, src, lsb, msb, set_mem_rd );
+    dim->curr_lsb = (dim->prev_lsb == -1) ? -1 : (dim->prev_lsb + (vwidth - (intval + expr->value->width)));
   } else {
     assert( intval < vwidth );
-    retval = vector_part_select_pull( expr->value, src, intval, ((intval + expr->value->width) - 1), set_mem_rd );
+    dim->curr_lsb = (dim->prev_lsb == -1) ? -1 : (dim->prev_lsb + intval);
+  }
+
+  if( dim->last ) {
+    if( dim->curr_lsb == -1 ) {
+      retval = vector_set_to_x( expr->value );
+    } else {
+      retval = vector_part_select_pull( expr->value, expr->sig->value, dim->curr_lsb, ((dim->curr_lsb + expr->value) - 1), dim->set_mem_rd );
+    }
   }
 
   /* Gather coverage information */
@@ -4397,22 +4387,19 @@ bool expression_op_func__mbit_pos(
   /* If the left expression is known, perform the part selection */
   if( !vector_is_unknown( expr->left->value ) ) {
 
-    int     exp_dim    = expression_get_curr_dimension( expr );
-    int     lsb        = (expr->sig->dim[exp_dim].lsb < expr->sig->dim[exp_dim].msb) ? expr->sig->dim[exp_dim].lsb : expr->sig->dim[exp_dim].msb;
-    bool    set_mem_rd = (expr->sig->value->suppl.part.type == VTYPE_MEM) && ((exp_dim + 1) == expr->sig->udim_num);
-    int     intval     = (vector_to_int( expr->left->value ) - lsb) * vsignal_calc_width_for_expr( expr, expr->sig );
-    vector* src;
+    int  exp_dim    = expression_get_curr_dimension( expr );
+    int  lsb        = (expr->sig->dim[exp_dim].lsb < expr->sig->dim[exp_dim].msb) ? expr->sig->dim[exp_dim].lsb : expr->sig->dim[exp_dim].msb;
+    bool set_mem_rd = (expr->sig->value->suppl.part.type == VTYPE_MEM) && ((exp_dim + 1) == expr->sig->udim_num);
+    int  intval     = (vector_to_int( expr->left->value ) - lsb) * vsignal_calc_width_for_expr( expr, expr->sig );
 
     /* Calculate starting bit position */
     if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-      src = expr->parent->expr->left->value;
     } else {
-      src = expr->sig->value;
     }
 
     assert( intval >= 0 );
     assert( intval < expr->sig->value->width );
-    retval = vector_part_select_pull( expr->value, src, intval, ((intval + vector_to_int( expr->right->value )) - 1), set_mem_rd );
+    retval = vector_part_select_pull( expr->value, expr->sig->value, intval, ((intval + vector_to_int( expr->right->value )) - 1), set_mem_rd );
 
   /* Otherwise, set our value to X */
   } else {
@@ -4452,25 +4439,22 @@ bool expression_op_func__mbit_neg(
   /* If the left expression is known, perform the part selection */
   if( !vector_is_unknown( expr->left->value ) ) {
 
-    int     exp_dim    = expression_get_curr_dimension( expr );
-    int     lsb        = (expr->sig->dim[exp_dim].lsb < expr->sig->dim[exp_dim].msb) ? expr->sig->dim[exp_dim].lsb : expr->sig->dim[exp_dim].msb;
-    bool    set_mem_rd = (expr->sig->value->suppl.part.type == VTYPE_MEM) && ((exp_dim + 1) == expr->sig->udim_num);
-    int     intval1    = vector_to_int( expr->left->value ) - lsb;;
-    int     intval2    = vector_to_int( expr->right->value );
-    vector* src;
+    int  exp_dim    = expression_get_curr_dimension( expr );
+    int  lsb        = (expr->sig->dim[exp_dim].lsb < expr->sig->dim[exp_dim].msb) ? expr->sig->dim[exp_dim].lsb : expr->sig->dim[exp_dim].msb;
+    bool set_mem_rd = (expr->sig->value->suppl.part.type == VTYPE_MEM) && ((exp_dim + 1) == expr->sig->udim_num);
+    int  intval1    = vector_to_int( expr->left->value ) - lsb;;
+    int  intval2    = vector_to_int( expr->right->value );
 
     /* Calculate starting bit position */
     if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-      src = expr->parent->expr->left->value;
     } else {
-      src = expr->sig->value;
     }
 
     intval1 = vector_to_int( expr->left->value ) - lsb;
     intval2 = vector_to_int( expr->right->value );
     assert( intval1 < expr->sig->value->width );
     assert( ((intval1 - intval2) + 1) >= 0 );
-    retval = vector_part_select_pull( expr->value, src, ((intval1 - intval2) + 1), intval1, set_mem_rd );
+    retval = vector_part_select_pull( expr->value, expr->sig->value, ((intval1 - intval2) + 1), intval1, set_mem_rd );
 
   /* Otherwise, set our expression value to X */
   } else {
@@ -5223,7 +5207,11 @@ void expression_assign(
 
     /* Calculate starting vector value bit and signal LSB/BE for LHS */
     if( lhs->sig != NULL ) {
-      vwidth  = lhs->sig->value->width;
+      if( (lhs->parent->expr->op == EXP_OP_DIM) && (lhs->parent->expr->right == lhs) ) {
+        vwidth = lhs->parent->expr->left->value->width;
+      } else {
+        vwidth  = lhs->sig->value->width;
+      }
       exp_dim = expression_get_curr_dimension( lhs );
       if( lhs->sig->dim[exp_dim].lsb < lhs->sig->dim[exp_dim].msb ) {
         dim_lsb = lhs->sig->dim[exp_dim].lsb;
@@ -5251,7 +5239,7 @@ void expression_assign(
       case EXP_OP_SIG      :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
-            bool changed = vector_part_select_push( lhs->value, 0, (lhs->value->width - 1), rhs->value, *src_lsb, ((*src_lsb + rhs->value->width) - 1), FALSE /*TBD*/ );
+            bool changed = vector_part_select_push( lhs->value, 0, (lhs->value->width - 1), rhs->value, *src_lsb, ((*src_lsb + rhs->value->width) - 1) );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5293,7 +5281,7 @@ void expression_assign(
             }
           }
           if( assign ) {
-            changed = vector_part_select_push( lhs->sig->value, *tgt_lsb, ((*tgt_lsb + lhs->value->width) - 1), rhs->value, *src_lsb, ((*src_lsb + rhs->value->width) - 1), FALSE /* TBD */ );
+            changed = vector_part_select_push( lhs->sig->value, *tgt_lsb, ((*tgt_lsb + lhs->value->width) - 1), rhs->value, *src_lsb, ((*src_lsb + rhs->value->width) - 1) );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5321,7 +5309,7 @@ void expression_assign(
             *tgt_lsb += intval;
           }
           if( assign ) {
-            changed = vector_part_select_push( lhs->sig->value, *tgt_lsb, ((*tgt_lsb + lhs->value->width) - 1), rhs->value, *src_lsb, ((*src_lsb + rhs->value->width) - 1), FALSE /*TBD*/ );
+            changed = vector_part_select_push( lhs->sig->value, *tgt_lsb, ((*tgt_lsb + lhs->value->width) - 1), rhs->value, *src_lsb, ((*src_lsb + rhs->value->width) - 1) );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5563,6 +5551,11 @@ void expression_dealloc(
       free_safe( expr->elem.tvecs, sizeof( vecblk ) );
     }
 
+    /* If we have expression dimensional information, deallocate it now */
+    if( (expr->elem.dim != NULL) && EXPR_OP_HAS_DIM( expr->op ) ) {
+      free_safe( expr->elem.dim, sizeof( exp_dim ) );
+    }
+
     /* Free up memory for the parent pointer */
     free_safe( expr->parent, sizeof( expr_stmt ) );
 
@@ -5581,6 +5574,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.31  2008/05/12 23:12:04  phase1geo
+ Ripping apart part selection code and reworking it.  Things compile but are
+ functionally quite broken at this point.  Checkpointing.
+
  Revision 1.329.2.30  2008/05/12 04:22:25  phase1geo
  Attempting to fix multi-dimensional array support.  Checkpointing.
 

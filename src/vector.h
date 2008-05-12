@@ -193,13 +193,12 @@ bool vector_part_select_pull(
 
 /*! \brief Sets specified target vector to bit range of source vector. */
 bool vector_part_select_push(
-  vector* tgt,
-  int     tgt_lsb,
-  int     tgt_msb,
-  vector* src,
-  int     src_lsb,
-  int     src_msb,
-  bool    set_mem_rd
+  vector*       tgt,
+  int           tgt_lsb,
+  int           tgt_msb,
+  const vector* src,
+  int           src_lsb,
+  int           src_msb
 );
 
 /*!
@@ -491,6 +490,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.18  2008/05/12 23:12:05  phase1geo
+ Ripping apart part selection code and reworking it.  Things compile but are
+ functionally quite broken at this point.  Checkpointing.
+
  Revision 1.58.2.17  2008/05/07 23:09:11  phase1geo
  Fixing vector_mem_wr_count function and calling code.  Updating regression
  files accordingly.  Checkpointing.

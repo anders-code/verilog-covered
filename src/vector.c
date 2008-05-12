@@ -1331,23 +1331,27 @@ bool vector_set_coverage_and_assign_uint32(
  value arrays.
 */
 static void vector_lshift_uint32(
-  vector*      vec,   /*!< Pointer to vector containing value that we want to left-shift */
-  uint32*      vall,  /*!< Pointer to intermediate value array containing lower bits of shifted value */
-  uint32*      valh,  /*!< Pointer to intermediate value array containing upper bits of shifted value */
-  unsigned int lsb,   /*!< LSB offset */
-  unsigned int msb    /*!< MSB offset */
+  const vector* vec,   /*!< Pointer to vector containing value that we want to left-shift */
+  uint32*       vall,  /*!< Pointer to intermediate value array containing lower bits of shifted value */
+  uint32*       valh,  /*!< Pointer to intermediate value array containing upper bits of shifted value */
+  unsigned int  lsb,   /*!< LSB offset */
+  unsigned int  msb    /*!< MSB offset */
 ) { PROFILE(VECTOR_LSHIFT_UINT32);
 
   unsigned int diff = (msb >> 5) - ((vec->width - 1) >> 5);
 
+  printf( "In vector_lshift_uint32, lsb: %d, msb: %d\n", lsb, msb );
+
   if( (lsb >> 5) == (msb >> 5) ) {
 
-    vall[0] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALL] << lsb);
-    valh[0] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALH] << lsb);
+    vall[diff] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALL] << lsb);
+    valh[diff] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALH] << lsb);
 
   } else if( (lsb & 0x1f) == 0 ) {
 
     int i;
+
+    printf( "HERE!!!!!\n" );
 
     for( i=((vec->width - 1) >> 5); i>=0; i-- ) {
       vall[i+diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
@@ -1420,11 +1424,11 @@ static void vector_lshift_uint32(
  value arrays.
 */
 static void vector_rshift_uint32(
-  vector*      vec,   /*!< Pointer to vector containing value that we want to right-shift */
-  uint32*      vall,  /*!< Pointer to intermediate value array containing lower bits of shifted value */
-  uint32*      valh,  /*!< Pointer to intermediate value array containing upper bits of shifted value */
-  unsigned int lsb,   /*!< LSB of vec range to shift */
-  unsigned int msb    /*!< MSB of vec range to shift */
+  const vector* vec,   /*!< Pointer to vector containing value that we want to right-shift */
+  uint32*       vall,  /*!< Pointer to intermediate value array containing lower bits of shifted value */
+  uint32*       valh,  /*!< Pointer to intermediate value array containing upper bits of shifted value */
+  unsigned int  lsb,   /*!< LSB of vec range to shift */
+  unsigned int  msb    /*!< MSB of vec range to shift */
 ) { PROFILE(VECTOR_RSHIFT_UINT32);
 
   int diff   = (lsb >> 5);
@@ -1578,7 +1582,16 @@ bool vector_part_select_pull(
       {
         uint32 valh[MAX_BIT_WIDTH>>5];
         uint32 vall[MAX_BIT_WIDTH>>5];
+
+        /* Perform shift operation */
         vector_rshift_uint32( src, vall, valh, lsb, msb );
+
+        /* If the src vector is of type MEM, set the MEM_RD bit in the source's supplemental field */
+        if( set_mem_rd && (src->suppl.part.type == VTYPE_MEM) ) {
+          src->value.u32[lsb>>5][VTYPE_INDEX_MEM_RD] |= (1 << (lsb & 0x1f));
+          printf( "Setting MEM_RD src->value.u32[%d]: %x (lsb: %d)\n", (lsb >> 5), (1 << (lsb & 0x1f)), lsb );
+        }
+
         retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
       }
       break;
@@ -1598,13 +1611,12 @@ bool vector_part_select_pull(
  LSB and MSB range.
 */
 bool vector_part_select_push(
-  vector* tgt,         /*!< Pointer to vector that will store the result */
-  int     tgt_lsb,     /*!< LSB offset of target vector */
-  int     tgt_msb,     /*!< MSB offset of target vector */
-  vector* src,         /*!< Pointer to vector containing data to store */
-  int     src_lsb,     /*!< LSB offset of source vector */
-  int     src_msb,     /*!< MSB offset of source vector */
-  bool    set_mem_rd   /*!< If TRUE, set the memory read bit in the source */
+  vector*       tgt,      /*!< Pointer to vector that will store the result */
+  int           tgt_lsb,  /*!< LSB offset of target vector */
+  int           tgt_msb,  /*!< MSB offset of target vector */
+  const vector* src,      /*!< Pointer to vector containing data to store */
+  int           src_lsb,  /*!< LSB offset of source vector */
+  int           src_msb   /*!< MSB offset of source vector */
 ) { PROFILE(VECTOR_PART_SELECT_PUSH);
 
   bool retval;  /* Return value for this function */
@@ -4694,6 +4706,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.70  2008/05/12 23:12:04  phase1geo
+ Ripping apart part selection code and reworking it.  Things compile but are
+ functionally quite broken at this point.  Checkpointing.
+
  Revision 1.138.2.69  2008/05/09 22:07:50  phase1geo
  Updates for VCS regressions.  Fixing some issues found in that regression
  suite.  Checkpointing.

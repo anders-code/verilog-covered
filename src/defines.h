@@ -885,6 +885,18 @@ typedef enum exp_op_type_e {
 #define EXPR_TMP_VECS(x)             exp_op_info[x].suppl.tmp_vecs
 
 /*!
+ Returns TRUE if this expression should have its dim element populated.
+*/
+#define EXPR_OP_HAS_DIM(x)          ((x == EXP_OP_DIM)        || \
+                                     (x == EXP_OP_SBIT_SEL)   || \
+                                     (x == EXP_OP_PARAM_SBIT) || \
+                                     (x == EXP_OP_MBIT_SEL)   || \
+                                     (x == EXP_OP_PARAM_MBIT) || \
+                                     (x == EXP_OP_MBIT_POS)   || \
+                                     (x == EXP_OP_MBIT_NEG))
+ 
+
+/*!
  \addtogroup op_tables
 
  The following describe the operation table values for AND, OR, XOR, NAND, NOR and
@@ -1585,6 +1597,7 @@ struct str_link_s;
 struct vector_s;
 struct const_value_s;
 struct vecblk_s;
+struct exp_dim_s;
 struct expression_s;
 struct vsignal_s;
 struct fsm_s;
@@ -1670,6 +1683,11 @@ typedef struct const_value_s const_value;
  Renaming vector structure for convenience.
 */
 typedef struct vecblk_s vecblk;
+
+/*!
+ Renaming expression dimension structure for convenience.
+*/
+typedef struct exp_dim_s exp_dim;
 
 /*!
  Renaming expression statement union for convenience.
@@ -2022,6 +2040,20 @@ struct vecblk_s {
 }; 
 
 /*!
+ Specifies the current dimensional LSB of the associated expression.  This is used by the DIM, SBIT, MBIT,
+ MBIT_POS and MBIT_NEG expressions types for proper bit selection of given signal.
+*/
+struct exp_dim_s {
+  int  prev_lsb;                     /*!< Calculated LSB of previous dimensions */
+  int  curr_lsb;                     /*!< Calculated LSB of this expression dimension (if -1, LSB was an X) */
+  int  dim_lsb;                      /*!< Dimensional LSB (static value) */
+  bool dim_be;                       /*!< Dimensional big endianness (static value) */
+  int  dim_width;                    /*!< Dimensional width of current expression (static value) */
+  bool last;                         /*!< Specifies if this is the dimension that should handle the signal interaction */
+  bool set_mem_rd;                   /*!< Set to TRUE if the MEM_RD bit should be set for this entry */
+};
+
+/*!
  Allows the parent pointer of an expression to point to either another expression
  or a statement.
 */
@@ -2058,6 +2090,7 @@ struct expression_s {
     thread*    thr;                /*!< Pointer to next thread to be called */
     uint64*    scale;              /*!< Pointer to parent functional unit's timescale value */
     vecblk*    tvecs;              /*!< Temporary vectors that are sized to match value */   
+    exp_dim*   dim;                /*!< Current dimensional LSB of this expression (valid for DIM, SBIT_SEL, MBIT_SEL, MBIT_NEG and MBIT_POS) */
   } elem;
 };
 
@@ -2747,6 +2780,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.11  2008/05/12 23:12:03  phase1geo
+ Ripping apart part selection code and reworking it.  Things compile but are
+ functionally quite broken at this point.  Checkpointing.
+
  Revision 1.294.2.10  2008/05/08 23:12:41  phase1geo
  Fixing several bugs and reworking code in arc to get FSM diagnostics
  to pass.  Checkpointing.
