@@ -247,7 +247,7 @@ static bool expression_op_func__lshift_a( expression*, thread*, const sim_time* 
 static bool expression_op_func__rshift_a( expression*, thread*, const sim_time* );
 static bool expression_op_func__arshift_a( expression*, thread*, const sim_time* );
 
-static void expression_assign( expression*, expression*, int*, thread*, const sim_time*, bool eval_lhs );
+static void expression_assign( expression*, expression*, int*, int*, thread*, const sim_time*, bool eval_lhs );
 
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
@@ -1851,9 +1851,10 @@ bool expression_op_func__xor_a(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__XOR_A);
 
-  bool    retval;                                /* Return value for this function */
-  vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
-  int     intval = 0;                            /* Integer value */
+  bool    retval;                                 /* Return value for this function */
+  vector* tmp     = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
+  int     intval1 = 0;                            /* Integer value */
+  int     intval2 = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
   sim_expression( expr->left, thr, time, TRUE );
@@ -1869,7 +1870,7 @@ bool expression_op_func__xor_a(
   expression_set_eval_NN( expr );
 
   /* Fourth, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  expression_assign( expr->left, expr, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -1924,9 +1925,10 @@ bool expression_op_func__multiply_a(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__MULTIPLY_A);
 
-  bool    retval;                                /* Return value for this function */
-  vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
-  int     intval = 0;                            /* Integer value */
+  bool    retval;                                 /* Return value for this function */
+  vector* tmp     = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
+  int     intval1 = 0;                            /* Integer value */
+  int     intval2 = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
   sim_expression( expr->left, thr, time, TRUE );
@@ -1942,7 +1944,7 @@ bool expression_op_func__multiply_a(
   expression_set_eval_NN( expr );
 
   /* Fourth, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  expression_assign( expr->left, expr, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -1997,9 +1999,10 @@ bool expression_op_func__divide_a(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__DIVIDE_A);
 
-  bool    retval = FALSE;                        /* Return value for this function */
-  vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
-  int     intval = 0;                            /* Integer value */
+  bool    retval  = FALSE;                        /* Return value for this function */
+  vector* tmp     = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
+  int     intval1 = 0;                            /* Integer value */
+  int     intval2 = 0;                            /* Integer value */
   
   /* First, evaluate the left-hand expression */
   sim_expression( expr->left, thr, time, TRUE );;
@@ -2015,7 +2018,7 @@ bool expression_op_func__divide_a(
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  expression_assign( expr->left, expr, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
   
   PROFILE_END;
 
@@ -2070,9 +2073,10 @@ bool expression_op_func__mod_a(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__MOD_A);
 
-  bool    retval;                                /* Return value for this function */
-  vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
-  int     intval = 0;                            /* Integer value */
+  bool    retval;                                 /* Return value for this function */
+  vector* tmp     = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
+  int     intval1 = 0;                            /* Integer value */
+  int     intval2 = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
   sim_expression( expr->left, thr, time, TRUE );;
@@ -2088,7 +2092,7 @@ bool expression_op_func__mod_a(
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  expression_assign( expr->left, expr, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2141,9 +2145,10 @@ bool expression_op_func__add_a(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__ADD_A);
   
-  bool    retval;                                /* Return value for this function */
-  vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
-  int     intval = 0;                            /* Integer value */
+  bool    retval;                                 /* Return value for this function */
+  vector* tmp     = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
+  int     intval1 = 0;                            /* Integer value */
+  int     intval2 = 0;                            /* Integer value */
 
   /* Evaluate the left expression */
   sim_expression( expr->left, thr, time, TRUE );
@@ -2159,7 +2164,7 @@ bool expression_op_func__add_a(
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  expression_assign( expr->left, expr, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2213,9 +2218,10 @@ bool expression_op_func__sub_a(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__SUB_A);
 
-  bool    retval;                                /* Return value for this function */
-  vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
-  int     intval = 0;                            /* Integer value */
+  bool    retval;                                 /* Return value for this function */
+  vector* tmp     = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
+  int     intval1 = 0;                            /* Integer value */
+  int     intval2 = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
   sim_expression( expr->left, thr, time, TRUE );
@@ -2232,7 +2238,7 @@ bool expression_op_func__sub_a(
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  expression_assign( expr->left, expr, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2285,9 +2291,10 @@ bool expression_op_func__and_a(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__AND_A);
 
-  bool    retval;                                /* Return value for this function */
-  vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
-  int     intval = 0;                            /* Integer value */
+  bool    retval;                                 /* Return value for this function */
+  vector* tmp     = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
+  int     intval1 = 0;                            /* Integer value */
+  int     intval2 = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
   sim_expression( expr->left, thr, time, TRUE );
@@ -2303,7 +2310,7 @@ bool expression_op_func__and_a(
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  expression_assign( expr->left, expr, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2356,9 +2363,10 @@ bool expression_op_func__or_a(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__OR_A);
 
-  bool    retval;                                /* Return value for this function */
-  vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
-  int     intval = 0;                            /* Integer value */
+  bool    retval;                                 /* Return value for this function */
+  vector* tmp     = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
+  int     intval1 = 0;                            /* Integer value */
+  int     intval2 = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
   sim_expression( expr->left, thr, time, TRUE );
@@ -2374,7 +2382,7 @@ bool expression_op_func__or_a(
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  expression_assign( expr->left, expr, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2577,9 +2585,10 @@ bool expression_op_func__lshift_a(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__LSHIFT_A);
   
-  bool    retval;                                /* Return value for this function */
-  vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
-  int     intval = 0;                            /* Integer value */
+  bool    retval;                                 /* Return value for this function */
+  vector* tmp     = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
+  int     intval1 = 0;                            /* Integer value */
+  int     intval2 = 0;                            /* Integer value */
   
   /* First, evaluate the left-hand expression */
   sim_expression( expr->left, thr, time, TRUE );
@@ -2595,7 +2604,7 @@ bool expression_op_func__lshift_a(
   expression_set_eval_NN( expr ); 
 
   /* Finally, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  expression_assign( expr->left, expr, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
   
   PROFILE_END;
   
@@ -2648,9 +2657,10 @@ bool expression_op_func__rshift_a(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__RSHIFT_A);
 
-  bool    retval;                                /* Return value for this function */
-  vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
-  int     intval = 0;                            /* Integer value */
+  bool    retval;                                 /* Return value for this function */
+  vector* tmp     = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
+  int     intval1 = 0;                            /* Integer value */
+  int     intval2 = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
   sim_expression( expr->left, thr, time, TRUE );
@@ -2666,7 +2676,7 @@ bool expression_op_func__rshift_a(
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  expression_assign( expr->left, expr, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -2719,9 +2729,10 @@ bool expression_op_func__arshift_a(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__ARSHIFT_A);
 
-  bool    retval;                                /* Return value for this function */
-  vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
-  int     intval = 0;                            /* Integer value */
+  bool    retval;                                 /* Return value for this function */
+  vector* tmp     = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
+  int     intval1 = 0;                            /* Integer value */
+  int     intval2 = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
   sim_expression( expr->left, thr, time, TRUE );
@@ -2737,7 +2748,7 @@ bool expression_op_func__arshift_a(
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  expression_assign( expr->left, expr, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
 
   PROFILE_END;
 
@@ -4022,10 +4033,11 @@ bool expression_op_func__bassign(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__BASSIGN);
 
-  int intval = 0;  /* Integer value */
+  int intval1 = 0;  /* Integer value */
+  int intval2 = 0;  /* Integer value */
 
   /* Perform assignment */
-  expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+  expression_assign( expr->left, expr->right, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr );
@@ -4319,8 +4331,9 @@ bool expression_op_func__passign(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__PASSIGN);
 
-  bool retval = FALSE;  /* Return value for this function */
-  int  intval = 0;      /* Integer value */
+  bool retval  = FALSE;  /* Return value for this function */
+  int  intval1 = 0;      /* Integer value */
+  int  intval2 = 0;      /* Integer value */
 
   /* If the current thread is running an automatic function, create a reentrant structure for it */
   if( (thr != NULL) && (thr->ren == NULL) &&
@@ -4341,7 +4354,7 @@ bool expression_op_func__passign(
      to the right expression.
     */
     case SSUPPL_TYPE_OUTPUT :
-      expression_assign( expr->right, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+      expression_assign( expr->right, expr, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
       retval = TRUE;
       break;
 
@@ -4671,8 +4684,9 @@ bool expression_op_func__dly_assign(
   const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__DLY_ASSIGN);
 
-  bool retval;      /* Return value for this function */
-  int  intval = 0;  /* Integer value */
+  bool retval;       /* Return value for this function */
+  int  intval1 = 0;  /* Integer value */
+  int  intval2 = 0;  /* Integer value */
 
   /* If we are the first statement in the queue, perform the dly_op manually */
   if( thr->suppl.part.exec_first && (expr->right->left->op == EXP_OP_DELAY) ) {
@@ -4681,7 +4695,7 @@ bool expression_op_func__dly_assign(
 
   /* Check the dly_op expression.  If eval_t is set to 1, perform the assignment */
   if( ESUPPL_IS_TRUE( expr->right->suppl ) == 1 ) {
-    expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+    expression_assign( expr->left, expr->right, &intval1, &intval2, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
   } else {
@@ -5178,7 +5192,8 @@ void expression_set_changed(
 /*!
  \param lhs       Pointer to current expression on left-hand-side of assignment to calculate for.
  \param rhs       Pointer to the right-hand-expression that will be assigned from.
- \param lsb       Current least-significant bit in rhs value to start assigning.
+ \param tgt_lsb   Current least-significant bit in lhs value to start assigning (initialized to 0).
+ \param src_lsb   Current least-significant bit in rhs value to start assigning.
  \param time      Specifies current simulation time when expression assignment occurs.
  \param eval_lhs  If TRUE, allows the left-hand expression to be evaluated, if necessary (should be
                   set to TRUE unless for specific cases where it is not necessary and would be
@@ -5190,33 +5205,25 @@ void expression_set_changed(
 void expression_assign(
   expression*     lhs,
   expression*     rhs,
-  int*            lsb,
+  int*            tgt_lsb,
+  int*            src_lsb,
   thread*         thr,
   const sim_time* time,
   bool            eval_lhs
 ) { PROFILE(EXPRESSION_ASSIGN);
 
-  int     intval1;    /* Integer value to use */
-  vector* src;        /* Starting vector data */
-  int     vwidth;     /* Width of vector data to select from */
-  bool    assign;     /* Set to TRUE if we should perform assignment */
-  int     exp_dim;    /* Current LHS expression dimension */
-  int     dim_width;  /* Current LHS dimension width */
-  int     dim_lsb;    /* Current LHS dimension LSB */
-  bool    dim_be;     /* Current LHS dimension endianness */
+  int  vwidth;     /* Width of vector data to select from */
+  bool assign;     /* Set to TRUE if we should perform assignment */
+  int  exp_dim;    /* Current LHS expression dimension */
+  int  dim_width;  /* Current LHS dimension width */
+  int  dim_lsb;    /* Current LHS dimension LSB */
+  bool dim_be;     /* Current LHS dimension endianness */
 
   if( lhs != NULL ) {
 
     /* Calculate starting vector value bit and signal LSB/BE for LHS */
     if( lhs->sig != NULL ) {
-      if( (lhs->parent->expr->op == EXP_OP_DIM) && (lhs->parent->expr->right == lhs) ) {
-        src    = lhs->parent->expr->left->value;
-        vwidth = lhs->parent->expr->left->value->width;
-      } else {
-        /* Get starting vector bit from signal itself */
-        src    = lhs->sig->value;
-        vwidth = lhs->sig->value->width;
-      }
+      vwidth  = lhs->sig->value->width;
       exp_dim = expression_get_curr_dimension( lhs );
       if( lhs->sig->dim[exp_dim].lsb < lhs->sig->dim[exp_dim].msb ) {
         dim_lsb = lhs->sig->dim[exp_dim].lsb;
@@ -5233,8 +5240,8 @@ void expression_assign(
 
 #ifdef DEBUG_MODE
     if( assign ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d, time: %llu",
-                                  expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb, time->full );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, tgt_lsb: %d, src_lsb: %d, time: %llu",
+                                  expression_string_op( lhs->op ), expression_string_op( rhs->op ), *tgt_lsb, *src_lsb, time->full );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
@@ -5244,8 +5251,7 @@ void expression_assign(
       case EXP_OP_SIG      :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( assign ) {
-            int  msb     = (*lsb + rhs->value->width) - 1;
-            bool changed = vector_part_select_push( lhs->value, 0, (lhs->value->width - 1), rhs->value, *lsb, msb, FALSE /*TBD*/ );
+            bool changed = vector_part_select_push( lhs->value, 0, (lhs->value->width - 1), rhs->value, *src_lsb, ((*src_lsb + rhs->value->width) - 1), FALSE /*TBD*/ );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5257,39 +5263,37 @@ void expression_assign(
           }
         }
         if( assign ) {
-          *lsb = *lsb + lhs->value->width;
+          *src_lsb += lhs->value->width;
         }
         break;
       case EXP_OP_SBIT_SEL :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           bool changed = FALSE;
-          if( assign ) {
-            if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
-              sim_expression( lhs->left, thr, time, TRUE );
-            }
-            if( !vector_is_unknown( lhs->left->value ) ) {
-              intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * dim_width;
-              if( intval1 >= 0 ) {           // Only perform assignment if selected bit is within range
-                if( dim_be ) {
-                  if( intval1 <= vwidth ) {  // Only perform assignment if selected bit is within range
-                    int tlsb = vwidth - (intval1 + lhs->value->width);
-                    changed = vector_part_select_push( src, tlsb, tlsb, rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE /* TBD */ );
-                  } else {
-                    assign = FALSE;
-                  }
+          if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
+            sim_expression( lhs->left, thr, time, TRUE );
+          }
+          if( !vector_is_unknown( lhs->left->value ) ) {
+            int intval = (vector_to_int( lhs->left->value ) - dim_lsb) * dim_width;
+            if( intval >= 0 ) {           // Only perform assignment if selected bit is within range
+              if( dim_be ) {
+                if( intval <= vwidth ) {  // Only perform assignment if selected bit is within range
+                  *tgt_lsb += (vwidth - (intval + lhs->value->width));
                 } else {
-                  if( intval1 < vwidth ) {   // Only perform assignment if selected bit is within range
-                    changed = vector_part_select_push( src, intval1, intval1, rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE /* TBD */ );
-                  } else {
-                    assign = FALSE;
-                  }
+                  assign = FALSE;
                 }
               } else {
-                assign = FALSE;
+                if( intval < vwidth ) {   // Only perform assignment if selected bit is within range
+                  *tgt_lsb += intval;
+                } else {
+                  assign = FALSE;
+                }
               }
+            } else {
+              assign = FALSE;
             }
           }
           if( assign ) {
+            changed = vector_part_select_push( lhs->sig->value, *tgt_lsb, ((*tgt_lsb + lhs->value->width) - 1), rhs->value, *src_lsb, ((*src_lsb + rhs->value->width) - 1), FALSE /* TBD */ );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5301,22 +5305,23 @@ void expression_assign(
           }
         }
         if( assign ) {
-          *lsb = *lsb + lhs->value->width;
+          *src_lsb += lhs->value->width;
         }
         break;
       case EXP_OP_MBIT_SEL :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           bool changed = FALSE;
+          int  intval  = ((dim_be ? vector_to_int( lhs->left->value ) : vector_to_int( lhs->right->value )) - dim_lsb) * dim_width;
+          assert( intval >= 0 );
+          if( dim_be ) {
+            assert( intval <= vwidth );
+            *tgt_lsb += (vwidth - (intval + lhs->value->width));
+          } else {
+            assert( intval < vwidth );
+            *tgt_lsb += intval;
+          }
           if( assign ) {
-            intval1 = ((dim_be ? vector_to_int( lhs->left->value ) : vector_to_int( lhs->right->value )) - dim_lsb) * dim_width;
-            assert( intval1 >= 0 );
-            if( dim_be ) {
-              assert( intval1 <= vwidth );
-              changed = vector_part_select_push( src, (vwidth - (intval1 + lhs->value->width)), ((vwidth - intval1) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE /*TBD*/ );
-            } else {
-              assert( intval1 < vwidth );
-              changed = vector_part_select_push( src, intval1, ((intval1 + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE /*TBD*/ );
-            }
+            changed = vector_part_select_push( lhs->sig->value, *tgt_lsb, ((*tgt_lsb + lhs->value->width) - 1), rhs->value, *src_lsb, ((*src_lsb + rhs->value->width) - 1), FALSE /*TBD*/ );
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5328,7 +5333,7 @@ void expression_assign(
           }
         }
         if( assign ) {
-          *lsb = *lsb + lhs->value->width;
+          *src_lsb += lhs->value->width;
         }
         break;
 #ifdef NOT_SUPPORTED
@@ -5391,12 +5396,12 @@ void expression_assign(
 #endif
       case EXP_OP_CONCAT   :
       case EXP_OP_LIST     :
-        expression_assign( lhs->right, rhs, lsb, thr, time, eval_lhs );
-        expression_assign( lhs->left,  rhs, lsb, thr, time, eval_lhs );
+        expression_assign( lhs->right, rhs, tgt_lsb, src_lsb, thr, time, eval_lhs );
+        expression_assign( lhs->left,  rhs, tgt_lsb, src_lsb, thr, time, eval_lhs );
         break;
       case EXP_OP_DIM      :
-        expression_assign( lhs->left,  rhs, lsb, thr, time, eval_lhs );
-        expression_assign( lhs->right, rhs, lsb, thr, time, eval_lhs );
+        expression_assign( lhs->left,  rhs, tgt_lsb, src_lsb, thr, time, eval_lhs );
+        expression_assign( lhs->right, rhs, tgt_lsb, src_lsb, thr, time, eval_lhs );
         break;
       case EXP_OP_STATIC   :
         break;
@@ -5420,6 +5425,11 @@ void expression_assign(
                 (lhs->op == EXP_OP_DIM) );
 #endif
         break;
+    }
+
+    /* If we have performed the assignment, reset the target LSB value */
+    if( assign ) {
+      *tgt_lsb = 0;
     }
 
   }
@@ -5571,6 +5581,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.30  2008/05/12 04:22:25  phase1geo
+ Attempting to fix multi-dimensional array support.  Checkpointing.
+
  Revision 1.329.2.29  2008/05/09 05:04:47  phase1geo
  Fixing big endianness assignment when MBIT select is being assigned.
  Updating regress files.  Checkpointing.
