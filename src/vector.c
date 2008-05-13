@@ -1340,8 +1340,6 @@ static void vector_lshift_uint32(
 
   unsigned int diff = (msb >> 5) - ((vec->width - 1) >> 5);
 
-  printf( "In vector_lshift_uint32, lsb: %d, msb: %d\n", lsb, msb );
-
   if( (lsb >> 5) == (msb >> 5) ) {
 
     vall[diff] = (vec->value.u32[0][VTYPE_INDEX_VAL_VALL] << lsb);
@@ -1350,8 +1348,6 @@ static void vector_lshift_uint32(
   } else if( (lsb & 0x1f) == 0 ) {
 
     int i;
-
-    printf( "HERE!!!!!\n" );
 
     for( i=((vec->width - 1) >> 5); i>=0; i-- ) {
       vall[i+diff] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
@@ -1589,7 +1585,6 @@ bool vector_part_select_pull(
         /* If the src vector is of type MEM, set the MEM_RD bit in the source's supplemental field */
         if( set_mem_rd && (src->suppl.part.type == VTYPE_MEM) ) {
           src->value.u32[lsb>>5][VTYPE_INDEX_MEM_RD] |= (1 << (lsb & 0x1f));
-          printf( "Setting MEM_RD src->value.u32[%d]: %x (lsb: %d)\n", (lsb >> 5), (1 << (lsb & 0x1f)), lsb );
         }
 
         retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
@@ -4706,6 +4701,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.71  2008/05/13 06:42:25  phase1geo
+ Finishing up initial pass of part-select code modifications.  Still getting an
+ error in regression.  Checkpointing.
+
  Revision 1.138.2.70  2008/05/12 23:12:04  phase1geo
  Ripping apart part selection code and reworking it.  Things compile but are
  functionally quite broken at this point.  Checkpointing.

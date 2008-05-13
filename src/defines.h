@@ -2044,7 +2044,6 @@ struct vecblk_s {
  MBIT_POS and MBIT_NEG expressions types for proper bit selection of given signal.
 */
 struct exp_dim_s {
-  int  prev_lsb;                     /*!< Calculated LSB of previous dimensions */
   int  curr_lsb;                     /*!< Calculated LSB of this expression dimension (if -1, LSB was an X) */
   int  dim_lsb;                      /*!< Dimensional LSB (static value) */
   bool dim_be;                       /*!< Dimensional big endianness (static value) */
@@ -2780,6 +2779,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.12  2008/05/13 06:42:23  phase1geo
+ Finishing up initial pass of part-select code modifications.  Still getting an
+ error in regression.  Checkpointing.
+
  Revision 1.294.2.11  2008/05/12 23:12:03  phase1geo
  Ripping apart part selection code and reworking it.  Things compile but are
  functionally quite broken at this point.  Checkpointing.
