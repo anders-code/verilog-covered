@@ -1271,7 +1271,7 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  tvall = entry[VTYPE_INDEX_SIG_VALL];
         uint32  tvalh = entry[VTYPE_INDEX_SIG_VALH];
         uint32  set   = entry[VTYPE_INDEX_SIG_SET];
-        if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
+        if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) || ((set & mask) == 0) ) {
           if( (set & mask) != 0 ) {
             entry[VTYPE_INDEX_SIG_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall) & mask;
             entry[VTYPE_INDEX_SIG_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall) & mask;
@@ -1309,7 +1309,8 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  fvalh = scratchh[i] & mask;
         uint32  tvall = entry[VTYPE_INDEX_EXP_VALL];
         uint32  tvalh = entry[VTYPE_INDEX_EXP_VALH];
-        if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
+        uint32  set   = entry[VTYPE_INDEX_EXP_SET];
+        if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) || ((set & mask) == 0) ) {
           entry[VTYPE_INDEX_EXP_SET] |= mask;
           entry[VTYPE_INDEX_EXP_VALL] = (tvall & ~mask) | fvall;
           entry[VTYPE_INDEX_EXP_VALH] = (tvalh & ~mask) | fvalh;
@@ -4701,6 +4702,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.72  2008/05/13 21:56:20  phase1geo
+ Checkpointing changes.
+
  Revision 1.138.2.71  2008/05/13 06:42:25  phase1geo
  Finishing up initial pass of part-select code modifications.  Still getting an
  error in regression.  Checkpointing.

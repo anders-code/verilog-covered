@@ -2642,8 +2642,10 @@ bool expression_op_func__rshift(
 
   /* Perform right shift operation and gather coverage information */
   if( vector_op_rshift( expr->value, expr->left->value, expr->right->value ) ) {
+    printf( "VECTOR_OP_RSHIFT returned true\n" );
     expression_set_tf_preclear( expr );
   }
+  vector_display( expr->value );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -4071,8 +4073,11 @@ bool expression_op_func__func_call(
     thr->ren = NULL;
   }
 
+  printf( "In expression_op_func__func_call...\n" );
+
   /* Gather coverage information */
   if( retval ) {
+    printf( "  retval was TRUE\n" );
     expression_set_tf_preclear( expr );
   }
   vector_set_unary_evals( expr->value );
@@ -4394,7 +4399,7 @@ bool expression_op_func__mbit_pos(
 
     int vwidth;
     int intval   = (vector_to_int( expr->left->value ) - dim->dim_lsb) * dim->dim_width;
-    int prev_lsb = ((expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr)) ? expr->parent->expr->left->elem.dim->curr_lsb : 0;
+    int prev_lsb = ((ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr)) ? expr->parent->expr->left->elem.dim->curr_lsb : 0;
 
     /* Calculate starting bit position */
     if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
@@ -4465,7 +4470,7 @@ bool expression_op_func__mbit_neg(
     int vwidth;
     int intval1  = vector_to_int( expr->left->value ) - dim->dim_lsb;
     int intval2  = vector_to_int( expr->right->value );
-    int prev_lsb = ((expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr)) ? expr->parent->expr->left->elem.dim->curr_lsb : 0;
+    int prev_lsb = ((ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr)) ? expr->parent->expr->left->elem.dim->curr_lsb : 0;
 
     /* Calculate starting bit position */
     if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
@@ -5279,7 +5284,7 @@ void expression_assign(
     }
 
 #ifdef DEBUG_MODE
-    if( (dim != NULL) && dim->last ) {
+    if( ((dim != NULL) && dim->last) || (lhs->op == EXP_OP_SIG) ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d, time: %llu",
                                   expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb, time->full );
       assert( rv < USER_MSG_LENGTH );
@@ -5610,6 +5615,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.33  2008/05/13 21:56:19  phase1geo
+ Checkpointing changes.
+
  Revision 1.329.2.32  2008/05/13 06:42:24  phase1geo
  Finishing up initial pass of part-select code modifications.  Still getting an
  error in regression.  Checkpointing.
