@@ -887,13 +887,15 @@ typedef enum exp_op_type_e {
 /*!
  Returns TRUE if this expression should have its dim element populated.
 */
-#define EXPR_OP_HAS_DIM(x)          ((x == EXP_OP_DIM)        || \
-                                     (x == EXP_OP_SBIT_SEL)   || \
-                                     (x == EXP_OP_PARAM_SBIT) || \
-                                     (x == EXP_OP_MBIT_SEL)   || \
-                                     (x == EXP_OP_PARAM_MBIT) || \
-                                     (x == EXP_OP_MBIT_POS)   || \
-                                     (x == EXP_OP_MBIT_NEG))
+#define EXPR_OP_HAS_DIM(x)          ((x == EXP_OP_DIM)            || \
+                                     (x == EXP_OP_SBIT_SEL)       || \
+                                     (x == EXP_OP_PARAM_SBIT)     || \
+                                     (x == EXP_OP_MBIT_SEL)       || \
+                                     (x == EXP_OP_PARAM_MBIT)     || \
+                                     (x == EXP_OP_MBIT_POS)       || \
+                                     (x == EXP_OP_MBIT_NEG)       || \
+                                     (x == EXP_OP_PARAM_MBIT_POS) || \
+                                     (x == EXP_OP_PARAM_MBIT_NEG))
  
 
 /*!
@@ -2779,6 +2781,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.13  2008/05/13 07:23:26  phase1geo
+ Fixing problem with parameterized multi-bit positive/negative select types.
+ Full regression passes for IV and Cver.  Checkpointing.
+
  Revision 1.294.2.12  2008/05/13 06:42:23  phase1geo
  Finishing up initial pass of part-select code modifications.  Still getting an
  error in regression.  Checkpointing.
