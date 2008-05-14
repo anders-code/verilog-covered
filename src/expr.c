@@ -2642,7 +2642,6 @@ bool expression_op_func__rshift(
 
   /* Perform right shift operation and gather coverage information */
   if( vector_op_rshift( expr->value, expr->left->value, expr->right->value ) ) {
-    printf( "VECTOR_OP_RSHIFT returned true\n" );
     expression_set_tf_preclear( expr );
   }
   vector_display( expr->value );
@@ -5615,6 +5614,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.34  2008/05/14 02:28:15  phase1geo
+ Another attempt to fix toggle issue.  IV and CVer regressions pass again.  Still need to
+ complete VCS regression.  Checkpointing.
+
  Revision 1.329.2.33  2008/05/13 21:56:19  phase1geo
  Checkpointing changes.
 
