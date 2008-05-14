@@ -22,7 +22,7 @@
 3 2 main.const_func "main.const_func" static_func2.3.v 24 30 1
 2 10 26 20006 1 3d 5802 0 0 1 18 0 1 0 0 0 0 0 $u1
 1 const_func 24 850010 1 0 31 0 32 17 0 ffffffff 4 0 0 0
-1 bit_to_set 25 80000f 1 0 31 0 32 17 0 ffffffff 0 0 0 0
+1 bit_to_set 25 80000f 1 0 31 0 32 17 0 ffffffff 2 0 0 0
 4 10 11 0 0
 3 1 main.const_func.$u1 "main.const_func.$u1" static_func2.3.v 0 29 1
 2 11 27 110011 0 0 1810 0 0 32 48 0 0
