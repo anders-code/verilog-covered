@@ -4539,7 +4539,12 @@ bool expression_op_func__iinc(
 
   /* Perform increment */
   expr->elem.tvecs->index = 0;
-  (void)vector_op_inc( expr->left->value, expr->elem.tvecs );
+  if( expr->left->sig != NULL ) {
+    (void)vector_op_inc( expr->left->sig->value, expr->elem.tvecs );
+    expr->left->sig->value->suppl.part.set = 1;
+  } else {
+    (void)vector_op_inc( expr->left->value, expr->elem.tvecs );
+  }
 
   /* Assign the left value to our value */
   (void)vector_set_value_uint32( expr->value, expr->left->value->value.u32, expr->left->value->width );
@@ -4579,7 +4584,12 @@ bool expression_op_func__pinc(
 
   /* Perform increment */
   expr->elem.tvecs->index = 0;
-  (void)vector_op_inc( expr->left->value, expr->elem.tvecs );
+  if( expr->left->sig != NULL ) {
+    (void)vector_op_inc( expr->left->sig->value, expr->elem.tvecs );
+    expr->left->sig->value->suppl.part.set = 1;
+  } else {
+    (void)vector_op_inc( expr->left->value, expr->elem.tvecs );
+  }
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -4613,7 +4623,12 @@ bool expression_op_func__idec(
 
   /* Perform decrement */
   expr->elem.tvecs->index = 0;
-  (void)vector_op_dec( expr->left->value, expr->elem.tvecs );
+  if( expr->left->sig != NULL ) {
+    (void)vector_op_dec( expr->left->sig->value, expr->elem.tvecs );
+    expr->left->sig->value->suppl.part.set = 1;
+  } else {
+    (void)vector_op_dec( expr->left->value, expr->elem.tvecs );
+  }
 
   /* Copy the left-hand value to our expression */
   (void)vector_set_value_uint32( expr->value, expr->left->value->value.u32, expr->left->value->width );
@@ -4653,7 +4668,12 @@ bool expression_op_func__pdec(
 
   /* Perform decrement */
   expr->elem.tvecs->index = 0;
-  (void)vector_op_dec( expr->left->value, expr->elem.tvecs );
+  if( expr->left->sig != NULL ) {
+    (void)vector_op_dec( expr->left->sig->value, expr->elem.tvecs );
+    expr->left->sig->value->suppl.part.set = 1;
+  } else {
+    (void)vector_op_dec( expr->left->value, expr->elem.tvecs );
+  }
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -5268,8 +5288,8 @@ void expression_assign(
     switch( lhs->op ) {
       case EXP_OP_SIG      :
         if( lhs->sig->suppl.part.assigned == 1 ) {
-          bool changed = vector_part_select_push( lhs->value, 0, (lhs->value->width - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1) );
-          lhs->value->suppl.part.set = 1;
+          bool changed = vector_part_select_push( lhs->sig->value, 0, (lhs->value->width - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1) );
+          lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
           if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
             printf( "        " );  vsignal_display( lhs->sig );
@@ -5593,6 +5613,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.37  2008/05/15 21:58:11  phase1geo
+ Updating regression files per changes for increment and decrement operators.
+ Checkpointing.
+
  Revision 1.329.2.36  2008/05/15 15:02:59  phase1geo
  Checkpointing fix for static function diagnostics.
 

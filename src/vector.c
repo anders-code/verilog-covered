@@ -971,14 +971,6 @@ void vector_display_nibble_uint32(
       printf( ", 1->0: " );
       vector_display_toggle10_uint32( value, width, stdout );
 
-      /* Display bit set information */
-      printf( ", set: %d'h", width );
-      for( i=VECTOR_SIZE32(width); i--; ) {
-        /*@-formatcode@*/
-        printf( "%x", value[i][VTYPE_INDEX_SIG_SET] );
-        /*@=formatcode@*/
-      }
-
       break;
 
     case VTYPE_EXP :
@@ -1012,14 +1004,6 @@ void vector_display_nibble_uint32(
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
         printf( "%x", value[i][VTYPE_INDEX_EXP_EVAL_D] );
-        /*@=formatcode@*/
-      }
-
-      /* Display set information */
-      printf( ", set: %d'h", width );
-      for( i=VECTOR_SIZE32(width); i--; ) {
-        /*@-formatcode@*/
-        printf( "%x", value[i][VTYPE_INDEX_EXP_SET] );
         /*@=formatcode@*/
       }
 
@@ -1245,6 +1229,7 @@ bool vector_set_coverage_and_assign_uint32(
   uint32       lmask   = (0xffffffff << lsb);                /* Mask to be used in lower element */
   uint32       hmask   = (0xffffffff >> (31-(msb & 0x1f)));  /* Mask to be used in upper element */
   unsigned int i;                                            /* Loop iterator */
+  nibble       prev_set;                                     /* Specifies if this vector value has previously been set */
 
   /* If the lindex and hindex are the same, set lmask to the AND of the high and low masks */
   if( lindex == hindex ) {
@@ -1263,6 +1248,7 @@ bool vector_set_coverage_and_assign_uint32(
       changed = TRUE;
       break;
     case VTYPE_SIG :
+      prev_set = vec->suppl.part.set;
       for( i=lindex; i<=hindex; i++ ) {
         uint32* entry = vec->value.u32[i];
         uint32  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : 0xffffffff);
@@ -1270,13 +1256,11 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  fvalh = scratchh[i] & mask;
         uint32  tvall = entry[VTYPE_INDEX_SIG_VALL];
         uint32  tvalh = entry[VTYPE_INDEX_SIG_VALH];
-        uint32  set   = entry[VTYPE_INDEX_SIG_SET];
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
-//          if( (set & mask) != 0 ) {
+          if( prev_set == 1 ) {
             entry[VTYPE_INDEX_SIG_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall) & mask;
             entry[VTYPE_INDEX_SIG_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall) & mask;
-//          }
-          entry[VTYPE_INDEX_SIG_SET] |= mask;
+          }
           entry[VTYPE_INDEX_SIG_VALL] = (tvall & ~mask) | fvall;
           entry[VTYPE_INDEX_SIG_VALH] = (tvalh & ~mask) | fvalh;
           changed = TRUE;
@@ -1309,9 +1293,7 @@ bool vector_set_coverage_and_assign_uint32(
         uint32  fvalh = scratchh[i] & mask;
         uint32  tvall = entry[VTYPE_INDEX_EXP_VALL];
         uint32  tvalh = entry[VTYPE_INDEX_EXP_VALH];
-        uint32  set   = entry[VTYPE_INDEX_EXP_SET];
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
-          entry[VTYPE_INDEX_EXP_SET] |= mask;
           entry[VTYPE_INDEX_EXP_VALL] = (tvall & ~mask) | fvall;
           entry[VTYPE_INDEX_EXP_VALH] = (tvalh & ~mask) | fvalh;
           changed = TRUE;
@@ -2612,6 +2594,9 @@ bool vector_vcd_assign(
       break;
     default :  assert( 0 );  break;
   }
+
+  /* Set the set bit to indicate that this vector has been evaluated */
+  vec->suppl.part.set = 1;
 
   PROFILE_END;
 
@@ -4672,6 +4657,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.75  2008/05/15 21:58:12  phase1geo
+ Updating regression files per changes for increment and decrement operators.
+ Checkpointing.
+
  Revision 1.138.2.74  2008/05/15 07:02:04  phase1geo
  Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
 

@@ -1087,7 +1087,6 @@ typedef enum vtype_sig_indices_e {
   VTYPE_INDEX_SIG_VALH,
   VTYPE_INDEX_SIG_TOG01,
   VTYPE_INDEX_SIG_TOG10,
-  VTYPE_INDEX_SIG_SET,
   VTYPE_INDEX_SIG_MISC,
   VTYPE_INDEX_SIG_NUM
 } vtype_sig_indices;
@@ -1111,7 +1110,6 @@ typedef enum vtype_exp_indices_e {
   VTYPE_INDEX_EXP_EVAL_B,
   VTYPE_INDEX_EXP_EVAL_C,
   VTYPE_INDEX_EXP_EVAL_D,
-  VTYPE_INDEX_EXP_SET,
   VTYPE_INDEX_EXP_NUM
 } vtype_exp_indices;
 
@@ -2782,6 +2780,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.15  2008/05/15 21:58:11  phase1geo
+ Updating regression files per changes for increment and decrement operators.
+ Checkpointing.
+
  Revision 1.294.2.14  2008/05/15 07:02:04  phase1geo
  Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
 
