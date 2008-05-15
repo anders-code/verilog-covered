@@ -1548,6 +1548,7 @@ union vsuppl_u {
     nibble owns_data :1;           /*!< Specifies if this vector owns its data array or not */
     nibble is_signed :1;           /*!< Specifies that this vector should be treated as a signed value */
     nibble is_2state :1;           /*!< Specifies that this vector should be treated as a 2-state value */
+    nibble set       :1;           /*!< Specifies if this vector's data has been set previously */
   } part;
 };
 
@@ -2781,6 +2782,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.14  2008/05/15 07:02:04  phase1geo
+ Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
+
  Revision 1.294.2.13  2008/05/13 07:23:26  phase1geo
  Fixing problem with parameterized multi-bit positive/negative select types.
  Full regression passes for IV and Cver.  Checkpointing.

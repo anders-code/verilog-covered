@@ -252,9 +252,6 @@ bool vector_is_not_zero( const vector* vec );
 /*! \brief Sets entire vector value to a value of X */
 bool vector_set_to_x( vector* vec );
 
-/*! \brief Returns TRUE if specified vector has been set (simulated) */
-bool vector_is_set( const vector* vec );
-
 /*! \brief Converts vector into integer value. */
 int vector_to_int( const vector* vec );
 
@@ -490,6 +487,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.19  2008/05/15 07:02:05  phase1geo
+ Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
+
  Revision 1.58.2.18  2008/05/12 23:12:05  phase1geo
  Ripping apart part selection code and reworking it.  Things compile but are
  functionally quite broken at this point.  Checkpointing.

@@ -1755,50 +1755,74 @@ void expression_display(
 }
 
 /*!
- \param expr  Pointer to expression to set true/false indicators of
+ \param expr     Pointer to expression to set true/false indicators of
+ \param changed  Set to TRUE if the expression changed value
 
  This function sets the true/false indicators in the expression supplemental field as
  needed.  This function should only be called by expression_op_func__* functions that
  are NOT events AND whose return value is TRUE AND whose op type is not STATIC or
  PARAM.
 */
-inline static void expression_set_tf_preclear( expression* expr ) {
+inline static void expression_set_tf_preclear(
+  expression* expr,
+  bool        changed
+) {
 
-  /* Clear current TRUE/FALSE indicators */
-  expr->suppl.part.eval_t = 0;
-  expr->suppl.part.eval_f = 0;
+  /* If the expression changed value or it has never been set, calculate coverage information */
+  if( changed || (expr->value->suppl.part.set == 0) ) {
+
+    /* Clear current TRUE/FALSE indicators */
+    expr->suppl.part.eval_t = 0;
+    expr->suppl.part.eval_f = 0;
       
-  /* Set TRUE/FALSE bits to indicate value */
-  if( !vector_is_unknown( expr->value ) ) {
-    if( vector_is_not_zero( expr->value ) ) {
-      expr->suppl.part.true   = 1;
-      expr->suppl.part.eval_t = 1;
-    } else {
-      expr->suppl.part.false  = 1;
-      expr->suppl.part.eval_f = 1;
+    /* Set TRUE/FALSE bits to indicate value */
+    if( !vector_is_unknown( expr->value ) ) {
+      if( vector_is_not_zero( expr->value ) ) {
+        expr->suppl.part.true   = 1;
+        expr->suppl.part.eval_t = 1;
+      } else {
+        expr->suppl.part.false  = 1;
+        expr->suppl.part.eval_f = 1;
+      }
     }
+
+    /* Indicate that the vector has been evaluated */
+    expr->value->suppl.part.set = 1;
+
   }
 
 }
 
 /*!
- \param expr  Pointer to expression to set true/false indicators of
+ \param expr     Pointer to expression to set true/false indicators of
+ \param changed  Set to TRUE if the expression changed value
   
  This function sets the true/false indicators in the expression supplemental field as
  needed.  This function should only be called by expression_op_func__* functions whose
  return value is TRUE AND whose op type is either STATIC or PARAM.
 */
-inline static void expression_set_tf( expression* expr ) {
+inline static void expression_set_tf(
+  expression* expr,
+  bool        changed
+) {
 
-  /* Set TRUE/FALSE bits to indicate value */
-  if( !vector_is_unknown( expr->value ) ) {
-    if( vector_is_not_zero( expr->value ) ) {
-      expr->suppl.part.true   = 1; 
-      expr->suppl.part.eval_t = 1;
-    } else {
-      expr->suppl.part.false  = 1;
-      expr->suppl.part.eval_f = 1;
+  /* If the expression changed value or it has never been set, calculate coverage information */
+  if( changed || (expr->value->suppl.part.set == 0) ) {
+
+    /* Set TRUE/FALSE bits to indicate value */
+    if( !vector_is_unknown( expr->value ) ) {
+      if( vector_is_not_zero( expr->value ) ) {
+        expr->suppl.part.true   = 1; 
+        expr->suppl.part.eval_t = 1;
+      } else {
+        expr->suppl.part.false  = 1;
+        expr->suppl.part.eval_f = 1;
+      }
     }
+
+    /* Indicate that the vector has been evaluated */
+    expr->value->suppl.part.set = 1;
+
   }
 
 }
@@ -1839,14 +1863,11 @@ bool expression_op_func__xor(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__XOR);
 
-  bool retval;  /* Return value for this function */
-
-  /* Perform XOR operation and gather statistics */
-  if( retval = vector_bitwise_xor_op( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Perform XOR operation */
+  bool retval = vector_bitwise_xor_op( expr->value, expr->left->value, expr->right->value );
 
   /* Gather other coverage stats */
+  expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -1882,9 +1903,9 @@ bool expression_op_func__xor_a(
   vector_copy( expr->left->value, tmp );
 
   /* Third, perform XOR and gather coverage information */
-  if( retval = vector_bitwise_xor_op( expr->value, tmp, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  retval = vector_bitwise_xor_op( expr->value, tmp, expr->right->value );
+
+  expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -1912,14 +1933,11 @@ bool expression_op_func__multiply(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__MULTIPLY);
 
-  bool retval;  /* Return value for this function */
-
-  /* Perform multiply operation and gather statistics */
-  if( retval = vector_op_multiply( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Perform multiply operation */
+  bool retval = vector_op_multiply( expr->value, expr->left->value, expr->right->value );
 
   /* Gather other coverage stats */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -1954,10 +1972,11 @@ bool expression_op_func__multiply_a(
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Third, perform multiply and gather coverage information */
-  if( retval = vector_op_multiply( expr->value, tmp, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Third, perform multiply */
+  retval = vector_op_multiply( expr->value, tmp, expr->right->value );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -1987,12 +2006,11 @@ bool expression_op_func__divide(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__DIVIDE);
 
-  bool retval;  /* Return value for this function */
+  /* Perform divide operation */
+  bool retval = vector_op_divide( expr->value, expr->left->value, expr->right->value );
 
   /* Gather coverage information */
-  if( retval = vector_op_divide( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2027,10 +2045,11 @@ bool expression_op_func__divide_a(
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
   
-  /* Perform division operation and gather coverage information */
-  if( retval = vector_op_divide( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Perform division operation */
+  retval = vector_op_divide( expr->value, expr->left->value, expr->right->value );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2060,12 +2079,11 @@ bool expression_op_func__mod(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__MOD);
 
-  bool retval;  /* Return value for this function */
+  /* Perform mod operation */
+  bool retval = vector_op_modulus( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform mod operation and gather coverage information */
-  if( retval = vector_op_modulus( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2101,9 +2119,10 @@ bool expression_op_func__mod_a(
   vector_copy( expr->left->value, tmp );
 
   /* Perform mod operation and ather coverage information */
-  if( retval = vector_op_modulus( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  retval = vector_op_modulus( expr->value, expr->left->value, expr->right->value );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2131,12 +2150,11 @@ bool expression_op_func__add(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__ADD);
 
-  bool retval;  /* Return value for this function */
+  /* Perform add operation */
+  bool retval = vector_op_add( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform ADD operation and gather coverage statistics */
-  if( retval = vector_op_add( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -2171,10 +2189,11 @@ bool expression_op_func__add_a(
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Third, perform addition and collect coverage information */
-  if( retval = vector_op_add( expr->value, tmp, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Third, perform addition */
+  retval = vector_op_add( expr->value, tmp, expr->right->value );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -2204,11 +2223,12 @@ bool expression_op_func__subtract(
 
   bool retval;  /* Return value for this function */
 
-  /* Perform SUBTRACT operation and gather coverage information */
+  /* Perform SUBTRACT operation */
   expr->elem.tvecs->index = 0;
-  if( retval = vector_op_subtract( expr->value, expr->left->value, expr->right->value, expr->elem.tvecs ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  retval = vector_op_subtract( expr->value, expr->left->value, expr->right->value, expr->elem.tvecs );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -2243,11 +2263,12 @@ bool expression_op_func__sub_a(
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Third, perform subtraction and gather coverage information */
+  /* Third, perform subtraction */
   expr->elem.tvecs->index = 1;
-  if( retval = vector_op_subtract( expr->value, tmp, expr->right->value, expr->elem.tvecs ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  retval = vector_op_subtract( expr->value, tmp, expr->right->value, expr->elem.tvecs );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -2275,12 +2296,11 @@ bool expression_op_func__and(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__AND);
 
-  bool retval;  /* Return value for this function */
+  /* Perform bitwise AND operation */
+  bool retval = vector_bitwise_and_op( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform bitwise AND operation and gather coverage information */
-  if( retval = vector_bitwise_and_op( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -2315,10 +2335,11 @@ bool expression_op_func__and_a(
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Third, perform AND and gather coverage information */
-  if( retval = vector_bitwise_and_op( expr->value, tmp, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Third, perform AND operation */
+  retval = vector_bitwise_and_op( expr->value, tmp, expr->right->value );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -2346,12 +2367,11 @@ bool expression_op_func__or(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__OR);
 
-  bool retval;  /* Return value for this function */
+  /* Perform bitwise OR operation */
+  bool retval = vector_bitwise_or_op( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform bitwise OR operation and gather coverage information */
-  if( retval = vector_bitwise_or_op( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -2386,10 +2406,11 @@ bool expression_op_func__or_a(
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Third, perform OR and gather coverage information */
-  if( retval = vector_bitwise_or_op( expr->value, tmp, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Third, perform OR operation */
+  retval = vector_bitwise_or_op( expr->value, tmp, expr->right->value );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -2417,12 +2438,11 @@ bool expression_op_func__nand(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__NAND);
 
-  bool retval;  /* Return value for this function */
+  /* Perform bitwise NAND operation */
+  bool retval = vector_bitwise_nand_op( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform bitwise NAND operation and gather coverage information */
-  if( retval = vector_bitwise_nand_op( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -2447,12 +2467,11 @@ bool expression_op_func__nor(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__NOR);
 
-  bool retval;  /* Return value for this function */
+  /* Perform bitwise NOR operation */
+  bool retval = vector_bitwise_nor_op( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform bitwise NOR operation and gather coverage information */
-  if( retval = vector_bitwise_nor_op( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -2477,12 +2496,11 @@ bool expression_op_func__nxor(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__NXOR);
 
-  bool retval;  /* Return value for this function */
+  /* Perform bitwise NXOR operation */
+  bool retval = vector_bitwise_nxor_op( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform bitwise NXOR operation and gather coverage information */
-  if( retval = vector_bitwise_nxor_op( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -2507,12 +2525,11 @@ bool expression_op_func__lt(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__LT);
 
-  bool retval;  /* Return value for this function */
+  /* Perform less-than operation */
+  bool retval = vector_op_lt( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform less-than operation and gather coverage information */
-  if( retval = vector_op_lt( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2537,12 +2554,11 @@ bool expression_op_func__gt(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__GT);
 
-  bool retval;  /* Return value for this function */
+  /* Perform greater-than operation */
+  bool retval = vector_op_gt( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform greater-than operation and gather coverage information */
-  if( retval = vector_op_gt( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2567,12 +2583,11 @@ bool expression_op_func__lshift(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__LSHIFT);
 
-  bool retval;  /* Return value for this function */
+  /* Perform left-shift operation */
+  bool retval = vector_op_lshift( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform left shift operation and gather coverage information */
-  if( retval = vector_op_lshift( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2607,10 +2622,11 @@ bool expression_op_func__lshift_a(
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
-  /* Third, perform left-shift and collect coverage information */
-  if( retval = vector_op_lshift( expr->value, tmp, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Third, perform left-shift operation */
+  retval = vector_op_lshift( expr->value, tmp, expr->right->value );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr ); 
 
@@ -2638,13 +2654,11 @@ bool expression_op_func__rshift(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__RSHIFT);
 
-  bool retval;  /* Return value for this function */
+  /* Perform right-shift operation */
+  bool retval = vector_op_rshift( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform right shift operation and gather coverage information */
-  if( vector_op_rshift( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
-  vector_display( expr->value );
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2680,9 +2694,10 @@ bool expression_op_func__rshift_a(
   vector_copy( expr->left->value, tmp );
 
   /* Third, perform right-shift and collect coverage information */
-  if( retval = vector_op_rshift( expr->value, tmp, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  retval = vector_op_rshift( expr->value, tmp, expr->right->value );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2710,12 +2725,11 @@ bool expression_op_func__arshift(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__ARSHIFT);
 
-  bool retval;  /* Return value for this function */
+  /* Perform arithmetic right-shift operation */
+  bool retval = vector_op_arshift( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform arithmetic right shift operation and gather coverage information */
-  if( retval = vector_op_arshift( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2751,9 +2765,10 @@ bool expression_op_func__arshift_a(
   vector_copy( expr->left->value, tmp );
 
   /* Third, perform arithmetic right-shift and collect coverage information */
-  if( retval = vector_op_arshift( expr->value, tmp, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  retval = vector_op_arshift( expr->value, tmp, expr->right->value );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2781,12 +2796,11 @@ bool expression_op_func__eq(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__EQ);
 
-  bool retval;  /* Return value for this function */
+  /* Perform equality operation */
+  bool retval = vector_op_eq( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform  equality operation and gather coverage information */
-  if( retval = vector_op_eq( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2811,12 +2825,11 @@ bool expression_op_func__ceq(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__CEQ);
 
-  bool retval;  /* Return value for this function */
+  /* Perform case equality operation */
+  bool retval = vector_op_ceq( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform equality operation and gather coverage information */
-  if( vector_op_ceq( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2841,12 +2854,11 @@ bool expression_op_func__le(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__LE);
 
-  bool retval;  /* Return value for this function */
+  /* Perform less-than-or-equal operation */
+  bool retval = vector_op_le( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform less-than-or-equal operation and gather coverage information */
-  if( retval = vector_op_le( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2871,12 +2883,11 @@ bool expression_op_func__ge(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__GE);
 
-  bool retval;  /* Return value for this function */
+  /* Perform greater-than-or-equal operation */
+  bool retval = vector_op_ge( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform greater-than-or-equal operation and gather coverage information */
-  if( retval = vector_op_ge( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2901,12 +2912,11 @@ bool expression_op_func__ne(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__NE);
 
-  bool retval;  /* Return value for this function */
+  /* Perform not-equal operation */
+  bool retval = vector_op_ne( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform not-equal operation and gather coverage information */
-  if( retval = vector_op_ne( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2931,12 +2941,11 @@ bool expression_op_func__cne(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__CNE);
 
-  bool retval;  /* Return value for this function */
+  /* Perform case not-equal operation */
+  bool retval = vector_op_cne( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform not-equal operation and gather coverage information */
-  if( retval = vector_op_cne( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -2961,12 +2970,11 @@ bool expression_op_func__lor(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__LOR);
 
-  bool retval;  /* Return value for this function */
+  /* Perform logical OR operation */
+  bool retval = vector_op_lor( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform bitwise OR operation and gather coverage information */
-  if( retval = vector_op_lor( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -2991,12 +2999,11 @@ bool expression_op_func__land(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__LAND);
 
-  bool retval;  /* Return value for this function */
+  /* Perform logical AND operation */
+  bool retval = vector_op_land( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform AND operation and gather coverage information */
-  if( retval = vector_op_land( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
   expression_set_eval_NN( expr );
 
@@ -3021,12 +3028,11 @@ bool expression_op_func__cond(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__COND);
 
-  bool retval;  /* Return value for this function */
-
   /* Simple vector copy from right side and gather coverage information */
-  if( retval = vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  bool retval = vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -3063,9 +3069,7 @@ bool expression_op_func__cond_sel(
   }
 
   /* Gather coverage information */
-  if( retval ) {
-    expression_set_tf_preclear( expr );
-  }
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -3090,12 +3094,11 @@ bool expression_op_func__uinv(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__UINV);
 
-  bool retval;  /* Return value for this function */
+  /* Perform unary inversion operation */
+  bool retval = vector_unary_inv( expr->value, expr->right->value );
 
-  /* Perform unary inversion operation and gather coverage information */
-  if( retval = vector_unary_inv( expr->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -3119,12 +3122,11 @@ bool expression_op_func__uand(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__UAND);
 
-  bool retval;  /* Return value for this function */
+  /* Perform unary AND operation */
+  bool retval = vector_unary_and( expr->value, expr->right->value );
 
-  /* Perform unary AND operation and gather coverage information */
-  if( retval = vector_unary_and( expr->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -3148,12 +3150,11 @@ bool expression_op_func__unot(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__UNOT);
 
-  bool retval;  /* Return value for this function */
+  /* Perform unary NOT operation */
+  bool retval = vector_unary_not( expr->value, expr->right->value );
 
-  /* Perform unary NOT operation and gather coverage information */
-  if( retval = vector_unary_not( expr->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -3177,12 +3178,11 @@ bool expression_op_func__uor(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__UOR);
 
-  bool retval;  /* Return value for this function */
+  /* Perform unary OR operation */
+  bool retval = vector_unary_or( expr->value, expr->right->value );
 
-  /* Perform unary OR operation and gather coverage information */
-  if( retval = vector_unary_or( expr->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -3206,12 +3206,11 @@ bool expression_op_func__uxor(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__UXOR);
 
-  bool retval;  /* Return value for this function */
+  /* Perform unary XOR operation */
+  bool retval = vector_unary_xor( expr->value, expr->right->value );
 
-  /* Perform unary XOR operation and gather coverage information */
-  if( retval = vector_unary_xor( expr->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -3235,12 +3234,11 @@ bool expression_op_func__unand(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__UNAND);
 
-  bool retval;  /* Return value for this function */
+  /* Perform unary NAND operation */
+  bool retval = vector_unary_nand( expr->value, expr->right->value );
 
-  /* Perform unary NAND operation and gather coverage information */
-  if( retval = vector_unary_nand( expr->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -3264,12 +3262,11 @@ bool expression_op_func__unor(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__UNOR);
 
-  bool retval;  /* Return value for this function */
+  /* Perform unary NOR operation */
+  bool retval = vector_unary_nor( expr->value, expr->right->value );
 
-  /* Perform unary NOR operation and gather coverage information */
-  if( retval = vector_unary_nor( expr->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -3293,12 +3290,11 @@ bool expression_op_func__unxor(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__UNXOR);
 
-  bool retval;  /* Return value for this function */
+  /* Perform unary NXOR operation */
+  bool retval = vector_unary_nxor( expr->value, expr->right->value );
 
-  /* Perform unary NXOR operation and gather coverage information */
-  if( retval = vector_unary_nxor( expr->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -3324,9 +3320,9 @@ bool expression_op_func__null(
 
   /* Set the true/false indicators as necessary */
   if( expr->op != EXP_OP_STATIC ) {
-    expression_set_tf_preclear( expr );
+    expression_set_tf_preclear( expr, TRUE );
   } else {
-    expression_set_tf( expr );
+    expression_set_tf( expr, TRUE );
   }
 
   PROFILE_END;
@@ -3354,9 +3350,9 @@ bool expression_op_func__sig(
 
   /* Gather coverage information */
   if( expr->op != EXP_OP_PARAM ) {
-    expression_set_tf_preclear( expr );
+    expression_set_tf_preclear( expr, TRUE );
   } else {
-    expression_set_tf( expr );
+    expression_set_tf( expr, TRUE );
   }
 
   PROFILE_END;
@@ -3432,7 +3428,7 @@ bool expression_op_func__sbit(
   dim->curr_lsb = curr_lsb;
 
   /* Gather coverage information */
-  expression_set_tf_preclear( expr );
+  expression_set_tf_preclear( expr, retval );
 
   PROFILE_END;
 
@@ -3496,7 +3492,7 @@ bool expression_op_func__mbit(
   dim->curr_lsb = curr_lsb;
 
   /* Gather coverage information */
-  expression_set_tf_preclear( expr );
+  expression_set_tf_preclear( expr, retval );
   expression_set_eval_NN( expr );
 
   PROFILE_END;
@@ -3520,12 +3516,11 @@ bool expression_op_func__expand(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__EXPAND);
 
-  bool retval;  /* Return value for this function */
+  /* Perform expansion operation */
+  bool retval = vector_op_expand( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform expansion and gather coverage information */
-  if( retval = vector_op_expand( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -3550,12 +3545,11 @@ bool expression_op_func__list(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__LIST);
 
-  bool retval;  /* Return value for this function */
+  /* Perform list operation */
+  bool retval = vector_op_list( expr->value, expr->left->value, expr->right->value );
 
   /* Gather coverage information */
-  if( retval = vector_op_list( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -3580,12 +3574,11 @@ bool expression_op_func__concat(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__CONCAT);
 
-  bool retval;  /* Return value for this function */
+  /* Perform concatenation operation */
+  bool retval = vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width );
 
-  /* Perform concatenation operation and gather coverage information */
-  if( retval = vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -3880,12 +3873,9 @@ bool expression_op_func__trigger(
   /* Indicate that we have triggered */
   expr->sig->value->value.u32[0][VTYPE_INDEX_SIG_VALL] = 1;
   expr->sig->value->value.u32[0][VTYPE_INDEX_SIG_VALH] = 0;
-  //expr->suppl.part.eval_t = 1;
 
   /* Propagate event */
   vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
-
-//  expression_set_tf_preclear( expr );
 
   PROFILE_END;
 
@@ -3908,12 +3898,11 @@ bool expression_op_func__case(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__CASE);
 
-  bool retval;  /* Return value for this function */
+  /* Perform case comparison operation */
+  bool retval = vector_op_ceq( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform comparison and gather coverage information */
-  if( retval = vector_op_ceq( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -3938,12 +3927,11 @@ bool expression_op_func__casex(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__CASEX);
 
-  bool retval;  /* Return value for this function */
+  /* Perform casex comparison operation */
+  bool retval = vector_op_cxeq( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform comparison and gather coverage information */
-  if( retval = vector_op_cxeq( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage inforamtion */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -3968,12 +3956,11 @@ bool expression_op_func__casez(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__CASEZ);
 
-  bool retval;  /* Return value for this function */
+  /* Perform casez comparison operation */
+  bool retval = vector_op_czeq( expr->value, expr->left->value, expr->right->value );
 
-  /* Perform comparison and gather coverage information */
-  if( retval = vector_op_czeq( expr->value, expr->left->value, expr->right->value ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
   expression_set_eval_NN( expr );
 
@@ -4002,10 +3989,11 @@ bool expression_op_func__default(
   uint32 valh = 0;  /* High value to store */
   uint32 vall = 1;  /* Low value to store */
 
-  /* Perform operation and gather coverage information */
-  if( retval = vector_set_coverage_and_assign_uint32( expr->value, &vall, &valh, 0, 0 ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  /* Perform default case operation */
+  retval = vector_set_coverage_and_assign_uint32( expr->value, &vall, &valh, 0, 0 );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -4035,7 +4023,7 @@ bool expression_op_func__bassign(
   expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
 
   /* Gather coverage information */
-  expression_set_tf_preclear( expr );
+  expression_set_tf_preclear( expr, TRUE );
 
   PROFILE_END;
 
@@ -4072,13 +4060,8 @@ bool expression_op_func__func_call(
     thr->ren = NULL;
   }
 
-  printf( "In expression_op_func__func_call...\n" );
-
   /* Gather coverage information */
-  if( retval ) {
-    printf( "  retval was TRUE\n" );
-    expression_set_tf_preclear( expr );
-  }
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -4164,7 +4147,7 @@ bool expression_op_func__fork(
   (void)sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
 
   /* Gather coverage information */
-  expression_set_tf_preclear( expr );
+  expression_set_tf_preclear( expr, TRUE );
 
   PROFILE_END;
 
@@ -4188,7 +4171,7 @@ bool expression_op_func__join(
 ) { PROFILE(EXPRESSION_OP_FUNC__JOIN);
 
   /* Gather coverage information */
-  expression_set_tf_preclear( expr );
+  expression_set_tf_preclear( expr, (thr->active_children == 0) );
 
   PROFILE_END;
 
@@ -4214,7 +4197,7 @@ bool expression_op_func__disable(
   sim_kill_thread_with_funit( expr->elem.funit );
 
   /* Gather coverage information */
-  expression_set_tf_preclear( expr );
+  expression_set_tf_preclear( expr, TRUE );
 
   PROFILE_END;
 
@@ -4248,9 +4231,7 @@ bool expression_op_func__repeat(
   }
 
   /* Gather coverage information */
-  if( retval ) {
-    expression_set_tf_preclear( expr );
-  }
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -4303,9 +4284,7 @@ bool expression_op_func__exponent(
   }
 
   /* Gather coverage information */
-  if( retval ) {
-    expression_set_tf_preclear( expr );
-  }
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -4364,9 +4343,7 @@ bool expression_op_func__passign(
   }
 
   /* Gather coverage information */
-  if( retval ) {
-    expression_set_tf_preclear( expr );
-  }
+  expression_set_tf_preclear( expr, retval );
 
   PROFILE_END;
 
@@ -4434,9 +4411,7 @@ bool expression_op_func__mbit_pos(
   dim->curr_lsb = curr_lsb;
 
   /* Gather coverage information */
-  if( retval ) {
-    expression_set_tf_preclear( expr );
-  }
+  expression_set_tf_preclear( expr, retval );
 
   PROFILE_END;
 
@@ -4508,9 +4483,7 @@ bool expression_op_func__mbit_neg(
   dim->curr_lsb = curr_lsb;
 
   /* Gather coverage information */
-  if( retval ) {
-    expression_set_tf_preclear( expr );
-  }
+  expression_set_tf_preclear( expr, retval );
 
   PROFILE_END;
 
@@ -4537,9 +4510,10 @@ bool expression_op_func__negate(
 
   /* Perform negate operation and gather coverage information */
   expr->elem.tvecs->index = 0;
-  if( retval = vector_op_negate( expr->value, expr->right->value, expr->elem.tvecs ) ) {
-    expression_set_tf_preclear( expr );
-  }
+  retval = vector_op_negate( expr->value, expr->right->value, expr->elem.tvecs );
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
 
   PROFILE_END;
@@ -5614,6 +5588,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.35  2008/05/15 07:02:04  phase1geo
+ Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
+
  Revision 1.329.2.34  2008/05/14 02:28:15  phase1geo
  Another attempt to fix toggle issue.  IV and CVer regressions pass again.  Still need to
  complete VCS regression.  Checkpointing.

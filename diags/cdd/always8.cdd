@@ -1,12 +1,12 @@
 5 e 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd always8.vcd -o always8.cdd -v always8.v -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd always8.vcd -o always8.cdd -v always8.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" always8.v 1 31 1
 2 1 11 90009 2 1 1008 0 0 2 1 a
 2 2 11 90009 5 29 100a 1 0 1 18 0 1 0 0 0 0 0
 2 3 13 40004 1 32 1004 0 0 2 1 A
 2 4 12 80008 6 1 100a 0 0 2 1 a
-2 5 13 0 2 2d 1106 3 4 1 18 0 1 ffffffff 0 0 0 0
+2 5 13 0 2 2d 1106 3 4 1 146 0 1 ffffffff 0 0 0 0
 2 6 14 40004 1 32 1008 0 0 2 1 B
 2 7 14 0 2 2d 120e 6 4 1 18 0 1 ffffffff 1 0 0 0
 2 8 15 40004 1 32 1008 0 0 2 1 C

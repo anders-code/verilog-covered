@@ -1,5 +1,5 @@
 5 e 1 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd fsm1.1.vcd -o fsm1.1.cdd -y lib -v fsm1.1.v -F fsm=state,next_state -D DUMP
+8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd fsm1.1.vcd -o fsm1.1.cdd -y lib -v fsm1.1.v -F fsm=state,next_state -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" fsm1.1.v 1 37 1
 2 1 32 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 0 $u1
@@ -14,9 +14,9 @@
 2 3 23 90015 20 27 100a 2 0 1 18 0 1 0 0 0 0 0
 2 4 23 36003f 1 1 1004 0 0 2 1 next_state
 2 5 23 290032 1 32 1004 0 0 2 1 STATE_IDLE
-2 6 23 210032 2 1a 1044 4 5 2 18 0 3 ffffffff 0 0 0 0
+2 6 23 210032 2 1a 1044 4 5 2 146 0 3 ffffffff 0 0 0 0
 2 7 23 210025 2 1 100c 0 0 1 1 reset
-2 8 23 21003f 2 19 1004 6 7 2 18 0 3 ffffffff 0 0 0 0
+2 8 23 21003f 2 19 1004 6 7 2 146 0 3 ffffffff 0 0 0 0
 2 9 23 18001c 0 1 1410 0 0 2 1 state
 2 10 23 18003f a 38 6 8 9
 2 11 26 230026 1 1 1004 0 0 1 1 tail

@@ -1993,36 +1993,6 @@ bool vector_set_to_x(
 }
 
 /*!
- \param vec  Pointer to vector to check for set bits
-
- \return Returns TRUE if the specified vector has been previously set (simulated); otherwise,
-         returns FALSE.
-*/
-bool vector_is_set(
-  const vector* vec
-) { PROFILE(VECTOR_IS_SET);
-
-  unsigned int i = 0;  /* Loop iterator */
-  unsigned int size;   /* Size of data array */
-
-  assert( vec != NULL );
-  assert( vec->value.u32 != NULL );
-
-  switch( vec->suppl.part.data_type ) {
-    case VDATA_U32 :
-      size = VECTOR_SIZE32( vec->width );
-      while( (i < size) && (vec->value.u32[i][VTYPE_INDEX_SIG_SET] == 0) ) i++;
-      break;
-    default :  assert( 0 );  break;
-  }
-
-  PROFILE_END;
-
-  return( i < size );
-
-}
-
-/*!
  \param vec  Pointer to vector to convert into integer.
 
  \return Returns integer value of specified vector.
@@ -4702,6 +4672,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.74  2008/05/15 07:02:04  phase1geo
+ Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
+
  Revision 1.138.2.73  2008/05/14 02:28:15  phase1geo
  Another attempt to fix toggle issue.  IV and CVer regressions pass again.  Still need to
  complete VCS regression.  Checkpointing.

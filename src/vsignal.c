@@ -139,7 +139,7 @@ void vsignal_create_vec(
   assert( sig->value != NULL );
 
   /* If this signal has been previously simulated, don't create a new vector */
-  if( !vector_is_set( sig->value ) ) {
+  if( !sig->value->suppl.part.set ) {
 
     /* Deallocate the old memory */
     vector_dealloc_value( sig->value );
@@ -800,6 +800,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.71.2.3  2008/05/15 07:02:06  phase1geo
+ Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
+
  Revision 1.71.2.2  2008/04/23 06:32:32  phase1geo
  Starting to debug vector changes.  Checkpointing.
 
