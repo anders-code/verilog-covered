@@ -5269,6 +5269,7 @@ void expression_assign(
       case EXP_OP_SIG      :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           bool changed = vector_part_select_push( lhs->value, 0, (lhs->value->width - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1) );
+          lhs->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
           if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
             printf( "        " );  vsignal_display( lhs->sig );
@@ -5300,6 +5301,7 @@ void expression_assign(
           }
           if( dim->last && (dim->curr_lsb != -1) ) {
             changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1) );
+            lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5328,6 +5330,7 @@ void expression_assign(
           }
           if( dim->last && (dim->curr_lsb != -1) ) {
             changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1) );
+            lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5357,6 +5360,7 @@ void expression_assign(
           }
           if( assign ) {
             bool changed = vector_set_value( lhs->value, rhs->value->value.u32, intval2, *lsb, 0 );
+            lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5385,6 +5389,7 @@ void expression_assign(
           }
           if( assign ) {
             bool changed = vector_set_value( lhs->value, rhs->value->value.u32, intval2, *lsb, 0 );
+            lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
               printf( "        " );  vsignal_display( lhs->sig );
@@ -5588,6 +5593,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.36  2008/05/15 15:02:59  phase1geo
+ Checkpointing fix for static function diagnostics.
+
  Revision 1.329.2.35  2008/05/15 07:02:04  phase1geo
  Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
 
