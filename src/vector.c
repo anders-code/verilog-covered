@@ -2934,6 +2934,11 @@ inline static void vector_copy_val_and_sign_extend_uint32(
       *valh = 0;
     }
 
+  /* Otherwise, if we are exceeding the index, set the vall and valh to 0 */
+  } else if( index > last_index ) {
+    *vall = 0;
+    *valh = 0;
+
   /* Otherwise, just copy the value */
   } else {
     *vall = vec->value.u32[index][VTYPE_INDEX_VAL_VALL];
@@ -3751,26 +3756,28 @@ bool vector_op_add(
           uint32       vall[MAX_BIT_WIDTH>>5];
           uint32       valh[MAX_BIT_WIDTH>>5];
           uint32       carry = 0;
-          uint32       lval;
-          uint32       rval;
+          bool         lmsb_is_one = ((left->value.u32[(left->width-1)>>5][VTYPE_INDEX_VAL_VALL]   >> ((left->width  - 1) & 0x1f) & 1) == 1);
+          bool         rmsb_is_one = ((right->value.u32[(right->width-1)>>5][VTYPE_INDEX_VAL_VALL] >> ((right->width - 1) & 0x1f) & 1) == 1);
+          uint32       lvall, lvalh;
+          uint32       rvall, rvalh;
 
           for( i=0; i<(VECTOR_SIZE32(tgt->width) - 1); i++ ) {
-            lval = (VECTOR_SIZE32(left->width)  < i) ? 0 : left->value.u32[i][VTYPE_INDEX_EXP_VALL];
-            rval = (VECTOR_SIZE32(right->width) < i) ? 0 : right->value.u32[i][VTYPE_INDEX_EXP_VALL]; 
+            vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
             vall[i] = 0;
             valh[i] = 0;
             for( j=0; j<32; j++ ) {
-              uint32 bit = ((lval >> j) & 0x1) + ((rval >> j) & 0x1) + carry;
+              uint32 bit = ((lvall >> j) & 0x1) + ((rvall >> j) & 0x1) + carry;
               carry      = bit >> 1;
               vall[i]   |= (bit & 0x1) << j;
             }
           }
-          lval = (VECTOR_SIZE32(left->width)  < i) ? 0 : left->value.u32[i][VTYPE_INDEX_EXP_VALL];
-          rval = (VECTOR_SIZE32(right->width) < i) ? 0 : right->value.u32[i][VTYPE_INDEX_EXP_VALL];
+          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
           vall[i] = 0;
           valh[i] = 0;
           for( j=0; j<(tgt->width - (i << 5)); j++ ) {
-            uint32 bit = ((lval >> j) & 0x1) + ((rval >> j) & 0x1) + carry;
+            uint32 bit = ((lvall >> j) & 0x1) + ((rvall >> j) & 0x1) + carry;
             carry      = bit >> 1;
             vall[i]   |= (bit & 0x1) << j;
           }
@@ -4709,6 +4716,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.77  2008/05/16 16:55:15  phase1geo
+ Fixing issue in vector_op_add.
+
  Revision 1.138.2.76  2008/05/16 14:00:36  phase1geo
  Fixing width extension with sign-extend for comparison operators.  Updating
  regression files.  Checkpointing.
