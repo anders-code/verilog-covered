@@ -2913,6 +2913,36 @@ inline static bool vector_reverse_for_cmp_uint32(
 }
 
 /*!
+*/
+inline static void vector_copy_val_and_sign_extend_uint32(
+            const vector* vec,         /*!< Pointer to vector to copy and sign extend */
+            unsigned int  index,       /*!< Current uint32 index to copy and sign extend */
+            bool          msb_is_one,  /*!< Set to TRUE if MSB is a value of one */
+  /*@out@*/ uint32*       vall,        /*!< Pointer to the low uint32 to copy and sign extend to */
+  /*@out@*/ uint32*       valh         /*!< Pointer to the high uint32 to copy and sign extend to */
+) {
+
+  unsigned int last_index = ((vec->width - 1) >> 5);
+
+  /* If we are at or exceeding the size of the current vector, it is a signed vector and the MSB is one, sign extend */
+  if( (index >= last_index) && (vec->suppl.part.is_signed == 1) && msb_is_one ) {
+    if( index == last_index ) {
+      *vall = vec->value.u32[index][VTYPE_INDEX_VAL_VALL] | (0xffffffff << (vec->width & 0x1f));
+      *valh = vec->value.u32[index][VTYPE_INDEX_VAL_VALH];
+    } else {
+      *vall = 0xffffffff;
+      *valh = 0;
+    }
+
+  /* Otherwise, just copy the value */
+  } else {
+    *vall = vec->value.u32[index][VTYPE_INDEX_VAL_VALL];
+    *valh = vec->value.u32[index][VTYPE_INDEX_VAL_VALH];
+  }
+  
+}
+
+/*!
  \param tgt    Target vector for storage of results.
  \param left   Expression on left of less than sign.
  \param right  Expression on right of less than sign.
@@ -2932,21 +2962,23 @@ bool vector_op_lt(
   switch( tgt->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        uint32       scratchl = 0;
-        uint32       scratchh = 0;
-        unsigned int lsize = VECTOR_SIZE32(left->width);
-        unsigned int rsize = VECTOR_SIZE32(right->width);
-        int          i     = ((lsize < rsize) ? rsize : lsize);
+        uint32       scratchl    = 0;
+        uint32       scratchh    = 0;
+        unsigned int lsize       = VECTOR_SIZE32(left->width);
+        unsigned int rsize       = VECTOR_SIZE32(right->width);
+        int          i           = ((lsize < rsize) ? rsize : lsize);
+        unsigned int lmsb        = (left->width - 1);
+        unsigned int rmsb        = (right->width - 1);
+        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
         uint32       lvall;
         uint32       lvalh;
         uint32       rvall;
         uint32       rvalh;
         do {
           i--;
-          lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-          lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
-          rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-          rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
+          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
         } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
@@ -2985,21 +3017,23 @@ bool vector_op_le(
   switch( tgt->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        uint32       scratchl = 0;
-        uint32       scratchh = 0;
-        unsigned int lsize = VECTOR_SIZE32(left->width);
-        unsigned int rsize = VECTOR_SIZE32(right->width);
-        int          i     = ((lsize < rsize) ? rsize : lsize);
+        uint32       scratchl    = 0;
+        uint32       scratchh    = 0;
+        unsigned int lsize       = VECTOR_SIZE32(left->width);
+        unsigned int rsize       = VECTOR_SIZE32(right->width);
+        int          i           = ((lsize < rsize) ? rsize : lsize);
+        unsigned int lmsb        = (left->width - 1);
+        unsigned int rmsb        = (right->width - 1);
+        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
         uint32       lvall;
         uint32       lvalh;
         uint32       rvall;
         uint32       rvalh;
         do {
           i--;
-          lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-          lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
-          rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-          rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
+          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
         } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
@@ -3038,21 +3072,23 @@ bool vector_op_gt(
   switch( tgt->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        uint32       scratchl = 0;
-        uint32       scratchh = 0;
-        unsigned int lsize = VECTOR_SIZE32(left->width);
-        unsigned int rsize = VECTOR_SIZE32(right->width);
-        int          i     = ((lsize < rsize) ? rsize : lsize);
+        uint32       scratchl    = 0;
+        uint32       scratchh    = 0;
+        unsigned int lsize       = VECTOR_SIZE32(left->width);
+        unsigned int rsize       = VECTOR_SIZE32(right->width);
+        int          i           = ((lsize < rsize) ? rsize : lsize);
+        unsigned int lmsb        = (left->width - 1);
+        unsigned int rmsb        = (right->width - 1);
+        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
         uint32       lvall;
         uint32       lvalh;
         uint32       rvall;
         uint32       rvalh;
         do {
           i--;
-          lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-          lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
-          rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-          rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
+          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
         } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
@@ -3091,21 +3127,23 @@ bool vector_op_ge(
   switch( tgt->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        uint32       scratchl = 0;
-        uint32       scratchh = 0;
-        unsigned int lsize = VECTOR_SIZE32(left->width);
-        unsigned int rsize = VECTOR_SIZE32(right->width);
-        int          i     = ((lsize < rsize) ? rsize : lsize);
+        uint32       scratchl    = 0;
+        uint32       scratchh    = 0;
+        unsigned int lsize       = VECTOR_SIZE32(left->width);
+        unsigned int rsize       = VECTOR_SIZE32(right->width);
+        int          i           = ((lsize < rsize) ? rsize : lsize);
+        unsigned int lmsb        = (left->width - 1);
+        unsigned int rmsb        = (right->width - 1);
+        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
         uint32       lvall;
         uint32       lvalh;
         uint32       rvall;
         uint32       rvalh;
         do {
           i--;
-          lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-          lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
-          rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-          rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
+          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
         } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
@@ -3144,21 +3182,23 @@ bool vector_op_eq(
   switch( tgt->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        uint32       scratchl = 0;
-        uint32       scratchh = 0;
-        unsigned int lsize = VECTOR_SIZE32(left->width);
-        unsigned int rsize = VECTOR_SIZE32(right->width);
-        int          i     = ((lsize < rsize) ? rsize : lsize);
+        uint32       scratchl    = 0;
+        uint32       scratchh    = 0;
+        unsigned int lsize       = VECTOR_SIZE32(left->width);
+        unsigned int rsize       = VECTOR_SIZE32(right->width);
+        int          i           = ((lsize < rsize) ? rsize : lsize);
+        unsigned int lmsb        = (left->width - 1);
+        unsigned int rmsb        = (right->width - 1);
+        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
         uint32       lvall;
         uint32       lvalh;
         uint32       rvall;
         uint32       rvalh;
         do {
           i--;
-          lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-          lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
-          rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-          rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
+          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
         } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
@@ -3186,9 +3226,13 @@ bool vector_ceq_uint32(
   const vector* right   /*!< Pointer to right vector to compare */
 ) { PROFILE(VECTOR_CEQ_UINT32);
 
-  unsigned int lsize = VECTOR_SIZE32(left->width);
-  unsigned int rsize = VECTOR_SIZE32(right->width);
-  int          i     = ((lsize < rsize) ? rsize : lsize);
+  unsigned int lsize       = VECTOR_SIZE32(left->width);
+  unsigned int rsize       = VECTOR_SIZE32(right->width);
+  int          i           = ((lsize < rsize) ? rsize : lsize);
+  unsigned int lmsb        = (left->width - 1);
+  unsigned int rmsb        = (right->width - 1);
+  bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+  bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
   uint32       lvall;
   uint32       lvalh;
   uint32       rvall;
@@ -3196,10 +3240,8 @@ bool vector_ceq_uint32(
 
   do {
     i--;
-    lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-    lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
-    rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-    rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
+    vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+    vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
   } while( (i > 0) && (lvall == rvall) && (lvalh == rvalh) );
 
   PROFILE_END;
@@ -3262,22 +3304,24 @@ bool vector_op_cxeq(
   switch( tgt->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        uint32       scratchl = 0;
-        uint32       scratchh = 0;
-        unsigned int lsize = VECTOR_SIZE32(left->width);
-        unsigned int rsize = VECTOR_SIZE32(right->width);
-        int          i     = ((lsize < rsize) ? rsize : lsize);
-        uint32       mask  = (left->width < right->width) ? (0xffffffff >> (31 - ((left->width - 1) & 0x1f))) : (0xffffffff >> (31 - ((right->width - 1) & 0x1f)));
-        uint32       lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-        uint32       lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : mask;
-        uint32       rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-        uint32       rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : mask;
+        uint32       scratchl    = 0;
+        uint32       scratchh    = 0;
+        unsigned int lsize       = VECTOR_SIZE32(left->width);
+        unsigned int rsize       = VECTOR_SIZE32(right->width);
+        int          i           = ((lsize < rsize) ? rsize : lsize);
+        unsigned int lmsb        = (left->width - 1);
+        unsigned int rmsb        = (right->width - 1);
+        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
+        uint32       mask        = (left->width < right->width) ? (0xffffffff >> (31 - ((left->width - 1) & 0x1f))) : (0xffffffff >> (31 - ((right->width - 1) & 0x1f)));
+        uint32       lvall;
+        uint32       lvalh;
+        uint32       rvall;
+        uint32       rvalh;
         do {
           i--;
-          lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-          lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
-          rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-          rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
+          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
         } while( (i > 0) && (((~(lvall ^ rvall) | lvalh | rvalh) & mask) == mask) );
         scratchl = (((~(lvall ^ rvall) | lvalh | rvalh) & mask) == mask);
         retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
@@ -3312,23 +3356,27 @@ bool vector_op_czeq(
   switch( tgt->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        uint32       scratchl = 0;
-        uint32       scratchh = 0;
-        unsigned int lsize    = VECTOR_SIZE32(left->width);
-        unsigned int rsize    = VECTOR_SIZE32(right->width);
-        int          i        = ((lsize < rsize) ? rsize : lsize) - 1;
-        uint32       mask     = (left->width < right->width) ? (0xffffffff >> (31 - ((left->width - 1) & 0x1f))) : (0xffffffff >> (31 - ((right->width - 1) & 0x1f)));
-        uint32       lvall    = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-        uint32       lvalh    = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : mask;
-        uint32       rvall    = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-        uint32       rvalh    = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : mask;
+        uint32       scratchl    = 0;
+        uint32       scratchh    = 0;
+        unsigned int lsize       = VECTOR_SIZE32(left->width);
+        unsigned int rsize       = VECTOR_SIZE32(right->width);
+        int          i           = ((lsize < rsize) ? rsize : lsize) - 1;
+        unsigned int lmsb        = (left->width - 1);
+        unsigned int rmsb        = (right->width - 1);
+        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
+        uint32       mask        = (left->width < right->width) ? (0xffffffff >> (31 - ((left->width - 1) & 0x1f))) : (0xffffffff >> (31 - ((right->width - 1) & 0x1f)));
+        uint32       lvall;
+        uint32       lvalh;
+        uint32       rvall;
+        uint32       rvalh;
+        vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+        vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
         while( (i > 0) && ((((~(lvall ^ rvall) & ~(lvalh ^ rvalh)) | (lvalh & lvall) | (rvalh & rvall)) & mask) == mask) ) {
           mask  = 0xffffffff;
           i--;
-          lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-          lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : mask;
-          rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-          rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : mask;
+          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
         }
         scratchl = ((((~(lvall ^ rvall) & ~(lvalh ^ rvalh)) | (lvalh & lvall) | (rvalh & rvall)) & mask) == mask);
         retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
@@ -3363,21 +3411,23 @@ bool vector_op_ne(
   switch( tgt->suppl.part.data_type ) {
     case VDATA_U32 :
       {
-        uint32       scratchl = 0;
-        uint32       scratchh = 0;
-        unsigned int lsize = VECTOR_SIZE32(left->width);
-        unsigned int rsize = VECTOR_SIZE32(right->width);
-        int          i     = ((lsize < rsize) ? rsize : lsize);
+        uint32       scratchl    = 0;
+        uint32       scratchh    = 0;
+        unsigned int lsize       = VECTOR_SIZE32(left->width);
+        unsigned int rsize       = VECTOR_SIZE32(right->width);
+        int          i           = ((lsize < rsize) ? rsize : lsize);
+        unsigned int lmsb        = (left->width - 1);
+        unsigned int rmsb        = (right->width - 1);
+        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
         uint32       lvall;
         uint32       lvalh;
         uint32       rvall;
         uint32       rvalh;
         do {
           i--;
-          lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-          lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0;
-          rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-          rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0;
+          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
         } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
         if( (lvalh != 0) || (rvalh != 0) ) {
           scratchh = 1;
@@ -3421,16 +3471,18 @@ bool vector_op_cne(
         unsigned int lsize = VECTOR_SIZE32(left->width);
         unsigned int rsize = VECTOR_SIZE32(right->width);
         int          i     = ((lsize < rsize) ? rsize : lsize);
+        unsigned int lmsb        = (left->width - 1);
+        unsigned int rmsb        = (right->width - 1);
+        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
         uint32       lvall;
         uint32       lvalh;
         uint32       rvall;
         uint32       rvalh;
         do {
           i--;
-          lvall = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALL]  : 0;
-          lvalh = (i<lsize) ? left->value.u32[i][VTYPE_INDEX_VAL_VALH]  : 0xffffffff;
-          rvall = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0;
-          rvalh = (i<rsize) ? right->value.u32[i][VTYPE_INDEX_VAL_VALH] : 0xffffffff;
+          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
         } while( (i > 0) && ((lvall & ~lvalh) == (rvall & ~rvalh)) );
         scratchl = (lvall != rvall); 
         retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
@@ -4657,6 +4709,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.76  2008/05/16 14:00:36  phase1geo
+ Fixing width extension with sign-extend for comparison operators.  Updating
+ regression files.  Checkpointing.
+
  Revision 1.138.2.75  2008/05/15 21:58:12  phase1geo
  Updating regression files per changes for increment and decrement operators.
  Checkpointing.
