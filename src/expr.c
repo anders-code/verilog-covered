@@ -711,7 +711,7 @@ void expression_set_value(
       exp->elem.dim->dim_be  = TRUE;
     }
     exp->elem.dim->dim_width  = exp_width;
-    exp->elem.dim->set_mem_rd = (sig->value->suppl.part.type == VTYPE_MEM) && ((edim + 1) == sig->udim_num);
+    exp->elem.dim->set_mem_rd = (sig->value->suppl.part.type == VTYPE_MEM) && ((edim + 1) >= sig->udim_num);
     exp->elem.dim->last       = expression_is_last_select( exp );
 
     /* Set the expression width */
@@ -5613,6 +5613,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.38  2008/05/16 15:11:11  phase1geo
+ Fixing problem with set_mem_rd for packed/unpacked arrays.  Updated regression
+ files.  Full regression now passes!
+
  Revision 1.329.2.37  2008/05/15 21:58:11  phase1geo
  Updating regression files per changes for increment and decrement operators.
  Checkpointing.
