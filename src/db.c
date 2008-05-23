@@ -1394,7 +1394,9 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
     sig->suppl.part.not_handled = handled ? 0 : 1;
 
     /* Set the implicit_size attribute */
-    sig->suppl.part.implicit_size = (((type == SSUPPL_TYPE_INPUT) || (type == SSUPPL_TYPE_OUTPUT) || (type == SSUPPL_TYPE_INOUT)) &&
+    sig->suppl.part.implicit_size = (((type == SSUPPL_TYPE_INPUT_NET)  || (type == SSUPPL_TYPE_INPUT_REG) ||
+                                      (type == SSUPPL_TYPE_OUTPUT_NET) || (type == SSUPPL_TYPE_OUTPUT_REG) ||
+                                      (type == SSUPPL_TYPE_INOUT_NET)  || (type == SSUPPL_TYPE_INOUT_REG)) &&
                                      (prange != NULL) && prange->dim[0].implicit &&
                                      (prange->dim[0].left->exp == NULL) && (prange->dim[0].left->num == 0) &&
                                      (prange->dim[0].right->exp == NULL) && (prange->dim[0].right->num == 0)) ? 1 : 0;
@@ -2948,6 +2950,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.307.2.2  2008/05/23 14:50:21  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
  Revision 1.307.2.1  2008/04/21 23:13:04  phase1geo
  More work to update other files per vector changes.  Currently in the middle
  of updating expr.c.  Checkpointing.

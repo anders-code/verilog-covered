@@ -634,9 +634,12 @@ static void bind_task_function_ports(
       i     = 0;
       sigl  = funit->sig_head;
       while( (sigl != NULL) && !found ) {
-        if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT)  ||
-            (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT) ||
-            (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) ) {
+        if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_NET)  ||
+            (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_REG)  ||
+            (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT_NET) ||
+            (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT_REG) ||
+            (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_NET)  ||
+            (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_REG) ) {
           if( i == *order ) {
             found = TRUE;
           } else {
@@ -970,6 +973,10 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.130.2.2  2008/05/23 14:50:20  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
  Revision 1.130.2.1  2008/04/21 04:37:22  phase1geo
  Attempting to get other files (besides vector.c) to compile with new vector
  changes.  Still work to go here.  The initial pass through vector.c is not

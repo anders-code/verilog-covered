@@ -219,9 +219,12 @@ int funit_get_port_count( func_unit* funit ) { PROFILE(FUNIT_GET_PORT_COUNT);
 
   sigl = funit->sig_head;
   while( sigl != NULL ) {
-    if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT)  ||
-        (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT) ||
-        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) ) {
+    if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_NET)  ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_REG)  ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT_NET) ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT_REG) ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_NET)  ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_REG) ) {
       port_cnt++;
     }
     sigl = sigl->next;
@@ -1057,9 +1060,12 @@ bool funit_is_top_module( func_unit* funit ) { PROFILE(FUNIT_IS_TOP_MODULE);
 
     sigl = funit->sig_head;
     while( (sigl != NULL) &&
-           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INPUT) &&
-           (sigl->sig->suppl.part.type != SSUPPL_TYPE_OUTPUT) &&
-           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INOUT) ) {
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INPUT_NET)  &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INPUT_REG)  &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_OUTPUT_NET) &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_OUTPUT_REG) &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INOUT_NET)  &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INOUT_REG) ) {
       sigl = sigl->next;
     }
 
@@ -1482,6 +1488,10 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.101.2.2  2008/05/23 14:50:22  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
  Revision 1.101.2.1  2008/04/22 23:01:43  phase1geo
  More updates.  Completed initial pass of expr.c and fsm_arg.c.  Working
  on memory.c.  Checkpointing.

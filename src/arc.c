@@ -482,11 +482,11 @@ void arc_db_write(
 
   /* Output state information */
   for( i=0; i<table->num_fr_states; i++ ) {
-    vector_db_write( table->fr_states[i], file, TRUE );
+    vector_db_write( table->fr_states[i], file, TRUE, FALSE );
     fprintf( file, "  " );
   }
   for( i=0; i<table->num_to_states; i++ ) {
-    vector_db_write( table->to_states[i], file, TRUE );
+    vector_db_write( table->to_states[i], file, TRUE, FALSE );
     fprintf( file, "  " );
   }
 
@@ -840,6 +840,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.60.2.13  2008/05/23 14:50:20  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
  Revision 1.60.2.12  2008/05/09 15:22:25  phase1geo
  Fixing memory initialization issue in arc.c that leads to inconsistent
  results.  Checkpointing.

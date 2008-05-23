@@ -270,7 +270,7 @@ void vsignal_db_write(
     }
     fprintf( file, " " );
 
-    vector_db_write( sig->value, file, ((sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (sig->suppl.part.type == SSUPPL_TYPE_ENUM)) );
+    vector_db_write( sig->value, file, ((sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (sig->suppl.part.type == SSUPPL_TYPE_ENUM)), SIGNAL_IS_NET( sig ) );
 
     fprintf( file, "\n" );
 
@@ -800,6 +800,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.71.2.4  2008/05/23 14:50:23  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
  Revision 1.71.2.3  2008/05/15 07:02:06  phase1geo
  Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
 

@@ -1362,7 +1362,7 @@ void expression_db_write(
     if( parse_mode && EXPR_OWNS_VEC( expr->op ) && (expr->value->suppl.part.owns_data == 0) ) {
       expr->value->suppl.part.owns_data = 1;
     }
-    vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC) );
+    vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC), FALSE );
   }
 
   if( expr->name != NULL ) {
@@ -4320,7 +4320,8 @@ bool expression_op_func__passign(
   switch( expr->sig->suppl.part.type ) {
 
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
-    case SSUPPL_TYPE_INPUT :
+    case SSUPPL_TYPE_INPUT_NET :
+    case SSUPPL_TYPE_INPUT_REG :
       retval = vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width );
       vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
       break;
@@ -4329,15 +4330,18 @@ bool expression_op_func__passign(
      If the connected signal is an output type, do an expression assign from our expression value
      to the right expression.
     */
-    case SSUPPL_TYPE_OUTPUT :
+    case SSUPPL_TYPE_OUTPUT_NET :
+    case SSUPPL_TYPE_OUTPUT_REG :
       expression_assign( expr->right, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
       retval = TRUE;
       break;
 
     /* We don't currently support INOUT as these are not used in tasks or functions */
     default :
-      assert( (expr->sig->suppl.part.type == SSUPPL_TYPE_INPUT) ||
-              (expr->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT) );
+      assert( (expr->sig->suppl.part.type == SSUPPL_TYPE_INPUT_NET) ||
+              (expr->sig->suppl.part.type == SSUPPL_TYPE_INPUT_REG) ||
+              (expr->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT_NET) ||
+              (expr->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT_REG) );
       break;
 
   }
@@ -5613,6 +5617,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.39  2008/05/23 14:50:21  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
  Revision 1.329.2.38  2008/05/16 15:11:11  phase1geo
  Fixing problem with set_mem_rd for packed/unpacked arrays.  Updated regression
  files.  Full regression now passes!

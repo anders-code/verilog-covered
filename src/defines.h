@@ -85,6 +85,12 @@
 #define MAX_BIT_WIDTH      65536
 
 /*!
+ Specifies the maximum number of bytes that can be allocated via the safe allocation functions
+ in util.c.
+*/
+#define MAX_MALLOC_SIZE    (MAX_BIT_WIDTH * 2)
+
+/*!
  Length of user_msg global string (used for inputs to snprintf calls).
 */
 #define USER_MSG_LENGTH    (MAX_BIT_WIDTH * 2)
@@ -453,43 +459,67 @@
  @{
 */
 
-/*! This is an input port signal */
-#define SSUPPL_TYPE_INPUT         0
+/*! This is an input port net signal */
+#define SSUPPL_TYPE_INPUT_NET     0
 
-/*! This is an output port signal */
-#define SSUPPL_TYPE_OUTPUT        1
+/*! This is an input port registered signal */
+#define SSUPPL_TYPE_INPUT_REG     1
 
-/*! This is an inout port signal */
-#define SSUPPL_TYPE_INOUT         2
+/*! This is an output port net signal */
+#define SSUPPL_TYPE_OUTPUT_NET    2
 
-/*! This is a declared signal (i.e., not a port) */
-#define SSUPPL_TYPE_DECLARED      3
+/*! This is an output port registered signal */
+#define SSUPPL_TYPE_OUTPUT_REG    3
+
+/*! This is an inout port net signal */
+#define SSUPPL_TYPE_INOUT_NET     4
+
+/*! This is an inout port registered signal */
+#define SSUPPL_TYPE_INOUT_REG     5
+
+/*! This is a declared net signal (i.e., not a port) */
+#define SSUPPL_TYPE_DECL_NET      6
+
+/*! This is a declared registered signal (i.e., not a port) */
+#define SSUPPL_TYPE_DECL_REG      7
 
 /*! This is an event */
-#define SSUPPL_TYPE_EVENT         4
+#define SSUPPL_TYPE_EVENT         8
 
 /*! This signal was implicitly created */
-#define SSUPPL_TYPE_IMPLICIT      5
+#define SSUPPL_TYPE_IMPLICIT      9
 
 /*! This signal was implicitly created (this signal was created from a positive variable multi-bit expression) */
-#define SSUPPL_TYPE_IMPLICIT_POS  6
+#define SSUPPL_TYPE_IMPLICIT_POS  10
 
 /*! This signal was implicitly created (this signal was created from a negative variable multi-bit expression) */
-#define SSUPPL_TYPE_IMPLICIT_NEG  7
+#define SSUPPL_TYPE_IMPLICIT_NEG  11
 
 /*! This signal is a parameter */
-#define SSUPPL_TYPE_PARAM         8
+#define SSUPPL_TYPE_PARAM         12
 
 /*! This signal is a genvar */
-#define SSUPPL_TYPE_GENVAR        9
+#define SSUPPL_TYPE_GENVAR        13
 
 /*! This signal is an enumerated value */
-#define SSUPPL_TYPE_ENUM          10
+#define SSUPPL_TYPE_ENUM          14
 
 /*! This signal is a memory */
-#define SSUPPL_TYPE_MEM           11
+#define SSUPPL_TYPE_MEM           15
 
 /*! @} */
+
+/*!
+ Returns TRUE if the given vsignal is a net type.
+*/
+#define SIGNAL_IS_NET(x)          ((x->suppl.part.type == SSUPPL_TYPE_INPUT_NET)    || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_OUTPUT_NET)   || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_INOUT_NET)    || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_EVENT)        || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_DECL_NET)     || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_IMPLICIT)     || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_IMPLICIT_POS) || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_IMPLICIT_NEG))
      
 /*!
  \addtogroup read_modes Modes for reading database file
@@ -1114,6 +1144,11 @@ typedef enum vtype_exp_indices_e {
 } vtype_exp_indices;
 
 /*! @} */
+
+/*!
+ Mask for signal supplemental field when writing to CDD file.
+*/
+#define VSUPPL_MASK               0x7f
 
 /*!
  \addtogroup expression_types Expression Types
@@ -2780,6 +2815,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.16  2008/05/23 14:50:21  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
  Revision 1.294.2.15  2008/05/15 21:58:11  phase1geo
  Updating regression files per changes for increment and decrement operators.
  Checkpointing.

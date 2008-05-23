@@ -295,13 +295,15 @@ void vector_clone(
  \param vec         Pointer to vector to display to database file.
  \param file        Pointer to coverage database file to display to.
  \param write_data  If set to TRUE, causes 4-state data bytes to be included.
+ \param net         If set to TRUE, causes default value to be written as Z instead of X.
 
  Writes the specified vector to the specified coverage database file.
 */
 void vector_db_write(
   vector* vec,
   FILE*   file,
-  bool    write_data
+  bool    write_data,
+  bool    net
 ) { PROFILE(VECTOR_DB_WRITE);
 
   nibble mask;   /* Mask value for vector value nibbles */
@@ -323,7 +325,7 @@ void vector_db_write(
   /*@-formatcode@*/
   fprintf( file, "%d %hhu",
     vec->width,
-    vec->suppl.all
+    (vec->suppl.all & VSUPPL_MASK)
   );
   /*@=formatcode@*/
 
@@ -334,10 +336,11 @@ void vector_db_write(
     switch( vec->suppl.part.data_type ) {
       case VDATA_U32 :
         {
+          uint32       dflt_l = net ? 0xffffffff : 0x0;
           uint32       dflt_h = (vec->suppl.part.is_2state == 1) ? 0x0 : 0xffffffff;
           unsigned int i, j;
           for( i=0; i<(VECTOR_SIZE32(vec->width) - 1); i++ ) {
-            fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0 );
+            fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[i][VTYPE_INDEX_VAL_VALL] : dflt_l );
             fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[i][VTYPE_INDEX_VAL_VALH] : dflt_h );
             for( j=2; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
               if( ((mask >> j) & 0x1) == 1 ) {
@@ -348,9 +351,10 @@ void vector_db_write(
             }
           }
 
+          dflt_l >>= (31 - ((vec->width - 1) & 0x1f));
           dflt_h >>= (31 - ((vec->width - 1) & 0x1f));
 
-          fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[i][VTYPE_INDEX_VAL_VALL] : 0 );
+          fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[i][VTYPE_INDEX_VAL_VALL] : dflt_l );
           fprintf( file, " %x", (write_data && (vec->value.u32 != NULL)) ? vec->value.u32[i][VTYPE_INDEX_VAL_VALH] : dflt_h );
           for( j=2; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
             if( ((mask >> j) & 0x1) == 1 ) {
@@ -3742,17 +3746,7 @@ bool vector_op_add(
 
     switch( tgt->suppl.part.data_type ) {
       case VDATA_U32 :
-        /* If both the left and right vectors are less than 32 bits, optimize by using built-in addition operator */
-        if( (left->width <= 32) && (right->width <= 32) ) {
-
-          uint32 vall = (uint32)vector_to_int( left ) + (uint32)vector_to_int( right );
-          uint32 valh = 0;
-          retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, (tgt->width - 1) );
-
-        /* Otherwise, we need to do the addition in a bitwise fashion */
-        } else {
-
-          unsigned int i, j;
+        {
           uint32       vall[MAX_BIT_WIDTH>>5];
           uint32       valh[MAX_BIT_WIDTH>>5];
           uint32       carry = 0;
@@ -3760,30 +3754,15 @@ bool vector_op_add(
           bool         rmsb_is_one = ((right->value.u32[(right->width-1)>>5][VTYPE_INDEX_VAL_VALL] >> ((right->width - 1) & 0x1f) & 1) == 1);
           uint32       lvall, lvalh;
           uint32       rvall, rvalh;
-
-          for( i=0; i<(VECTOR_SIZE32(tgt->width) - 1); i++ ) {
-            vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
-            vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
-            vall[i] = 0;
+          unsigned int i;
+          for( i=0; i<VECTOR_SIZE32( tgt->width ); i++ ) {
+            vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh ); 
+            vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh ); 
+            vall[i] = lvall + rvall + carry;
             valh[i] = 0;
-            for( j=0; j<32; j++ ) {
-              uint32 bit = ((lvall >> j) & 0x1) + ((rvall >> j) & 0x1) + carry;
-              carry      = bit >> 1;
-              vall[i]   |= (bit & 0x1) << j;
-            }
+            carry   = (((lvall & rvall & vall[i]) | ((lvall | rvall) & ~vall[i])) >> 31) & 0x1;
           }
-          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
-          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
-          vall[i] = 0;
-          valh[i] = 0;
-          for( j=0; j<(tgt->width - (i << 5)); j++ ) {
-            uint32 bit = ((lvall >> j) & 0x1) + ((rvall >> j) & 0x1) + carry;
-            carry      = bit >> 1;
-            vall[i]   |= (bit & 0x1) << j;
-          }
-
           retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
-
         }
         break;
       default :  assert( 0 );  break;
@@ -3907,54 +3886,24 @@ bool vector_op_subtract(
 
     switch( tgt->suppl.part.data_type ) {
       case VDATA_U32 :
-        /* If both the left and right vectors are less than 32 bits, optimize by using built-in subtraction operator */
-        if( (left->width <= 32) && (right->width <= 32) ) {
-
-          uint32 vall = (uint32)vector_to_int( left ) - (uint32)vector_to_int( right );
-          uint32 valh = 0;
-          retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, (tgt->width - 1) );
-
-        /* Otherwise, we need to do the subtraction in a bitwise fashion */
-        } else {
-
-          unsigned int i, j;
-          unsigned int size   = VECTOR_SIZE32(tgt->width);
-          unsigned int lsize  = VECTOR_SIZE32(left->width);
-          unsigned int rsize  = VECTOR_SIZE32(right->width);
+        {
           uint32       vall[MAX_BIT_WIDTH>>5];
           uint32       valh[MAX_BIT_WIDTH>>5];
-          uint32       carryA = 1;
-          uint32       carryB = 0;
-          uint32       lval;
-          uint32       rval;
-
-          for( i=0; i<(size - 1); i++ ) {
-            lval    = (lsize <= i) ? 0          :  left->value.u32[i][VTYPE_INDEX_EXP_VALL];
-            rval    = (rsize <= i) ? 0xffffffff : ~right->value.u32[i][VTYPE_INDEX_EXP_VALL];
-            vall[i] = 0;
+          uint32       carry = 1;
+          bool         lmsb_is_one = ((left->value.u32[(left->width-1)>>5][VTYPE_INDEX_VAL_VALL]   >> ((left->width  - 1) & 0x1f) & 1) == 1);
+          bool         rmsb_is_one = ((right->value.u32[(right->width-1)>>5][VTYPE_INDEX_VAL_VALL] >> ((right->width - 1) & 0x1f) & 1) == 1);
+          uint32       lvall, lvalh;
+          uint32       rvall, rvalh;
+          unsigned int i;
+          for( i=0; i<VECTOR_SIZE32( tgt->width ); i++ ) {
+            vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh ); 
+            rvall   = ~rvall;
+            vall[i] = lvall + rvall + carry;
             valh[i] = 0;
-            for( j=0; j<32; j++ ) {
-              uint32 bitA = ((rval >> j) & 0x1) + carryA;
-              uint32 bitB = ((lval >> j) & 0x1) + (bitA & 0x1) + carryB;
-              carryA      = bitA >> 1;
-              carryB      = bitB >> 1;
-              vall[i]    |= (bitB & 0x1) << j;
-            }
+            carry   = (((lvall & rvall & vall[i]) | ((lvall | rvall) & ~vall[i])) >> 31) & 0x1;
           }
-          lval = (lsize <= i) ? 0          :  left->value.u32[i][VTYPE_INDEX_EXP_VALL];
-          rval = (rsize <= i) ? 0xffffffff : ~right->value.u32[i][VTYPE_INDEX_EXP_VALL];
-          vall[i] = 0;
-          valh[i] = 0;
-          for( j=0; j<(tgt->width - (i << 5)); j++ ) {
-            uint32 bitA = ((rval >> j) & 0x1) + carryA;
-            uint32 bitB = ((lval >> j) & 0x1) + (bitA & 0x1) + carryB;
-            carryA      = bitA >> 1;
-            carryB      = bitB >> 1;
-            vall[i]    |= (bitB & 0x1) << j;
-          }
-
           retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
-
         }
         break;
       default :  assert( 0 );  break;
@@ -4716,6 +4665,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.78  2008/05/23 14:50:23  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
  Revision 1.138.2.77  2008/05/16 16:55:15  phase1geo
  Fixing issue in vector_op_add.
 

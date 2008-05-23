@@ -679,8 +679,10 @@ static void race_check_one_block_assignment(
                 assert( sig_stmt != -1 );
   
                 /* Check to see if current signal is also an input port */ 
-                if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT) ||
-                    (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) || curr_race ) {
+                if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_NET) ||
+                    (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_REG) ||
+                    (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_NET) ||
+                    (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_REG) || curr_race ) {
                   race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, RACE_TYPE_ASSIGN_IN_ONE_BLOCK2 );
                   sb[sig_stmt].remove = TRUE;
                 }
@@ -1168,6 +1170,10 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.80.2.2  2008/05/23 14:50:23  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
  Revision 1.80.2.1  2008/04/23 05:20:44  phase1geo
  Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
 

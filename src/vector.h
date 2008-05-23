@@ -74,7 +74,8 @@ void vector_clone(
 void vector_db_write(
   vector* vec,
   FILE*   file,
-  bool    write_data
+  bool    write_data,
+  bool    net
 );
 
 /*! \brief Creates and parses current file line for vector information */
@@ -487,6 +488,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.20  2008/05/23 14:50:23  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
  Revision 1.58.2.19  2008/05/15 07:02:05  phase1geo
  Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
 
