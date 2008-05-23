@@ -415,7 +415,7 @@ void vector_db_read(
                     *line += chars_read;
                   } else {
                     print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                    printf( "vector Throw A\n" );
+                    // printf( "vector Throw A\n" ); - HIT
                     Throw 0;
                   }
                 }
@@ -428,7 +428,7 @@ void vector_db_read(
       } Catch_anonymous {
         vector_dealloc( *vec );
         *vec = NULL;
-        printf( "vector Throw B\n" );
+        // printf( "vector Throw B\n" ); - HIT
         Throw 0;
       }
 
@@ -4665,6 +4665,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.79  2008/05/23 23:04:56  phase1geo
+ Adding err5 diagnostic to regression suite.  Fixing memory deallocation bug
+ found with err5.  Full regression passes.
+
  Revision 1.138.2.78  2008/05/23 14:50:23  phase1geo
  Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
  vector set bit.  Updating regressions per this change.
