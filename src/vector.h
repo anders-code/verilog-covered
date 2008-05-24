@@ -343,90 +343,157 @@ bool vector_bitwise_xor_op( vector* tgt, vector* src1, vector* src2 );
 bool vector_bitwise_nxor_op( vector* tgt, vector* src1, vector* src2 );
 
 /*! \brief Performs less-than comparison of two vectors. */
-bool vector_op_lt( vector* tgt, vector* left, vector* right );
+bool vector_op_lt(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs less-than-or-equal comparison of two vectors. */
-bool vector_op_le( vector* tgt, vector* left, vector* right );
+bool vector_op_le(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs greater-than comparison of two vectors. */
-bool vector_op_gt( vector* tgt, vector* left, vector* right );
+bool vector_op_gt(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs greater-than-or-equal comparison of two vectors. */
-bool vector_op_ge( vector* tgt, vector* left, vector* right );
+bool vector_op_ge(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs equal comparison of two vectors. */
-bool vector_op_eq( vector* tgt, vector* left, vector* right );
+bool vector_op_eq(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs case equal comparison of two vectors and returns result. */
-bool vector_ceq_uint32( const vector* left, const vector* right );
+bool vector_ceq_uint32(
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs case equal comparison of two vectors. */
-bool vector_op_ceq( vector* tgt, vector* left, vector* right );
+bool vector_op_ceq(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs casex equal comparison of two vectors. */
-bool vector_op_cxeq( vector* tgt, vector* left, vector* right );
+bool vector_op_cxeq(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs casez equal comparison of two vectors. */
-bool vector_op_czeq( vector* tgt, vector* left, vector* right );
+bool vector_op_czeq(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs not-equal comparison of two vectors. */
-bool vector_op_ne( vector* tgt, vector* left, vector* right );
+bool vector_op_ne(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs case not-equal comparison of two vectors. */
-bool vector_op_cne( vector* tgt, vector* left, vector* right );
+bool vector_op_cne(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs logical-OR operation of two vectors. */
-bool vector_op_lor( vector* tgt, vector* left, vector* right );
+bool vector_op_lor(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs logical-AND operation of two vectors. */
-bool vector_op_land( vector* tgt, vector* left, vector* right );
+bool vector_op_land(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs left shift operation on left expression by right expression bits. */
-bool vector_op_lshift( vector* tgt, vector* left, vector* right );
+bool vector_op_lshift(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
  
 /*! \brief Performs right shift operation on left expression by right expression bits. */
-bool vector_op_rshift( vector* tgt, vector* left, vector* right );
+bool vector_op_rshift(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs arithmetic right shift operation on left expression by right expression bits. */
-bool vector_op_arshift( vector* tgt, vector* left, vector* right );
+bool vector_op_arshift(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs addition operation on left and right expression values. */
-bool vector_op_add( vector* tgt, vector* left, vector* right );
+bool vector_op_add(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs a twos complement of the src vector and stores the new vector in tgt. */
 bool vector_op_negate(
-  vector* tgt,
-  vector* src,
-  vecblk* tvb
+  vector*       tgt,
+  const vector* src,
+  vecblk*       tvb
 );
 
 /*! \brief Performs subtraction operation on left and right expression values. */
 bool vector_op_subtract(
-  vector* tgt,
-  vector* left,
-  vector* right,
-  vecblk* tvb
+  vector*       tgt,
+  const vector* left,
+  const vector* right,
+  vecblk*       tvb
 );
 
 /*! \brief Performs multiplication operation on left and right expression values. */
 bool vector_op_multiply(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 );
 
 /*! \brief Performs division operation on left and right vector values. */
 bool vector_op_divide(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 );
 
 /*! \brief Performs modulus operation on left and right vector values. */
 bool vector_op_modulus(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 );
 
 /*! \brief Performs increment operation on specified vector. */
@@ -442,28 +509,52 @@ bool vector_op_dec(
 );
 
 /*! \brief Performs unary bitwise inversion operation on specified vector value. */
-bool vector_unary_inv( vector* tgt, vector* src );
+bool vector_unary_inv(
+  vector*       tgt,
+  const vector* src
+);
 
 /*! \brief Performs unary AND operation on specified vector value. */
-bool vector_unary_and( vector* tgt, vector* src );
+bool vector_unary_and(
+  vector*       tgt,
+  const vector* src
+);
 
 /*! \brief Performs unary NAND operation on specified vector value. */
-bool vector_unary_nand( vector* tgt, vector* src );
+bool vector_unary_nand(
+  vector*       tgt,
+  const vector* src
+);
 
 /*! \brief Performs unary OR operation on specified vector value. */
-bool vector_unary_or( vector* tgt, vector* src );
+bool vector_unary_or(
+  vector*       tgt,
+  const vector* src
+);
 
 /*! \brief Performs unary NOR operation on specified vector value. */
-bool vector_unary_nor( vector* tgt, vector* src );
+bool vector_unary_nor(
+  vector*       tgt,
+  const vector* src
+);
 
 /*! \brief Performs unary XOR operation on specified vector value. */
-bool vector_unary_xor( vector* tgt, vector* src );
+bool vector_unary_xor(
+  vector*       tgt,
+  const vector* src
+);
 
 /*! \brief Performs unary NXOR operation on specified vector value. */
-bool vector_unary_nxor( vector* tgt, vector* src );
+bool vector_unary_nxor(
+  vector*       tgt,
+  const vector* src
+);
 
 /*! \brief Performs unary logical NOT operation on specified vector value. */
-bool vector_unary_not( vector* tgt, vector* src );
+bool vector_unary_not(
+  vector*       tgt,
+  const vector* src
+);
 
 /*! \brief Performs expansion operation. */
 bool vector_op_expand(
@@ -488,6 +579,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.21  2008/05/24 21:20:57  phase1geo
+ Fixing bugs with comparison functions when values contain Xs.  Adding more diagnostics
+ to regression suite to cover coverage holes.
+
  Revision 1.58.2.20  2008/05/23 14:50:23  phase1geo
  Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
  vector set bit.  Updating regressions per this change.

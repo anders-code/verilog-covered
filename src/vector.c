@@ -1826,7 +1826,7 @@ static void vector_sign_extend_uint32(
     uint32       fmask = 0xffffffff << ((last + 1) & 0x1f);
     vall[i] |= signl & fmask;
     valh[i] |= signh & fmask;
-    for( i++; i<((width - 1) >> 5); i++ ) {
+    for( i++; i<=((width - 1) >> 5); i++ ) {
       vall[i] = signl;
       valh[i] = signh;
     }
@@ -2961,43 +2961,47 @@ inline static void vector_copy_val_and_sign_extend_uint32(
  Performs a less-than comparison of the left and right expressions.
 */
 bool vector_op_lt(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_LT);
 
   bool retval;  /* Return value for this function */
 
-  switch( tgt->suppl.part.data_type ) {
-    case VDATA_U32 :
-      {
-        uint32       scratchl    = 0;
-        uint32       scratchh    = 0;
-        unsigned int lsize       = VECTOR_SIZE32(left->width);
-        unsigned int rsize       = VECTOR_SIZE32(right->width);
-        int          i           = ((lsize < rsize) ? rsize : lsize);
-        unsigned int lmsb        = (left->width - 1);
-        unsigned int rmsb        = (right->width - 1);
-        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
-        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
-        uint32       lvall;
-        uint32       lvalh;
-        uint32       rvall;
-        uint32       rvalh;
-        do {
-          i--;
-          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
-          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
-        } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
-        if( (lvalh != 0) || (rvalh != 0) ) {
-          scratchh = 1;
-        } else {
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32       scratchl;
+          uint32       scratchh    = 0;
+          unsigned int lsize       = VECTOR_SIZE32(left->width);
+          unsigned int rsize       = VECTOR_SIZE32(right->width);
+          int          i           = ((lsize < rsize) ? rsize : lsize);
+          unsigned int lmsb        = (left->width - 1);
+          unsigned int rmsb        = (right->width - 1);
+          bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
+          uint32       lvall;
+          uint32       lvalh;
+          uint32       rvall;
+          uint32       rvalh;
+          do {
+            i--;
+            vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
+          } while( (i > 0) && (lvall == rvall) );
           scratchl = vector_reverse_for_cmp_uint32( left, right ) ? (rvall < lvall) : (lvall < rvall);
+          retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
         }
-        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
-      }
-      break;
-    default :  assert( 0 );  break;
+        break;
+      default :  assert( 0 );  break;
+    }
+
   }
 
   PROFILE_END;
@@ -3016,43 +3020,47 @@ bool vector_op_lt(
  Performs a less-than-or-equal comparison of the left and right expressions.
 */
 bool vector_op_le(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_LE);
 
   bool retval;  /* Return value for this function */
 
-  switch( tgt->suppl.part.data_type ) {
-    case VDATA_U32 :
-      {
-        uint32       scratchl    = 0;
-        uint32       scratchh    = 0;
-        unsigned int lsize       = VECTOR_SIZE32(left->width);
-        unsigned int rsize       = VECTOR_SIZE32(right->width);
-        int          i           = ((lsize < rsize) ? rsize : lsize);
-        unsigned int lmsb        = (left->width - 1);
-        unsigned int rmsb        = (right->width - 1);
-        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
-        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
-        uint32       lvall;
-        uint32       lvalh;
-        uint32       rvall;
-        uint32       rvalh;
-        do {
-          i--;
-          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
-          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
-        } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
-        if( (lvalh != 0) || (rvalh != 0) ) {
-          scratchh = 1;
-        } else {
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32       scratchl;
+          uint32       scratchh    = 0;
+          unsigned int lsize       = VECTOR_SIZE32(left->width);
+          unsigned int rsize       = VECTOR_SIZE32(right->width);
+          int          i           = ((lsize < rsize) ? rsize : lsize);
+          unsigned int lmsb        = (left->width - 1);
+          unsigned int rmsb        = (right->width - 1);
+          bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
+          uint32       lvall;
+          uint32       lvalh;
+          uint32       rvall;
+          uint32       rvalh;
+          do {
+            i--;
+            vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
+          } while( (i > 0) && (lvall == rvall) );
           scratchl = vector_reverse_for_cmp_uint32( left, right ) ? (rvall <= lvall) : (lvall <= rvall);
+          retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
         }
-        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
-      }
-      break;
-    default :  assert( 0 );  break;
+        break;
+      default :  assert( 0 );  break;
+    }
+
   }
 
   PROFILE_END;
@@ -3071,43 +3079,47 @@ bool vector_op_le(
  Performs a greater-than comparison of the left and right expressions.
 */
 bool vector_op_gt(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_GT);
 
   bool retval;  /* Return value for this function */
 
-  switch( tgt->suppl.part.data_type ) {
-    case VDATA_U32 :
-      {
-        uint32       scratchl    = 0;
-        uint32       scratchh    = 0;
-        unsigned int lsize       = VECTOR_SIZE32(left->width);
-        unsigned int rsize       = VECTOR_SIZE32(right->width);
-        int          i           = ((lsize < rsize) ? rsize : lsize);
-        unsigned int lmsb        = (left->width - 1);
-        unsigned int rmsb        = (right->width - 1);
-        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
-        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
-        uint32       lvall;
-        uint32       lvalh;
-        uint32       rvall;
-        uint32       rvalh;
-        do {
-          i--;
-          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
-          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
-        } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
-        if( (lvalh != 0) || (rvalh != 0) ) {
-          scratchh = 1;
-        } else {
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+ 
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32       scratchl;
+          uint32       scratchh    = 0;
+          unsigned int lsize       = VECTOR_SIZE32(left->width);
+          unsigned int rsize       = VECTOR_SIZE32(right->width);
+          int          i           = ((lsize < rsize) ? rsize : lsize);
+          unsigned int lmsb        = (left->width - 1);
+          unsigned int rmsb        = (right->width - 1);
+          bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
+          uint32       lvall;
+          uint32       lvalh;
+          uint32       rvall;
+          uint32       rvalh;
+          do {
+            i--;
+            vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
+          } while( (i > 0) && (lvall == rvall) );
           scratchl = vector_reverse_for_cmp_uint32( left, right ) ? (rvall > lvall) : (lvall > rvall);
+          retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
         }
-        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
-      }
-      break;
-    default :  assert( 0 );  break;
+        break;
+      default :  assert( 0 );  break;
+    }
+
   }
 
   PROFILE_END;
@@ -3126,43 +3138,47 @@ bool vector_op_gt(
  Performs a greater-than-or-equal comparison of the left and right expressions.
 */
 bool vector_op_ge(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_GE);
 
   bool retval;  /* Return value for this function */
 
-  switch( tgt->suppl.part.data_type ) {
-    case VDATA_U32 :
-      {
-        uint32       scratchl    = 0;
-        uint32       scratchh    = 0;
-        unsigned int lsize       = VECTOR_SIZE32(left->width);
-        unsigned int rsize       = VECTOR_SIZE32(right->width);
-        int          i           = ((lsize < rsize) ? rsize : lsize);
-        unsigned int lmsb        = (left->width - 1);
-        unsigned int rmsb        = (right->width - 1);
-        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
-        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
-        uint32       lvall;
-        uint32       lvalh;
-        uint32       rvall;
-        uint32       rvalh;
-        do {
-          i--;
-          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
-          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
-        } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
-        if( (lvalh != 0) || (rvalh != 0) ) {
-          scratchh = 1;
-        } else {
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32       scratchl;
+          uint32       scratchh    = 0;
+          unsigned int lsize       = VECTOR_SIZE32(left->width);
+          unsigned int rsize       = VECTOR_SIZE32(right->width);
+          int          i           = ((lsize < rsize) ? rsize : lsize);
+          unsigned int lmsb        = (left->width - 1);
+          unsigned int rmsb        = (right->width - 1);
+          bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
+          uint32       lvall;
+          uint32       lvalh;
+          uint32       rvall;
+          uint32       rvalh;
+          do {
+            i--;
+            vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
+          } while( (i > 0) && (lvall == rvall) );
           scratchl = vector_reverse_for_cmp_uint32( left, right ) ? (rvall >= lvall) : (lvall >= rvall);
+          retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
         }
-        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
-      }
-      break;
-    default :  assert( 0 );  break;
+        break;
+      default :  assert( 0 );  break;
+    }
+
   }
 
   PROFILE_END;
@@ -3181,43 +3197,47 @@ bool vector_op_ge(
  Performs an equal comparison of the left and right expressions.
 */
 bool vector_op_eq(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_EQ);
 
   bool retval;  /* Return value for this function */
 
-  switch( tgt->suppl.part.data_type ) {
-    case VDATA_U32 :
-      {
-        uint32       scratchl    = 0;
-        uint32       scratchh    = 0;
-        unsigned int lsize       = VECTOR_SIZE32(left->width);
-        unsigned int rsize       = VECTOR_SIZE32(right->width);
-        int          i           = ((lsize < rsize) ? rsize : lsize);
-        unsigned int lmsb        = (left->width - 1);
-        unsigned int rmsb        = (right->width - 1);
-        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
-        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
-        uint32       lvall;
-        uint32       lvalh;
-        uint32       rvall;
-        uint32       rvalh;
-        do {
-          i--;
-          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
-          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
-        } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
-        if( (lvalh != 0) || (rvalh != 0) ) {
-          scratchh = 1;
-        } else {
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32       scratchl;
+          uint32       scratchh    = 0;
+          unsigned int lsize       = VECTOR_SIZE32(left->width);
+          unsigned int rsize       = VECTOR_SIZE32(right->width);
+          int          i           = ((lsize < rsize) ? rsize : lsize);
+          unsigned int lmsb        = (left->width - 1);
+          unsigned int rmsb        = (right->width - 1);
+          bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
+          uint32       lvall;
+          uint32       lvalh;
+          uint32       rvall;
+          uint32       rvalh;
+          do {
+            i--;
+            vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
+          } while( (i > 0) && (lvall == rvall) );
           scratchl = (lvall == rvall);
+          retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
         }
-        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
-      }
-      break;
-    default :  assert( 0 );  break;
+        break;
+      default :  assert( 0 );  break;
+    }
+
   }
 
   PROFILE_END;
@@ -3269,9 +3289,9 @@ bool vector_ceq_uint32(
  Performs a case equal comparison of the left and right expressions.
 */
 bool vector_op_ceq(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_CEQ);
 
   bool retval;  /* Return value for this function */
@@ -3303,9 +3323,9 @@ bool vector_op_ceq(
  Performs a casex equal comparison of the left and right expressions.
 */
 bool vector_op_cxeq(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_CXEQ);
 
   bool retval;  /* Return value for this function */
@@ -3355,9 +3375,9 @@ bool vector_op_cxeq(
  Performs a casez equal comparison of the left and right expressions.
 */
 bool vector_op_czeq(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_CZEQ);
 
   bool retval;  /* Return value for this function */
@@ -3410,43 +3430,47 @@ bool vector_op_czeq(
  Performs a not-equal comparison of the left and right expressions.
 */
 bool vector_op_ne(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_NE);
 
   bool retval;  /* Return value for this function */
 
-  switch( tgt->suppl.part.data_type ) {
-    case VDATA_U32 :
-      {
-        uint32       scratchl    = 0;
-        uint32       scratchh    = 0;
-        unsigned int lsize       = VECTOR_SIZE32(left->width);
-        unsigned int rsize       = VECTOR_SIZE32(right->width);
-        int          i           = ((lsize < rsize) ? rsize : lsize);
-        unsigned int lmsb        = (left->width - 1);
-        unsigned int rmsb        = (right->width - 1);
-        bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
-        bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
-        uint32       lvall;
-        uint32       lvalh;
-        uint32       rvall;
-        uint32       rvalh;
-        do {
-          i--;
-          vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
-          vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
-        } while( (i > 0) && (lvall == rvall) && (lvalh == 0) && (rvalh == 0) );
-        if( (lvalh != 0) || (rvalh != 0) ) {
-          scratchh = 1;
-        } else {
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_U32 :
+        {
+          uint32       scratchl;
+          uint32       scratchh    = 0;
+          unsigned int lsize       = VECTOR_SIZE32(left->width);
+          unsigned int rsize       = VECTOR_SIZE32(right->width);
+          int          i           = ((lsize < rsize) ? rsize : lsize);
+          unsigned int lmsb        = (left->width - 1);
+          unsigned int rmsb        = (right->width - 1);
+          bool         lmsb_is_one = (((left->value.u32[lmsb>>5][VTYPE_INDEX_VAL_VALL]  >> (lmsb & 0x1f)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.u32[rmsb>>5][VTYPE_INDEX_VAL_VALL] >> (rmsb & 0x1f)) & 1) == 1);
+          uint32       lvall;
+          uint32       lvalh;
+          uint32       rvall;
+          uint32       rvalh;
+          do {
+            i--;
+            vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh );
+          } while( (i > 0) && (lvall == rvall) );
           scratchl = (lvall != rvall);
+          retval   = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
         }
-        retval = vector_set_coverage_and_assign_uint32( tgt, &scratchl, &scratchh, 0, 0 );
-      }
-      break;
-    default :  assert( 0 );  break;
+        break;
+      default :  assert( 0 );  break;
+    }
+
   }
 
   PROFILE_END;
@@ -3465,9 +3489,9 @@ bool vector_op_ne(
  Performs an case not-equal comparison of the left and right expressions.
 */
 bool vector_op_cne(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_CNE);
 
   bool retval;  /* Return value for this function */
@@ -3512,9 +3536,9 @@ bool vector_op_cne(
  Performs logical-OR operation and calculates coverage information.
 */
 bool vector_op_lor(
-  vector* tgt,   /*!< Pointer to vector to store result into */
-  vector* left,  /*!< Pointer to left vector of expression */
-  vector* right  /*!< Pointer to right vector of expression */
+  vector*       tgt,   /*!< Pointer to vector to store result into */
+  const vector* left,  /*!< Pointer to left vector of expression */
+  const vector* right  /*!< Pointer to right vector of expression */
 ) { PROFILE(VECTOR_OP_LOR);
 
   bool retval;                                 /* Return value for this function */
@@ -3544,9 +3568,9 @@ bool vector_op_lor(
  Performs logical-AND operation and calculates coverage information.
 */
 bool vector_op_land(
-  vector* tgt,   /*!< Pointer to vector to store result into */
-  vector* left,  /*!< Pointer to left vector of expression */
-  vector* right  /*!< Pointer to right vector of expression */
+  vector*       tgt,   /*!< Pointer to vector to store result into */
+  const vector* left,  /*!< Pointer to left vector of expression */
+  const vector* right  /*!< Pointer to right vector of expression */
 ) { PROFILE(VECTOR_OP_LAND);
 
   bool retval;                                 /* Return value for this function */
@@ -3581,9 +3605,9 @@ bool vector_op_land(
  expression the specified number of bit locations, zero-filling the LSB.
 */
 bool vector_op_lshift(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_LSHIFT);
 
   bool retval;  /* Return value for this function */
@@ -3628,9 +3652,9 @@ bool vector_op_lshift(
  expression the specified number of bit locations, zero-filling the MSB.
 */
 bool vector_op_rshift(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_RSHIFT);
 
   bool retval;  /* Return value for this function */
@@ -3674,9 +3698,9 @@ bool vector_op_rshift(
  expression the specified number of bit locations, sign extending the MSB.
 */
 bool vector_op_arshift(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_ARSHIFT);
 
   bool retval;  /* Return value for this function */
@@ -3724,17 +3748,12 @@ bool vector_op_arshift(
  Carry bit is discarded (value is wrapped around).
 */
 bool vector_op_add(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_ADD);
 
   bool retval;  /* Return value for this function */
-
-/*
-  printf( "LEFT:  " );  vector_display( left );
-  printf( "RIGHT: " );  vector_display( right );
-*/
 
   /* If either the left or right vector is unknown, set the entire value to X */
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
@@ -3785,9 +3804,9 @@ bool vector_op_add(
  Performs a twos complement of the src vector and stores the result in the tgt vector.
 */
 bool vector_op_negate(
-  vector* tgt,
-  vector* src,
-  vecblk* tvb
+  vector*       tgt,
+  const vector* src,
+  vecblk*       tvb
 ) { PROFILE(VECTOR_OP_NEGATE);
 
   bool retval;  /* Return value for this function */
@@ -3863,18 +3882,13 @@ bool vector_op_negate(
  result to the left expression value.
 */
 bool vector_op_subtract(
-  vector* tgt,
-  vector* left,
-  vector* right,
-  vecblk* tvb
+  vector*       tgt,
+  const vector* left,
+  const vector* right,
+  vecblk*       tvb
 ) { PROFILE(VECTOR_OP_SUBTRACT);
 
   bool retval;  /* Return value for this function */
-
-/*
-  printf( "LEFT:  " );  vector_display( left );
-  printf( "RIGHT: " );  vector_display( right );
-*/
 
   /* If either the left or right vector is unknown, set the entire value to X */
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
@@ -3931,9 +3945,9 @@ bool vector_op_subtract(
  the value is that of the other vector.
 */
 bool vector_op_multiply(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_MULTIPLY);
 
   bool retval;  /* Return value for this function */
@@ -3973,9 +3987,9 @@ bool vector_op_multiply(
  Performs vector divide operation.
 */
 bool vector_op_divide(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_DIVIDE);
 
   bool retval;  /* Return value for this function */
@@ -4022,9 +4036,9 @@ bool vector_op_divide(
  Performs vector modulus operation.
 */
 bool vector_op_modulus(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_MODULUS);
 
   bool retval;  /* Return value for this function */
@@ -4138,8 +4152,8 @@ bool vector_op_dec(
  Performs a bitwise inversion on the specified vector.
 */
 bool vector_unary_inv(
-  vector* tgt,
-  vector* src
+  vector*       tgt,
+  const vector* src
 ) { PROFILE(VECTOR_UNARY_INV);
 
   bool retval;  /* Return value for this function */
@@ -4184,8 +4198,8 @@ bool vector_unary_inv(
  Performs unary AND operation on specified vector value.
 */
 bool vector_unary_and(
-  vector* tgt,
-  vector* src
+  vector*       tgt,
+  const vector* src
 ) { PROFILE(VECTOR_UNARY_AND);
 
   bool retval;  /* Return value for this function */
@@ -4225,8 +4239,8 @@ bool vector_unary_and(
  Performs unary NAND operation on specified vector value.
 */
 bool vector_unary_nand(
-  vector* tgt,
-  vector* src
+  vector*       tgt,
+  const vector* src
 ) { PROFILE(VECTOR_UNARY_NAND);
 
   bool retval;  /* Return value for this function */
@@ -4266,8 +4280,8 @@ bool vector_unary_nand(
  Performs unary OR operation on specified vector value.
 */
 bool vector_unary_or(
-  vector* tgt,
-  vector* src
+  vector*       tgt,
+  const vector* src
 ) { PROFILE(VECTOR_UNARY_OR);
 
   bool retval;  /* Return value for this function */
@@ -4317,8 +4331,8 @@ bool vector_unary_or(
  Performs unary NOR operation on specified vector value.
 */
 bool vector_unary_nor(
-  vector* tgt,
-  vector* src
+  vector*       tgt,
+  const vector* src
 ) { PROFILE(VECTOR_UNARY_NOR);
 
   bool retval;  /* Return value for this function */
@@ -4363,8 +4377,8 @@ bool vector_unary_nor(
  Performs unary XOR operation on specified vector value.
 */
 bool vector_unary_xor(
-  vector* tgt,
-  vector* src
+  vector*       tgt,
+  const vector* src
 ) { PROFILE(VECTOR_UNARY_XOR);
 
   bool retval;  /* Return value for this function */
@@ -4411,8 +4425,8 @@ bool vector_unary_xor(
  Performs unary NXOR operation on specified vector value.
 */
 bool vector_unary_nxor(
-  vector* tgt,
-  vector* src
+  vector*       tgt,
+  const vector* src
 ) { PROFILE(VECTOR_UNARY_NXOR);
 
   bool retval;  /* Return value for this function */
@@ -4459,8 +4473,8 @@ bool vector_unary_nxor(
  Performs unary logical NOT operation on specified vector value.
 */
 bool vector_unary_not(
-  vector* tgt,
-  vector* src
+  vector*       tgt,
+  const vector* src
 ) { PROFILE(VECTOR_UNARY_NOT);
 
   bool retval;  /* Return value of this function */
@@ -4487,11 +4501,6 @@ bool vector_unary_not(
   }
 
   PROFILE_END;
-
-/*
-  printf( "SRC: " );  vector_display( src );
-  printf( "TGT: " );  vector_display( tgt );
-*/
 
   return( retval );
 
@@ -4665,6 +4674,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.81  2008/05/24 21:20:56  phase1geo
+ Fixing bugs with comparison functions when values contain Xs.  Adding more diagnostics
+ to regression suite to cover coverage holes.
+
  Revision 1.138.2.80  2008/05/24 05:36:22  phase1geo
  Fixing bitwise coverage functionality and updating regression files.  Added
  new bitwise1 and err5.1 diagnostics to regression suite.  Removing output

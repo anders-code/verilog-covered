@@ -29,7 +29,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 always3         always3.1.11A   always4         always5         always6 \
                 always7         always7.1       always8         always9         always10 \
                 always11        always11.1      always11.2      always12        always13 \
-                ashift1         ashift2         assign2         assign2.1       assign2.2 \
+                ashift1         ashift2         ashift3         ashift4         assign2 \
+                assign2.1       assign2.2 \
                 assign2.3       assign2.4       assign2.5       assign2.6       assign2.7 \
                 assign2.9       assign3.2A      bassign1        bassign2        bassign3 \
                 block1          case1           case1.1         case1.2         case1.3 \
@@ -37,9 +38,11 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 case3.4         case4           case4.1         case5           casex1 \
                 casex1.1        casex1.2        casex1.3        casex1.4        casex2 \
                 casez1          casez1.1        casez1.2        casez1.3        casez1.4 \
-                casez2          casez3          concat1         concat2         concat3 \
+                casez2          casez3          casez4          compx1          compx1.1 \
+                compx1.2        compx1.3        concat1         concat2         concat3 \
                 concat4.1       concat4.2       concat5         concat6         cond1 \
-                cond2           delay1          delay2          define1         define1.1 \
+                cond2           cond3           cond3.1         cond3.2         cond3.3 \
+                delay1          delay2          define1         define1.1 \
                 define1.2       define2         define2.1       define4         define5 \
                 disable1        disable1.1      disable2        disable2.1      disable3 \
                 dly_assign1     endian1         endian2         endian3         event1 \
@@ -62,16 +65,16 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 long_exp2       long_exp3       lshift1         lshift1.1       lshift1.2 \
                 lshift2         lshift2.1       lshift2.2       lshift2.3       lshift3 \
                 lshift3.1       lshift3.2       lshift3.3       lshift4         lshift4.1 \
-                lshift4.2       mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1 \
-                mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel7 \
-                mbit_sel9       mbit_sel9.1     mbit_sel9.2     mem1            mem2 \
-                mult1           multi_exp1 \
+                lshift4.2       lshift4.3       lshift5         mbit_sel1       mbit_sel2       mbit_sel3 \
+                mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3 \
+                mbit_sel7       mbit_sel9       mbit_sel9.1     mbit_sel9.2     mem1 \
+                mem2            mult1           multi_exp1 \
                 multi_exp1.1    multi_exp1.2    multi_exp1.3    multi_exp1.4    multi_exp1.5 \
                 multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp1.9    multi_exp1.10 \
                 multi_exp1.11   multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15 \
                 multi_exp2      multi_exp2.1    multi_exp3      multi_exp4      named_block1 \
-                named_block2    named_block3    named_block4    nested_block1   nested_block2 \
-                nested_block2.1 nested_block3   null_stmt1      null_stmt1.1    null_stmt1.2 \
+                named_block2    named_block3    named_block4    negate1         nested_block1   nested_block2 \
+                nested_block2.1 nested_block3   not1            null_stmt1      null_stmt1.1    null_stmt1.2 \
                 null_stmt1.3    null_stmt1.5    null_stmt1.6    null_stmt1.7    null_stmt1.8 \
                 null_stmt1.9    null_stmt1.10   param1          param1.1        param1.2 \
                 param1.3        param3          param3.1        param3.2        param3.3 \
@@ -84,7 +87,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 repeat2         report1         rshift1         rshift1.1       rshift1.2 \
                 rshift1.3       rshift2         rshift2.1       rshift2.2       rshift2.3 \
                 rshift3         rshift3.1       rshift4         rshift4.1       rshift4.2 \
-                sbit_sel1       sbit_sel1.1     sbit_sel2       sbit_sel2.1     sbit_sel3 \
+                rshift5         sbit_sel1       sbit_sel1.1     sbit_sel2       sbit_sel2.1     sbit_sel3 \
                 sbit_sel3.1     sbit_sel4       sbit_sel4.1     sbit_sel4.2     sbit_sel4.3 \
                 signed1         signed3         signed3.1       signed3.2 \
                 signed3.3       signed3.4       signed3.5       signed3.6       signed4 \
