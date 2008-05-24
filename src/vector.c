@@ -442,7 +442,7 @@ void vector_db_read(
   } else {
 
     print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-    printf( "vector Throw C\n" );
+    // printf( "vector Throw C\n" ); - HIT
     Throw 0;
 
   }
@@ -983,7 +983,7 @@ void vector_display_nibble_uint32(
       printf( ", a: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[i][VTYPE_INDEX_EXP_EVAL_A] );
+        printf( "%08x", value[i][VTYPE_INDEX_EXP_EVAL_A] );
         /*@=formatcode@*/
       }
 
@@ -991,7 +991,7 @@ void vector_display_nibble_uint32(
       printf( ", b: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[i][VTYPE_INDEX_EXP_EVAL_B] );
+        printf( "%08x", value[i][VTYPE_INDEX_EXP_EVAL_B] );
         /*@=formatcode@*/
       }
 
@@ -999,7 +999,7 @@ void vector_display_nibble_uint32(
       printf( ", c: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[i][VTYPE_INDEX_EXP_EVAL_C] );
+        printf( "%08x", value[i][VTYPE_INDEX_EXP_EVAL_C] );
         /*@=formatcode@*/
       }
 
@@ -1007,7 +1007,7 @@ void vector_display_nibble_uint32(
       printf( ", d: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[i][VTYPE_INDEX_EXP_EVAL_D] );
+        printf( "%08x", value[i][VTYPE_INDEX_EXP_EVAL_D] );
         /*@=formatcode@*/
       }
 
@@ -1027,7 +1027,7 @@ void vector_display_nibble_uint32(
       printf( ", wr: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[i][VTYPE_INDEX_MEM_WR] );
+        printf( "%08x", value[i][VTYPE_INDEX_MEM_WR] );
         /*@=formatcode@*/
       }
 
@@ -1035,7 +1035,7 @@ void vector_display_nibble_uint32(
       printf( ", rd: %d'h", width );
       for( i=VECTOR_SIZE32(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%x", value[i][VTYPE_INDEX_MEM_RD] );
+        printf( "%08x", value[i][VTYPE_INDEX_MEM_RD] );
         /*@=formatcode@*/
       }
 
@@ -1695,10 +1695,10 @@ void vector_set_and_comb_evals(
           uint32* val    = tgt->value.u32[i];
           uint32* lval   = left->value.u32[i];
           uint32* rval   = right->value.u32[i];
-          uint32  lvall  = (i < lsize) ? lval[VTYPE_INDEX_EXP_VALL] : 0;
-          uint32  nlvalh = (i < lsize) ? lval[VTYPE_INDEX_EXP_VALH] : 0xffffffff;
-          uint32  rvall  = (i < rsize) ? rval[VTYPE_INDEX_EXP_VALL] : 0;
-          uint32  nrvalh = (i < rsize) ? rval[VTYPE_INDEX_EXP_VALH] : 0xffffffff;
+          uint32  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
+          uint32  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : 0xffffffff;
+          uint32  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
+          uint32  nrvalh = (i < rsize) ? ~rval[VTYPE_INDEX_EXP_VALH] : 0xffffffff;
           
           val[VTYPE_INDEX_EXP_EVAL_A] |= nlvalh & ~lvall;
           val[VTYPE_INDEX_EXP_EVAL_B] |= nrvalh & ~rvall;
@@ -1740,10 +1740,10 @@ void vector_set_or_comb_evals(
           uint32* val    = tgt->value.u32[i];
           uint32* lval   = left->value.u32[i];
           uint32* rval   = right->value.u32[i];
-          uint32  lvall  = (i < lsize) ? lval[VTYPE_INDEX_EXP_VALL] : 0;
-          uint32  nlvalh = (i < lsize) ? lval[VTYPE_INDEX_EXP_VALH] : 0;
-          uint32  rvall  = (i < rsize) ? rval[VTYPE_INDEX_EXP_VALL] : 0;
-          uint32  nrvalh = (i < rsize) ? rval[VTYPE_INDEX_EXP_VALH] : 0;
+          uint32  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
+          uint32  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : 0xffffffff;
+          uint32  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
+          uint32  nrvalh = (i < rsize) ? ~rval[VTYPE_INDEX_EXP_VALH] : 0xffffffff;
 
           val[VTYPE_INDEX_EXP_EVAL_A] |= nlvalh & lvall;
           val[VTYPE_INDEX_EXP_EVAL_B] |= nrvalh & rvall;
@@ -1785,10 +1785,10 @@ void vector_set_other_comb_evals(
           uint32* val    = tgt->value.u32[i];
           uint32* lval   = left->value.u32[i];
           uint32* rval   = right->value.u32[i];
-          uint32  lvall  = (i < lsize) ? lval[VTYPE_INDEX_EXP_VALL] : 0;
-          uint32  nlvalh = (i < lsize) ? lval[VTYPE_INDEX_EXP_VALH] : 0;
-          uint32  rvall  = (i < rsize) ? rval[VTYPE_INDEX_EXP_VALL] : 0;
-          uint32  nrvalh = (i < rsize) ? rval[VTYPE_INDEX_EXP_VALH] : 0;
+          uint32  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
+          uint32  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : 0xffffffff;
+          uint32  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
+          uint32  nrvalh = (i < rsize) ? ~rval[VTYPE_INDEX_EXP_VALH] : 0xffffffff;
           uint32  nvalh  = nlvalh & nrvalh;
 
           val[VTYPE_INDEX_EXP_EVAL_A] |= nvalh & ~lvall & ~rvall;
@@ -4665,6 +4665,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.80  2008/05/24 05:36:22  phase1geo
+ Fixing bitwise coverage functionality and updating regression files.  Added
+ new bitwise1 and err5.1 diagnostics to regression suite.  Removing output
+ for uncovered exceptions in command-line parsers.
+
  Revision 1.138.2.79  2008/05/23 23:04:56  phase1geo
  Adding err5 diagnostic to regression suite.  Fixing memory deallocation bug
  found with err5.  Full regression passes.

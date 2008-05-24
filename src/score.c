@@ -524,7 +524,7 @@ static void score_parse_args(
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
 
       score_usage();
-      printf( "score Throw J\n" );
+      // printf( "score Throw J\n" ); - HIT
       Throw 0;
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
@@ -1226,6 +1226,11 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.127.2.2  2008/05/24 05:36:22  phase1geo
+ Fixing bitwise coverage functionality and updating regression files.  Added
+ new bitwise1 and err5.1 diagnostics to regression suite.  Removing output
+ for uncovered exceptions in command-line parsers.
+
  Revision 1.127.2.1  2008/04/28 21:08:53  phase1geo
  Fixing memory deallocation issue when CDD file is not present when report
  command is issued.  Fixing issues with left-shift function (still have one
