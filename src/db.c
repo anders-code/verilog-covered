@@ -343,7 +343,7 @@ void db_write(
     } Catch_anonymous {
       rv = fclose( db_handle );
       assert( rv == 0 );
-      printf( "db Throw A\n" );
+      // printf( "db Throw A\n" ); - HIT
       Throw 0;
     }
 
@@ -2951,6 +2951,9 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.307.2.4  2008/05/25 04:27:32  phase1geo
+ Adding div1 and mod1 diagnostics to regression suite.
+
  Revision 1.307.2.3  2008/05/23 23:04:56  phase1geo
  Adding err5 diagnostic to regression suite.  Fixing memory deallocation bug
  found with err5.  Full regression passes.

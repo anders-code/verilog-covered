@@ -926,6 +926,12 @@ void expression_resize(
       */
       case EXP_OP_EXPAND :
         expression_operate_recursively( expr->left, funit, TRUE );
+        if( vector_is_unknown( expr->left->value ) ) {
+          snprintf( user_msg, USER_MSG_LENGTH, "Unknown value used for concatenation multiplier, file: %s, line: %d", funit->filename, expr->line );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          // printf( "expr Throw B.1\n" ); - HIT
+          Throw 0;
+        }
         if( (expr->value->width != (vector_to_int( expr->left->value ) * expr->right->value->width)) ||
             (expr->value->value.u32 == NULL) ) {
           assert( expr->value->value.u32 == NULL );
@@ -5617,6 +5623,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.40  2008/05/25 04:27:32  phase1geo
+ Adding div1 and mod1 diagnostics to regression suite.
+
  Revision 1.329.2.39  2008/05/23 14:50:21  phase1geo
  Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
  vector set bit.  Updating regressions per this change.

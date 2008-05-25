@@ -4008,7 +4008,7 @@ bool vector_op_divide(
           uint32 rval = right->value.u32[0][VTYPE_INDEX_EXP_VALL];
           if( rval == 0 ) {
             print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-            printf( "vector Throw G\n" );
+            // printf( "vector Throw G\n" ); - HIT
             Throw 0;
           }
           vall = left->value.u32[0][VTYPE_INDEX_EXP_VALL] / rval;
@@ -4519,43 +4519,33 @@ bool vector_op_expand(
 
   bool retval;  /* Return value for this function */
 
-  /* If the expansion multiplier is unknown, set the target to X */
-  if( vector_is_unknown( left ) ) {
-
-    retval = vector_set_to_x( tgt );
-
-  /* Otherwise, perform the expansion */
-  } else {
-
-    switch( tgt->suppl.part.data_type ) {
-      case VDATA_U32 :
-        {
-          uint32       vall[MAX_BIT_WIDTH>>5];
-          uint32       valh[MAX_BIT_WIDTH>>5];
-          unsigned int i, j;
-          unsigned int rwidth     = right->width;
-          unsigned int multiplier = vector_to_int( left );
-          unsigned int pos        = 0;
-          for( i=0; i<multiplier; i++ ) {
-            for( j=0; j<rwidth; j++ ) {
-              uint32*      rval     = right->value.u32[j>>5];
-              unsigned int my_index = (pos >> 5);
-              unsigned int offset   = (pos & 0x1f);
-              if( offset == 0 ) {
-                vall[my_index] = 0;
-                valh[my_index] = 0;
-              }
-              vall[my_index] |= ((rval[VTYPE_INDEX_VAL_VALL] >> (j & 0x1f)) & 0x1) << offset;
-              valh[my_index] |= ((rval[VTYPE_INDEX_VAL_VALH] >> (j & 0x1f)) & 0x1) << offset;
-              pos++;
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_U32 :
+      {
+        uint32       vall[MAX_BIT_WIDTH>>5];
+        uint32       valh[MAX_BIT_WIDTH>>5];
+        unsigned int i, j;
+        unsigned int rwidth     = right->width;
+        unsigned int multiplier = vector_to_int( left );
+        unsigned int pos        = 0;
+        for( i=0; i<multiplier; i++ ) {
+          for( j=0; j<rwidth; j++ ) {
+            uint32*      rval     = right->value.u32[j>>5];
+            unsigned int my_index = (pos >> 5);
+            unsigned int offset   = (pos & 0x1f);
+            if( offset == 0 ) {
+              vall[my_index] = 0;
+              valh[my_index] = 0;
             }
+            vall[my_index] |= ((rval[VTYPE_INDEX_VAL_VALL] >> (j & 0x1f)) & 0x1) << offset;
+            valh[my_index] |= ((rval[VTYPE_INDEX_VAL_VALH] >> (j & 0x1f)) & 0x1) << offset;
+            pos++;
           }
-          retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
         }
-        break;
-      default :  assert( 0 );  break;
-    }
-
+        retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -4674,6 +4664,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.82  2008/05/25 04:27:33  phase1geo
+ Adding div1 and mod1 diagnostics to regression suite.
+
  Revision 1.138.2.81  2008/05/24 21:20:56  phase1geo
  Fixing bugs with comparison functions when values contain Xs.  Adding more diagnostics
  to regression suite to cover coverage holes.
