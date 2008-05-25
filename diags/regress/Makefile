@@ -42,9 +42,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 compx1.2        compx1.3        concat1         concat2         concat3 \
                 concat4.1       concat4.2       concat5         concat6         cond1 \
                 cond2           cond3           cond3.1         cond3.2         cond3.3 \
-                delay1          delay2          define1         define1.1 \
-                define1.2       define2         define2.1       define4         define5 \
-                disable1        disable1.1      disable2        disable2.1      disable3 \
+                delay1          delay2          define1         define1.1       define1.2 \
+                define2         define2.1       define4         define5         disable1 \
+                disable1.1      disable2        disable2.1      disable3        div1 \
                 dly_assign1     endian1         endian2         endian3         event1 \
                 event1.1        exclude1        exclude2        exclude3        exclude4 \
                 exclude6        exclude6.1      exclude7        exclude7.1      exclude7.2 \
@@ -68,7 +68,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 lshift4.2       lshift4.3       lshift5         mbit_sel1       mbit_sel2       mbit_sel3 \
                 mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3 \
                 mbit_sel7       mbit_sel9       mbit_sel9.1     mbit_sel9.2     mem1 \
-                mem2            mult1           mult2           multi_exp1 \
+                mem2            mod1            mult1           mult2           multi_exp1 \
                 multi_exp1.1    multi_exp1.2    multi_exp1.3    multi_exp1.4    multi_exp1.5 \
                 multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp1.9    multi_exp1.10 \
                 multi_exp1.11   multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15 \
@@ -133,7 +133,7 @@ NOSIMLIST     = gen1            gen1.1          gen1.3          gen1.4          
                 gen31.2         gen32.2         gen33.2         gen34.2         gen35.2 \
                 gen36.2         gen37.2         gen38.2         gen39.2         gen40.2
 
-NOSIMERRLIST  = comment1        div1            enum2           err4            err4.1 \
+NOSIMERRLIST  = comment1        enum2           err4            err4.1 \
                 expand5         for7            for7.1          func3           func3.1 \
                 func3.2         func3.3         func3.4         func3.5         func3.6 \
                 gen1.2          gen2            gen3 \

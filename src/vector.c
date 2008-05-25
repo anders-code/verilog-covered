@@ -4007,12 +4007,11 @@ bool vector_op_divide(
           uint32 valh = 0;
           uint32 rval = right->value.u32[0][VTYPE_INDEX_EXP_VALL];
           if( rval == 0 ) {
-            print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-            // printf( "vector Throw G\n" ); - HIT
-            Throw 0;
+            retval = vector_set_to_x( tgt );
+          } else {
+            vall = left->value.u32[0][VTYPE_INDEX_EXP_VALL] / rval;
+            retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 31 );
           }
-          vall = left->value.u32[0][VTYPE_INDEX_EXP_VALL] / rval;
-          retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 31 );
         }
         break;
       default :  assert( 0 );  break;
@@ -4056,12 +4055,11 @@ bool vector_op_modulus(
           uint32 valh = 0;
           uint32 rval = right->value.u32[0][VTYPE_INDEX_EXP_VALL];
           if( rval == 0 ) {
-            print_output( "Modulus by 0 error", FATAL, __FILE__, __LINE__ );
-            printf( "vector Throw H\n" );
-            Throw 0;
+            retval = vector_set_to_x( tgt );
+          } else {
+            vall = left->value.u32[0][VTYPE_INDEX_EXP_VALL] % rval;
+            retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 31 );
           }
-          vall = left->value.u32[0][VTYPE_INDEX_EXP_VALL] % rval;
-          retval = vector_set_coverage_and_assign_uint32( tgt, &vall, &valh, 0, 31 );
         }
         break;
       default :  assert( 0 );  break;
@@ -4664,6 +4662,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.83  2008/05/25 05:15:40  phase1geo
+ Updating regressions.
+
  Revision 1.138.2.82  2008/05/25 04:27:33  phase1geo
  Adding div1 and mod1 diagnostics to regression suite.
 

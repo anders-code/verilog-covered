@@ -13,12 +13,19 @@ module main;
 integer a, b;
 
 initial begin
-	$dumpfile( "mod1.dump" );
-	$dumpvars( 0, main );
 	a = 0;
+	b = 0;
+	#5;
 	b = 32 % a;
 	#5;
 	$finish;
+end
+
+initial begin
+`ifdef DUMP
+	$dumpfile( "mod1.vcd" );
+	$dumpvars( 0, main );
+`endif
 end
 
 endmodule

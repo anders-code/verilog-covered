@@ -25,11 +25,4 @@ initial begin
 	$finish;
 end
 
-initial begin
-`ifdef DUMP
-        $dumpfile( "expand5.vcd" );
-        $dumpvars( 0, main );
-`endif
-end
-
 endmodule
