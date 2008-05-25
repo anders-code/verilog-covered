@@ -99,7 +99,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 timescale1.9    timescale1.12   timescale1.15   timescale1.16   timescale1.17 \
                 timescale1.18   timescale2      timescale2.2    timescale2.3    timescale2.4 \
                 timescale2.5    timescale2.8    toggle          tri             tri0 \
-                tri1            triand          trior           wait1           wait1.1 \
+                tri1            triand          trior           unary2          unary3 \
+                wait1           wait1.1 \
                 wait2           wand            while1          while1.1        wor
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
