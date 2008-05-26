@@ -815,7 +815,7 @@ void funit_db_merge(
         }
       } Catch_anonymous {
         free_safe( curr_line, curr_line_size );
-        printf( "func_unit Throw H\n" );
+        // printf( "func_unit Throw H\n" ); - HIT
         Throw 0;
       }
       free_safe( curr_line, curr_line_size );
@@ -1488,6 +1488,10 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.101.2.3  2008/05/26 05:42:09  phase1geo
+ Adding new error merge diagnostics to regression suite to verify missing vector_db_merge
+ error cases.  Full regression passes.
+
  Revision 1.101.2.2  2008/05/23 14:50:22  phase1geo
  Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
  vector set bit.  Updating regressions per this change.

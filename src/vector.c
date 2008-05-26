@@ -485,7 +485,7 @@ void vector_db_merge(
       if( same ) {
         print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                       FATAL, __FILE__, __LINE__ );
-        printf( "vector Throw D\n" );
+        // printf( "vector Throw D\n" ); - HIT
         Throw 0;
       }
 
@@ -505,7 +505,7 @@ void vector_db_merge(
                   }
                 } else {
                   print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-                  printf( "vector Throw E\n" );
+                  // printf( "vector Throw E\n" ); - HIT
                   Throw 0;
                 }
               }
@@ -520,7 +520,7 @@ void vector_db_merge(
   } else {
 
     print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-    printf( "vector Throw F\n" );
+    // printf( "vector Throw F\n" ); - HIT
     Throw 0;
 
   }
@@ -4662,6 +4662,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.84  2008/05/26 05:42:09  phase1geo
+ Adding new error merge diagnostics to regression suite to verify missing vector_db_merge
+ error cases.  Full regression passes.
+
  Revision 1.138.2.83  2008/05/25 05:15:40  phase1geo
  Updating regressions.
 

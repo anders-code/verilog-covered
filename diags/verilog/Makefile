@@ -354,8 +354,7 @@ errmergerun:
 ifndef VPI
 	@echo Running $(DIAG) -- should see an error message
 	@$(MAKE) DIAG=$(DIAG)a oneerrmergerun
-	@$(MAKE) DIAG=$(DIAG)b oneerrmergerun
-	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd 2> $(DIAG).err | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd.bad 2> $(DIAG).err | ./check_mem
 	@cat $(DIAG).err
 	@./check_test $(DIAG) 1 1
 endif

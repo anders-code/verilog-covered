@@ -574,7 +574,9 @@ void db_read(
         } Catch_anonymous {
 
           free_safe( curr_line, curr_line_size );
-          funit_dealloc( curr_funit );
+          if( (read_mode != READ_MODE_MERGE_INST_MERGE) && (read_mode != READ_MODE_REPORT_MOD_MERGE) ) {
+            funit_dealloc( curr_funit );
+          }
           // printf( "db Throw F\n" ); - HIT
           Throw 0;
 
@@ -2951,6 +2953,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.307.2.5  2008/05/26 05:42:09  phase1geo
+ Adding new error merge diagnostics to regression suite to verify missing vector_db_merge
+ error cases.  Full regression passes.
+
  Revision 1.307.2.4  2008/05/25 04:27:32  phase1geo
  Adding div1 and mod1 diagnostics to regression suite.
 
