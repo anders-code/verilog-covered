@@ -1314,6 +1314,51 @@ bool vector_set_coverage_and_assign_uint32(
 }
 
 /*!
+ Calculates the lower and upper sign extension values for the given vector.
+*/
+inline static void vector_get_sign_extend_vector_uint32(
+            const vector* vec,    /*!< Pointer to vector to get MSB value from */
+  /*@out@*/ uint32*       signl,  /*!< Pointer to value that will contain the lower value vector */
+  /*@out@*/ uint32*       signh   /*!< Pointer to value that will contain the upper value vector */
+) { PROFILE(VECTOR_GET_SIGN_EXTEND_VECTOR_UINT32);
+
+  uint32* entry     = vec->value.u32[(vec->width - 1) >> 5];
+  uint32  last_mask = 1 << ((vec->width - 1) & 0x1f);
+
+  *signl = ((entry[VTYPE_INDEX_VAL_VALL] & last_mask) != 0) ? 0xffffffff : 0;
+  *signh = ((entry[VTYPE_INDEX_VAL_VALH] & last_mask) != 0) ? 0xffffffff : 0;
+
+}
+
+/*!
+ Performs signedness bit fill for the given value arrays.
+*/
+static void vector_sign_extend_uint32(
+  uint32* vall,   /*!< Pointer to lower value array to bit fill */
+  uint32* valh,   /*!< Pointer to upper value array to bit fill */
+  uint32  signl,  /*!< Sign-extension value for the lower value (call vector_get_sign_extend_vector_uint32) */
+  uint32  signh,  /*!< Sign-extension value for the upper value (call vector_get_sign_extend_vector_uint32) */
+  int     last,   /*!< Index of last bit in vall/h to evalulate for bit fill */
+  int     width   /*!< Width of vall/h to fill */
+) { PROFILE(VECTOR_SIGN_EXTEND_UINT32);
+
+  /* If any special sign-extension is necessary, handle it now */
+  if( (signl != 0) || (signh != 0) ) {
+    unsigned int i     = ((last + 1) >> 5);
+    uint32       fmask = 0xffffffff << ((last + 1) & 0x1f);
+    vall[i] |= signl & fmask;
+    valh[i] |= signh & fmask;
+    for( i++; i<=((width - 1) >> 5); i++ ) {
+      vall[i] = signl;
+      valh[i] = signh;
+    }
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  Performs a fast left-shift of 0-bit-aligned data in vector and stores the result in the vall/h
  value arrays.
 */
@@ -1611,22 +1656,48 @@ bool vector_part_select_push(
         uint32       vall[MAX_BIT_WIDTH>>5];
         unsigned int diff;
         unsigned int i; 
+        uint32       signl, signh;
 
-        /* First, initialize the vall/h arrays to zero */
-        for( i=(tgt_lsb >> 5); i<=(tgt_msb >> 5); i++ ) {
-          vall[i] = valh[i] = 0;
-        }
+        /* Get the sign extension vector */
+        vector_get_sign_extend_vector_uint32( src, &signl, &signh );
 
-        /* Left-shift the source vector to match up with target LSB */
-        if( src_lsb < tgt_lsb ) {
-          diff = (tgt_lsb - src_lsb);
-          vector_lshift_uint32( src, vall, valh, diff, ((src_msb - src_lsb) + diff) );
-        /* Otherwise, right-shift the source vector to match up */
+        /* If the LSB to assign exceeds the size of the actual vector, just create a value based on the signedness */
+        if( src_lsb >= src->width ) {
+
+          if( sign_extend && ((signl != 0) || (signh != 0)) ) {
+            vector_sign_extend_uint32( vall, valh, signl, signh, (tgt_lsb - 1), tgt->width );
+          } else {
+            for( i=(tgt_lsb >> 5); i<=(tgt_msb >> 5); i++ ) {
+              vall[i] = valh[i] = 0;
+            }
+          }
+
+        /* Otherwise, pull the value from source vector */
         } else {
-          diff = (src_lsb - tgt_lsb);
-          vector_rshift_uint32( src, vall, valh, diff, ((src_msb - src_lsb) + diff) );
+
+          /* First, initialize the vall/h arrays to zero */
+          for( i=(tgt_lsb >> 5); i<=(tgt_msb >> 5); i++ ) {
+            vall[i] = valh[i] = 0;
+          }
+  
+          /* Left-shift the source vector to match up with target LSB */
+          if( src_lsb < tgt_lsb ) {
+            diff = (tgt_lsb - src_lsb);
+            vector_lshift_uint32( src, vall, valh, diff, ((src_msb - src_lsb) + diff) );
+          /* Otherwise, right-shift the source vector to match up */
+          } else {
+            diff = (src_lsb - tgt_lsb);
+            vector_rshift_uint32( src, vall, valh, diff, ((src_msb - src_lsb) + diff) );
+          }
+
+          /* Now apply the sign extension, if necessary */
+          if( sign_extend && ((signl != 0) || (signh != 0)) ) {
+            vector_sign_extend_uint32( vall, valh, signl, signh, (tgt_lsb + (src_msb - src_lsb)), (tgt_msb + 1) );
+          }
+
         }
 
+        /* Now assign the calculated value and set coverage information */
         retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, tgt_lsb, tgt_msb );
       }
       break;
@@ -1805,85 +1876,6 @@ void vector_set_other_comb_evals(
   PROFILE_END;
   
 } 
-
-/*!
- Performs signedness bit fill for the given value arrays.
-*/
-static void vector_sign_extend_uint32(
-  uint32* vall,  /*!< Pointer to lower value array to bit fill */
-  uint32* valh,  /*!< Pointer to upper value array to bit fill */
-  int     last,  /*!< Index of last bit in vall/h to evalulate for bit fill */
-  int     width  /*!< Width of vall/h to fill */
-) { PROFILE(VECTOR_BIT_FILL_UINT32);
-
-  unsigned int msb_pos  = 1 << (last & 0x1f);
-  unsigned int msb_elem = last >> 5;
-  uint32       signl    = (vall[msb_elem] & msb_pos) ? 0xffffffff : 0;
-  uint32       signh    = (valh[msb_elem] & msb_pos) ? 0xffffffff : 0;
-
-  /* If any special sign-extension is necessary, handle it now */
-  if( (signl != 0) || (signh != 0) ) {
-    unsigned int i     = ((last + 1) >> 5);
-    uint32       fmask = 0xffffffff << ((last + 1) & 0x1f);
-    vall[i] |= signl & fmask;
-    valh[i] |= signh & fmask;
-    for( i++; i<=((width - 1) >> 5); i++ ) {
-      vall[i] = signl;
-      valh[i] = signh;
-    }
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
- \param vec   Pointer to vector to bit-fill
- \param last  Bit position of last set value
-
- \return Returns TRUE if any of the bits in the bit-fill range have changed
-         value.
-
- Performs a bit-fill of the specified vector starting at the specified LSB
- and bit-filling all bits to the MSB.
-*/
-bool vector_sign_extend(
-  vector* vec,
-  int     last
-) { PROFILE(VECTOR_BIT_FILL);
-
-  bool changed = FALSE;  /* Return value for this function */
-
-  assert( vec != NULL );
-  assert( last >= 0 );
-  assert( last < vec->width ); 
-
-  switch( vec->suppl.part.data_type ) {
-    case VDATA_U32 :
-      {
-        uint32       vall[MAX_BIT_WIDTH>>5];
-        uint32       valh[MAX_BIT_WIDTH>>5];
-        unsigned int i;
-
-        /* Copy the needed data from the vector to the temporary value arrays */
-        for( i=(last >> 5); i<=((vec->width - 1) >> 5); i++ ) {
-          vall[i] = vec->value.u32[i][VTYPE_INDEX_VAL_VALL];
-          valh[i] = vec->value.u32[i][VTYPE_INDEX_VAL_VALH];
-        }
-
-        /* Perform bit fill */
-        vector_sign_extend_uint32( vall, valh, last, vec->width );
-
-        /* Get coverage information and perform assign */
-        (void)vector_set_coverage_and_assign_uint32( vec, vall, valh, (last + 1), (vec->width - 1) );
-      }
-      break;
-    default :  assert( 0 );  break;
-  }
- 
-  return( changed );
-
-}
 
 /*!
  \param vec  Pointer to vector check for unknown-ness
@@ -3719,10 +3711,12 @@ bool vector_op_arshift(
         {
           uint32       vall[MAX_BIT_WIDTH>>5];
           uint32       valh[MAX_BIT_WIDTH>>5];
+          uint32       signl, signh;
           unsigned int msb = left->width - 1;
 
           vector_rshift_uint32( left, vall, valh, shift_val, msb );
-          vector_sign_extend_uint32( vall, valh, (msb - shift_val), tgt->width );
+          vector_get_sign_extend_vector_uint32( left, &signl, &signh );
+          vector_sign_extend_uint32( vall, valh, signl, signh, (msb - shift_val), tgt->width );
         
           retval = vector_set_coverage_and_assign_uint32( tgt, vall, valh, 0, (tgt->width - 1) );
         }
@@ -3910,6 +3904,7 @@ bool vector_op_subtract(
           uint32       lvall, lvalh;
           uint32       rvall, rvalh;
           unsigned int i;
+          uint32       signl, signh;
           for( i=0; i<VECTOR_SIZE32( tgt->width ); i++ ) {
             vector_copy_val_and_sign_extend_uint32( left,  i, lmsb_is_one, &lvall, &lvalh );
             vector_copy_val_and_sign_extend_uint32( right, i, rmsb_is_one, &rvall, &rvalh ); 
@@ -4663,6 +4658,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.86  2008/05/27 23:05:08  phase1geo
+ Fixing sign-extension issue with signal assignments.  Added diagnostic to
+ verify this functionality.  Full regression passes.
+
  Revision 1.138.2.85  2008/05/27 05:52:51  phase1geo
  Starting to add fix for sign extension.  Not finished at this point.
 
