@@ -5298,7 +5298,7 @@ void expression_assign(
     switch( lhs->op ) {
       case EXP_OP_SIG      :
         if( lhs->sig->suppl.part.assigned == 1 ) {
-          bool changed = vector_part_select_push( lhs->sig->value, 0, (lhs->value->width - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1) );
+          bool changed = vector_part_select_push( lhs->sig->value, 0, (lhs->value->width - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), rhs->value->suppl.part.is_signed );
           lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
           if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -5330,7 +5330,7 @@ void expression_assign(
             }
           }
           if( dim->last && (dim->curr_lsb != -1) ) {
-            changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1) );
+            changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE );
             lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -5359,7 +5359,7 @@ void expression_assign(
             dim->curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + intval);
           }
           if( dim->last && (dim->curr_lsb != -1) ) {
-            changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1) );
+            changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE );
             lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -5623,6 +5623,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.41  2008/05/27 05:52:50  phase1geo
+ Starting to add fix for sign extension.  Not finished at this point.
+
  Revision 1.329.2.40  2008/05/25 04:27:32  phase1geo
  Adding div1 and mod1 diagnostics to regression suite.
 

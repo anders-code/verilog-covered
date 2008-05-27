@@ -1593,12 +1593,13 @@ bool vector_part_select_pull(
  LSB and MSB range.
 */
 bool vector_part_select_push(
-  vector*       tgt,      /*!< Pointer to vector that will store the result */
-  int           tgt_lsb,  /*!< LSB offset of target vector */
-  int           tgt_msb,  /*!< MSB offset of target vector */
-  const vector* src,      /*!< Pointer to vector containing data to store */
-  int           src_lsb,  /*!< LSB offset of source vector */
-  int           src_msb   /*!< MSB offset of source vector */
+  vector*       tgt,         /*!< Pointer to vector that will store the result */
+  int           tgt_lsb,     /*!< LSB offset of target vector */
+  int           tgt_msb,     /*!< MSB offset of target vector */
+  const vector* src,         /*!< Pointer to vector containing data to store */
+  int           src_lsb,     /*!< LSB offset of source vector */
+  int           src_msb,     /*!< MSB offset of source vector */
+  bool          sign_extend  /*!< Set to TRUE if sign extension is needed */
 ) { PROFILE(VECTOR_PART_SELECT_PUSH);
 
   bool retval;  /* Return value for this function */
@@ -4662,6 +4663,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.85  2008/05/27 05:52:51  phase1geo
+ Starting to add fix for sign extension.  Not finished at this point.
+
  Revision 1.138.2.84  2008/05/26 05:42:09  phase1geo
  Adding new error merge diagnostics to regression suite to verify missing vector_db_merge
  error cases.  Full regression passes.

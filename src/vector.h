@@ -199,7 +199,8 @@ bool vector_part_select_push(
   int           tgt_msb,
   const vector* src,
   int           src_lsb,
-  int           src_msb
+  int           src_msb,
+  bool          sign_extend
 );
 
 /*!
@@ -579,6 +580,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.22  2008/05/27 05:52:52  phase1geo
+ Starting to add fix for sign extension.  Not finished at this point.
+
  Revision 1.58.2.21  2008/05/24 21:20:57  phase1geo
  Fixing bugs with comparison functions when values contain Xs.  Adding more diagnostics
  to regression suite to cover coverage holes.
