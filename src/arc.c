@@ -577,7 +577,7 @@ void arc_db_read(
 
           if( sscanf( *line, "%d %d %x%n", &((*table)->arcs[i]->from), &((*table)->arcs[i]->to), &((*table)->arcs[i]->suppl.all), &chars_read ) != 3 ) {
             print_output( "Unable to parse FSM table information from database.  Unable to read.", FATAL, __FILE__, __LINE__ );
-            printf( "arc Throw A\n" );
+            // printf( "arc Throw A\n" ); - HIT
             Throw 0;
           } else {
             *line += chars_read;
@@ -587,20 +587,20 @@ void arc_db_read(
 
       } else {
         print_output( "Unable to parse FSM table information from database.  Unable to read.", FATAL, __FILE__, __LINE__ );
-        printf( "arc Throw B\n" );
+        // printf( "arc Throw B\n" ); - HIT
         Throw 0;
       }
 
     } else {
       print_output( "Unable to parse FSM table information from database.  Unable to read.", FATAL, __FILE__, __LINE__ );
-      printf( "arc Throw C\n" );
+      // printf( "arc Throw C\n" ); - HIT
       Throw 0;
     }
 
   } Catch_anonymous {
     arc_dealloc( *table );
     *table = NULL;
-    printf( "arc Throw D\n" );
+    // printf( "arc Throw D\n" ); - HIT
     Throw 0;
   }
 
@@ -840,6 +840,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.60.2.14  2008/05/27 04:29:31  phase1geo
+ Fixing memory leak for an FSM arc parser error.  Adding diagnostics to regression
+ suite for coverage purposes.
+
  Revision 1.60.2.13  2008/05/23 14:50:20  phase1geo
  Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
  vector set bit.  Updating regressions per this change.

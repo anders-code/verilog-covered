@@ -897,6 +897,7 @@ static void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
   }
   
   exp_link_delete_list( static_expr_head, FALSE );
+  static_expr_head = static_expr_tail = NULL;
 
   PROFILE_END;
   
@@ -1212,6 +1213,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
   all_head = all_tail = all_next = NULL;
 
+  /* Deallocate all static expressions, if there are any */
+  exp_link_delete_list( static_expr_head, FALSE );
+
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY
   /* Clear CLI debug mode */
@@ -1226,6 +1230,10 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.126.2.3  2008/05/27 04:29:31  phase1geo
+ Fixing memory leak for an FSM arc parser error.  Adding diagnostics to regression
+ suite for coverage purposes.
+
  Revision 1.126.2.2  2008/05/08 23:12:43  phase1geo
  Fixing several bugs and reworking code in arc to get FSM diagnostics
  to pass.  Checkpointing.

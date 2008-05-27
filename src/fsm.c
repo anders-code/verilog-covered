@@ -274,7 +274,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
             arc_db_read( &(table->table), line );
           } Catch_anonymous {
             fsm_dealloc( table );
-            printf( "fsm Throw C\n" );
+            // printf( "fsm Throw C\n" ); - HIT
             Throw 0;
           }
 
@@ -298,7 +298,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
   } else {
 
     print_output( "Unable to parse statement line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-    printf( "fsm Throw E\n" );
+    // printf( "fsm Throw E\n" ); - HIT
     Throw 0;
 
   }
@@ -1372,6 +1372,10 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.95.2.3  2008/05/27 04:29:31  phase1geo
+ Fixing memory leak for an FSM arc parser error.  Adding diagnostics to regression
+ suite for coverage purposes.
+
  Revision 1.95.2.2  2008/05/08 23:12:42  phase1geo
  Fixing several bugs and reworking code in arc to get FSM diagnostics
  to pass.  Checkpointing.
