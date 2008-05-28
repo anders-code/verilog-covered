@@ -1595,6 +1595,7 @@ union isuppl_u {
     uint32 excl_final  : 1;    /*!< Specifies if final statements are being excluded from coverage */
     uint32 excl_pragma : 1;    /*!< Specifies if code encapsulated in coverage pragmas should be excluded from coverage */
     uint32 assert_ovl  : 1;    /*!< Specifies that OVL assertions should be included for coverage */
+    uint32 vec_ul_size : 2;    /*!< Specifies the bit size of a vector element (0=8 bits, 1=16-bits, 2=32-bits, 3=64-bits) */
   } part;
 };
 
@@ -2852,6 +2853,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.18  2008/05/28 22:12:31  phase1geo
+ Adding further support for 32-/64-bit support.  Checkpointing.
+
  Revision 1.294.2.17  2008/05/28 05:57:10  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 

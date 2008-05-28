@@ -617,9 +617,9 @@ static void race_check_one_block_assignment(
                   if( (intval >= 0) && (intval < expl->exp->value->width) ) {
                     if( dim_be ) {
                       int lsb = (vwidth - (intval + expl->exp->value->width));
-                      curr_race = vector_set_assigned( src, ((expl->exp->value->width - 1) + lsb), lsb );
+                      curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + lsb), lsb );
                     } else {
-                      curr_race = vector_set_assigned( src, ((expl->exp->value->width - 1) + intval), intval );
+                      curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + intval), intval );
                     }
                   } else {
                     curr_race = FALSE;
@@ -633,9 +633,9 @@ static void race_check_one_block_assignment(
                   intval = ((dim_be ? vector_to_int( expl->exp->left->value ) : vector_to_int( expl->exp->right->value )) - dim_lsb) * dim_width;
                   if( dim_be ) {
                     int lsb = (vwidth - (intval + expl->exp->value->width));
-                    curr_race = vector_set_assigned( src, ((expl->exp->value->width - 1) + lsb), lsb );
+                    curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + lsb), lsb );
                   } else {
-                    curr_race = vector_set_assigned( src, ((expl->exp->value->width - 1) + intval), intval );
+                    curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + intval), intval );
                   }
                 } else {
                   curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
@@ -1170,6 +1170,9 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.80.2.3  2008/05/28 22:12:31  phase1geo
+ Adding further support for 32-/64-bit support.  Checkpointing.
+
  Revision 1.80.2.2  2008/05/23 14:50:23  phase1geo
  Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
  vector set bit.  Updating regressions per this change.

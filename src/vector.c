@@ -72,7 +72,8 @@
 /*! Contains the structure sizes for the various vector types (vector "type" supplemental field is the index to this array */
 static const unsigned int vector_type_sizes[4] = {VTYPE_INDEX_VAL_NUM, VTYPE_INDEX_SIG_NUM, VTYPE_INDEX_EXP_NUM, VTYPE_INDEX_MEM_NUM};
 
-extern char user_msg[USER_MSG_LENGTH];
+extern char   user_msg[USER_MSG_LENGTH];
+extern isuppl info_suppl;
 
 
 /*!
@@ -110,7 +111,7 @@ void vector_init_ulong(
     int    i, j;
     int    size  = UL_SIZE(width);
     int    num   = vector_type_sizes[type];
-    ulong  lmask = UL_SET >> (31 - ((width - 1) & 0x1f));
+    ulong  lmask = UL_HMASK(width - 1);
 
     assert( width > 0 );
 
@@ -340,6 +341,7 @@ void vector_db_write(
           ulong        dflt_l = net ? UL_SET : 0x0;
           ulong        dflt_h = (vec->suppl.part.is_2state == 1) ? 0x0 : UL_SET;
           unsigned int i, j;
+          ulong        hmask  = UL_HMASK( vec->width - 1 );
           for( i=0; i<(UL_SIZE(vec->width) - 1); i++ ) {
             fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l );
             fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h );
@@ -351,15 +353,11 @@ void vector_db_write(
               }
             }
           }
-
-          dflt_l >>= (31 - UL_MOD(vec->width - 1));
-          dflt_h >>= (31 - UL_MOD(vec->width - 1));
-
-          fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l );
-          fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h );
+          fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l) & hmask );
+          fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h) & hmask );
           for( j=2; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
             if( ((mask >> j) & 0x1) == 1 ) {
-              fprintf( file, " %lx", (vec->value.ul != NULL) ? vec->value.ul[i][j] : 0 );
+              fprintf( file, " %lx", (vec->value.ul != NULL) ? (vec->value.ul[i][j] & hmask) : 0 );
             } else {
               fprintf( file, " 0" );
             }
@@ -410,13 +408,52 @@ void vector_db_read(
           case VDATA_UL :
             {
               unsigned int i, j;
-              for( i=0; i<UL_SIZE(width); i++ ) {
+              for( i=0; i<=((width-1)>>(info_suppl.part.vec_ul_size+3)); i++ ) {
                 for( j=0; j<vector_type_sizes[suppl.part.type]; j++ ) {
-                  if( sscanf( *line, "%lx%n", &((*vec)->value.ul[i][j]), &chars_read ) == 1 ) {
-                    *line += chars_read;
+                  /* If the CDD vector size and our size are the same, just do a direct read */
+                  if( ((info_suppl.part.vec_ul_size == 2) && (sizeof( ulong ) == 4)) ||
+                      ((info_suppl.part.vec_ul_size == 3) && (sizeof( ulong ) == 8)) ) {
+                    if( sscanf( *line, "%lx%n", &((*vec)->value.ul[i][j]), &chars_read ) == 1 ) {
+                      *line += chars_read;
+                    } else {
+                      print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                      // printf( "vector Throw A\n" ); - HIT
+                      Throw 0;
+                    }
+
+                  /* If the CDD file size is 32-bit and we are 64-bit, store two elements to our one */
+                  } else if( (info_suppl.part.vec_ul_size == 2) && (sizeof( ulong ) == 8) ) {
+                    uint32 val;
+                    if( sscanf( *line, "%x%n", &val, &chars_read ) == 1 ) {
+                      *line += chars_read;
+                      if( i == 0 ) {
+                        (*vec)->value.ul[i/2][j] = (ulong)val;
+                      } else {
+                        (*vec)->value.ul[i/2][j] |= ((ulong)val << 32);
+                      }
+                    } else {
+                      print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                      printf( "vector Throw A.1\n" );
+                      Throw 0;
+                    }
+
+                  /* If the CDD file size is 64-bit and we are 32-bit, store one elements to our two */
+                  } else if( (info_suppl.part.vec_ul_size == 3) && (sizeof( ulong ) == 4) ) {
+                    unsigned long long val;
+                    if( sscanf( *line, "%llx%n", &val, &chars_read ) == 1 ) {
+                      *line += chars_read;
+                      (*vec)->value.ul[(i*2)+0][j] = (ulong)(val & 0xffffffffLL);
+                      (*vec)->value.ul[(i*2)+1][j] = (ulong)((val >> 32) & 0xffffffffLL);
+                    } else {
+                      print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                      printf( "vector Throw A.2\n" );
+                      Throw 0;
+                    }
+
+                  /* Otherwise, we don't know how to convert the value, so flag an error */
                   } else {
                     print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                    // printf( "vector Throw A\n" ); - HIT
+                    printf( "vector Throw A.3\n" );
                     Throw 0;
                   }
                 }
@@ -496,21 +533,64 @@ void vector_db_merge(
         case VDATA_UL :
           {
             unsigned int i, j;
-            ulong        value;
-            for( i=0; i<UL_SIZE(width); i++ ) {
+            for( i=0; i<=((width-1)>>(info_suppl.part.vec_ul_size+3)); i++ ) {
               for( j=0; j<vector_type_sizes[suppl.part.type]; j++ ) {
-                if( sscanf( *line, "%lx%n", &value, &chars_read ) == 1 ) {
-                  *line += chars_read;
-                  if( j >= 2 ) {
-                    base->value.ul[i][j] |= value;
+                /* If the CDD vector size and our size are the same, just do a direct read */
+                if( ((info_suppl.part.vec_ul_size == 2) && (sizeof( ulong ) == 4)) ||
+                    ((info_suppl.part.vec_ul_size == 3) && (sizeof( ulong ) == 8)) ) {
+                  ulong val;
+                  if( sscanf( *line, "%lx%n", &val, &chars_read ) == 1 ) {
+                    *line += chars_read;
+                    if( j >= 2 ) {
+                      base->value.ul[i][j] |= val;
+                    }
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+                    // printf( "vector Throw E\n" ); - HIT
+                    Throw 0;
                   }
+
+                /* If the CDD file size is 32-bit and we are 64-bit, store two elements to our one */
+                } else if( (info_suppl.part.vec_ul_size == 2) && (sizeof( ulong ) == 8) ) {
+                  uint32 val;
+                  if( sscanf( *line, "%x%n", &val, &chars_read ) == 1 ) {
+                    *line += chars_read;
+                    if( j >= 2 ) {
+                      if( i == 0 ) {
+                        base->value.ul[i/2][j] = (ulong)val;
+                      } else {
+                        base->value.ul[i/2][j] |= ((ulong)val << 32);
+                      }
+                    }
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+                    printf( "vector Throw E.1\n" );
+                    Throw 0;
+                  }
+
+                /* If the CDD file size is 64-bit and we are 32-bit, store one elements to our two */
+                } else if( (info_suppl.part.vec_ul_size == 3) && (sizeof( ulong ) == 4) ) {
+                  unsigned long long val;
+                  if( sscanf( *line, "%llx%n", &val, &chars_read ) == 1 ) {
+                    *line += chars_read;
+                    if( j >= 2 ) {
+                      base->value.ul[(i*2)+0][j] = (ulong)(val & 0xffffffffLL);
+                      base->value.ul[(i*2)+1][j] = (ulong)((val >> 32) & 0xffffffffLL);
+                    }
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+                    printf( "vector Throw E.2\n" );
+                    Throw 0;
+                  }
+
+                /* Otherwise, we don't know how to convert the value, so flag an error */
                 } else {
-                  print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-                  // printf( "vector Throw E\n" ); - HIT
+                  print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+                  printf( "vector Throw E.3\n" );
                   Throw 0;
                 }
               }
-            } 
+            }
           }
           break;
         default :  assert( 0 );  break;
@@ -573,8 +653,8 @@ int vector_get_eval_a(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL :  retval = (vec->value.ul[index>>5][VTYPE_INDEX_EXP_EVAL_A] >> (index & 0x1f)) & 0x1;  break;
-    default        :  assert( 0 );  break;
+    case VDATA_UL :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_A] >> UL_MOD(index)) & 0x1;  break;
+    default       :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -597,8 +677,8 @@ int vector_get_eval_b(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL :  retval = (vec->value.ul[index>>5][VTYPE_INDEX_EXP_EVAL_B] >> (index & 0x1f)) & 0x1;  break;
-    default        :  assert( 0 );  break;
+    case VDATA_UL :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_B] >> UL_MOD(index)) & 0x1;  break;
+    default       :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -621,8 +701,8 @@ int vector_get_eval_c(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL :  retval = (vec->value.ul[index>>5][VTYPE_INDEX_EXP_EVAL_C] >> (index & 0x1f)) & 0x1;  break;
-    default        :  assert( 0 );  break;
+    case VDATA_UL :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_C] >> UL_MOD(index)) & 0x1;  break;
+    default       :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -645,8 +725,8 @@ int vector_get_eval_d(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL :  retval = (vec->value.ul[index>>5][VTYPE_INDEX_EXP_EVAL_D] >> (index & 0x1f)) & 0x1;  break;
-    default        :  assert( 0 );  break;
+    case VDATA_UL :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_D] >> UL_MOD(index)) & 0x1;  break;
+    default       :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -769,7 +849,7 @@ char* vector_get_toggle01_ulong(
 ) { PROFILE(VECTOR_GET_TOGGLE01_ULONG);
 
   char* bits      = (char*)malloc_safe( width + 1 );
-  int   bits_left = ((width - 1) & 0x1f);
+  int   bits_left = UL_MOD(width - 1);
   int   i, j;
   char  tmp[2];
 
@@ -781,7 +861,7 @@ char* vector_get_toggle01_ulong(
       assert( rv < 2 );
       bits[((width - 1) - i)] = tmp[0];
     }
-    bits_left = 31;
+    bits_left = UL_BITS - 1;
   }
 
   bits[width] = '\0';
@@ -804,7 +884,7 @@ char* vector_get_toggle10_ulong(
 ) { PROFILE(VECTOR_GET_TOGGLE10_ULONG);
 
   char* bits      = (char*)malloc_safe( width + 1 );
-  int   bits_left = ((width - 1) & 0x1f);
+  int   bits_left = UL_MOD(width - 1);
   int   i, j;
   char  tmp[2];
   
@@ -816,7 +896,7 @@ char* vector_get_toggle10_ulong(
       assert( rv < 2 );
       bits[((width - 1) - i)] = tmp[0];
     } 
-    bits_left = 31;
+    bits_left = UL_BITS - 1;
   } 
   
   bits[width] = '\0';
@@ -843,7 +923,7 @@ void vector_display_toggle01_ulong(
 
   unsigned int nib       = 0;
   int          i, j;
-  int          bits_left = ((width - 1) & 0x1f);
+  int          bits_left = UL_MOD(width - 1);
 
   fprintf( ofile, "%d'h", width );
 
@@ -881,7 +961,7 @@ void vector_display_toggle10_ulong(
 
   unsigned int nib       = 0;
   int          i, j;
-  int          bits_left = ((width - 1) & 0x1f);
+  int          bits_left = UL_MOD(width - 1);
   
   fprintf( ofile, "%d'h", width );
       
@@ -915,7 +995,7 @@ void vector_display_value_ulong(
 ) {
 
   int i, j;  /* Loop iterator */
-  int bits_left = ((width - 1) & 0x1f);
+  int bits_left = UL_MOD(width - 1);
 
   printf( "value: %d'b", width );
 
@@ -1134,8 +1214,8 @@ void vector_mem_rw_count(
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
       { 
-        ulong lmask = UL_SET << (lsb & 0x1f);
-        ulong hmask = UL_SET >> (31 - (msb & 0x1f));
+        ulong lmask = UL_LMASK(lsb);
+        ulong hmask = UL_HMASK(msb);
         if( UL_DIV(lsb) == UL_DIV(msb) ) {
           lmask &= hmask;
         }
@@ -1184,7 +1264,7 @@ bool vector_set_assigned(
   /* Figure out which value to choose */
   switch( vec->suppl.part.type ) {
     case VTYPE_SIG :  assigned_index = VTYPE_INDEX_SIG_MISC;    break;
-    case VTYPE_EXP :  assigned_index = VTYPE_INDEX_EXP_EVAL_A;  break;
+//    case VTYPE_EXP :  assigned_index = VTYPE_INDEX_EXP_EVAL_A;  break;
     default        :  assert( 0 );  break;
   }
 
@@ -1379,7 +1459,7 @@ static void vector_lshift_ulong(
     vall[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALL] << lsb);
     valh[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALH] << lsb);
 
-  } else if( (lsb & 0x1f) == 0 ) {
+  } else if( UL_MOD(lsb) == 0 ) {
 
     int i;
 
@@ -1402,8 +1482,8 @@ static void vector_lshift_ulong(
     ulong        mask3       = ~mask2;
     int          i;
 
-    vall[msb>>5] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALL] & mask1) << shift_bits1;
-    valh[msb>>5] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALH] & mask1) << shift_bits1;
+    vall[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALL] & mask1) << shift_bits1;
+    valh[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALH] & mask1) << shift_bits1;
 
     for( i=(UL_DIV(vec->width - 1) - 1); i>=0; i-- ) {
       vall[i+diff+1] |= ((vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & mask2) >> (UL_BITS - shift_bits1));
@@ -2434,7 +2514,7 @@ void vector_from_string(
       pos   = 0;
 
       for( i=(strlen( *str ) - 1); i>=0; i-- ) {
-        (*vec)->value.ul[pos>>2][VTYPE_INDEX_VAL_VALL] |= (ulong)((*str)[i]) << ((pos & 0x3) << 3);
+        (*vec)->value.ul[pos>>(UL_DIV_VAL-3)][VTYPE_INDEX_VAL_VALL] |= (ulong)((*str)[i]) << ((pos & 0x3) << 3);
         pos++;
       }
 
@@ -4155,8 +4235,8 @@ bool vector_unary_inv(
   switch( src->suppl.part.data_type ) {
     case VDATA_UL :
       {
-        ulong        vall[MAX_BIT_WIDTH>>5];
-        ulong        valh[MAX_BIT_WIDTH>>5];
+        ulong        vall[UL_DIV(MAX_BIT_WIDTH)];
+        ulong        valh[UL_DIV(MAX_BIT_WIDTH)];
         ulong        mask = UL_HMASK(src->width - 1);
         ulong        tvalh;
         unsigned int i;
@@ -4653,6 +4733,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.88  2008/05/28 22:12:31  phase1geo
+ Adding further support for 32-/64-bit support.  Checkpointing.
+
  Revision 1.138.2.87  2008/05/28 05:57:12  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 
