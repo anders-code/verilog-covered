@@ -1095,8 +1095,8 @@ typedef enum exp_op_type_e {
  @{
 */
 
-/*! 32-bit unsigned integer */
-#define VDATA_U32      0
+/*! unsigned long */
+#define VDATA_UL      0
 
 /*! @} */
 
@@ -1409,6 +1409,44 @@ typedef uint8 nibble;
  A control is a 32-bit value.
 */
 typedef uint32 control;
+
+/*!
+ Machine-dependent value.
+*/
+typedef unsigned long ulong;
+
+/*!
+ Create defines for unsigned long.
+*/
+#if SIZEOF_LONG == 1
+#define UL_SET     0xff
+#define UL_DIV_VAL 3
+#define UL_MOD_VAL 0x7
+#define UL_BITS    8
+#elif SIZEOF_LONG == 2
+#define UL_SET     0xffff
+#define UL_DIV_VAL 4
+#define UL_MOD_VAL 0xf
+#define UL_BITS    16
+#elif SIZEOF_LONG == 4
+#define UL_SET     0xffffffff
+#define UL_DIV_VAL 5
+#define UL_MOD_VAL 0x1f
+#define UL_BITS    32
+#elif SIZEOF_LONG == 8
+#define UL_SET     0xffffffffffffffff
+#define UL_DIV_VAL 6
+#define UL_MOD_VAL 0x3f
+#define UL_BITS    64
+#else
+#error "Unsigned long is of an unsupported size"
+#endif
+
+/*! Divides a bit position by an unsigned long */
+#define UL_DIV(x)  ((x) >> UL_DIV_VAL)
+
+/*! Mods a bit position by an unsigned long */
+#define UL_MOD(x)  ((x) &  UL_MOD_VAL)
 
 /*------------------------------------------------------------------------------*/
 
@@ -2036,8 +2074,8 @@ struct exp_info_s {
 */
 struct str_link_s {
   char*         str;                 /*!< String to store */
-  uint32       suppl;               /*!< 32-bit additional information */
-  uint32       suppl2;              /*!< 32-bit additional information */
+  uint32        suppl;               /*!< 32-bit additional information */
+  uint32        suppl2;              /*!< 32-bit additional information */
   nibble        suppl3;              /*!< 8-bit additional information */
   vector_width* range;               /*!< Pointer to optional range information */
   str_link*     next;                /*!< Pointer to next str_link element */
@@ -2052,8 +2090,7 @@ struct vector_s {
   int        width;                  /*!< Bit width of this vector */
   vsuppl     suppl;                  /*!< Supplemental field */
   union {
-    uint32** u32;                    /*!< 32-bit unsigned integer array for value, signal, expression and memory types */
-//    uint64** u64;                    /*!< 64-bit unsigned integer value */
+    ulong** ul;                      /*!< Machine sized unsigned integer array for value, signal, expression and memory types */
 //    real32** r32;                    /*!< 32-bit real value (float) */
 //    real64** r64;                    /*!< 64-bit real value (double) */
   } value;
@@ -2815,6 +2852,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.17  2008/05/28 05:57:10  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.294.2.16  2008/05/23 14:50:21  phase1geo
  Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
  vector set bit.  Updating regressions per this change.

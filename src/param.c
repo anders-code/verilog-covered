@@ -441,7 +441,7 @@ static inst_parm* inst_parm_add(
     iparm->sig->value->suppl.part.is_signed = is_signed;
   
     /* Copy the contents of the specified vector value to the signal */
-    (void)vector_set_value_uint32( iparm->sig->value, value->value.u32, value->width );
+    (void)vector_set_value_ulong( iparm->sig->value, value->value.ul, value->width );
 
     iparm->mparm = mparm;
     iparm->next  = NULL;
@@ -1159,6 +1159,9 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.108.2.2  2008/05/28 05:57:11  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.108.2.1  2008/04/23 05:20:44  phase1geo
  Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
 

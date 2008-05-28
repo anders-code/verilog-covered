@@ -92,14 +92,14 @@ static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, unsigne
     /* Walk through the signal list in the reentrant functional unit, compressing and saving vector values */
     while( sigl != NULL ) {
       switch( sigl->sig->value->suppl.part.data_type ) {
-        case VDATA_U32 :
+        case VDATA_UL :
           {
             unsigned int i;
             for( i=0; i<sigl->sig->value->width; i++ ) {
-              uint32* entry = sigl->sig->value->value.u32[i>>5];
-              ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> (i & 0x1f)) & 0x1) << (curr_bit & 0x7));
+              ulong* entry = sigl->sig->value->value.ul[UL_DIV(i)];
+              ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
               curr_bit++;
-              ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> (i & 0x1f)) & 0x1) << (curr_bit & 0x7));
+              ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
               curr_bit++;
             }
           }
@@ -114,13 +114,13 @@ static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, unsigne
       unsigned int i;
       if( (ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
         switch( expl->exp->value->suppl.part.data_type ) {
-          case VDATA_U32 :
+          case VDATA_UL :
             {
               for( i=0; i<expl->exp->value->width; i++ ) {
-                uint32* entry = expl->exp->value->value.u32[i>>5];
-                ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> (i & 0x1f)) & 0x1) << (curr_bit & 0x7));
+                ulong* entry = expl->exp->value->value.ul[UL_DIV(i)];
+                ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
                 curr_bit++;
-                ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> (i & 0x1f)) & 0x1) << (curr_bit & 0x7));
+                ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
                 curr_bit++;
               }
             }
@@ -166,7 +166,7 @@ static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, unsigne
 */
 static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsigned int curr_bit, expression* expr ) { PROFILE(REENTRANT_RESTORE_DATA_BITS);
 
-  int       i;     /* Loop iterator */
+  int i;  /* Loop iterator */
 
   if( (funit->type == FUNIT_ATASK) || (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
 
@@ -177,18 +177,18 @@ static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsig
     sigl = funit->sig_head;
     while( sigl != NULL ) {
       switch( sigl->sig->value->suppl.part.data_type ) {
-        case VDATA_U32 :
+        case VDATA_UL :
           {
             unsigned int i;
             for( i=0; i<sigl->sig->value->width; i++ ) {
-              uint32* entry = sigl->sig->value->value.u32[i>>5];
-              if( (i & 0x1f) == 0 ) {
+              ulong* entry = sigl->sig->value->value.ul[UL_DIV(i)];
+              if( UL_MOD(i) == 0 ) {
                 entry[VTYPE_INDEX_VAL_VALL] = 0;
                 entry[VTYPE_INDEX_VAL_VALH] = 0;
               }
-              entry[VTYPE_INDEX_VAL_VALL] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << (i & 0x1f);
+              entry[VTYPE_INDEX_VAL_VALL] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
               curr_bit++;
-              entry[VTYPE_INDEX_VAL_VALH] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << (i & 0x1f);
+              entry[VTYPE_INDEX_VAL_VALH] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
               curr_bit++;
             }
           }
@@ -206,18 +206,18 @@ static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsig
       } else {
         if( (ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
           switch( expl->exp->value->suppl.part.data_type ) {
-            case VDATA_U32 :
+            case VDATA_UL :
               {
                 unsigned int i;
                 for( i=0; i<expl->exp->value->width; i++ ) {
-                  uint32* entry = expl->exp->value->value.u32[i>>5];
+                  ulong* entry = expl->exp->value->value.ul[UL_DIV(i)];
                   if( (i & 0x1f) == 0 ) {
                     entry[VTYPE_INDEX_VAL_VALL] = 0;
                     entry[VTYPE_INDEX_VAL_VALH] = 0;
                   }
-                  entry[VTYPE_INDEX_VAL_VALL] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << (i & 0x1f);
+                  entry[VTYPE_INDEX_VAL_VALL] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
                   curr_bit++;
-                  entry[VTYPE_INDEX_VAL_VALH] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << (i & 0x1f);
+                  entry[VTYPE_INDEX_VAL_VALH] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
                   curr_bit++;
                 }
               }
@@ -332,6 +332,9 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
 
 /*
  $Log$
+ Revision 1.17.2.4  2008/05/28 05:57:12  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.17.2.3  2008/05/09 22:07:50  phase1geo
  Updates for VCS regressions.  Fixing some issues found in that regression
  suite.  Checkpointing.

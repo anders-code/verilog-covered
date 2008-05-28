@@ -151,7 +151,7 @@ static_expr* static_expr_gen_unary(
           tmpexp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
           curr_expr_id++;
           {
-            vector* vec = vector_create( 32, VTYPE_EXP, VDATA_U32, TRUE );
+            vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
             vector_dealloc( tmpexp->value );
             tmpexp->value = vec;
           }
@@ -262,7 +262,7 @@ static_expr* static_expr_gen(
         right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
         {
-          vector* vec = vector_create( 32, VTYPE_EXP, VDATA_U32, TRUE );
+          vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
           vector_dealloc( right->exp->value );
           right->exp->value = vec;
         }
@@ -281,7 +281,7 @@ static_expr* static_expr_gen(
         left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
         {
-          vector* vec = vector_create( 32, VTYPE_EXP, VDATA_U32, TRUE );
+          vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
           vector_dealloc( left->exp->value );
           left->exp->value = vec;
         }
@@ -456,6 +456,9 @@ void static_expr_dealloc(
 
 /*
  $Log$
+ Revision 1.35.2.2  2008/05/28 05:57:12  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.35.2.1  2008/04/23 05:20:45  phase1geo
  Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
 

@@ -306,7 +306,7 @@ static void memory_get_mem_coverage(
   /* Only output memory contents if we have reached the lowest dimension */
   if( (dim + 1) == sig->udim_num ) {
 
-    vector* vec = vector_create( dim_width, VTYPE_MEM, VDATA_U32, TRUE );
+    vector* vec = vector_create( dim_width, VTYPE_MEM, VDATA_UL, TRUE );
     int     tog01;
     int     tog10;
     int     wr;
@@ -345,8 +345,8 @@ static void memory_get_mem_coverage(
       vector_toggle_count( vec, &tog01, &tog10 );
 
       /* Get toggle strings */
-      tog01_str = vector_get_toggle01_uint32( vec->value.u32, vec->width );
-      tog10_str = vector_get_toggle10_uint32( vec->value.u32, vec->width );
+      tog01_str = vector_get_toggle01_ulong( vec->value.ul, vec->width );
+      tog10_str = vector_get_toggle10_ulong( vec->value.ul, vec->width );
 
       /* Get write/read information */
       wr = 0;
@@ -1006,7 +1006,7 @@ static void memory_display_memory(
   /* Only output memory contents if we have reached the lowest dimension */
   if( (dim + 1) == sig->udim_num ) {
 
-    vector* vec = vector_create( dim_width, VTYPE_MEM, VDATA_U32, TRUE );
+    vector* vec = vector_create( dim_width, VTYPE_MEM, VDATA_UL, TRUE );
     int     tog01;
     int     tog10;
     int     wr;
@@ -1039,14 +1039,14 @@ static void memory_display_memory(
         unsigned int rv = snprintf( name, 4096, "%s[%d]", prefix, i );
         assert( rv < 4096 );
         fprintf( ofile, "        %s  Written: %d  0->1: ", name, ((wr == 0) ? 0 : 1) );
-        vector_display_toggle01_uint32( vec->value.u32, vec->width, ofile );
+        vector_display_toggle01_ulong( vec->value.ul, vec->width, ofile );
         fprintf( ofile, "\n" );
         fprintf( ofile, "        " );
         for( j=0; j<strlen( name ); j++ ) {
           fprintf( ofile, "." );
         }
         fprintf( ofile, "  Read   : %d  1->0: ", ((rd == 0) ? 0 : 1) );
-        vector_display_toggle10_uint32( vec->value.u32, vec->width, ofile );
+        vector_display_toggle10_ulong( vec->value.ul, vec->width, ofile );
         fprintf( ofile, " ...\n" );
       }
 
@@ -1350,6 +1350,9 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.28.2.4  2008/05/28 05:57:11  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.28.2.3  2008/05/07 23:09:10  phase1geo
  Fixing vector_mem_wr_count function and calling code.  Updating regression
  files accordingly.  Checkpointing.

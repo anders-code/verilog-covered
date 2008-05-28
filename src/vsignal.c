@@ -110,7 +110,7 @@ vsignal* vsignal_create(
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ) );
 
   vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name ) : NULL),
-                type, vector_create( width, ((type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), VDATA_U32, TRUE ), line, col );
+                type, vector_create( width, ((type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), VDATA_UL, TRUE ), line, col );
 
   PROFILE_END;
 
@@ -162,8 +162,8 @@ void vsignal_create_vec(
     }
 
     /* Create the vector and assign it to the signal */
-    vec = vector_create( sig->value->width, ((sig->suppl.part.type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), VDATA_U32, TRUE );
-    sig->value->value.u32 = vec->value.u32;
+    vec = vector_create( sig->value->width, ((sig->suppl.part.type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), VDATA_UL, TRUE );
+    sig->value->value.ul = vec->value.ul;
     free_safe( vec, sizeof( vector ) );
 
     /* Iterate through expression list, setting the expression to this signal */
@@ -618,7 +618,7 @@ void vsignal_display(
     printf( ", " );
   }
 
-  vector_display_value_uint32( sig->value->value.u32, sig->value->width );
+  vector_display_value_ulong( sig->value->value.ul, sig->value->width );
   printf( "\n" );
 
 }
@@ -689,7 +689,7 @@ vsignal* vsignal_from_string(
     /* Specify that this width is unknown */
     vector_dealloc_value( sig->value );
     sig->value->width = 0;
-    sig->value->value.u32 = NULL;
+    sig->value->value.ul = NULL;
     *str += chars_read;
   } else {
     sig = NULL;
@@ -800,6 +800,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.71.2.6  2008/05/28 05:57:12  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.71.2.5  2008/05/23 23:04:56  phase1geo
  Adding err5 diagnostic to regression suite.  Fixing memory deallocation bug
  found with err5.  Full regression passes.

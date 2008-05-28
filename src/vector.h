@@ -29,15 +29,15 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init_uint32(
-  /*@out@*/ vector*   vec,
-            uint32**  value,
-            uint32    data_l,
-            uint32    data_h,
-            bool      owns_value,
-            int       width,
-            int       type,
-            int       data_type
+void vector_init_ulong(
+  /*@out@*/ vector*  vec,
+            ulong**  value,
+            ulong    data_l,
+            ulong    data_h,
+            bool     owns_value,
+            int      width,
+            int      type,
+            int      data_type
 );
 
 /*! \brief Creates and initializes new vector */
@@ -131,43 +131,43 @@ int vector_get_eval_abc_count( vector* vec );
 int vector_get_eval_abcd_count( vector* vec );
 
 /*! \brief Returns string containing toggle 0 -> 1 information in binary format */
-char* vector_get_toggle01_uint32(
-  uint32** value,
-  int      width
+char* vector_get_toggle01_ulong(
+  ulong** value,
+  int     width
 );
 
 /*! \brief Returns string containing toggle 1 -> 0 information in binary format */
-char* vector_get_toggle10_uint32(
-  uint32** value,
-  int      width
+char* vector_get_toggle10_ulong(
+  ulong** value,
+  int     width
 );
 
 /*! \brief Outputs the toggle01 information from the specified nibble to the specified output stream. */
-void vector_display_toggle01_uint32(
-  uint32** value,
-  int      width,
-  FILE*    ofile
+void vector_display_toggle01_ulong(
+  ulong** value,
+  int     width,
+  FILE*   ofile
 );
 
 /*! \brief Outputs the toggle10 information from the specified nibble to the specified output stream. */
-void vector_display_toggle10_uint32(
-  uint32** value,
-  int      width,
-  FILE*    ofile
+void vector_display_toggle10_ulong(
+  ulong** value,
+  int     width,
+  FILE*   ofile
 );
 
 /*! \brief Outputs the binary value of the specified nibble array to standard output */
-void vector_display_value_uint32(
-  uint32** value,
-  int      width
+void vector_display_value_ulong(
+  ulong** value,
+  int     width
 );
 
 /*@-exportlocal@*/
 /*! \brief Outputs nibble to standard output. */
-void vector_display_nibble_uint32(
-  uint32** value,
-  int      width,
-  int      type
+void vector_display_nibble_ulong(
+  ulong** value,
+  int     width,
+  int     type
 );
 /*@=exportlocal@*/
 
@@ -177,10 +177,10 @@ void vector_display(
 );
 
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
-bool vector_set_value_uint32(
-  vector*  vec,
-  uint32** value,
-  int      width
+bool vector_set_value_ulong(
+  vector* vec,
+  ulong** value,
+  int     width
 );
 
 /*! \brief Sets specified target vector to bit range of source vector. */
@@ -317,12 +317,12 @@ void vector_mem_rw_count(
 bool vector_set_assigned( vector* vec, int msb, int lsb );
 
 /*! \brief Set coverage information for given vector and assigns values from scratch arrays to vector. */
-bool vector_set_coverage_and_assign_uint32(
-  vector*       vec,
-  const uint32* scratchl,
-  const uint32* scratchh,
-  int           lsb,
-  int           msb
+bool vector_set_coverage_and_assign_ulong(
+  vector*      vec,
+  const ulong* scratchl,
+  const ulong* scratchh,
+  int          lsb,
+  int          msb
 );
 
 /*! \brief Performs bitwise AND operation on two source vectors. */
@@ -379,7 +379,7 @@ bool vector_op_eq(
 );
 
 /*! \brief Performs case equal comparison of two vectors and returns result. */
-bool vector_ceq_uint32(
+bool vector_ceq_ulong(
   const vector* left,
   const vector* right
 );
@@ -580,6 +580,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.23  2008/05/28 05:57:12  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.58.2.22  2008/05/27 05:52:52  phase1geo
  Starting to add fix for sign extension.  Not finished at this point.
 

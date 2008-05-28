@@ -126,7 +126,7 @@ void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
         vector_from_int( ei->sig->value, ei->value->num );
       } else {
         param_expr_eval( ei->value->exp, inst );
-        (void)vector_set_value_uint32( ei->sig->value, ei->value->exp->value->value.u32, ei->sig->value->width );
+        (void)vector_set_value_ulong( ei->sig->value, ei->value->exp->value->value.ul, ei->sig->value->width );
       }
 
     }
@@ -194,6 +194,9 @@ void enumerate_dealloc_list( func_unit* funit ) { PROFILE(ENUMERATE_DEALLOC_LIST
 
 /*
  $Log$
+ Revision 1.17.2.3  2008/05/28 05:57:10  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.17.2.2  2008/04/23 05:20:44  phase1geo
  Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
 

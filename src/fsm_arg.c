@@ -93,7 +93,7 @@ static expression* fsm_arg_parse_state(
             expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
             curr_expr_id++;
             vector_dealloc( expr->value );
-            expr->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+            expr->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
             vector_from_int( expr->value, sig->dim[0].lsb );
 
             expr = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
@@ -105,13 +105,13 @@ static expression* fsm_arg_parse_state(
             expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
             curr_expr_id++;
             vector_dealloc( expt->value );
-            expt->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+            expt->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
             vector_from_int( expt->value, sig->dim[0].lsb );
 
             expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
             curr_expr_id++;
             vector_dealloc( expr->value );
-            expr->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+            expr->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
             vector_from_int( expr->value, ((sig->value->width - 1) + sig->dim[0].lsb) );
 
             switch( sig->suppl.part.type ) {
@@ -173,7 +173,7 @@ static expression* fsm_arg_parse_state(
           expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expr->value );
-          expr->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+          expr->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
           vector_from_int( expr->value, sig->dim[0].lsb );
 
           expl = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
@@ -184,13 +184,13 @@ static expression* fsm_arg_parse_state(
           expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expt->value );
-          expt->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+          expt->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
           vector_from_int( expt->value, sig->dim[0].lsb );
 
           expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expr->value );
-          expr->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+          expr->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
           vector_from_int( expr->value, ((sig->value->width - 1) + sig->dim[0].lsb) );
 
           switch( sig->suppl.part.type ) {
@@ -379,7 +379,7 @@ static expression* fsm_arg_parse_value(
         left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
-        left->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+        left->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
         vector_from_int( left->value, msb );
 
         /* Generate right child expression */
@@ -392,7 +392,7 @@ static expression* fsm_arg_parse_value(
         }
         curr_expr_id++;
         vector_dealloc( right->value );
-        right->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+        right->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
         vector_from_int( right->value, lsb );
 
         /* Generate multi-bit parameter expression */
@@ -416,7 +416,7 @@ static expression* fsm_arg_parse_value(
         left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
-        left->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+        left->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
         vector_from_int( left->value, msb );
 
         /* Generate right child expression */
@@ -429,7 +429,7 @@ static expression* fsm_arg_parse_value(
         }
         curr_expr_id++;
         vector_dealloc( right->value );
-        right->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+        right->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
         vector_from_int( right->value, lsb );
 
         /* Generate variable positive multi-bit parameter expression */
@@ -453,7 +453,7 @@ static expression* fsm_arg_parse_value(
         left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
-        left->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+        left->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
         vector_from_int( left->value, msb );
 
         /* Generate right child expression */
@@ -466,7 +466,7 @@ static expression* fsm_arg_parse_value(
         }
         curr_expr_id++;
         vector_dealloc( right->value );
-        right->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+        right->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
         vector_from_int( right->value, lsb );
 
         /* Generate variable positive multi-bit parameter expression */
@@ -490,7 +490,7 @@ static expression* fsm_arg_parse_value(
         left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
-        left->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+        left->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
         vector_from_int( left->value, lsb );
 
         /* Generate single-bit parameter expression */
@@ -765,6 +765,9 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.51.2.3  2008/05/28 05:57:10  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.51.2.2  2008/05/07 21:09:10  phase1geo
  Added functionality to allow to_string to output full vector bits (even
  non-significant bits) for purposes of reporting for FSMs (matches original

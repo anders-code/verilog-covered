@@ -1911,11 +1911,11 @@ expression* db_create_expr_from_static(
       expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, first_col, last_col, NULL );
 
       /* Create the new vector */
-      vec = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+      vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
       vector_from_int( vec, se->num );
 
       /* Assign the new vector to the expression's vector (after deallocating the expression's old vector) */
-      assert( expr->value->value.u32 == NULL );
+      assert( expr->value->value.ul == NULL );
       free_safe( expr->value, sizeof( vector ) );
       expr->value = vec;
 
@@ -2953,6 +2953,9 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.307.2.6  2008/05/28 05:57:10  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.307.2.5  2008/05/26 05:42:09  phase1geo
  Adding new error merge diagnostics to regression suite to verify missing vector_db_merge
  error cases.  Full regression passes.

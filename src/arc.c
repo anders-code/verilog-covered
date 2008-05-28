@@ -190,7 +190,7 @@ int arc_find_from_state(
 
   assert( table != NULL );
 
-  while( (i < table->num_fr_states) && !vector_ceq_uint32( st, table->fr_states[i] ) ) i++;
+  while( (i < table->num_fr_states) && !vector_ceq_ulong( st, table->fr_states[i] ) ) i++;
   if( i < table->num_fr_states ) {
     index = i;
   }
@@ -216,7 +216,7 @@ int arc_find_to_state(
 
   assert( table != NULL );
 
-  while( (i < table->num_to_states) && !vector_ceq_uint32( st, table->to_states[i] ) ) i++;
+  while( (i < table->num_to_states) && !vector_ceq_ulong( st, table->to_states[i] ) ) i++;
   if( i < table->num_to_states ) {
     index = i;
   }
@@ -840,6 +840,9 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.60.2.15  2008/05/28 05:57:09  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.60.2.14  2008/05/27 04:29:31  phase1geo
  Fixing memory leak for an FSM arc parser error.  Adding diagnostics to regression
  suite for coverage purposes.

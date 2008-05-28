@@ -381,14 +381,14 @@ static void expression_create_tmp_vecs(
   */
   if( (EXPR_TMP_VECS( exp->op ) > 0) && (exp->elem.tvecs == NULL) ) {
  
-    uint32   hdata;
+    ulong    hdata;
     unsigned i;
 
     /* Calculate the width that we need to allocate */
     switch( exp->op ) {
       case EXP_OP_PEDGE :
-      case EXP_OP_NEDGE :  hdata = 0xffffffff;  width = 1;                         break;
-      case EXP_OP_AEDGE :  hdata = 0xffffffff;  width = exp->right->value->width;  break;
+      case EXP_OP_NEDGE :  hdata = UL_SET;  width = 1;                         break;
+      case EXP_OP_AEDGE :  hdata = UL_SET;  width = exp->right->value->width;  break;
       case EXP_OP_ADD_A :
       case EXP_OP_SUB_A :
       case EXP_OP_MLT_A :
@@ -407,8 +407,8 @@ static void expression_create_tmp_vecs(
     /* Allocate the memory */
     exp->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
     for( i=0; i<EXPR_TMP_VECS( exp->op ); i++ ) {
-      vector* vec = vector_create( width, VTYPE_VAL, VDATA_U32, TRUE );
-      vector_init_uint32( &(exp->elem.tvecs->vec[i]), vec->value.u32, 0, hdata, TRUE, width, VTYPE_VAL, VDATA_U32 );
+      vector* vec = vector_create( width, VTYPE_VAL, VDATA_UL, TRUE );
+      vector_init_ulong( &(exp->elem.tvecs->vec[i]), vec->value.ul, 0, hdata, TRUE, width, VTYPE_VAL, VDATA_UL );
       free_safe( vec, sizeof( vector ) );
     }
 
@@ -449,9 +449,9 @@ static void expression_create_value(
       Throw 0;
     }
 
-    vec = vector_create( width, VTYPE_EXP, VDATA_U32, TRUE );
-    assert( exp->value->value.u32 == NULL );
-    vector_init_uint32( exp->value, vec->value.u32, 0x0, 0x0, TRUE, width, vec->suppl.part.type, vec->suppl.part.data_type );
+    vec = vector_create( width, VTYPE_EXP, VDATA_UL, TRUE );
+    assert( exp->value->value.ul == NULL );
+    vector_init_ulong( exp->value, vec->value.ul, 0x0, 0x0, TRUE, width, vec->suppl.part.type, vec->suppl.part.data_type );
     free_safe( vec, sizeof( vector ) );
 
     /* Create the temporary vectors now, if needed */
@@ -459,7 +459,7 @@ static void expression_create_value(
 
   } else {
 
-    vector_init_uint32( exp->value, NULL, 0x0, 0x0, FALSE, width, VTYPE_EXP, VDATA_U32 );
+    vector_init_ulong( exp->value, NULL, 0x0, 0x0, FALSE, width, VTYPE_EXP, VDATA_UL );
 
   }
 
@@ -520,7 +520,7 @@ expression* expression_create(
   new_expr->left                = left;
   new_expr->value               = (vector*)malloc_safe( sizeof( vector ) );
   new_expr->suppl.part.owns_vec = 1;
-  new_expr->value->value.u32    = NULL;
+  new_expr->value->value.ul     = NULL;
   new_expr->table               = NULL;
   new_expr->elem.funit          = NULL;
   new_expr->name                = NULL;
@@ -572,7 +572,7 @@ expression* expression_create(
 
       expression_create_value( new_expr, rwidth, data );
 
-    } else if( (op == EXP_OP_EXPAND) && (rwidth > 0) && (lwidth > 0) && (left->value->value.u32 != NULL) ) {
+    } else if( (op == EXP_OP_EXPAND) && (rwidth > 0) && (lwidth > 0) && (left->value->value.ul != NULL) ) {
 
       /*
        If the left-hand expression is a known value, go ahead and create the value here; otherwise,
@@ -652,7 +652,7 @@ expression* expression_create(
   }
 
   if( (data == FALSE) && (generate_expr_mode == 0) ) {
-    assert( new_expr->value->value.u32 == NULL );
+    assert( new_expr->value->value.ul == NULL );
   }
 
   PROFILE_END;
@@ -689,7 +689,7 @@ void expression_set_value(
 
     exp->value->suppl                = sig->value->suppl;
     exp->value->width                = sig->value->width;
-    exp->value->value.u32            = sig->value->value.u32;
+    exp->value->value.ul             = sig->value->value.ul;
     exp->value->suppl.part.owns_data = 0;
 
   /* Otherwise, create our own vector to store the part select */
@@ -746,7 +746,7 @@ void expression_set_value(
     }
 
     /* Allocate a vector for this expression */
-    if( exp->value->value.u32 != NULL ) {
+    if( exp->value->value.ul != NULL ) {
       vector_dealloc_value( exp->value );
     }
     expression_create_value( exp, exp->value->width, TRUE );
@@ -863,7 +863,7 @@ void expression_resize(
       case EXP_OP_MBIT_NEG       :
         if( recursive && (expr->sig != NULL) ) {
           expression_set_value( expr, expr->sig, funit );
-          assert( expr->value->value.u32 != NULL );
+          assert( expr->value->value.ul != NULL );
         }
         break;
 
@@ -914,8 +914,8 @@ void expression_resize(
       case EXP_OP_NEDGE   :
       case EXP_OP_PEDGE   :
       case EXP_OP_AEDGE   :
-        if( (expr->value->width != 1) || (expr->value->value.u32 == NULL) ) {
-          assert( expr->value->value.u32 == NULL );
+        if( (expr->value->width != 1) || (expr->value->value.ul == NULL) ) {
+          assert( expr->value->value.ul == NULL );
           expression_create_value( expr, 1, alloc );
         }
         break;
@@ -933,8 +933,8 @@ void expression_resize(
           Throw 0;
         }
         if( (expr->value->width != (vector_to_int( expr->left->value ) * expr->right->value->width)) ||
-            (expr->value->value.u32 == NULL) ) {
-          assert( expr->value->value.u32 == NULL );
+            (expr->value->value.ul == NULL) ) {
+          assert( expr->value->value.ul == NULL );
           expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), alloc );
         }
         break;
@@ -946,8 +946,8 @@ void expression_resize(
       */
       case EXP_OP_LIST :
         if( (expr->value->width != (expr->left->value->width + expr->right->value->width)) ||
-            (expr->value->value.u32 == NULL) ) {
-          assert( expr->value->value.u32 == NULL );
+            (expr->value->value.ul == NULL) ) {
+          assert( expr->value->value.ul == NULL );
           expression_create_value( expr, (expr->left->value->width + expr->right->value->width), alloc );
         }
         break;
@@ -963,8 +963,8 @@ void expression_resize(
             tmp_inst = inst_link_find_by_funit( expr->elem.funit, db_list[curr_db]->inst_head, &ignore );
             funit_size_elements( expr->elem.funit, tmp_inst, FALSE, FALSE );
           }
-          if( (expr->value->width != expr->sig->value->width) || (expr->value->value.u32 == NULL) ) {
-            assert( expr->value->value.u32 == NULL );
+          if( (expr->value->width != expr->sig->value->width) || (expr->value->value.ul == NULL) ) {
+            assert( expr->value->value.ul == NULL );
             expression_create_value( expr, expr->sig->value->width, alloc );
           }
         }
@@ -990,22 +990,22 @@ void expression_resize(
           } else {
             largest_width = 1;
           }
-          if( (expr->value->width != largest_width) || (expr->value->value.u32 == NULL) ) {
-            assert( expr->value->value.u32 == NULL );
+          if( (expr->value->width != largest_width) || (expr->value->value.ul == NULL) ) {
+            assert( expr->value->value.ul == NULL );
             expression_create_value( expr, largest_width, alloc );
           }
 
         /* If our parent is a DLY_OP, we need to get our value from the LHS of the DLY_ASSIGN expression */
         } else if( expr->parent->expr->op == EXP_OP_DLY_OP ) {
-          if( (expr->parent->expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value.u32 == NULL) ) {
-            assert( expr->value->value.u32 == NULL );
+          if( (expr->parent->expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value.ul == NULL) ) {
+            assert( expr->value->value.ul == NULL );
             expression_create_value( expr, expr->parent->expr->parent->expr->left->value->width, alloc );
           }
 
         /* Otherwise, get our value from the size of the expression on the left-hand-side of the assignment */
         } else {
-          if( (expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value.u32 == NULL) ) {
-            assert( expr->value->value.u32 == NULL );
+          if( (expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value.ul == NULL) ) {
+            assert( expr->value->value.ul == NULL );
             expression_create_value( expr, expr->parent->expr->left->value->width, alloc );
           }
         }
@@ -1751,10 +1751,10 @@ void expression_display(
           left_id, 
           right_id );
 
-  if( expr->value->value.u32 == NULL ) {
+  if( expr->value->value.ul == NULL ) {
     printf( "NO DATA VECTOR" );
   } else {
-    vector_display_value_uint32( expr->value->value.u32, expr->value->width );
+    vector_display_value_ulong( expr->value->value.ul, expr->value->width );
   }
   printf( "\n" );
 
@@ -3035,7 +3035,7 @@ bool expression_op_func__cond(
 ) { PROFILE(EXPRESSION_OP_FUNC__COND);
 
   /* Simple vector copy from right side and gather coverage information */
-  bool retval = vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width );
+  bool retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
@@ -3066,9 +3066,9 @@ bool expression_op_func__cond_sel(
 
   if( !vector_is_unknown( expr->parent->expr->left->value ) ) {
     if( !vector_is_not_zero( expr->parent->expr->left->value ) ) {
-      retval = vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width );
+      retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
     } else {
-      retval = vector_set_value_uint32( expr->value, expr->left->value->value.u32, expr->left->value->width );
+      retval = vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );
     }
   } else {
     retval = vector_set_to_x( expr->value );
@@ -3581,7 +3581,7 @@ bool expression_op_func__concat(
 ) { PROFILE(EXPRESSION_OP_FUNC__CONCAT);
 
   /* Perform concatenation operation */
-  bool retval = vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width );
+  bool retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
@@ -3608,11 +3608,11 @@ bool expression_op_func__pedge(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__PEDGE);
 
-  bool    retval;   /* Return value for this function */
-  uint32  nvall = expr->right->value->value.u32[0][VTYPE_INDEX_EXP_VALL];
-  uint32  nvalh = expr->right->value->value.u32[0][VTYPE_INDEX_EXP_VALH];
-  uint32* ovall = &(expr->elem.tvecs->vec[0].value.u32[0][VTYPE_INDEX_EXP_VALL]);
-  uint32* ovalh = &(expr->elem.tvecs->vec[0].value.u32[0][VTYPE_INDEX_EXP_VALH]);
+  bool   retval;   /* Return value for this function */
+  ulong  nvall = expr->right->value->value.ul[0][VTYPE_INDEX_EXP_VALL];
+  ulong  nvalh = expr->right->value->value.ul[0][VTYPE_INDEX_EXP_VALH];
+  ulong* ovall = &(expr->elem.tvecs->vec[0].value.ul[0][VTYPE_INDEX_EXP_VALL]);
+  ulong* ovalh = &(expr->elem.tvecs->vec[0].value.ul[0][VTYPE_INDEX_EXP_VALH]);
 
   if( ((*ovalh | ~(*ovall)) & (~nvalh & nvall)) && thr->suppl.part.exec_first ) {
     expr->suppl.part.true   = 1;
@@ -3648,11 +3648,11 @@ bool expression_op_func__nedge(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__NEDGE);
 
-  bool    retval;   /* Return value for this function */
-  uint32  nvall = expr->right->value->value.u32[0][VTYPE_INDEX_EXP_VALL];
-  uint32  nvalh = expr->right->value->value.u32[0][VTYPE_INDEX_EXP_VALH];
-  uint32* ovall = &(expr->elem.tvecs->vec[0].value.u32[0][VTYPE_INDEX_EXP_VALL]);
-  uint32* ovalh = &(expr->elem.tvecs->vec[0].value.u32[0][VTYPE_INDEX_EXP_VALH]);
+  bool   retval;   /* Return value for this function */
+  ulong  nvall = expr->right->value->value.ul[0][VTYPE_INDEX_EXP_VALL];
+  ulong  nvalh = expr->right->value->value.ul[0][VTYPE_INDEX_EXP_VALH];
+  ulong* ovall = &(expr->elem.tvecs->vec[0].value.ul[0][VTYPE_INDEX_EXP_VALL]);
+  ulong* ovalh = &(expr->elem.tvecs->vec[0].value.ul[0][VTYPE_INDEX_EXP_VALH]);
 
   if( ((*ovalh | *ovall) & (~nvalh & ~nvall)) && thr->suppl.part.exec_first ) {
     expr->suppl.part.true   = 1;
@@ -3877,8 +3877,8 @@ bool expression_op_func__trigger(
 ) { PROFILE(EXPRESSION_OP_FUNC__TRIGGER);
 
   /* Indicate that we have triggered */
-  expr->sig->value->value.u32[0][VTYPE_INDEX_SIG_VALL] = 1;
-  expr->sig->value->value.u32[0][VTYPE_INDEX_SIG_VALH] = 0;
+  expr->sig->value->value.ul[0][VTYPE_INDEX_SIG_VALL] = 1;
+  expr->sig->value->value.ul[0][VTYPE_INDEX_SIG_VALH] = 0;
 
   /* Propagate event */
   vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
@@ -3991,12 +3991,12 @@ bool expression_op_func__default(
   /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__DEFAULT);
 
-  bool   retval;    /* Return value for this function */
-  uint32 valh = 0;  /* High value to store */
-  uint32 vall = 1;  /* Low value to store */
+  bool  retval;    /* Return value for this function */
+  ulong valh = 0;  /* High value to store */
+  ulong vall = 1;  /* Low value to store */
 
   /* Perform default case operation */
-  retval = vector_set_coverage_and_assign_uint32( expr->value, &vall, &valh, 0, 0 );
+  retval = vector_set_coverage_and_assign_ulong( expr->value, &vall, &valh, 0, 0 );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
@@ -4058,7 +4058,7 @@ bool expression_op_func__func_call(
   sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time ), ((thr == NULL) ? time : &(thr->curr_time)) );
 
   /* Then copy the function variable to this expression */
-  retval = vector_set_value_uint32( expr->value, expr->sig->value->value.u32, expr->value->width );
+  retval = vector_set_value_ulong( expr->value, expr->sig->value->value.ul, expr->value->width );
   
   /* Deallocate the reentrant structure of the current thread (if it exists) */
   if( (thr != NULL) && (thr->ren != NULL) ) {
@@ -4230,7 +4230,7 @@ bool expression_op_func__repeat(
 
   retval = vector_op_lt( expr->value, expr->left->value, expr->right->value );
 
-  if( expr->value->value.u32[0][VTYPE_INDEX_VAL_VALL] == 0 ) {
+  if( expr->value->value.ul[0][VTYPE_INDEX_VAL_VALL] == 0 ) {
     vector_from_int( expr->left->value, 0 );
   } else {
     vector_from_int( expr->left->value, (vector_to_int( expr->left->value ) + 1) );
@@ -4268,8 +4268,8 @@ bool expression_op_func__exponent(
 
     int          intval1;
     int          intval2;
-    uint32       vall = 1;
-    uint32       valh = 0;
+    ulong        vall = 1;
+    ulong        valh = 0;
     unsigned int i;
 
     intval1 = vector_to_int( expr->left->value );
@@ -4280,7 +4280,7 @@ bool expression_op_func__exponent(
     }
 
     /* Assign value and calculate coverage */
-    retval = vector_set_coverage_and_assign_uint32( expr->value, &vall, &valh, 0, 31 );
+    retval = vector_set_coverage_and_assign_ulong( expr->value, &vall, &valh, 0, 31 );
 
   /* Otherwise, the entire value should be X */
   } else {
@@ -4328,7 +4328,7 @@ bool expression_op_func__passign(
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT_NET :
     case SSUPPL_TYPE_INPUT_REG :
-      retval = vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width );
+      retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
       vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
       break;
 
@@ -4557,7 +4557,7 @@ bool expression_op_func__iinc(
   }
 
   /* Assign the left value to our value */
-  (void)vector_set_value_uint32( expr->value, expr->left->value->value.u32, expr->left->value->width );
+  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -4590,7 +4590,7 @@ bool expression_op_func__pinc(
 ) { PROFILE(EXPRESSION_OP_FUNC__PINC);
 
   /* Copy the left-hand value to our expression */
-  (void)vector_set_value_uint32( expr->value, expr->left->value->value.u32, expr->left->value->width );
+  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );
 
   /* Perform increment */
   expr->elem.tvecs->index = 0;
@@ -4641,7 +4641,7 @@ bool expression_op_func__idec(
   }
 
   /* Copy the left-hand value to our expression */
-  (void)vector_set_value_uint32( expr->value, expr->left->value->value.u32, expr->left->value->width );
+  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -4674,7 +4674,7 @@ bool expression_op_func__pdec(
 ) { PROFILE(EXPRESSION_OP_FUNC__PDEC);
 
   /* Copy the left-hand value to our expression */
-  (void)vector_set_value_uint32( expr->value, expr->left->value->value.u32, expr->left->value->width );
+  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );
 
   /* Perform decrement */
   expr->elem.tvecs->index = 0;
@@ -4757,7 +4757,7 @@ bool expression_op_func__dly_op(
 
   /* If we are not waiting for the delay to occur, copy the contents of the operation */
   if( !thr->suppl.part.exec_first ) {
-    (void)vector_set_value_uint32( expr->value, expr->right->value->value.u32, expr->right->value->width );
+    (void)vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
   }
 
   /* Explicitly call the delay/event.  If the delay is complete, set eval_t to TRUE */
@@ -4797,7 +4797,7 @@ bool expression_op_func__repeat_dly(
     (void)expression_op_func__repeat( expr->left, thr, time );
 
     /* If the repeat operation evaluated to TRUE, perform delay operation */
-    if( expr->left->value->value.u32[0][VTYPE_INDEX_VAL_VALL] == 1 ) {
+    if( expr->left->value->value.ul[0][VTYPE_INDEX_VAL_VALL] == 1 ) {
       (void)exp_op_info[expr->right->op].func( expr->right, thr, time );
       expr->suppl.part.eval_t = 0;
 
@@ -5386,10 +5386,10 @@ void expression_assign(
             intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
             assert( intval1 >= 0 );
             assert( ((intval1 + intval2) - 1) < lhs->sig->value->width );
-            lhs->value->value.u32 = vstart + intval1;
+            lhs->value->value.ul = vstart + intval1;
           }
           if( assign ) {
-            bool changed = vector_set_value( lhs->value, rhs->value->value.u32, intval2, *lsb, 0 );
+            bool changed = vector_set_value( lhs->value, rhs->value->value.ul, intval2, *lsb, 0 );
             lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -5415,10 +5415,10 @@ void expression_assign(
             intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
             assert( intval1 < lhs->sig->value->width );
             assert( ((intval1 - intval2) + 1) >= 0 );
-            lhs->value->value.u32 = vstart + ((intval1 - intval2) + 1);
+            lhs->value->value.ul = vstart + ((intval1 - intval2) + 1);
           }
           if( assign ) {
-            bool changed = vector_set_value( lhs->value, rhs->value->value.u32, intval2, *lsb, 0 );
+            bool changed = vector_set_value( lhs->value, rhs->value->value.ul, intval2, *lsb, 0 );
             lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -5623,6 +5623,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.42  2008/05/28 05:57:10  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.329.2.41  2008/05/27 05:52:50  phase1geo
  Starting to add fix for sign extension.  Not finished at this point.
 

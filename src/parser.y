@@ -4476,11 +4476,11 @@ statement
       expression* expr;
       statement*  stmt;
       if( (ignore_mode == 0) && ($3 != NULL) && ($6 != NULL) ) {
-        vec = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+        vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
         Try {
           expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           vector_from_int( vec, 0x0 );
-          assert( expr->value->value.u32 == NULL );
+          assert( expr->value->value.ul == NULL );
           free_safe( expr->value, sizeof( vector ) );
           expr->value = vec;
         } Catch_anonymous {
@@ -5004,11 +5004,11 @@ statement
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($5 != NULL) && ($7 != NULL) && ($8 != NULL) ) {
-        vec = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+        vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
         Try {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           vector_from_int( vec, 0x0 );
-          assert( tmp->value->value.u32 == NULL );
+          assert( tmp->value->value.ul == NULL );
           free_safe( tmp->value, sizeof( vector ) );
           tmp->value = vec;
         } Catch_anonymous {
@@ -5858,7 +5858,7 @@ delay_value
             error_count++;
           }
           vector_dealloc( tmp->value );
-          tmp->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+          tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
           vector_from_int( tmp->value, se->num );
           static_expr_dealloc( se, TRUE );
         } else {
@@ -5915,7 +5915,7 @@ delay_value
               error_count++;
             }
             vector_dealloc( tmp->value );
-            tmp->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+            tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
             vector_from_int( tmp->value, se->num );
             static_expr_dealloc( se, TRUE );
           } else {
@@ -5943,7 +5943,7 @@ delay_value_simple
         } Catch_anonymous {
           error_count++;
         }
-        assert( tmp->value->value.u32 == NULL );
+        assert( tmp->value->value.ul == NULL );
         free_safe( tmp->value, sizeof( vector ) );
         tmp->value = $1.vec;
         $$ = tmp;
@@ -7224,7 +7224,7 @@ single_index_expr
               error_count++;
             }
             vector_dealloc( tmp->value );
-            tmp->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+            tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
             vector_from_int( tmp->value, $4->num );
             Try {
               tmp = db_create_expression( tmp, $2, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
@@ -7264,7 +7264,7 @@ single_index_expr
               error_count++;
             }
             vector_dealloc( tmp->value );
-            tmp->value = vector_create( 32, VTYPE_VAL, VDATA_U32, TRUE );
+            tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
             vector_from_int( tmp->value, $4->num );
             Try {
               tmp = db_create_expression( tmp, $2, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );

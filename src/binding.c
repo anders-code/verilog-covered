@@ -828,7 +828,7 @@ void bind_perform(
 
             /* If an FSM expression is attached, size it now */
             if( curr_eb->fsm != NULL ) {
-              curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, VTYPE_EXP, VDATA_U32, TRUE );
+              curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, VTYPE_EXP, VDATA_UL, TRUE );
             }
 
           /* Otherwise, handle disable binding */
@@ -973,6 +973,9 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.130.2.3  2008/05/28 05:57:10  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.130.2.2  2008/05/23 14:50:20  phase1geo
  Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
  vector set bit.  Updating regressions per this change.

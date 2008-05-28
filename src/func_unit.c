@@ -485,7 +485,7 @@ void funit_size_elements(
         (curr_exp->exp->op != EXP_OP_FUNC_CALL) &&
         (curr_exp->exp->op != EXP_OP_PASSIGN) ) {
       expression_set_value( curr_exp->exp, curr_exp->exp->sig, funit );
-      assert( curr_exp->exp->value->value.u32 != NULL );
+      assert( curr_exp->exp->value->value.ul != NULL );
     }
     curr_exp = curr_exp->next;
   }
@@ -1488,6 +1488,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.101.2.4  2008/05/28 05:57:10  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
  Revision 1.101.2.3  2008/05/26 05:42:09  phase1geo
  Adding new error merge diagnostics to regression suite to verify missing vector_db_merge
  error cases.  Full regression passes.
