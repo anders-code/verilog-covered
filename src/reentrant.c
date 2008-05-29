@@ -186,9 +186,9 @@ static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsig
                 entry[VTYPE_INDEX_VAL_VALL] = 0;
                 entry[VTYPE_INDEX_VAL_VALH] = 0;
               }
-              entry[VTYPE_INDEX_VAL_VALL] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
+              entry[VTYPE_INDEX_VAL_VALL] |= (ulong)((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
               curr_bit++;
-              entry[VTYPE_INDEX_VAL_VALH] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
+              entry[VTYPE_INDEX_VAL_VALH] |= (ulong)((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
               curr_bit++;
             }
           }
@@ -211,13 +211,13 @@ static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsig
                 unsigned int i;
                 for( i=0; i<expl->exp->value->width; i++ ) {
                   ulong* entry = expl->exp->value->value.ul[UL_DIV(i)];
-                  if( (i & 0x1f) == 0 ) {
+                  if( UL_MOD(i) == 0 ) {
                     entry[VTYPE_INDEX_VAL_VALL] = 0;
                     entry[VTYPE_INDEX_VAL_VALH] = 0;
                   }
-                  entry[VTYPE_INDEX_VAL_VALL] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
+                  entry[VTYPE_INDEX_VAL_VALL] |= (ulong)((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
                   curr_bit++;
-                  entry[VTYPE_INDEX_VAL_VALH] |= ((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
+                  entry[VTYPE_INDEX_VAL_VALH] |= (ulong)((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
                   curr_bit++;
                 }
               }
@@ -332,6 +332,10 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
 
 /*
  $Log$
+ Revision 1.17.2.5  2008/05/29 23:04:51  phase1geo
+ Last set of submissions to get full regression passing.  Fixed a few more
+ bugs in vector.c and reentrant.c.
+
  Revision 1.17.2.4  2008/05/28 05:57:12  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 

@@ -1050,7 +1050,7 @@ void vector_display_nibble_ulong(
   for( i=0; i<vector_type_sizes[type]; i++ ) {
     for( j=UL_SIZE(width); j--; ) {
       /*@-formatcode@*/
-      printf( " %x", value[j][i] );
+      printf( " %lx", value[j][i] );
       /*@=formatcode@*/
     }
   }
@@ -1080,9 +1080,9 @@ void vector_display_nibble_ulong(
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
-        printf( "%08x", value[i][VTYPE_INDEX_EXP_EVAL_A] );
+        printf( "%08lx", value[i][VTYPE_INDEX_EXP_EVAL_A] );
 #elif SIZEOF_LONG == 8
-        printf( "%016x", value[i][VTYPE_INDEX_EXP_EVAL_A] );
+        printf( "%016lx", value[i][VTYPE_INDEX_EXP_EVAL_A] );
 #else
 #error "Unsupported long size"
 #endif
@@ -1094,9 +1094,9 @@ void vector_display_nibble_ulong(
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
-        printf( "%08x", value[i][VTYPE_INDEX_EXP_EVAL_B] );
+        printf( "%08lx", value[i][VTYPE_INDEX_EXP_EVAL_B] );
 #elif SIZEOF_LONG == 8
-        printf( "%016x", value[i][VTYPE_INDEX_EXP_EVAL_B] );
+        printf( "%016lx", value[i][VTYPE_INDEX_EXP_EVAL_B] );
 #endif
         /*@=formatcode@*/
       }
@@ -1106,9 +1106,9 @@ void vector_display_nibble_ulong(
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
-        printf( "%08x", value[i][VTYPE_INDEX_EXP_EVAL_C] );
+        printf( "%08lx", value[i][VTYPE_INDEX_EXP_EVAL_C] );
 #elif SIZEOF_LONG == 8
-        printf( "%016x", value[i][VTYPE_INDEX_EXP_EVAL_C] );
+        printf( "%016lx", value[i][VTYPE_INDEX_EXP_EVAL_C] );
 #endif
         /*@=formatcode@*/
       }
@@ -1118,9 +1118,9 @@ void vector_display_nibble_ulong(
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
-        printf( "%08x", value[i][VTYPE_INDEX_EXP_EVAL_D] );
+        printf( "%08lx", value[i][VTYPE_INDEX_EXP_EVAL_D] );
 #elif SIZEOF_LONG == 8
-        printf( "%016x", value[i][VTYPE_INDEX_EXP_EVAL_D] );
+        printf( "%016lx", value[i][VTYPE_INDEX_EXP_EVAL_D] );
 #endif
         /*@=formatcode@*/
       }
@@ -1142,9 +1142,9 @@ void vector_display_nibble_ulong(
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
-        printf( "%08x", value[i][VTYPE_INDEX_MEM_WR] );
+        printf( "%08lx", value[i][VTYPE_INDEX_MEM_WR] );
 #elif SIZEOF_LONG == 8
-        printf( "%016x", value[i][VTYPE_INDEX_MEM_WR] );
+        printf( "%016lx", value[i][VTYPE_INDEX_MEM_WR] );
 #endif
         /*@=formatcode@*/
       }
@@ -1154,9 +1154,9 @@ void vector_display_nibble_ulong(
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
-        printf( "%08x", value[i][VTYPE_INDEX_MEM_RD] );
+        printf( "%08lx", value[i][VTYPE_INDEX_MEM_RD] );
 #elif SIZEOF_LONG == 8
-        printf( "%016x", value[i][VTYPE_INDEX_MEM_RD] );
+        printf( "%016lx", value[i][VTYPE_INDEX_MEM_RD] );
 #endif
         /*@=formatcode@*/
       }
@@ -1354,13 +1354,13 @@ bool vector_set_coverage_and_assign_ulong(
   int          msb
 ) { PROFILE(VECTOR_SET_COVERAGE_AND_ASSIGN);
 
-  bool         changed = FALSE;                                  /* Set to TRUE if the assigned value has changed */
-  unsigned int lindex  = UL_DIV(lsb);                            /* Index of lowest array entry */
-  unsigned int hindex  = UL_DIV(msb);                            /* Index of highest array entry */
-  ulong        lmask   = (UL_SET << lsb);                        /* Mask to be used in lower element */
-  ulong        hmask   = (UL_SET >> ((UL_BITS-1)-UL_MOD(msb)));  /* Mask to be used in upper element */
-  unsigned int i;                                                /* Loop iterator */
-  nibble       prev_set;                                         /* Specifies if this vector value has previously been set */
+  bool         changed = FALSE;          /* Set to TRUE if the assigned value has changed */
+  unsigned int lindex  = UL_DIV(lsb);    /* Index of lowest array entry */
+  unsigned int hindex  = UL_DIV(msb);    /* Index of highest array entry */
+  ulong        lmask   = UL_LMASK(lsb);  /* Mask to be used in lower element */
+  ulong        hmask   = UL_HMASK(msb);  /* Mask to be used in upper element */
+  unsigned int i;                        /* Loop iterator */
+  nibble       prev_set;                 /* Specifies if this vector value has previously been set */
 
   /* If the lindex and hindex are the same, set lmask to the AND of the high and low masks */
   if( lindex == hindex ) {
@@ -4779,6 +4779,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.92  2008/05/29 23:04:51  phase1geo
+ Last set of submissions to get full regression passing.  Fixed a few more
+ bugs in vector.c and reentrant.c.
+
  Revision 1.138.2.91  2008/05/29 18:47:03  phase1geo
  Fixing various bugs found in 64-bit mode in vector.c file.  IV and Cver
  regressions pass on 64-bit architecturs.  Checkpointing.

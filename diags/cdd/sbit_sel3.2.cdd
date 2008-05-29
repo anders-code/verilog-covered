@@ -1,4 +1,4 @@
-5 e 1 * 0
+5 e 181 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd sbit_sel3.2.vcd -o sbit_sel3.2.cdd -v sbit_sel3.2.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" sbit_sel3.2.v 10 40 1
@@ -31,7 +31,7 @@
 3 7 main.foo.$u2 "main.foo.$u2" sbit_sel3.2.v 0 37 1
 2 15 33 d000d 1 0 1804 0 0 32 48 0 0
 2 16 33 80008 3 1 180c 0 0 32 1 x
-2 17 33 8000d 3 11 190c 15 16 1 18 0 1 ffffffff 1 0 0
+2 17 33 8000d 3 11 190c 15 16 1 18 0 1 1 1 0 0
 2 18 33 4000f 3 39 80e 17 0
 2 19 36 1b001b 1 0 1808 0 0 32 48 1 0
 2 20 36 150015 1 0 1808 0 0 32 48 1 0

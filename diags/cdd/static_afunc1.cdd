@@ -1,4 +1,4 @@
-5 e 1 * 0
+5 e 181 * 0
 8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd static_afunc1.vcd -o static_afunc1.cdd -v static_afunc1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" static_afunc1.v 9 40 1
@@ -27,7 +27,7 @@
 3 7 main.div2.$u2 "main.div2.$u2" static_afunc1.v 0 37 1
 2 11 33 c000c 0 0 1810 0 0 32 48 0 0
 2 12 33 80008 7 1 180c 0 0 32 1 a
-2 13 33 8000c 7 e 182c 11 12 1 18 0 1 ffffffff 1 0 0
+2 13 33 8000c 7 e 182c 11 12 1 18 0 1 1 1 0 0
 2 14 33 4000e 7 39 82e 13 0
 2 15 36 d000d 0 0 1810 0 0 32 48 0 0
 2 16 36 60009 0 1 1c10 0 0 32 1 div2
