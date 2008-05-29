@@ -953,7 +953,7 @@ void vector_display_toggle01_ulong(
         fprintf( ofile, "_" );
       }
     }
-    bits_left = 31;
+    bits_left = (UL_BITS - 1);
   }
 
   PROFILE_END;
@@ -991,7 +991,7 @@ void vector_display_toggle10_ulong(
         fprintf( ofile, "_" );
       }
     } 
-    bits_left = 31;
+    bits_left = (UL_BITS - 1);
   }
 
   PROFILE_END;
@@ -1026,7 +1026,7 @@ void vector_display_value_ulong(
         }
       }
     }
-    bits_left = 31;
+    bits_left = (UL_BITS - 1);
   }
 
 }
@@ -1079,7 +1079,13 @@ void vector_display_nibble_ulong(
       printf( ", a: %d'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
+#if SIZEOF_LONG == 4
         printf( "%08x", value[i][VTYPE_INDEX_EXP_EVAL_A] );
+#elif SIZEOF_LONG == 8
+        printf( "%016x", value[i][VTYPE_INDEX_EXP_EVAL_A] );
+#else
+#error "Unsupported long size"
+#endif
         /*@=formatcode@*/
       }
 
@@ -1087,7 +1093,11 @@ void vector_display_nibble_ulong(
       printf( ", b: %d'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
+#if SIZEOF_LONG == 4
         printf( "%08x", value[i][VTYPE_INDEX_EXP_EVAL_B] );
+#elif SIZEOF_LONG == 8
+        printf( "%016x", value[i][VTYPE_INDEX_EXP_EVAL_B] );
+#endif
         /*@=formatcode@*/
       }
 
@@ -1095,7 +1105,11 @@ void vector_display_nibble_ulong(
       printf( ", c: %d'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
+#if SIZEOF_LONG == 4
         printf( "%08x", value[i][VTYPE_INDEX_EXP_EVAL_C] );
+#elif SIZEOF_LONG == 8
+        printf( "%016x", value[i][VTYPE_INDEX_EXP_EVAL_C] );
+#endif
         /*@=formatcode@*/
       }
 
@@ -1103,7 +1117,11 @@ void vector_display_nibble_ulong(
       printf( ", d: %d'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
+#if SIZEOF_LONG == 4
         printf( "%08x", value[i][VTYPE_INDEX_EXP_EVAL_D] );
+#elif SIZEOF_LONG == 8
+        printf( "%016x", value[i][VTYPE_INDEX_EXP_EVAL_D] );
+#endif
         /*@=formatcode@*/
       }
 
@@ -1123,7 +1141,11 @@ void vector_display_nibble_ulong(
       printf( ", wr: %d'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
+#if SIZEOF_LONG == 4
         printf( "%08x", value[i][VTYPE_INDEX_MEM_WR] );
+#elif SIZEOF_LONG == 8
+        printf( "%016x", value[i][VTYPE_INDEX_MEM_WR] );
+#endif
         /*@=formatcode@*/
       }
 
@@ -1131,7 +1153,11 @@ void vector_display_nibble_ulong(
       printf( ", rd: %d'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
+#if SIZEOF_LONG == 4
         printf( "%08x", value[i][VTYPE_INDEX_MEM_RD] );
+#elif SIZEOF_LONG == 8
+        printf( "%016x", value[i][VTYPE_INDEX_MEM_RD] );
+#endif
         /*@=formatcode@*/
       }
 
@@ -1161,7 +1187,7 @@ void vector_display(
   if( (vec->width > 0) && (vec->value.ul != NULL) ) {
     switch( vec->suppl.part.data_type ) {
       case VDATA_UL :  vector_display_nibble_ulong( vec->value.ul, vec->width, vec->suppl.part.type );  break;
-      default        :  assert( 0 );  break;
+      default       :  assert( 0 );  break;
     }
   } else {
     printf( "NO DATA" );
@@ -1269,28 +1295,33 @@ bool vector_set_assigned(
   int     lsb
 ) { PROFILE(VECTOR_SET_ASSIGNED);
 
-  bool          prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
-  unsigned int  i;                      /* Loop iterator */
-  unsigned int  assigned_index;         /* Index of vector value array to use for setting "assigned" bits */
+  bool prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
 
   assert( vec != NULL );
   assert( (msb - lsb) < vec->width );
-
-  /* Figure out which value to choose */
-  switch( vec->suppl.part.type ) {
-    case VTYPE_SIG :  assigned_index = VTYPE_INDEX_SIG_MISC;    break;
-//    case VTYPE_EXP :  assigned_index = VTYPE_INDEX_EXP_EVAL_A;  break;
-    default        :  assert( 0 );  break;
-  }
+  assert( vec->suppl.part.type == VTYPE_SIG );
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      for( i=lsb; i<=msb; i++ ) {
-        unsigned int offset = UL_DIV(i);
-        if( ((vec->value.ul[offset][assigned_index] >> UL_MOD(i)) & 0x1) == 1 ) {
-          prev_assigned = TRUE;
+      {
+        ulong        lmask     = UL_LMASK(lsb);
+        ulong        hmask     = UL_HMASK(msb);
+        unsigned int i         = UL_DIV(lsb);
+        unsigned int msb_index = UL_DIV(msb);
+        if( i == msb_index ) {
+          lmask &= hmask;
+          prev_assigned = ((vec->value.ul[i][VTYPE_INDEX_SIG_MISC] & lmask) != 0);
+          vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= lmask;
+        } else {
+          prev_assigned |= ((vec->value.ul[i][VTYPE_INDEX_SIG_MISC] & lmask) != 0);
+          vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= lmask;
+          for( i++; i<msb_index; i++ ) {
+            prev_assigned = (vec->value.ul[i][VTYPE_INDEX_SIG_MISC] != 0);
+            vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= UL_SET;
+          }
+          prev_assigned |= ((vec->value.ul[i][VTYPE_INDEX_SIG_MISC] & hmask) != 0);
+          vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= hmask;
         }
-        vec->value.ul[offset][assigned_index] |= (0x1 << UL_MOD(i));
       }
       break;
     default :  assert( 0 );  break;
@@ -1419,7 +1450,7 @@ inline static void vector_get_sign_extend_vector_ulong(
 ) { PROFILE(VECTOR_GET_SIGN_EXTEND_VECTOR_ULONG);
 
   ulong* entry     = vec->value.ul[UL_DIV(vec->width - 1)];
-  ulong  last_mask = 1 << UL_MOD(vec->width - 1);
+  ulong  last_mask = (ulong)1 << UL_MOD(vec->width - 1);
 
   *signl = ((entry[VTYPE_INDEX_VAL_VALL] & last_mask) != 0) ? UL_SET : 0;
   *signh = ((entry[VTYPE_INDEX_VAL_VALH] & last_mask) != 0) ? UL_SET : 0;
@@ -1713,7 +1744,7 @@ bool vector_part_select_pull(
 
         /* If the src vector is of type MEM, set the MEM_RD bit in the source's supplemental field */
         if( set_mem_rd && (src->suppl.part.type == VTYPE_MEM) ) {
-          src->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= (1 << UL_MOD(lsb));
+          src->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= ((ulong)1 << UL_MOD(lsb));
         }
 
         retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
@@ -2252,7 +2283,7 @@ static void vector_set_static(
           case VDATA_UL :
             for( i=0; i<bits_per_char; i++ ) {
               if( (i + pos) < vec->width ) {
-                vec->value.ul[UL_DIV(i+pos)][VTYPE_INDEX_VAL_VALH] |= (1 << UL_MOD(i+pos));
+                vec->value.ul[UL_DIV(i+pos)][VTYPE_INDEX_VAL_VALH] |= ((ulong)1 << UL_MOD(i+pos));
               }
             }
             break;
@@ -2264,7 +2295,7 @@ static void vector_set_static(
             for( i=0; i<bits_per_char; i++ ) {
               if( (i + pos) < vec->width ) {
                 unsigned int index = UL_DIV(i + pos);
-                unsigned int value = (1 << UL_MOD(i + pos));
+                ulong        value = ((ulong)1 << UL_MOD(i + pos));
                 vec->value.ul[index][VTYPE_INDEX_VAL_VALL] |= value;
                 vec->value.ul[index][VTYPE_INDEX_VAL_VALH] |= value;
               }
@@ -2273,7 +2304,7 @@ static void vector_set_static(
           default :  assert( 0 );  break;
         }
       } else {
-        unsigned int val;
+        ulong val;
         if( (*ptr >= 'a') && (*ptr <= 'f') ) {
           val = (*ptr - 'a') + 10;
         } else if( (*ptr >= 'A') && (*ptr <= 'F') ) {
@@ -2303,8 +2334,8 @@ static void vector_set_static(
     switch( data_type ) {
       case VDATA_UL :
         {
-          ulong hfill = (vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALH] & (1 << UL_MOD(pos - 1))) ? UL_SET : 0x0;
-          ulong lfill = (vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALL] & (1 << UL_MOD(pos - 1))) ? hfill  : 0x0;
+          ulong hfill = (vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALH] & ((ulong)1 << UL_MOD(pos - 1))) ? UL_SET : 0x0;
+          ulong lfill = (vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALL] & ((ulong)1 << UL_MOD(pos - 1))) ? hfill  : 0x0;
           ulong lmask = UL_LMASK(pos);
           ulong hmask = UL_HMASK(vec->width - 1);
           if( UL_DIV(pos) == UL_DIV(vec->width - 1) ) {
@@ -2429,7 +2460,7 @@ char* vector_to_string(
             if( ((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) == 1 ) {
               value = ((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) + 16;
             } else if( ((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) == 1 ) {
-              value = (value < 16) ? ((1 << (UL_MOD(i) % group)) | value) : value;
+              value = (value < 16) ? (((ulong)1 << (UL_MOD(i) % group)) | value) : value;
             }
             assert( pos < vec_size );
             if( (i % group) == 0 ) {
@@ -2661,7 +2692,7 @@ bool vector_vcd_assign(
         while( ptr >= value ) {
           unsigned int index  = UL_DIV(i);
           unsigned int offset = UL_MOD(i);
-          ulong        bit    = (1 << offset);
+          ulong        bit    = ((ulong)1 << offset);
           if( offset == 0 ) {
             scratchl[index] = 0;
             scratchh[index] = 0;
@@ -2676,7 +2707,7 @@ bool vector_vcd_assign(
         for( ; i<=msb; i++ ) {
           unsigned int index  = UL_DIV(i);
           unsigned int offset = UL_MOD(i);
-          ulong        bit    = (1 << offset);
+          ulong        bit    = ((ulong)1 << offset);
           if( offset == 0 ) {
             scratchl[index] = 0;
             scratchh[index] = 0;
@@ -4748,6 +4779,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.91  2008/05/29 18:47:03  phase1geo
+ Fixing various bugs found in 64-bit mode in vector.c file.  IV and Cver
+ regressions pass on 64-bit architecturs.  Checkpointing.
+
  Revision 1.138.2.90  2008/05/29 06:54:12  phase1geo
  Fixing compatibility problems in 64-bit mode.  More work to go.  Checkpointing.
 

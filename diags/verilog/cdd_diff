@@ -203,9 +203,9 @@ sub parse_vector {
               $record1[$j] = $val;
             } else {
               if( length( $record1[$j] ) == 8 ) {
-                $record1[$j] = ($val != 0) ? "${val}${record1[$j]}" : $record1[$j];
+                $record1[$j] = ($val ne "0") ? "${val}${record1[$j]}" : $record1[$j];
               } else {
-                $record1[$j] = ($val != 0) ? "${val}" . "0" x (8 - length( $record1[$j] )) . "${record1[$j]}" : $record1[$j];
+                $record1[$j] = ($val ne "0") ? "${val}" . "0" x (8 - length( $record1[$j] )) . "${record1[$j]}" : $record1[$j];
               }
             }
           }
