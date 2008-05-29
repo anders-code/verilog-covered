@@ -87,6 +87,11 @@ sub parse_cdd {
 
         }
 
+        # If our exec_num is non-zero, set it to one to make sure that we compare
+        if( $line[4] ne "0" ) {
+          $line[4] = "1";
+        }
+
       # FSM
       } elsif( $line[0] eq "6" ) {
 
@@ -152,6 +157,10 @@ sub parse_cdd {
 sub parse_vector {
 
   my( $start, $num, @line ) = @_;
+
+  if( ($vec_ul_size[$num] != 2) && ($vec_ul_size[$num] != 3) ) {
+    die "Unsupported vector unsigned long size ($vec_ul_size[$num]).  Unable to compare!\n";
+  }
 
   my( $vec_width ) = $line[$start];
   my( $vec_type  ) = $line[$start + 1] & 0x3;

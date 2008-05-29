@@ -411,8 +411,13 @@ void vector_db_read(
               for( i=0; i<=((width-1)>>(info_suppl.part.vec_ul_size+3)); i++ ) {
                 for( j=0; j<vector_type_sizes[suppl.part.type]; j++ ) {
                   /* If the CDD vector size and our size are the same, just do a direct read */
-                  if( ((info_suppl.part.vec_ul_size == 2) && (sizeof( ulong ) == 4)) ||
-                      ((info_suppl.part.vec_ul_size == 3) && (sizeof( ulong ) == 8)) ) {
+#if SIZEOF_LONG == 4
+                  if( info_suppl.part.vec_ul_size == 2 ) {
+#elif SIZEOF_LONG == 8
+                  if( info_suppl.part.vec_ul_size == 3 ) {
+#else
+#error "Unsupported long size"
+#endif
                     if( sscanf( *line, "%lx%n", &((*vec)->value.ul[i][j]), &chars_read ) == 1 ) {
                       *line += chars_read;
                     } else {
@@ -421,8 +426,9 @@ void vector_db_read(
                       Throw 0;
                     }
 
+#if SIZEOF_LONG == 8
                   /* If the CDD file size is 32-bit and we are 64-bit, store two elements to our one */
-                  } else if( (info_suppl.part.vec_ul_size == 2) && (sizeof( ulong ) == 8) ) {
+                  } else if( info_suppl.part.vec_ul_size == 2 ) {
                     uint32 val;
                     if( sscanf( *line, "%x%n", &val, &chars_read ) == 1 ) {
                       *line += chars_read;
@@ -437,8 +443,9 @@ void vector_db_read(
                       Throw 0;
                     }
 
+#elif SIZEOF_LONG == 4
                   /* If the CDD file size is 64-bit and we are 32-bit, store one elements to our two */
-                  } else if( (info_suppl.part.vec_ul_size == 3) && (sizeof( ulong ) == 4) ) {
+                  } else if( info_suppl.part.vec_ul_size == 3 ) {
                     unsigned long long val;
                     if( sscanf( *line, "%llx%n", &val, &chars_read ) == 1 ) {
                       *line += chars_read;
@@ -449,11 +456,11 @@ void vector_db_read(
                       printf( "vector Throw A.2\n" );
                       Throw 0;
                     }
-
+#endif
                   /* Otherwise, we don't know how to convert the value, so flag an error */
                   } else {
                     print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                    printf( "vector Throw A.3\n" );
+                    // printf( "vector Throw A.3\n" ); - HIT
                     Throw 0;
                   }
                 }
@@ -535,9 +542,15 @@ void vector_db_merge(
             unsigned int i, j;
             for( i=0; i<=((width-1)>>(info_suppl.part.vec_ul_size+3)); i++ ) {
               for( j=0; j<vector_type_sizes[suppl.part.type]; j++ ) {
+
                 /* If the CDD vector size and our size are the same, just do a direct read */
-                if( ((info_suppl.part.vec_ul_size == 2) && (sizeof( ulong ) == 4)) ||
-                    ((info_suppl.part.vec_ul_size == 3) && (sizeof( ulong ) == 8)) ) {
+#if SIZEOF_LONG == 4
+                if( info_suppl.part.vec_ul_size == 2 ) {
+#elif SIZEOF_LONG == 8
+                if( info_suppl.part.vec_ul_size == 3 ) {
+#else
+#error "Unsupported long size"
+#endif
                   ulong val;
                   if( sscanf( *line, "%lx%n", &val, &chars_read ) == 1 ) {
                     *line += chars_read;
@@ -550,8 +563,9 @@ void vector_db_merge(
                     Throw 0;
                   }
 
+#if SIZEOF_LONG == 8
                 /* If the CDD file size is 32-bit and we are 64-bit, store two elements to our one */
-                } else if( (info_suppl.part.vec_ul_size == 2) && (sizeof( ulong ) == 8) ) {
+                } else if( info_suppl.part.vec_ul_size == 2 ) {
                   uint32 val;
                   if( sscanf( *line, "%x%n", &val, &chars_read ) == 1 ) {
                     *line += chars_read;
@@ -568,8 +582,9 @@ void vector_db_merge(
                     Throw 0;
                   }
 
+#elif SIZEOF_LONG == 4
                 /* If the CDD file size is 64-bit and we are 32-bit, store one elements to our two */
-                } else if( (info_suppl.part.vec_ul_size == 3) && (sizeof( ulong ) == 4) ) {
+                } else if( info_suppl.part.vec_ul_size == 3 ) {
                   unsigned long long val;
                   if( sscanf( *line, "%llx%n", &val, &chars_read ) == 1 ) {
                     *line += chars_read;
@@ -582,11 +597,11 @@ void vector_db_merge(
                     printf( "vector Throw E.2\n" );
                     Throw 0;
                   }
-
+#endif
                 /* Otherwise, we don't know how to convert the value, so flag an error */
                 } else {
                   print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-                  printf( "vector Throw E.3\n" );
+                  // printf( "vector Throw E.3\n" ); - HIT
                   Throw 0;
                 }
               }
@@ -4733,6 +4748,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.89  2008/05/29 06:46:25  phase1geo
+ Finishing last submission.
+
  Revision 1.138.2.88  2008/05/28 22:12:31  phase1geo
  Adding further support for 32-/64-bit support.  Checkpointing.
 

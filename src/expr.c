@@ -1506,7 +1506,7 @@ void expression_db_read(
 
         } Catch_anonymous {
           expression_dealloc( expr, FALSE );
-          printf( "expr Throw F\n" );
+          // printf( "expr Throw F\n" ); - HIT
           Throw 0;
         }
 
@@ -5503,7 +5503,7 @@ void expression_dealloc(
       /* If this is a named block call or fork call, remove the statement that this expression points to */
       if( (expr->op == EXP_OP_NB_CALL) || (expr->op == EXP_OP_FORK) ) {
 
-        if( !exp_only ) {
+        if( !exp_only && (expr->elem.funit != NULL) ) {
 #ifdef DEBUG_MODE
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL and its calling expression is being removed",
                                       expr->elem.funit->first_stmt->exp->line );
@@ -5623,6 +5623,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.329.2.43  2008/05/29 06:46:24  phase1geo
+ Finishing last submission.
+
  Revision 1.329.2.42  2008/05/28 05:57:10  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 

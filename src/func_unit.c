@@ -782,7 +782,7 @@ void funit_db_merge(
         }
       } Catch_anonymous {
         free_safe( curr_line, curr_line_size );
-        printf( "func_unit Throw D\n" );
+        // printf( "func_unit Throw D\n" ); - HIT
         Throw 0;
       }
       free_safe( curr_line, curr_line_size );
@@ -1488,6 +1488,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.101.2.5  2008/05/29 06:46:25  phase1geo
+ Finishing last submission.
+
  Revision 1.101.2.4  2008/05/28 05:57:10  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 

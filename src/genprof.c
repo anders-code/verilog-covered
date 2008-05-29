@@ -394,6 +394,7 @@ profiler profiles[NUM_PROFILES] = {
   {"funit_get_filename", NULL, 0, 0, 0, FALSE},
   {"funit_get_start_and_end_lines", NULL, 0, 0, 0, FALSE},
   {"info_initialize", NULL, 0, 0, 0, FALSE},
+  {"info_set_vector_elem_size", NULL, 0, 0, 0, FALSE},
   {"info_db_write", NULL, 0, 0, 0, FALSE},
   {"info_db_read", NULL, 0, 0, 0, FALSE},
   {"args_db_read", NULL, 0, 0, 0, FALSE},
