@@ -1,4 +1,4 @@
-5 e 1 * 0
+5 e 101 * 0
 8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd timescale2.7.vcd -o timescale2.7.cdd -v timescale2.7.v -y lib -D DUMP
 3 0 $root "$root" NA 0 0 1000000000000000
 3 0 main "main" timescale2.7.v 11 24 1000000000000000
