@@ -2349,8 +2349,8 @@ char* vector_to_string(
   if( base == QSTRING ) {
 
     int i, j;
-    int vec_size  = ((vec->width - 1) >> 3) + 2;
-    int pos       = 0;
+    int vec_size = ((vec->width - 1) >> 3) + 2;
+    int pos      = 0;
 
     /* Allocate memory for string from the heap */
     str = (char*)malloc_safe( vec_size );
@@ -2358,14 +2358,14 @@ char* vector_to_string(
     switch( vec->suppl.part.data_type ) {
       case VDATA_UL :
         {
-          int offset = (((vec->width >> 3) & 0x3) == 0) ? 4 : ((vec->width >> 3) & 0x3);
+          int offset = (((vec->width >> 3) & (UL_MOD_VAL >> 3)) == 0) ? SIZEOF_LONG : ((vec->width >> 3) & (UL_MOD_VAL >> 3));
           for( i=UL_SIZE(vec->width); i--; ) {
             ulong val = vec->value.ul[i][VTYPE_INDEX_VAL_VALL]; 
             for( j=(offset - 1); j>=0; j-- ) {
               str[pos] = (val >> (j * 8)) & 0xff;
               pos++;
             }
-            offset = 4;
+            offset = SIZEOF_LONG;
           }
         }
         break;
@@ -2389,7 +2389,7 @@ char* vector_to_string(
     unsigned int group;
     char         type_char;
     char         width_str[20];
-    int          vec_size  = ((vec->width & 0x7) == 0) ? ((vec->width >> 3) + 1) : ((vec->width >> 3) + 2);
+    int          vec_size  = ((vec->width - 1) >> 3) + 2;
     int          pos       = 0;
 
     switch( base ) {
@@ -2529,7 +2529,7 @@ void vector_from_string(
       pos   = 0;
 
       for( i=(strlen( *str ) - 1); i>=0; i-- ) {
-        (*vec)->value.ul[pos>>(UL_DIV_VAL-3)][VTYPE_INDEX_VAL_VALL] |= (ulong)((*str)[i]) << ((pos & 0x3) << 3);
+        (*vec)->value.ul[pos>>(UL_DIV_VAL-3)][VTYPE_INDEX_VAL_VALL] |= (ulong)((*str)[i]) << ((pos & (UL_MOD_VAL >> 3)) << 3);
         pos++;
       }
 
@@ -4748,6 +4748,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.90  2008/05/29 06:54:12  phase1geo
+ Fixing compatibility problems in 64-bit mode.  More work to go.  Checkpointing.
+
  Revision 1.138.2.89  2008/05/29 06:46:25  phase1geo
  Finishing last submission.
 
