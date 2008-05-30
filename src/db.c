@@ -451,8 +451,10 @@ void db_read(
           
               assert( !merge_mode );
          
-              /* Parse rest of line for argument info */
-              args_db_read( &rest_line );
+              /* Parse rest of line for argument info (if we are not instance merging) */
+              if( read_mode != READ_MODE_MERGE_INST_MERGE ) {
+                args_db_read( &rest_line );
+              }
             
             } else if( type == DB_TYPE_SIGNAL ) {
   
@@ -2953,6 +2955,12 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.307.2.7  2008/05/30 03:36:29  phase1geo
+ Fixing bug 1966994.  Updating regression files.  Improved cdd_diff script to
+ strip out the relative path information when performing CDD compares but pay
+ attention to the rest of the score argument information.  Full regression
+ passes.
+
  Revision 1.307.2.6  2008/05/28 05:57:10  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 
