@@ -1266,15 +1266,12 @@ void funit_add_thread(
 }
 
 /*!
- \param funit  Pointer of functional unit to push threads from
- \param time   Pointer to current simulation time
-
  Adds all of the given functional unit threads to the active simulation queue.
 */
 void funit_push_threads(
-  func_unit*       funit,
-  const statement* stmt,
-  const sim_time*  time
+  func_unit*       funit,  /*!< Pointer of functional unit to push threads from */
+  const statement* stmt,   /*!< Pointer to the statement to search for in functional unit threads */
+  const sim_time*  time    /*!< Pointer to current simulation time */
 ) { PROFILE(FUNIT_PUSH_THREADS);
 
   assert( funit != NULL );
@@ -1488,6 +1485,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.103  2008/05/30 23:00:48  phase1geo
+ Fixing Doxygen comments to eliminate Doxygen warning messages.
+
  Revision 1.102  2008/05/30 05:38:30  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.
