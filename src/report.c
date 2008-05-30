@@ -775,13 +775,14 @@ void report_read_cdd_and_ready(
 
   } else {
 
-    inst_link* instl = db_list[curr_db]->inst_head;
+    inst_link* instl;
 
     /* Read in database, performing instance merging */
     db_read( ifile, read_mode );
     bind_perform( TRUE, 0 );
 
     /* Gather instance statistics */
+    instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
       report_gather_instance_stats( instl->inst );
       instl = instl->next;
@@ -1010,6 +1011,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104  2008/05/30 06:02:59  phase1geo
+ Fixing segmentation fault with GUI opening an initial CDD file.
+
  Revision 1.103  2008/05/30 05:38:32  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.
