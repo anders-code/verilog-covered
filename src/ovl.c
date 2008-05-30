@@ -253,7 +253,7 @@ static char* ovl_get_coverage_point( statement* stmt ) { PROFILE(OVL_GET_COVERAG
   assert( stmt->exp->left->right->op == EXP_OP_STATIC );
   assert( ESUPPL_STATIC_BASE( stmt->exp->left->right->suppl ) == QSTRING );
 
-  return( vector_to_string( stmt->exp->left->right->value, ESUPPL_STATIC_BASE( stmt->exp->left->right->suppl ) ) );  
+  return( vector_to_string( stmt->exp->left->right->value, ESUPPL_STATIC_BASE( stmt->exp->left->right->suppl ), FALSE ) );  
 
 }
 
@@ -469,6 +469,15 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
 /*
  $Log$
+ Revision 1.27  2008/05/30 05:38:31  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
+ Revision 1.26.2.1  2008/05/07 21:09:10  phase1geo
+ Added functionality to allow to_string to output full vector bits (even
+ non-significant bits) for purposes of reporting for FSMs (matches original
+ behavior).
+
  Revision 1.26  2008/04/15 20:37:11  phase1geo
  Fixing database array support.  Full regression passes.
 

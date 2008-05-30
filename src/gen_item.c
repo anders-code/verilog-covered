@@ -70,7 +70,7 @@ static void gen_item_stringify(
     unsigned int rv;
 
     /* Allocate some memory in the tmp string */
-    tmp = (char*)malloc_safe( str_len );
+    tmp = (char*)malloc_safe_nolimit( str_len );
 
     rv = snprintf( str, str_len, "%p, suppl: %x", gi, gi->suppl.all );
     assert( rv < str_len );
@@ -1209,6 +1209,13 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.68  2008/05/30 05:38:31  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
+ Revision 1.67.2.1  2008/04/30 23:12:31  phase1geo
+ Fixing simulation issues.
+
  Revision 1.67  2008/04/15 20:37:11  phase1geo
  Fixing database array support.  Full regression passes.
 
