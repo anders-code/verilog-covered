@@ -2777,6 +2777,7 @@ struct sig_range_s {
   int           dim_num;             /*!< Specifies the number of dimensions in dim array */
   vector_width* dim;                 /*!< Pointer to array of unpacked or packed dimensions */
   bool          clear;               /*!< Set to TRUE when this range has been fully consumed */
+  bool          exp_dealloc;         /*!< Set to TRUE if expressions should be deallocated from the database because they are not in use */
 };
 
 /*!
@@ -2861,6 +2862,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.297  2008/06/02 21:34:29  phase1geo
+ Fixing bug 1981073.  Adding new tests to verify this fix.
+
  Revision 1.296  2008/05/30 23:00:47  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 

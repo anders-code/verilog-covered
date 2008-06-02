@@ -1411,7 +1411,7 @@ static void funit_clean( func_unit* funit ) { PROFILE(FUNIT_CLEAN);
     /* Free tf elements */
     funit_link_delete_list( &(funit->tf_head), &(funit->tf_tail), FALSE );
 
-    /* Free typdef items */
+    /* Free typedef items */
     tdi = funit->tdi_head;
     while( tdi != NULL ) {
       ttdi = tdi;
@@ -1485,6 +1485,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.104  2008/06/02 21:34:29  phase1geo
+ Fixing bug 1981073.  Adding new tests to verify this fix.
+
  Revision 1.103  2008/05/30 23:00:48  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 
