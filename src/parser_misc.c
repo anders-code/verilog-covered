@@ -121,8 +121,8 @@ void parser_dealloc_sig_range(
   int i;  /* Loop iterator */
 
   for( i=0; i<range->dim_num; i++ ) {
-    static_expr_dealloc( range->dim[i].left,  FALSE );
-    static_expr_dealloc( range->dim[i].right, FALSE );
+    static_expr_dealloc( range->dim[i].left,  range->exp_dealloc );
+    static_expr_dealloc( range->dim[i].right, range->exp_dealloc );
   }
 
   if( i > 0 ) {
@@ -132,7 +132,10 @@ void parser_dealloc_sig_range(
   }
 
   /* Clear the clear bit */
-  range->clear = FALSE;
+  range->clear       = FALSE;
+
+  /* Set the deallocation bit */
+  range->exp_dealloc = TRUE;
 
   /* Deallocate pointer itself, if specified to do so */
   if( rm_ptr ) {
@@ -175,6 +178,8 @@ sig_range* parser_copy_curr_range(
       range->dim[i].implicit   = FALSE;
     }
   }
+  range->clear       = crange->clear;
+  range->exp_dealloc = crange->exp_dealloc;
 
   return( range );
 
@@ -212,6 +217,8 @@ void parser_copy_range_to_curr_range(
       crange->dim[i].implicit   = FALSE;
     }
   }
+  crange->clear       = range->clear;
+  crange->exp_dealloc = range->exp_dealloc;
 
 }
 
@@ -316,6 +323,9 @@ bool parser_check_generation(
 
 /*
  $Log$
+ Revision 1.25  2008/06/02 21:34:29  phase1geo
+ Fixing bug 1981073.  Adding new tests to verify this fix.
+
  Revision 1.24  2008/04/05 05:54:32  phase1geo
  Fixing memory deallocation.
 
