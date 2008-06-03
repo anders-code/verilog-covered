@@ -8,12 +8,13 @@ proc create_wizard {} {
     # Create new window
     toplevel .wizwin
     wm title .wizwin "Covered Wizard"
-    wm attributes .wizwin -topmost
 
     frame .wizwin.f -relief raised -borderwidth 1 
 
     # Create buttons
-    button .wizwin.f.new   -text "Generate New CDD File" -relief flat -state disabled -command {
+    button .wizwin.f.new   -text "Generate New CDD File" -relief flat -command {
+      create_new_cdd
+      destroy .wizwin
     }
     button .wizwin.f.open  -text "Open/Merge CDD File(s)" -relief flat -command {
       .menubar.file invoke 0

@@ -16,6 +16,7 @@ source [file join $HOME scripts assert.tcl]
 source [file join $HOME scripts verilog.tcl]
 source [file join $HOME scripts memory.tcl]
 source [file join $HOME scripts wizard.tcl]
+source [file join $HOME scripts create_new.tcl]
 
 # The Tablelist package is used for displaying instance/module hit/miss/total/percent hit information
 package require Tablelist
