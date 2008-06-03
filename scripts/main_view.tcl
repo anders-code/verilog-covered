@@ -19,7 +19,9 @@ source [file join $HOME scripts wizard.tcl]
 source [file join $HOME scripts create_new.tcl]
 
 # The Tablelist package is used for displaying instance/module hit/miss/total/percent hit information
-package require Tablelist
+#package require Tablelist
+package require tile
+package require tablelist_tile 4.8
 
 set last_lb_index      ""
 set lwidth             -1 
@@ -32,7 +34,7 @@ set next_uncov_index   ""
 proc main_view {} {
 
   global race_msgs prev_uncov_index next_uncov_index
-  global HOME
+  global HOME tableCol
 
   # Start off 
 
@@ -116,8 +118,7 @@ proc main_view {} {
   # Create Tablelist and associated scrollbars
   tablelist::tablelist .bot.left.tl \
     -columns {0 "Instance Name" 0 "Module Name" 0 "Hit" 0 "Miss" 0 "Total" 0 "Hit %" 0 "Index"} \
-    -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} -stretch all
-
+    -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.sbf.vb set} -stretch all
   .bot.left.tl columnconfigure 0 -hide true
   .bot.left.tl columnconfigure 2 -sortmode integer -stretchable false
   .bot.left.tl columnconfigure 3 -sortmode integer -stretchable false
@@ -125,17 +126,46 @@ proc main_view {} {
   .bot.left.tl columnconfigure 5 -sortmode integer -stretchable false
   .bot.left.tl columnconfigure 6 -hide true
 
-  scrollbar .bot.left.vb -command {.bot.left.tl yview}
+  # Create vertical scrollbar frame and pack it
+  frame      .bot.left.sbf
+  ttk::label .bot.left.sbf.ml -relief flat -style TablelistHeader.TLabel -image [image create bitmap -data "#define stuff_width 16\n#define stuff_height 16\nstatic unsigned char stuff_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0xf8, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0xf8, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,0xf8, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"]
+
+  scrollbar  .bot.left.sbf.vb -command {.bot.left.tl yview}
+  ttk::label .bot.left.sbf.l
+  pack .bot.left.sbf.ml -side top    -fill x
+  pack .bot.left.sbf.vb -side top    -fill y -expand 1
+  pack .bot.left.sbf.l  -side bottom -fill x
+
   scrollbar .bot.left.hb -orient horizontal -command {.bot.left.tl xview}
 
   grid rowconfigure    .bot.left 0 -weight 1
   grid columnconfigure .bot.left 0 -weight 1
-  grid .bot.left.tl -row 0 -column 0 -sticky news
-  grid .bot.left.vb -row 0 -column 1 -sticky ns
-  grid .bot.left.hb -row 1 -column 0 -sticky ew
+  grid .bot.left.tl  -row 0 -column 0 -sticky news
+  grid .bot.left.sbf -row 0 -column 1 -sticky ns -rowspan 2
+  grid .bot.left.hb  -row 1 -column 0 -sticky ew
 
   # Bind the listbox selection event
   bind .bot.left.tl <<ListboxSelect>> populate_text
+
+  # Create and bind the listbox label to a popup menu
+  menu .lbm -tearoff false
+  set num 0
+  foreach {width name align} [.bot.left.tl cget -columns] {
+    if {[expr ! [.bot.left.tl columncget $num -hide]]} {
+      .lbm add checkbutton -label $name -variable tableCol($num) -command {
+        foreach col [array names tableCol] {
+          .bot.left.tl columnconfigure $col -hide [expr ! $tableCol($col)]
+        }
+      }
+      set tableCol($num) 1
+    }
+    incr num
+  }
+  .lbm add separator
+  .lbm add command -label "Close" -command {
+    .lbm unpost
+  }
+  bind .bot.left.sbf.ml <ButtonPress-1> {.lbm post %X %Y}
 
   # Pack the bottom window
   .bot add .bot.left
@@ -155,6 +185,7 @@ proc main_view {} {
   #wm attributes . -topmost true
   wm focusmodel . active
   raise .
+  grab -global .
 
   # Set icon
   set icon_img [image create photo -file [file join $HOME scripts cov_icon.gif]]
