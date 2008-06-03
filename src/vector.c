@@ -2504,6 +2504,11 @@ void vector_from_string(
 
     size = strlen( *str ) * 8;
 
+    /* If this is the empty (null) string, allocate 8-bits */
+    if( size == 0 ) {
+      size = 8;
+    }
+
     /* If we have exceeded the maximum number of bits, return a value of NULL */
     if( size > MAX_BIT_WIDTH ) {
 
@@ -4734,6 +4739,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.142  2008/06/03 04:43:24  phase1geo
+ Fixing bug 1982530.  Updating regression tests.
+
  Revision 1.141  2008/05/30 23:00:48  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 
