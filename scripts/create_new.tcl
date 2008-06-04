@@ -160,6 +160,23 @@ proc create_new_cdd {} {
         }
       }
     }
+    $m add command -label "Define..." -command {
+      # TBD
+    }
+    $m add command -label "Parameter Override..." -command {
+      # TBD
+    }
+    $m add command -label "FSM..." -command {
+      # TBD
+    }
+    $m add separator
+    $m add command -label "Module Generation..." -command {
+      # TBD
+    }
+    $m add command -label "Module Exclusion..." -command {
+      # TBD
+    }
+    $m add separator
     $m add command -label "Command File..." -command {
       set value [tk_getOpenFile -title "Select Command File"]
       if {$value ne ""} {
@@ -233,8 +250,15 @@ proc create_new_cdd {} {
     ################################
 
     labelframe .newwin.bot.console -text "Console Output"
-    text .newwin.bot.console.t -state disabled
-    pack .newwin.bot.console.t -fill both -expand 1
+    text .newwin.bot.console.t -state disabled -xscrollcommand {.newwin.bot.console.hb set} -yscrollcommand {.newwin.bot.console.vb set}
+    scrollbar .newwin.bot.console.vb -command {.newwin.bot.console.t yview}
+    scrollbar .newwin.bot.console.hb -orient horizontal -command {.newwin.bot.console.t xview}
+
+    grid rowconfigure    .newwin.bot.console 0 -weight 1
+    grid columnconfigure .newwin.bot.console 0 -weight 1
+    grid .newwin.bot.console.t  -row 0 -column 0 -sticky news
+    grid .newwin.bot.console.vb -row 0 -column 1 -sticky ns
+    grid .newwin.bot.console.hb -row 1 -column 0 -sticky ew
 
     # Pack the panedwindow
     .newwin.bot add .newwin.bot.opts
