@@ -534,11 +534,13 @@ proc clear_all_windows {} {
 
 proc bgerror {msg} {
 
+  global errorInfo
+
   ;# Remove the status window if it exists
   destroy .status
 
   ;# Display error message
-  set retval [tk_messageBox -message $msg -title "Error" -type ok]
+  set retval [tk_messageBox -message "$msg\n$errorInfo" -title "Error" -type ok]
 
 }
 
