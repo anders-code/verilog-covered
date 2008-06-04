@@ -21,7 +21,7 @@ proc create_new_cdd {} {
     # Add widgets to general option item frame #
     ############################################
 
-    labelframe .newwin.general -text "General CDD Options"
+    labelframe .newwin.general -text "General CDD Options" -takefocus 0
 
     # Add the CDD filename widgets
     set cdd_filename ""
@@ -37,13 +37,13 @@ proc create_new_cdd {} {
       }
       return 1
     }
-    button .newwin.general.cdd.b -text "Browse" -command {
+    button .newwin.general.cdd.b -text "Browse" -width 10 -command {
       set tmp_cdd [tk_getOpenFile -title "Select CDD Filename" -filetypes $file_types]
       if {$tmp_cdd ne ""} {
         set cdd_filename $tmp_cdd
       }
-      raise .newwin
     }
+    bind .newwin.general.cdd.b <Return> {%W invoke}
     pack .newwin.general.cdd.l -side left  -fill y
     pack .newwin.general.cdd.e -side left  -fill x -expand 1
     pack .newwin.general.cdd.b -side right -fill y
@@ -53,10 +53,10 @@ proc create_new_cdd {} {
     frame  .newwin.general.dump
     label  .newwin.general.dump.l -text "Dumpfile:"
     entry  .newwin.general.dump.e -textvariable dumpfile
-    button .newwin.general.dump.b -text "Browse" -command {
+    button .newwin.general.dump.b -text "Browse" -width 10 -command {
       set dumpfile [tk_getOpenFile -title "Select VCD/LXT Dumpfile" -filetypes $dump_filetypes]
-      raise .newwin
     }
+    bind .newwin.general.dump.b <Return> {%W invoke}
     pack .newwin.general.dump.l -side left
     pack .newwin.general.dump.e -side left -fill x -expand 1
     pack .newwin.general.dump.b -side right
@@ -69,7 +69,7 @@ proc create_new_cdd {} {
     # Add widgets to design parsing item frame #
     ############################################
 
-    labelframe .newwin.parse -text "Design parsing fields"
+    labelframe .newwin.parse -text "Design parsing fields" -takefocus 0
 
     # Add toplevel design name widgets
     set toplevel_name ""
@@ -103,13 +103,13 @@ proc create_new_cdd {} {
     # Add widgets to verilog path frame #
     #####################################
 
-    labelframe .newwin.bot.opts -text "Command-line Options"
+    labelframe .newwin.bot.opts -text "Command-line Options" -takefocus 0
 
     # Create and pack the listbox frame
     frame     .newwin.bot.opts.lbf
     listbox   .newwin.bot.opts.lbf.lb -xscrollcommand {.newwin.bot.opts.lbf.hb set} -yscrollcommand {.newwin.bot.opts.lbf.vb set}
-    scrollbar .newwin.bot.opts.lbf.vb -command ".newwin.bot.opts.lbf.lb yview"
-    scrollbar .newwin.bot.opts.lbf.hb -orient horizontal -command ".newwin.bot.opts.lbf.lb xview"
+    scrollbar .newwin.bot.opts.lbf.vb -command ".newwin.bot.opts.lbf.lb yview" -takefocus 0
+    scrollbar .newwin.bot.opts.lbf.hb -orient horizontal -command ".newwin.bot.opts.lbf.lb xview" -takefocus 0
 
     grid rowconfigure    .newwin.bot.opts.lbf 0 -weight 1
     grid columnconfigure .newwin.bot.opts.lbf 0 -weight 1
@@ -118,10 +118,15 @@ proc create_new_cdd {} {
     grid .newwin.bot.opts.lbf.hb -row 1 -column 0 -sticky ew
 
     # Create and pack the button frame
-    frame  .newwin.bot.opts.bf
-    menubutton .newwin.bot.opts.bf.ins_mb -text "Insert"
-    set m [menu .newwin.bot.opts.bf.ins_mb.m -tearoff false]
+    frame       .newwin.bot.opts.bf
+    menubutton  .newwin.bot.opts.bf.ins_mb -text "Insert" -relief raised -highlightthickness 1 -takefocus 1
+    set m [menu .newwin.bot.opts.bf.ins_mb.m -tearoff false -takefocus 1]
     .newwin.bot.opts.bf.ins_mb configure -menu $m
+    bind .newwin.bot.opts.bf.ins_mb <Return> {
+      .newwin.bot.opts.bf.ins_mb.m post [winfo rootx .newwin.bot.opts.bf.ins_mb] [winfo rooty .newwin.bot.opts.bf.ins_mb]
+      .newwin.bot.opts.bf.ins_mb.m activate 0
+    }
+    bind .newwin.bot.opts.bf.ins_mb <FocusOut> {.newwin.bot.opts.bf.ins_mb.m unpost}
 
     # Add the menu items
     $m add command -label "Source File..." -command {
@@ -161,20 +166,51 @@ proc create_new_cdd {} {
       }
     }
     $m add command -label "Define..." -command {
-      # TBD
+      set value [get_define "" ""]
+      if {$value ne ""} {
+        set index [.newwin.bot.opts.lbf.lb curselection]
+        if {$index eq ""} {
+          .newwin.bot.opts.lbf.lb insert end $value
+        } else {
+          .newwin.bot.opts.lbf.lb insert $index $value
+        }
+      }
     }
     $m add command -label "Parameter Override..." -command {
-      # TBD
-    }
-    $m add command -label "FSM..." -command {
-      # TBD
+      set value [get_parameter_override "" ""]
+      if {$value ne ""} {
+        set index [.newwin.bot.opts.lbf.lb curselection]
+        if {$index eq ""} {
+          .newwin.bot.opts.lbf.lb insert end $value
+        } else {
+          .newwin.bot.opts.lbf.lb insert $index $value
+        }
+      }
     }
     $m add separator
+    $m add command -label "FSM..." -command {
+    }
     $m add command -label "Module Generation..." -command {
-      # TBD
+      set value [get_module_generation "" ""]
+      if {$value ne ""} {
+        set index [.newwin.bot.opts.lbf.lb curselection]
+        if {$index eq ""} {
+          .newwin.bot.opts.lbf.lb insert end $value
+        } else {
+          .newwin.bot.opts.lbf.lb insert $index $value
+        }
+      }
     }
     $m add command -label "Module Exclusion..." -command {
-      # TBD
+      set value [get_module_exclusion ""]
+      if {$value ne ""} {
+        set index [.newwin.bot.opts.lbf.lb curselection]
+        if {$index eq ""} {
+          .newwin.bot.opts.lbf.lb insert end $value
+        } else {
+          .newwin.bot.opts.lbf.lb insert $index $value
+        }
+      }
     }
     $m add separator
     $m add command -label "Command File..." -command {
@@ -190,47 +226,52 @@ proc create_new_cdd {} {
       }
     }
 
-    button .newwin.bot.opts.bf.edit -text "Edit..." -state disabled -command {
+    button .newwin.bot.opts.bf.edit -text "Edit..." -width 10 -state disabled -command {
       set index [.newwin.bot.opts.lbf.lb curselection]
       set value [split [.newwin.bot.opts.lbf.lb get $index]]
-      puts "[lindex $value 1]"
       if {[lindex $value 0] eq "-v"} {
         set value [tk_getOpenFile -title "Select Verilog Source File" -initialfile [lindex $value 1]]
         if {$value ne ""} {
           set value "-v $value"
-          .newwin.bot.opts.lbf.lb delete $index
-          .newwin.bot.opts.lbf.lb insert $index $value
-          .newwin.bot.opts.lbf.lb selection set $index
         }
       } elseif {[lindex $value 0] eq "-y"} {
         set value [tk_chooseDirectory -title "Select Verilog Library Directory" -mustexist true -initialdir [lindex $value 1]]
         if {$value ne ""} {
           set value "-y $value"
-          .newwin.bot.opts.lbf.lb delete $index
-          .newwin.bot.opts.lbf.lb insert $index $value
-          .newwin.bot.opts.lbf.lb selection set $index
         }
       } elseif {[lindex $value 0] eq "-I"} {
         set value [tk_chooseDirectory -title "Select Include Directory" -mustexist true -initialdir [lindex $value 1]]
         if {$value ne ""} {
           set value "-I $value"
-          .newwin.bot.opts.lbf.lb delete $index
-          .newwin.bot.opts.lbf.lb insert $index $value
-          .newwin.bot.opts.lbf.lb selection set $index
         }
       } elseif {[lindex $value 0] eq "-f"} {
         set value [tk_getOpenFile -title "Select Command File" -initialfile [lindex $value 1]]
         if {$value ne ""} {
           set value "-f $value"
-          .newwin.bot.opts.lbf.lb delete $index
-          .newwin.bot.opts.lbf.lb insert $index $value
-          .newwin.bot.opts.lbf.lb selection set $index
         }
+      } elseif {[lindex $value 0] eq "-e"} {
+        set value [get_module_exclusion [lindex $value 1]]
+      } elseif {[lindex $value 0] eq "-g"} {
+        set old_value [split [lindex $value 1] "="]]
+        set value [get_module_generation [lindex $old_value 0] [lindex $old_value 1]]
+      } elseif {[lindex $value 0] eq "-D"} {
+        set old_value [split [lindex $value 1] "="]
+        set value [get_define [lindex $old_value 0] [lindex $old_value 1]]
+      } elseif {[lindex $value 0] eq "-P"} {
+        set old_value [split [lindex $value 1] "="]
+        set value [get_parameter_override [lindex $old_value 0] [lindex $old_value 1]]
+      }
+      if {$value ne ""} {
+        .newwin.bot.opts.lbf.lb delete $index
+        .newwin.bot.opts.lbf.lb insert $index $value
+        .newwin.bot.opts.lbf.lb selection set $index
       }
     }
-    button .newwin.bot.opts.bf.delete -text "Delete" -state disabled -command {
+    bind .newwin.bot.opts.bf.edit <Return> {%W invoke}
+    button .newwin.bot.opts.bf.delete -text "Delete" -width 10 -state disabled -command {
       .newwin.bot.opts.lbf.lb delete [.newwin.bot.opts.lbf.lb curselection]
     }
+    bind .newwin.bot.opts.bf.delete <Return> {%W invoke}
     bind .newwin.bot.opts.lbf.lb <<ListboxSelect>> {
       if {[.newwin.bot.opts.lbf.lb curselection] ne ""} {
         .newwin.bot.opts.bf.edit   configure -state normal
@@ -249,10 +290,10 @@ proc create_new_cdd {} {
     # Add widgets to console frame #
     ################################
 
-    labelframe .newwin.bot.console -text "Console Output"
-    text .newwin.bot.console.t -state disabled -xscrollcommand {.newwin.bot.console.hb set} -yscrollcommand {.newwin.bot.console.vb set}
-    scrollbar .newwin.bot.console.vb -command {.newwin.bot.console.t yview}
-    scrollbar .newwin.bot.console.hb -orient horizontal -command {.newwin.bot.console.t xview}
+    labelframe .newwin.bot.console -text "Console Output" -takefocus 0
+    text .newwin.bot.console.t -state disabled -xscrollcommand {.newwin.bot.console.hb set} -yscrollcommand {.newwin.bot.console.vb set} -takefocus 0
+    scrollbar .newwin.bot.console.vb -command {.newwin.bot.console.t yview} -takefocus 0
+    scrollbar .newwin.bot.console.hb -orient horizontal -command {.newwin.bot.console.t xview} -takefocus 0
 
     grid rowconfigure    .newwin.bot.console 0 -weight 1
     grid columnconfigure .newwin.bot.console 0 -weight 1
@@ -269,18 +310,21 @@ proc create_new_cdd {} {
     #####################################
 
     frame .newwin.bf
-    button .newwin.bf.gen -text "Generate" -state disabled -command {
+    button .newwin.bf.gen -text "Generate" -width 10 -state disabled -command {
       puts "Generating CDD file"
     }
-    button .newwin.bf.help -text "Help" -command {
+    bind .newwin.bf.gen <Return> {%W invoke}
+    button .newwin.bf.help -text "Help" -width 10 -command {
       puts "Help"
     }
-    button .newwin.bf.cancel -text "Cancel" -command {
+    bind .newwin.bf.help <Return> {%W invoke}
+    button .newwin.bf.cancel -text "Cancel" -width 10 -command {
       destroy .newwin
     }
+    bind .newwin.bf.cancel <Return> {%W invoke}
     pack .newwin.bf.help   -side right -pady 4 -padx 8
-    pack .newwin.bf.gen    -side right -pady 4 -padx 8
     pack .newwin.bf.cancel -side right -pady 4 -padx 8
+    pack .newwin.bf.gen    -side right -pady 4 -padx 8
 
     # Pack the main frames
     pack .newwin.general -side top    -fill x
@@ -288,10 +332,13 @@ proc create_new_cdd {} {
     pack .newwin.bot     -side top    -fill both -expand 1
     pack .newwin.bf      -side bottom -fill x
 
+    # Cause this window to stay on top of main window
+    wm transient .newwin .
+
   } 
 
-  # Make sure that this window is top-most
-  raise .newwin
+  # Set beginning focus
+  focus .newwin.general.cdd.e
 
 }
 
@@ -310,3 +357,306 @@ proc set_widget_state {name state} {
 
 }
 
+proc get_module_generation {modname gen} {
+
+  global mod_gen_retval mod_gen_modname
+
+  set mod_gen_retval  ""
+  set mod_gen_modname modname
+
+  # Create new window
+  toplevel .mgenwin
+  wm title .mgenwin "Specify generation for module"
+
+  # Add selection widgets
+  frame .mgenwin.f -relief raised
+  label .mgenwin.f.l -text "Module name:"
+  entry .mgenwin.f.e -textvariable mod_gen_modname -validate all -vcmd {
+    if {$mod_gen_modname ne ""} {
+      .mgenwin.bf.ok configure -state normal
+    } else {
+      .mgenwin.bf.ok configure -state disabled
+    }
+    return 1
+  }
+  tk_optionMenu .mgenwin.f.m modgen "Verilog 1995" "Verilog 2001" "System Verilog"
+  pack .mgenwin.f.l -side left  -padx 8 -pady 4 -fill x
+  pack .mgenwin.f.e -side left  -padx 8 -pady 4 -fill x -expand 1
+  pack .mgenwin.f.m -side right -padx 8 -pady 4 -fill x
+
+  # Add button frame widgets
+  frame  .mgenwin.bf -relief raised
+  button .mgenwin.bf.ok -text "OK" -width 10 -state disabled -command {
+    if {$modgen eq "Verilog 1995"} {
+      set mod_gen_retval "-g $mod_gen_modname=1"
+    } elseif {$modgen eq "Verilog 2001"} {
+      set mod_gen_retval "-g $mod_gen_modname=2"
+    } elseif {$modgen eq "System Verilog"} {
+      set mod_gen_retval "-g $mod_gen_modname=3"
+    }
+    destroy .mgenwin
+  }
+  bind .mgenwin.bf.ok <Return> {%W invoke}
+  button .mgenwin.bf.cancel -text "Cancel" -width 10 -command {
+    set mod_gen_retval ""
+    destroy .mgenwin
+  }
+  bind .mgenwin.bf.cancel <Return> {%W invoke}
+  pack .mgenwin.bf.cancel -side right -padx 8 -pady 4
+  pack .mgenwin.bf.ok     -side right -padx 8 -pady 4
+
+  # Pack the window
+  pack .mgenwin.f  -fill x
+  pack .mgenwin.bf -fill x
+
+  # Make sure that this window is a transient window and set focus
+  wm transient .mgenwin .newwin
+  focus .mgenwin.f.e
+
+  # Wait for the module generation window to be destroyed before returning
+  tkwait window .mgenwin
+
+  return $mod_gen_retval
+
+}
+
+proc get_module_exclusion {modname} {
+
+  global mod_excl_retval mod_excl_modname
+
+  set mod_excl_retval  ""
+  set mod_excl_modname $modname
+
+  # Create new window
+  toplevel .mexclwin
+  wm title .mexclwin "Specify module to exclude"
+
+  # Add selection widgets
+  frame .mexclwin.f -relief raised
+  label .mexclwin.f.l -text "Module name:"
+  entry .mexclwin.f.e -textvariable mod_excl_modname -validate all -vcmd {
+    if {$mod_excl_modname ne ""} {
+      .mexclwin.bf.ok configure -state normal
+    } else {
+      .mexclwin.bf.ok configure -state disabled
+    }
+    return 1
+  }
+  pack .mexclwin.f.l -side left -padx 8 -pady 4 -fill x
+  pack .mexclwin.f.e -side left -padx 8 -pady 4 -fill x -expand 1
+
+  # Add button frame widgets
+  frame .mexclwin.bf -relief raised
+  button .mexclwin.bf.ok -text "OK" -width 10 -state disabled -command {
+    set mod_excl_retval "-e $mod_excl_modname"
+    destroy .mexclwin
+  }
+  bind .mexclwin.bf.ok <Return> {%W invoke}
+  button .mexclwin.bf.cancel -text "Cancel" -width 10 -command {
+    set mod_excl_retval ""
+    destroy .mexclwin
+  }
+  bind .mexclwin.bf.cancel <Return> {%W invoke}
+  pack .mexclwin.bf.cancel -side right -padx 8 -pady 4
+  pack .mexclwin.bf.ok     -side right -padx 8 -pady 4
+
+  # Pack the window
+  pack .mexclwin.f  -fill x
+  pack .mexclwin.bf -fill x
+
+  # Make sure that this window is transient and sets focus to first widget
+  wm transient .mexclwin .newwin
+  focus .mexclwin.f.e
+
+  # Wait for the module exclusion window to be destroyed before returning
+  tkwait window .mexclwin
+
+  return $mod_excl_retval
+
+}
+
+proc get_define {defname value} {
+
+  global def_retval define_name define_value
+
+  set def_retval   ""
+  set define_name  $defname
+  set define_value $value
+
+  # Create new window
+  toplevel .defwin
+  wm title .defwin "Specify a command-line define value"
+
+  # Add selection widgets
+  frame .defwin.f
+  label .defwin.f.l -text "Define name:"
+  entry .defwin.f.e -textvariable define_name -validate all -vcmd {
+    if {$define_name ne ""} {
+      if {[.defwin.f.b cget -relief] eq "raised"} {
+        .defwin.bf.ok configure -state normal
+      } elseif {$define_value ne ""} {
+        .defwin.bf.ok configure -state normal
+      } else {
+        .defwin.bf.ok configure -state disabled
+      }
+    } else {
+      .defwin.bf.ok configure -state disabled
+    }
+    return 1
+  }
+  button .defwin.f.b -text "=" -width 1 -relief raised -command {
+    if {[.defwin.f.b cget -relief] eq "raised"} {
+      .defwin.f.v configure -state normal
+      .defwin.f.b configure -relief flat
+      if {$define_value eq ""} {
+        .defwin.bf.ok configure -state disabled
+      }
+    } else {
+      .defwin.f.v delete 0 end
+      .defwin.f.v configure -state disabled
+      .defwin.f.b configure -relief raised
+    }
+  }
+  bind .defwin.f.b <Return> {%W invoke}
+  entry .defwin.f.v -state disabled -textvariable define_value -validate all -vcmd {
+    if {$define_name ne ""} {
+      if {[.defwin.f.b cget -relief] eq "raised"} {
+        .defwin.bf.ok configure -state normal
+      } elseif {$define_value ne ""} {
+        .defwin.bf.ok configure -state normal
+      } else {
+        .defwin.bf.ok configure -state disabled
+      }
+    } else {
+      .defwin.bf.ok configure -state disabled
+    }
+    return 1
+  }
+
+  # If a value was specified, enable the textbox and set the relief to flat on the '=' button
+  if {$value ne ""} {
+    .defwin.f.v configure -state normal
+    .defwin.f.b configure -relief flat
+  }
+  
+  # Pack the input widgets
+  grid rowconfigure    .defwin.f 1 -weight 1
+  grid columnconfigure .defwin.f 3 -weight 1
+  grid .defwin.f.l -row 0 -column 0 -sticky news -pady 4 -padx 8
+  grid .defwin.f.e -row 0 -column 1 -sticky news -pady 4 -padx 8
+  grid .defwin.f.b -row 0 -column 2 -sticky news -pady 4 -padx 8
+  grid .defwin.f.v -row 0 -column 3 -sticky news -pady 4 -padx 8
+
+  # Add button frame and widgets
+  frame .defwin.bf
+  button .defwin.bf.ok -text "OK" -width 10 -state disabled -command {
+    if {[.defwin.f.b cget -relief] eq "raised"} {
+      set def_retval "-D $define_name"
+    } else {
+       set def_retval "-D $define_name=$define_value"
+    }
+    destroy .defwin
+  }
+  bind .defwin.bf.ok <Return> {%W invoke}
+  button .defwin.bf.cancel -text "Cancel" -width 10 -pady 4 -padx 8 -command {
+    set def_retval ""
+    destroy .defwin
+  }
+  bind .defwin.bf.cancel <Return> {%W invoke}
+  pack .defwin.bf.cancel -side right -padx 8 -pady 4
+  pack .defwin.bf.ok     -side right -padx 8 -pady 4
+
+  # Pack the frames
+  pack .defwin.f  -fill x
+  pack .defwin.bf -fill x
+
+  # Make sure that this window is transient and sets the first focus
+  wm transient .defwin .newwin
+  focus .defwin.f.e
+
+  # Wait for the define window to be destroyed before returning
+  tkwait window .defwin
+
+  return $def_retval
+  
+}
+
+proc get_parameter_override {parmname value} {
+
+  global param_retval param_name param_value
+
+  set param_retval ""
+  set param_name   $parmname
+  set param_value  $value
+
+  # Create new window
+  toplevel .parmwin
+  wm title .parmwin "Specify a command-line parameter override"
+
+  # Add selection widgets
+  frame .parmwin.f -relief raised
+  label .parmwin.f.l1 -text "Parameter scope:"
+  entry .parmwin.f.e  -textvariable param_name -validate all -vcmd {
+    if {$param_name ne ""} {
+      if {$param_value ne ""} {
+        .parmwin.bf.ok configure -state normal
+      } else {
+        .parmwin.bf.ok configure -state disabled
+      }
+    } else {
+      .parmwin.bf.ok configure -state disabled
+    }
+    return 1
+  }
+  label .parmwin.f.l2 -text "="
+  entry .parmwin.f.v  -textvariable param_value -validate all -vcmd {
+    if {$param_name ne ""} {
+      if {$param_value ne ""} {
+        .parmwin.bf.ok configure -state normal
+      } else {
+        .parmwin.bf.ok configure -state disabled
+      }
+    } else {
+      .parmwin.bf.ok configure -state disabled
+    }
+    return 1
+  }
+
+  # Pack the input widgets
+  pack .parmwin.f.l1 -padx 8 -pady 4 -side left -fill x
+  pack .parmwin.f.e  -padx 8 -pady 4 -side left -fill x -expand 1
+  pack .parmwin.f.l2 -padx 8 -pady 4 -side left -fill x
+  pack .parmwin.f.v  -padx 8 -pady 4 -side left -fill x -expand 1
+
+  # Add button frame and widgets
+  frame .parmwin.bf -relief raised
+  button .parmwin.bf.ok -text "OK" -width 10 -state disabled -command {
+    set param_retval "-P $param_name=$param_value"
+    destroy .parmwin
+  }
+  bind .parmwin.bf.ok <Return> {%W invoke}
+  button .parmwin.bf.cancel -text "Cancel" -width 10 -command {
+    set param_retval ""
+    destroy .parmwin
+  }
+  bind .parmwin.bf.cancel <Return> {%W invoke}
+  pack .parmwin.bf.cancel -side right -padx 8 -pady 4
+  pack .parmwin.bf.ok     -side right -padx 8 -pady 4
+
+  # Pack the frames
+  pack .parmwin.f  -fill x
+  pack .parmwin.bf -fill x
+
+  # Make sure that this window is transient and sets the first focus
+  wm transient .parmwin .newwin
+  focus .parmwin.f.e
+
+  # Wait for the parameter window to be destroyed before returning
+  tkwait window .parmwin
+
+  return $param_retval
+}
+
+proc get_fsm {modname value} {
+
+}

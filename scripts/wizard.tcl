@@ -43,6 +43,6 @@ proc create_wizard {} {
   }
 
   # Make sure that the focus is on this window only
-  grab .wizwin
+  wm transient .wizwin .
 
 }

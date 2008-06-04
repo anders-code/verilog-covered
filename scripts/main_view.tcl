@@ -161,11 +161,8 @@ proc main_view {} {
     }
     incr num
   }
-  .lbm add separator
-  .lbm add command -label "Close" -command {
-    .lbm unpost
-  }
   bind .bot.left.sbf.ml <ButtonPress-1> {.lbm post %X %Y}
+  bind .lbm <Leave> {.lbm unpost}
 
   # Pack the bottom window
   .bot add .bot.left
