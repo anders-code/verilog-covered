@@ -189,6 +189,15 @@ proc create_new_cdd {} {
     }
     $m add separator
     $m add command -label "FSM..." -command {
+      set value [get_fsm "" "" ""]
+      if {$value ne ""} {
+        set index [.newwin.bot.opts.lbf.lb curselection]
+        if {$index eq ""} {
+          .newwin.bot.opts.lbf.lb insert end $value
+        } else {
+          .newwin.bot.opts.lbf.lb insert $index $value
+        }
+      }
     }
     $m add command -label "Module Generation..." -command {
       set value [get_module_generation "" ""]
@@ -260,6 +269,10 @@ proc create_new_cdd {} {
       } elseif {[lindex $value 0] eq "-P"} {
         set old_value [split [lindex $value 1] "="]
         set value [get_parameter_override [lindex $old_value 0] [lindex $old_value 1]]
+      } elseif {[lindex $value 0] eq "-F"} {
+        set old_value1 [split [lindex $value 1] "="]
+        set old_value2 [split [lindex $old_value1 1] ","]
+        set value [get_fsm [lindex $old_value1 0] [lindex $old_value2 0] [lindex $old_value2 1]]
       }
       if {$value ne ""} {
         .newwin.bot.opts.lbf.lb delete $index
@@ -655,8 +668,95 @@ proc get_parameter_override {parmname value} {
   tkwait window .parmwin
 
   return $param_retval
+
 }
 
-proc get_fsm {modname value} {
+proc get_fsm {modname input output} {
+
+  global fsmd_retval
+  global fsmd_modname fsmd_input fsmd_output
+
+  set fsmd_retval  ""
+  set fsmd_modname $modname
+  set fsmd_input   $input
+  set fsmd_output  $output
+
+  # Create new window
+  toplevel .fsmdwin
+  wm title .fsmdwin "Specify an FSM input/output state"
+
+  # Add input widgets
+  frame .fsmdwin.f -relief raised
+  label .fsmdwin.f.l -text "Module name:"
+  entry .fsmdwin.f.e -textvariable fsmd_modname -validate all -vcmd {
+    if {$fsmd_modname ne ""} {
+      if {$fsmd_output ne ""} {
+        .fsmdwin.bf.ok configure -state normal
+      } else {
+        .fsmdwin.bf.ok configure -state disabled
+      }
+    } else {
+      .fsmdwin.bf.ok configure -state disabled
+    }
+    return 1
+  }
+  label .fsmdwin.f.lo -text "Output Expression:"
+  entry .fsmdwin.f.eo -textvariable fsmd_output -validate all -vcmd {
+    if {$fsmd_output ne ""} {
+      .fsmdwin.f.b configure -state normal
+      if {$fsmd_modname ne ""} {
+        .fsmdwin.bf.ok configure -state normal
+      } else {
+        .fsmdwin.bf.ok configure -state disabled
+      }
+    } else {
+      .fsmdwin.bf.ok configure -state disabled
+    }
+    return 1
+  }
+  button .fsmdwin.f.b -text "Input == Output" -command {
+    set fsmd_input $fsmd_output
+  }
+  bind .fsmdwin.f.b <Return> {%W invoke}
+  label .fsmdwin.f.li -text "Input Expression:"
+  entry .fsmdwin.f.ei -textvariable fsmd_input
+
+  grid columnconfigure .fsmdwin.f 1 -weight 1
+  grid columnconfigure .fsmdwin.f 3 -weight 1
+  grid .fsmdwin.f.l  -row 0 -column 0 -sticky news -padx 8 -pady 4
+  grid .fsmdwin.f.e  -row 0 -column 1 -sticky news -padx 8 -pady 4
+  grid .fsmdwin.f.lo -row 0 -column 2 -sticky news -padx 8 -pady 4
+  grid .fsmdwin.f.eo -row 0 -column 3 -sticky news -padx 8 -pady 4
+  grid .fsmdwin.f.b  -row 1 -column 1 -sticky e    -padx 8 -pady 4
+  grid .fsmdwin.f.li -row 1 -column 2 -sticky news -padx 8 -pady 4
+  grid .fsmdwin.f.ei -row 1 -column 3 -sticky news -padx 8 -pady 4
+
+  # Add button frame and widgets
+  frame .fsmdwin.bf -relief raised
+  button .fsmdwin.bf.ok -text "OK" -width 10 -state disabled -command {
+    set fsmd_retval "-F $fsmd_modname=$fsmd_input,$fsmd_output"
+    destroy .fsmdwin
+  }
+  bind .fsmdwin.bf.ok <Return> {%W invoke}
+  button .fsmdwin.bf.cancel -text "Cancel" -width 10 -command {
+    set fsmd_retval ""
+    destroy .fsmdwin
+  }
+  bind .fsmdwin.bf.cancel <Return> {%W invoke}
+  pack .fsmdwin.bf.cancel -side right -padx 8 -pady 4
+  pack .fsmdwin.bf.ok     -side right -padx 8 -pady 4
+
+  # Pack frames
+  pack .fsmdwin.f  -fill x
+  pack .fsmdwin.bf -fill x
+  
+  # Make sure that this window is transient and sets the first focus
+  wm transient .fsmdwin .newwin
+  focus .fsmdwin.f.e
+
+  # Wait for the parameter window to be destroyed before returning
+  tkwait window .fsmdwin
+
+  return $fsmd_retval
 
 }
