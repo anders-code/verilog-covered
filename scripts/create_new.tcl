@@ -8,7 +8,8 @@ set dump_filetypes {
 proc create_new_cdd {} {
 
   global dump_filetypes file_types
-  global cdd_filename toplevel_name dumpfile
+  global cdd_filename toplevel_name dumpfile delay_type
+  global race_cond_action race_cond_pragma race_cond_pragma_name
 
   # Now create the window and raise it to the front
   if {[winfo exists .newwin] == 0} {
@@ -87,11 +88,42 @@ proc create_new_cdd {} {
     pack  .newwin.parse.inst.l -side left
     pack  .newwin.parse.inst.e -side left -fill x -expand 1
 
+    # Add delay specification
+    set delay_type "None"
+    frame .newwin.parse.delay
+    label .newwin.parse.delay.l -text "Delay Type:"
+    tk_optionMenu .newwin.parse.delay.m delay_type None Min Typ Max
+    pack .newwin.parse.delay.l -side left
+    pack .newwin.parse.delay.m -side left -fill x
+
+    # Add race condition option
+    set race_cond_action      "None"
+    set race_cond_pragma      0
+    set race_cond_pragma_name "racecheck"
+    frame         .newwin.parse.race
+    label         .newwin.parse.race.l  -text "Race Condition Action:"
+    tk_optionMenu .newwin.parse.race.m race_cond None Silent Warning Error Ignore
+    checkbutton   .newwin.parse.race.cb -text "Use embedded race condition pragmas" -variable race_cond_pragma
+    entry         .newwin.parse.race.e  -state disabled -textvariable race_cond_pragma_name -validate all
+    .newwin.parse.race.cb configure -command {
+      if {$race_cond_pragma == 0} {
+        .newwin.parse.race.e configure -state disabled
+      } else {
+        .newwin.parse.race.e configure -state normal
+      }
+    }
+    pack .newwin.parse.race.l  -side left -padx 3 -pady 3
+    pack .newwin.parse.race.m  -side left -padx 3 -pady 3
+    pack .newwin.parse.race.cb -side left -padx 3 -pady 3
+    pack .newwin.parse.race.e  -side left -padx 3 -pady 3 -fill x -expand 1
+
     # Pack the general options frame
     grid columnconfigure .newwin.parse 0 -weight 1
     grid columnconfigure .newwin.parse 1 -weight 1
-    grid .newwin.parse.top  -row 0 -column 0 -sticky news
-    grid .newwin.parse.inst -row 0 -column 1 -sticky news
+    grid .newwin.parse.top   -row 0 -column 0 -sticky news -padx 3 -pady 3
+    grid .newwin.parse.inst  -row 0 -column 1 -sticky news -padx 3 -pady 3
+    grid .newwin.parse.delay -row 1 -column 0 -sticky news -padx 3 -pady 3
+    grid .newwin.parse.race  -row 1 -column 1 -sticky news -padx 3 -pady 3
 
     ############################################################
     # Create paned window for verilog paths and console output #
@@ -304,15 +336,32 @@ proc create_new_cdd {} {
     ################################
 
     labelframe .newwin.bot.console -text "Console Output" -takefocus 0
-    text .newwin.bot.console.t -state disabled -xscrollcommand {.newwin.bot.console.hb set} -yscrollcommand {.newwin.bot.console.vb set} -takefocus 0
-    scrollbar .newwin.bot.console.vb -command {.newwin.bot.console.t yview} -takefocus 0
-    scrollbar .newwin.bot.console.hb -orient horizontal -command {.newwin.bot.console.t xview} -takefocus 0
+    frame      .newwin.bot.console.f
+    text       .newwin.bot.console.f.t -state disabled -xscrollcommand {.newwin.bot.console.f.hb set} -yscrollcommand {.newwin.bot.console.f.vb set} -takefocus 0
+    scrollbar  .newwin.bot.console.f.vb -command {.newwin.bot.console.f.t yview} -takefocus 0
+    scrollbar  .newwin.bot.console.f.hb -orient horizontal -command {.newwin.bot.console.f.t xview} -takefocus 0
 
-    grid rowconfigure    .newwin.bot.console 0 -weight 1
-    grid columnconfigure .newwin.bot.console 0 -weight 1
-    grid .newwin.bot.console.t  -row 0 -column 0 -sticky news
-    grid .newwin.bot.console.vb -row 0 -column 1 -sticky ns
-    grid .newwin.bot.console.hb -row 1 -column 0 -sticky ew
+    grid rowconfigure    .newwin.bot.console.f 0 -weight 1
+    grid columnconfigure .newwin.bot.console.f 0 -weight 1
+    grid .newwin.bot.console.f.t  -row 0 -column 0 -sticky news
+    grid .newwin.bot.console.f.vb -row 0 -column 1 -sticky ns
+    grid .newwin.bot.console.f.hb -row 1 -column 0 -sticky ew
+
+    frame  .newwin.bot.console.bf
+    button .newwin.bot.console.bf.clear -text "Clear" -width 7 -command {
+      .newwin.bot.console.f.t configure -state normal
+      .newwin.bot.console.f.t delete 1.0 end
+      .newwin.bot.console.f.t configure -state disabled
+    }
+    button .newwin.bot.console.bf.save -text "Save..." -width 7 -state disabled -command {
+      puts "NEED TO save console output to a file"
+    }
+    pack .newwin.bot.console.bf.clear -side right -padx 8 -pady 4
+    pack .newwin.bot.console.bf.save  -side right -padx 8 -pady 4
+
+    # Pack the console frame
+    pack .newwin.bot.console.bf -fill x
+    pack .newwin.bot.console.f  -fill both -expand 1
 
     # Pack the panedwindow
     .newwin.bot add .newwin.bot.opts
