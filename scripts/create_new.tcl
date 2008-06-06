@@ -375,7 +375,7 @@ proc get_module_generation {modname gen} {
   global mod_gen_retval mod_gen_modname
 
   set mod_gen_retval  ""
-  set mod_gen_modname modname
+  set mod_gen_modname $modname
 
   # Create new window
   toplevel .mgenwin
@@ -384,14 +384,7 @@ proc get_module_generation {modname gen} {
   # Add selection widgets
   frame .mgenwin.f -relief raised
   label .mgenwin.f.l -text "Module name:"
-  entry .mgenwin.f.e -textvariable mod_gen_modname -validate all -vcmd {
-    if {$mod_gen_modname ne ""} {
-      .mgenwin.bf.ok configure -state normal
-    } else {
-      .mgenwin.bf.ok configure -state disabled
-    }
-    return 1
-  }
+  entry .mgenwin.f.e -textvariable mod_gen_modname -validate all
   tk_optionMenu .mgenwin.f.m modgen "Verilog 1995" "Verilog 2001" "System Verilog"
   pack .mgenwin.f.l -side left  -padx 8 -pady 4 -fill x
   pack .mgenwin.f.e -side left  -padx 8 -pady 4 -fill x -expand 1
@@ -417,6 +410,16 @@ proc get_module_generation {modname gen} {
   bind .mgenwin.bf.cancel <Return> {%W invoke}
   pack .mgenwin.bf.cancel -side right -padx 8 -pady 4
   pack .mgenwin.bf.ok     -side right -padx 8 -pady 4
+
+  # Add functionality for entry
+  .mgenwin.f.e configure -vcmd {
+    if {$mod_gen_modname ne ""} {
+      .mgenwin.bf.ok configure -state normal
+    } else {
+      .mgenwin.bf.ok configure -state disabled
+    }
+    return 1
+  }
 
   # Pack the window
   pack .mgenwin.f  -fill x
@@ -447,14 +450,7 @@ proc get_module_exclusion {modname} {
   # Add selection widgets
   frame .mexclwin.f -relief raised
   label .mexclwin.f.l -text "Module name:"
-  entry .mexclwin.f.e -textvariable mod_excl_modname -validate all -vcmd {
-    if {$mod_excl_modname ne ""} {
-      .mexclwin.bf.ok configure -state normal
-    } else {
-      .mexclwin.bf.ok configure -state disabled
-    }
-    return 1
-  }
+  entry .mexclwin.f.e -textvariable mod_excl_modname -validate all
   pack .mexclwin.f.l -side left -padx 8 -pady 4 -fill x
   pack .mexclwin.f.e -side left -padx 8 -pady 4 -fill x -expand 1
 
@@ -473,6 +469,16 @@ proc get_module_exclusion {modname} {
   pack .mexclwin.bf.cancel -side right -padx 8 -pady 4
   pack .mexclwin.bf.ok     -side right -padx 8 -pady 4
 
+  # Provide functionality for the entry
+  .mexclwin.f.e configure -vcmd {
+    if {$mod_excl_modname ne ""} {
+      .mexclwin.bf.ok configure -state normal
+    } else {
+      .mexclwin.bf.ok configure -state disabled
+    }
+    return 1
+  }
+
   # Pack the window
   pack .mexclwin.f  -fill x
   pack .mexclwin.bf -fill x
@@ -485,6 +491,26 @@ proc get_module_exclusion {modname} {
   tkwait window .mexclwin
 
   return $mod_excl_retval
+
+}
+
+proc define_update_state {} {
+
+  global define_name define_value
+
+  if {$define_name ne ""} {
+    if {[.defwin.f.b cget -relief] eq "raised"} {
+      .defwin.bf.ok configure -state normal
+    } elseif {$define_value ne ""} {
+      .defwin.bf.ok configure -state normal
+    } else {
+      .defwin.bf.ok configure -state disabled
+    }
+  } else {
+    .defwin.bf.ok configure -state disabled
+  }
+
+  return 1
 
 }
 
@@ -503,20 +529,8 @@ proc get_define {defname value} {
   # Add selection widgets
   frame .defwin.f
   label .defwin.f.l -text "Define name:"
-  entry .defwin.f.e -textvariable define_name -validate all -vcmd {
-    if {$define_name ne ""} {
-      if {[.defwin.f.b cget -relief] eq "raised"} {
-        .defwin.bf.ok configure -state normal
-      } elseif {$define_value ne ""} {
-        .defwin.bf.ok configure -state normal
-      } else {
-        .defwin.bf.ok configure -state disabled
-      }
-    } else {
-      .defwin.bf.ok configure -state disabled
-    }
-    return 1
-  }
+  entry .defwin.f.e -textvariable define_name -validate all
+  entry .defwin.f.v -state disabled -textvariable define_value -validate all
   button .defwin.f.b -text "=" -width 1 -relief raised -command {
     if {[.defwin.f.b cget -relief] eq "raised"} {
       .defwin.f.v configure -state normal
@@ -531,20 +545,6 @@ proc get_define {defname value} {
     }
   }
   bind .defwin.f.b <Return> {%W invoke}
-  entry .defwin.f.v -state disabled -textvariable define_value -validate all -vcmd {
-    if {$define_name ne ""} {
-      if {[.defwin.f.b cget -relief] eq "raised"} {
-        .defwin.bf.ok configure -state normal
-      } elseif {$define_value ne ""} {
-        .defwin.bf.ok configure -state normal
-      } else {
-        .defwin.bf.ok configure -state disabled
-      }
-    } else {
-      .defwin.bf.ok configure -state disabled
-    }
-    return 1
-  }
 
   # If a value was specified, enable the textbox and set the relief to flat on the '=' button
   if {$value ne ""} {
@@ -579,6 +579,10 @@ proc get_define {defname value} {
   pack .defwin.bf.cancel -side right -padx 8 -pady 4
   pack .defwin.bf.ok     -side right -padx 8 -pady 4
 
+  # Provide functionality for entries
+  .defwin.f.e configure -vcmd { return [define_update_state] }
+  .defwin.f.v configure -vcmd { return [define_update_state] }
+
   # Pack the frames
   pack .defwin.f  -fill x
   pack .defwin.bf -fill x
@@ -592,6 +596,24 @@ proc get_define {defname value} {
 
   return $def_retval
   
+}
+
+proc parameter_update_state {} {
+
+  global param_name param_value
+ 
+  if {$param_name ne ""} {
+    if {$param_value ne ""} {
+      .parmwin.bf.ok configure -state normal
+    } else {
+      .parmwin.bf.ok configure -state disabled
+    }
+  } else {
+    .parmwin.bf.ok configure -state disabled
+  }
+
+  return 1
+
 }
 
 proc get_parameter_override {parmname value} {
@@ -609,31 +631,9 @@ proc get_parameter_override {parmname value} {
   # Add selection widgets
   frame .parmwin.f -relief raised
   label .parmwin.f.l1 -text "Parameter scope:"
-  entry .parmwin.f.e  -textvariable param_name -validate all -vcmd {
-    if {$param_name ne ""} {
-      if {$param_value ne ""} {
-        .parmwin.bf.ok configure -state normal
-      } else {
-        .parmwin.bf.ok configure -state disabled
-      }
-    } else {
-      .parmwin.bf.ok configure -state disabled
-    }
-    return 1
-  }
+  entry .parmwin.f.e  -textvariable param_name -validate all
   label .parmwin.f.l2 -text "="
-  entry .parmwin.f.v  -textvariable param_value -validate all -vcmd {
-    if {$param_name ne ""} {
-      if {$param_value ne ""} {
-        .parmwin.bf.ok configure -state normal
-      } else {
-        .parmwin.bf.ok configure -state disabled
-      }
-    } else {
-      .parmwin.bf.ok configure -state disabled
-    }
-    return 1
-  }
+  entry .parmwin.f.v  -textvariable param_value -validate all
 
   # Pack the input widgets
   pack .parmwin.f.l1 -padx 8 -pady 4 -side left -fill x
@@ -656,6 +656,10 @@ proc get_parameter_override {parmname value} {
   pack .parmwin.bf.cancel -side right -padx 8 -pady 4
   pack .parmwin.bf.ok     -side right -padx 8 -pady 4
 
+  # Provide entry functionality
+  .parmwin.f.e configure -vcmd { return [parameter_update_state] }
+  .parmwin.f.v configure -vcmd { return [parameter_update_state] }
+
   # Pack the frames
   pack .parmwin.f  -fill x
   pack .parmwin.bf -fill x
@@ -668,6 +672,24 @@ proc get_parameter_override {parmname value} {
   tkwait window .parmwin
 
   return $param_retval
+
+}
+
+proc fsmd_update_state {} {
+
+  global fsmd_modname fsmd_output
+
+  if {$fsmd_modname ne ""} {
+    if {$fsmd_output ne ""} {
+      .fsmdwin.bf.ok configure -state normal
+    } else {
+      .fsmdwin.bf.ok configure -state disabled
+    }
+  } else {
+    .fsmdwin.bf.ok configure -state disabled
+  }
+
+  return 1
 
 }
 
@@ -688,36 +710,13 @@ proc get_fsm {modname input output} {
   # Add input widgets
   frame .fsmdwin.f -relief raised
   label .fsmdwin.f.l -text "Module name:"
-  entry .fsmdwin.f.e -textvariable fsmd_modname -validate all -vcmd {
-    if {$fsmd_modname ne ""} {
-      if {$fsmd_output ne ""} {
-        .fsmdwin.bf.ok configure -state normal
-      } else {
-        .fsmdwin.bf.ok configure -state disabled
-      }
-    } else {
-      .fsmdwin.bf.ok configure -state disabled
-    }
-    return 1
-  }
+  entry .fsmdwin.f.e -textvariable fsmd_modname -validate all
   label .fsmdwin.f.lo -text "Output Expression:"
-  entry .fsmdwin.f.eo -textvariable fsmd_output -validate all -vcmd {
-    if {$fsmd_output ne ""} {
-      .fsmdwin.f.b configure -state normal
-      if {$fsmd_modname ne ""} {
-        .fsmdwin.bf.ok configure -state normal
-      } else {
-        .fsmdwin.bf.ok configure -state disabled
-      }
-    } else {
-      .fsmdwin.bf.ok configure -state disabled
-    }
-    return 1
-  }
   button .fsmdwin.f.b -text "Input == Output" -command {
     set fsmd_input $fsmd_output
   }
   bind .fsmdwin.f.b <Return> {%W invoke}
+  entry .fsmdwin.f.eo -textvariable fsmd_output -validate all
   label .fsmdwin.f.li -text "Input Expression:"
   entry .fsmdwin.f.ei -textvariable fsmd_input
 
@@ -745,6 +744,10 @@ proc get_fsm {modname input output} {
   bind .fsmdwin.bf.cancel <Return> {%W invoke}
   pack .fsmdwin.bf.cancel -side right -padx 8 -pady 4
   pack .fsmdwin.bf.ok     -side right -padx 8 -pady 4
+
+  # Provide functionality for entries
+  .fsmdwin.f.e  configure -vcmd { return [fsmd_update_state] }
+  .fsmdwin.f.eo configure -vcmd { return [fsmd_update_state] }
 
   # Pack frames
   pack .fsmdwin.f  -fill x

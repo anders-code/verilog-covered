@@ -975,7 +975,7 @@ void command_report(
         if( rv != TCL_OK ) {
           rv = snprintf( user_msg, USER_MSG_LENGTH, "TCL/TK: %s\n", Tcl_ErrnoMsg( Tcl_GetErrno() ) );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          printf( "report Throw Q\n" );
+          // printf( "report Throw Q\n" ); - HIT
           Throw 0;
         }
 
@@ -1011,6 +1011,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104.2.2  2008/06/06 05:00:35  phase1geo
+ Updates for GUI.  Checkpointing.
+
  Revision 1.104.2.1  2008/06/05 03:50:04  phase1geo
  Fixing memory errors when Tk initialization fails.
 
