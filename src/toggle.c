@@ -176,7 +176,6 @@ bool toggle_get_coverage( const char* funit_name, int funit_type, char* sig_name
       *lsb      = sigl->sig->dim[0].lsb; 
       *tog01    = vector_get_toggle01_ulong( sigl->sig->value->value.ul, sigl->sig->value->width );
       *tog10    = vector_get_toggle10_ulong( sigl->sig->value->value.ul, sigl->sig->value->width );
-      printf( "tog01: %s, tog10: %s\n", *tog01, *tog10 );
       *excluded = sigl->sig->suppl.part.excluded;
     } else {
       retval = FALSE;
@@ -707,6 +706,9 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
 /*
  $Log$
+ Revision 1.73.2.2  2008/06/10 05:07:09  phase1geo
+ Removing unnecessary output.
+
  Revision 1.73.2.1  2008/06/10 05:06:30  phase1geo
  Fixed bug 1989398.
 
