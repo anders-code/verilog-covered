@@ -10,6 +10,8 @@ proc create_new_cdd {} {
   global dump_filetypes file_types
   global cdd_filename toplevel_name dumpfile delay_type
   global race_cond_action race_cond_pragma race_cond_pragma_name
+  global exclude_always exclude_assign exclude_initial exclude_final exclude_pragma exclude_pragma_name
+  global assert_ovl
 
   # Now create the window and raise it to the front
   if {[winfo exists .newwin] == 0} {
@@ -45,9 +47,9 @@ proc create_new_cdd {} {
       }
     }
     bind .newwin.general.cdd.b <Return> {%W invoke}
-    pack .newwin.general.cdd.l -side left  -fill y
-    pack .newwin.general.cdd.e -side left  -fill x -expand 1
-    pack .newwin.general.cdd.b -side right -fill y
+    pack .newwin.general.cdd.l -side left  -padx 3 -pady 3 -fill y
+    pack .newwin.general.cdd.e -side left  -padx 3 -pady 3 -fill x -expand 1
+    pack .newwin.general.cdd.b -side right -padx 3 -pady 3 -fill y
 
     # Add dumpfile widgets
     set dumpfile ""
@@ -58,9 +60,9 @@ proc create_new_cdd {} {
       set dumpfile [tk_getOpenFile -title "Select VCD/LXT Dumpfile" -filetypes $dump_filetypes]
     }
     bind .newwin.general.dump.b <Return> {%W invoke}
-    pack .newwin.general.dump.l -side left
-    pack .newwin.general.dump.e -side left -fill x -expand 1
-    pack .newwin.general.dump.b -side right
+    pack .newwin.general.dump.l -side left  -padx 3 -pady 3
+    pack .newwin.general.dump.e -side left  -padx 3 -pady 3 -fill x -expand 1
+    pack .newwin.general.dump.b -side right -padx 3 -pady 3
 
     # Pack the general widgets
     pack .newwin.general.cdd  -fill x
@@ -77,24 +79,24 @@ proc create_new_cdd {} {
     frame .newwin.parse.top
     label .newwin.parse.top.l -text "Toplevel module name:"
     entry .newwin.parse.top.e -textvariable toplevel_name
-    pack  .newwin.parse.top.l -side left
-    pack  .newwin.parse.top.e -side left -fill x -expand 1
+    pack  .newwin.parse.top.l -side left -padx 3 -pady 3
+    pack  .newwin.parse.top.e -side left -padx 3 -pady 3 -fill x -expand 1
 
     # Add root pathname widgets
     set inst_name ""
     frame .newwin.parse.inst
     label .newwin.parse.inst.l -text "Root pathname:"
     entry .newwin.parse.inst.e -textvariable inst_name
-    pack  .newwin.parse.inst.l -side left
-    pack  .newwin.parse.inst.e -side left -fill x -expand 1
+    pack  .newwin.parse.inst.l -side left -padx 3 -pady 3
+    pack  .newwin.parse.inst.e -side left -padx 3 -pady 3 -fill x -expand 1
 
     # Add delay specification
     set delay_type "None"
     frame .newwin.parse.delay
     label .newwin.parse.delay.l -text "Delay Type:"
     tk_optionMenu .newwin.parse.delay.m delay_type None Min Typ Max
-    pack .newwin.parse.delay.l -side left
-    pack .newwin.parse.delay.m -side left -fill x
+    pack .newwin.parse.delay.l -side left -padx 3 -pady 3
+    pack .newwin.parse.delay.m -side left -padx 3 -pady 3 -fill x
 
     # Add race condition option
     set race_cond_action      "None"
@@ -104,7 +106,7 @@ proc create_new_cdd {} {
     label         .newwin.parse.race.l  -text "Race Condition Action:"
     tk_optionMenu .newwin.parse.race.m race_cond None Silent Warning Error Ignore
     checkbutton   .newwin.parse.race.cb -text "Use embedded race condition pragmas" -variable race_cond_pragma
-    entry         .newwin.parse.race.e  -state disabled -textvariable race_cond_pragma_name -validate all
+    entry         .newwin.parse.race.e  -state disabled -textvariable race_cond_pragma_name
     .newwin.parse.race.cb configure -command {
       if {$race_cond_pragma == 0} {
         .newwin.parse.race.e configure -state disabled
@@ -117,13 +119,49 @@ proc create_new_cdd {} {
     pack .newwin.parse.race.cb -side left -padx 3 -pady 3
     pack .newwin.parse.race.e  -side left -padx 3 -pady 3 -fill x -expand 1
 
+    # Add assertion options
+    set assert_ovl 0
+    frame .newwin.parse.assert
+    checkbutton .newwin.parse.assert.ovl -text "Include OVL Assertions" -variable assert_ovl
+    pack .newwin.parse.assert.ovl -side left -padx 3 -pady 3
+
+    # Add exclusion options
+    set exclude_always      0
+    set exclude_assign      0
+    set exclude_initial     0
+    set exclude_final       0
+    set exclude_pragma      0
+    set exclude_pragma_name "coverage"
+    frame       .newwin.parse.exclude
+    checkbutton .newwin.parse.exclude.ea  -text "Exclude Always Blocks"  -variable exclude_always
+    checkbutton .newwin.parse.exclude.ec  -text "Exclude Assign Blocks"  -variable exclude_assign
+    checkbutton .newwin.parse.exclude.ei  -text "Exclude Initial Blocks" -variable exclude_initial
+    checkbutton .newwin.parse.exclude.ef  -text "Exclude Final Blocks"   -variable exclude_final
+    checkbutton .newwin.parse.exclude.epc -text "Exclude Within Pragma:" -variable exclude_pragma
+    entry       .newwin.parse.exclude.epe -state disabled -textvariable exclude_pragma_name
+    .newwin.parse.exclude.epc configure -command {
+      if {$exclude_pragma == 0} {
+        .newwin.parse.exclude.epe configure -state disabled
+      } else {
+        .newwin.parse.exclude.epe configure -state normal
+      }
+    }
+    pack .newwin.parse.exclude.ea  -side left -padx 3 -pady 3
+    pack .newwin.parse.exclude.ec  -side left -padx 3 -pady 3
+    pack .newwin.parse.exclude.ei  -side left -padx 3 -pady 3
+    pack .newwin.parse.exclude.ef  -side left -padx 3 -pady 3
+    pack .newwin.parse.exclude.epc -side left -padx 3 -pady 3
+    pack .newwin.parse.exclude.epe -side left -padx 3 -pady 3 -fill x -expand 1
+
     # Pack the general options frame
     grid columnconfigure .newwin.parse 0 -weight 1
     grid columnconfigure .newwin.parse 1 -weight 1
-    grid .newwin.parse.top   -row 0 -column 0 -sticky news -padx 3 -pady 3
-    grid .newwin.parse.inst  -row 0 -column 1 -sticky news -padx 3 -pady 3
-    grid .newwin.parse.delay -row 1 -column 0 -sticky news -padx 3 -pady 3
-    grid .newwin.parse.race  -row 1 -column 1 -sticky news -padx 3 -pady 3
+    grid .newwin.parse.top     -row 0 -column 0 -sticky news -padx 3 -pady 3
+    grid .newwin.parse.inst    -row 0 -column 1 -sticky news -padx 3 -pady 3
+    grid .newwin.parse.delay   -row 1 -column 0 -sticky news -padx 3 -pady 3
+    grid .newwin.parse.race    -row 1 -column 1 -sticky news -padx 3 -pady 3
+    grid .newwin.parse.assert  -row 2 -column 0 -sticky news -padx 3 -pady 3
+    grid .newwin.parse.exclude -row 3 -column 0 -sticky news -padx 3 -pady 3 -columnspan 2
 
     ############################################################
     # Create paned window for verilog paths and console output #
@@ -139,7 +177,9 @@ proc create_new_cdd {} {
 
     # Create and pack the listbox frame
     frame     .newwin.bot.opts.lbf
-    listbox   .newwin.bot.opts.lbf.lb -xscrollcommand {.newwin.bot.opts.lbf.hb set} -yscrollcommand {.newwin.bot.opts.lbf.vb set}
+    tablelist::tablelist .newwin.bot.opts.lbf.lb \
+      -columns {0 "Type" 0 "Argument"} \
+      -labelcommand tablelist::sortByColumn -xscrollcommand {.newwin.bot.opts.lbf.hb set} -yscrollcommand {.newwin.bot.opts.lbf.vb set} -stretch all
     scrollbar .newwin.bot.opts.lbf.vb -command ".newwin.bot.opts.lbf.lb yview" -takefocus 0
     scrollbar .newwin.bot.opts.lbf.hb -orient horizontal -command ".newwin.bot.opts.lbf.lb xview" -takefocus 0
 
@@ -167,9 +207,9 @@ proc create_new_cdd {} {
         set value "-v $value"
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
-          .newwin.bot.opts.lbf.lb insert end $value
+          .newwin.bot.opts.lbf.lb insert end [list "Source File" $value]
         } else {
-          .newwin.bot.opts.lbf.lb insert $index $value
+          .newwin.bot.opts.lbf.lb insert $index [list "Source File" $value]
         }
       }
     }
@@ -179,9 +219,9 @@ proc create_new_cdd {} {
         set value "-y $value"
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
-          .newwin.bot.opts.lbf.lb insert end $value
+          .newwin.bot.opts.lbf.lb insert end [list "Library Directory" $value]
         } else {
-          .newwin.bot.opts.lbf.lb insert $index $value
+          .newwin.bot.opts.lbf.lb insert $index [list "Library Directory" $value]
         }
       }
     }
@@ -191,9 +231,9 @@ proc create_new_cdd {} {
         set value "-I $value"
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
-          .newwin.bot.opts.lbf.lb insert end $value
+          .newwin.bot.opts.lbf.lb insert end [list "Include Directory" $value]
         } else {
-          .newwin.bot.opts.lbf.lb insert $index $value
+          .newwin.bot.opts.lbf.lb insert $index [list "Include Directory" $value]
         }
       }
     }
@@ -202,9 +242,9 @@ proc create_new_cdd {} {
       if {$value ne ""} {
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
-          .newwin.bot.opts.lbf.lb insert end $value
+          .newwin.bot.opts.lbf.lb insert end [list "Define" $value]
         } else {
-          .newwin.bot.opts.lbf.lb insert $index $value
+          .newwin.bot.opts.lbf.lb insert $index [list "Define" $value]
         }
       }
     }
@@ -213,9 +253,9 @@ proc create_new_cdd {} {
       if {$value ne ""} {
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
-          .newwin.bot.opts.lbf.lb insert end $value
+          .newwin.bot.opts.lbf.lb insert end [list "Param Override" $value]
         } else {
-          .newwin.bot.opts.lbf.lb insert $index $value
+          .newwin.bot.opts.lbf.lb insert $index [list "Param Override" $value]
         }
       }
     }
@@ -225,9 +265,9 @@ proc create_new_cdd {} {
       if {$value ne ""} {
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
-          .newwin.bot.opts.lbf.lb insert end $value
+          .newwin.bot.opts.lbf.lb insert end [list "FSM" $value]
         } else {
-          .newwin.bot.opts.lbf.lb insert $index $value
+          .newwin.bot.opts.lbf.lb insert $index [list "FSM" $value]
         }
       }
     }
@@ -236,9 +276,9 @@ proc create_new_cdd {} {
       if {$value ne ""} {
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
-          .newwin.bot.opts.lbf.lb insert end $value
+          .newwin.bot.opts.lbf.lb insert end [list "Module Generation" $value]
         } else {
-          .newwin.bot.opts.lbf.lb insert $index $value
+          .newwin.bot.opts.lbf.lb insert $index [list "Module Generation" $value]
         }
       }
     }
@@ -247,9 +287,9 @@ proc create_new_cdd {} {
       if {$value ne ""} {
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
-          .newwin.bot.opts.lbf.lb insert end $value
+          .newwin.bot.opts.lbf.lb insert end [list "Module Exclusion" $value]
         } else {
-          .newwin.bot.opts.lbf.lb insert $index $value
+          .newwin.bot.opts.lbf.lb insert $index [list "Module Exclusion" $value]
         }
       }
     }
@@ -260,16 +300,18 @@ proc create_new_cdd {} {
         set value "-f $value"
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
-          .newwin.bot.opts.lbf.lb insert end $value
+          .newwin.bot.opts.lbf.lb insert end [list "Command File" $value]
         } else {
-          .newwin.bot.opts.lbf.lb insert $index $value
+          .newwin.bot.opts.lbf.lb insert $index [list "Command File" $value]
         }
       }
     }
 
     button .newwin.bot.opts.bf.edit -text "Edit..." -width 10 -state disabled -command {
-      set index [.newwin.bot.opts.lbf.lb curselection]
-      set value [split [.newwin.bot.opts.lbf.lb get $index]]
+      set index  [.newwin.bot.opts.lbf.lb curselection]
+      set values [.newwin.bot.opts.lbf.lb get $index]
+      set type   [lindex $values 0]
+      set value  [split [lindex $values 1]]
       if {[lindex $value 0] eq "-v"} {
         set value [tk_getOpenFile -title "Select Verilog Source File" -initialfile [lindex $value 1]]
         if {$value ne ""} {
@@ -308,7 +350,7 @@ proc create_new_cdd {} {
       }
       if {$value ne ""} {
         .newwin.bot.opts.lbf.lb delete $index
-        .newwin.bot.opts.lbf.lb insert $index $value
+        .newwin.bot.opts.lbf.lb insert $index [list $type $value]
         .newwin.bot.opts.lbf.lb selection set $index
       }
     }
@@ -323,9 +365,9 @@ proc create_new_cdd {} {
         .newwin.bot.opts.bf.delete configure -state normal
       }
     }
-    pack .newwin.bot.opts.bf.ins_mb -fill x
-    pack .newwin.bot.opts.bf.edit   -fill x
-    pack .newwin.bot.opts.bf.delete -fill x
+    pack .newwin.bot.opts.bf.ins_mb -fill x -padx 3 -pady 3
+    pack .newwin.bot.opts.bf.edit   -fill x -padx 3 -pady 3
+    pack .newwin.bot.opts.bf.delete -fill x -padx 3 -pady 3
 
     # Now pack the buttons and listbox frames in the labelframe
     pack .newwin.bot.opts.lbf -side left  -fill both -expand 1
@@ -392,7 +434,7 @@ proc create_new_cdd {} {
     pack .newwin.general -side top    -fill x
     pack .newwin.parse   -side top    -fill x
     pack .newwin.bot     -side top    -fill both -expand 1
-    pack .newwin.bf      -side bottom -fill x
+    pack .newwin.bf      -side bottom -fill both
 
     # Cause this window to stay on top of main window
     wm transient .newwin .
@@ -406,6 +448,8 @@ proc create_new_cdd {} {
 
 proc set_widget_state {name state} {
 
+  global new_widget_state
+
   set children [winfo children $name]
 
   foreach child $children {
@@ -414,7 +458,20 @@ proc set_widget_state {name state} {
 
   # If this widget has a -state option, set it to the given value
   if {[lsearch -exact [join [$name configure]] {-state}] != -1} {
-    $name configure -state $state
+    if {$state eq "disabled"} {
+      if {[$name cget -state] ne "disabled"} {
+        set new_widget_state($name) [$name cget -state]
+      }
+    } else {
+      if {[info exists new_widget_state($name)]} {
+        set state $new_widget_state($name)
+      } else {
+        set new_widget_state($name) [$name cget -state]
+      }
+    }
+    if {$state ne ""} {
+      $name configure -state $state
+    }
   }
 
 }

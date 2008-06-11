@@ -19,9 +19,9 @@ source [file join $HOME scripts wizard.tcl]
 source [file join $HOME scripts create_new.tcl]
 
 # The Tablelist package is used for displaying instance/module hit/miss/total/percent hit information
-#package require Tablelist
-package require tile
-package require tablelist_tile 4.8
+package require Tablelist
+#package require tile
+#package require tablelist_tile 4.8
 
 set last_lb_index      ""
 set lwidth             -1 
@@ -128,7 +128,7 @@ proc main_view {} {
 
   # Create vertical scrollbar frame and pack it
   frame      .bot.left.sbf
-  ttk::label .bot.left.sbf.ml -relief flat -style TablelistHeader.TLabel -image [image create bitmap -data "#define stuff_width 16\n#define stuff_height 16\nstatic unsigned char stuff_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0xf8, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0xf8, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,0xf8, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"]
+  ttk::label .bot.left.sbf.ml -relief flat -style TablelistHeader.TLabel -image [image create bitmap -data "#define stuff_width 16\n#define stuff_height 16\nstatic unsigned char stuff_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x00, 0x00, 0x00, 0x00};"]
 
   scrollbar  .bot.left.sbf.vb -command {.bot.left.tl yview}
   ttk::label .bot.left.sbf.l
@@ -182,7 +182,6 @@ proc main_view {} {
   #wm attributes . -topmost true
   wm focusmodel . active
   raise .
-  grab -global .
 
   # Set icon
   set icon_img [image create photo -file [file join $HOME scripts cov_icon.gif]]
