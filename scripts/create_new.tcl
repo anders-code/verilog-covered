@@ -8,10 +8,11 @@ set dump_filetypes {
 proc create_new_cdd {} {
 
   global dump_filetypes file_types
-  global cdd_filename toplevel_name dumpfile delay_type
+  global cdd_filename toplevel_name delay_type
   global race_cond_action race_cond_pragma race_cond_pragma_name
   global exclude_always exclude_assign exclude_initial exclude_final exclude_pragma exclude_pragma_name
   global assert_ovl
+  global dump_vpi_none dump_file vpi_file vpi_ts vpi_ts_num1 vpi_ts_scale1 vpi_ts_num2 vpi_ts_scale2 simulator
 
   # Now create the window and raise it to the front
   if {[winfo exists .newwin] == 0} {
@@ -52,17 +53,99 @@ proc create_new_cdd {} {
     pack .newwin.general.cdd.b -side right -padx 3 -pady 3 -fill y
 
     # Add dumpfile widgets
-    set dumpfile ""
+    set dump_vpi_none "none"
+    set dump_file     ""
+    set vpi_file      ""
+    set vpi_ts        "0"
+    set vpi_ts_num1   "1"
+    set vpi_ts_scale1 "s"
+    set vpi_ts_num2   "1"
+    set vpi_ts_scale2 "s"
+    set simulator     "Icarus Verilog"
     frame  .newwin.general.dump
-    label  .newwin.general.dump.l -text "Dumpfile:"
-    entry  .newwin.general.dump.e -textvariable dumpfile
-    button .newwin.general.dump.b -text "Browse" -width 10 -command {
-      set dumpfile [tk_getOpenFile -title "Select VCD/LXT Dumpfile" -filetypes $dump_filetypes]
+    radiobutton .newwin.general.dump.rn -text "Parse Design Only" -variable dump_vpi_none -value "none" -anchor w
+    radiobutton .newwin.general.dump.rd -text "Dumpfile:"         -variable dump_vpi_none -value "dump" -anchor w
+    entry  .newwin.general.dump.ed -textvariable dump_file -state disabled
+    button .newwin.general.dump.bd -text "Browse" -width 10 -state disabled -command {
+      set dump_file [tk_getOpenFile -title "Select VCD/LXT Dumpfile" -filetypes $dump_filetypes]
     }
-    bind .newwin.general.dump.b <Return> {%W invoke}
-    pack .newwin.general.dump.l -side left  -padx 3 -pady 3
-    pack .newwin.general.dump.e -side left  -padx 3 -pady 3 -fill x -expand 1
-    pack .newwin.general.dump.b -side right -padx 3 -pady 3
+    bind .newwin.general.dump.bd <Return> {%W invoke}
+    radiobutton   .newwin.general.dump.rv -text "VPI Module:" -variable dump_vpi_none -value "vpi" -anchor w
+    entry         .newwin.general.dump.ev -textvariable vpi_file -state disabled
+    tk_optionMenu .newwin.general.dump.mv simulator {Icarus Verilog} {Cver} {VCS}
+    frame         .newwin.general.dump.ts
+    checkbutton   .newwin.general.dump.ts.cb -text "Set VPI Module Timescale:" -anchor w -variable vpi_ts -state disabled
+    tk_optionMenu .newwin.general.dump.ts.n1 vpi_ts_num1   {1} {10} {100}
+    tk_optionMenu .newwin.general.dump.ts.s1 vpi_ts_scale1 {s} {ms} {us} {ns} {ps} {fs}
+    label         .newwin.general.dump.ts.l  -text "/" -state disabled
+    tk_optionMenu .newwin.general.dump.ts.n2 vpi_ts_num2   {1} {10} {100}
+    tk_optionMenu .newwin.general.dump.ts.s2 vpi_ts_scale2 {s} {ms} {us} {ns} {ps} {fs}
+    pack .newwin.general.dump.ts.cb -side left -padx 3 -pady 3
+    pack .newwin.general.dump.ts.n1 -side left -padx 3 -pady 3
+    pack .newwin.general.dump.ts.s1 -side left -padx 3 -pady 3
+    pack .newwin.general.dump.ts.l  -side left -padx 3 -pady 3
+    pack .newwin.general.dump.ts.n2 -side left -padx 3 -pady 3
+    pack .newwin.general.dump.ts.s2 -side left -padx 3 -pady 3
+    .newwin.general.dump.rn configure -command {
+      if {$dump_vpi_none eq "none"} {
+        .newwin.general.dump.ed configure -state disabled
+        .newwin.general.dump.bd configure -state disabled
+        .newwin.general.dump.ev configure -state disabled
+        .newwin.general.dump.mv configure -state disabled
+        set_widget_state .newwin.general.dump.ts disabled
+      }
+    }
+    .newwin.general.dump.rd configure -command {
+      if {$dump_vpi_none eq "dump"} {
+        .newwin.general.dump.ed configure -state normal
+        .newwin.general.dump.bd configure -state normal
+        .newwin.general.dump.ev configure -state disabled
+        .newwin.general.dump.mv configure -state disabled
+        set_widget_state .newwin.general.dump.ts disabled
+      }
+    }
+    .newwin.general.dump.rv configure -command {
+      if {$dump_vpi_none eq "vpi"} {
+        .newwin.general.dump.ed configure -state disabled
+        .newwin.general.dump.bd configure -state disabled
+        .newwin.general.dump.ev configure -state normal
+        .newwin.general.dump.mv configure -state normal
+        if {$vpi_ts == 1} {
+          set_widget_state .newwin.general.dump.ts normal
+        }
+        .newwin.general.dump.ts.cb configure -state normal
+      }
+    }
+    .newwin.general.dump.ts.cb configure -command {
+      if {$vpi_ts == 0} {
+        .newwin.general.dump.ts.n1 configure -state disabled
+        .newwin.general.dump.ts.s1 configure -state disabled
+        .newwin.general.dump.ts.l  configure -state disabled
+        .newwin.general.dump.ts.n2 configure -state disabled
+        .newwin.general.dump.ts.s2 configure -state disabled
+      } else {
+        .newwin.general.dump.ts.n1 configure -state normal
+        .newwin.general.dump.ts.s1 configure -state normal
+        .newwin.general.dump.ts.l  configure -state normal
+        .newwin.general.dump.ts.n2 configure -state normal
+        .newwin.general.dump.ts.s2 configure -state normal
+      }
+    }
+    .newwin.general.dump.mv    configure -state disabled
+    .newwin.general.dump.ts.n1 configure -state disabled
+    .newwin.general.dump.ts.s1 configure -state disabled
+    .newwin.general.dump.ts.n2 configure -state disabled
+    .newwin.general.dump.ts.s2 configure -state disabled
+
+    grid columnconfig .newwin.general.dump 1 -weight 1
+    grid .newwin.general.dump.rn -row 0 -column 0 -sticky news -padx 3 -pady 3 -columnspan 2
+    grid .newwin.general.dump.rd -row 1 -column 0 -sticky news -padx 3 -pady 3
+    grid .newwin.general.dump.ed -row 1 -column 1 -sticky news -padx 3 -pady 3
+    grid .newwin.general.dump.bd -row 1 -column 2 -sticky news -padx 3 -pady 3
+    grid .newwin.general.dump.rv -row 2 -column 0 -sticky news -padx 3 -pady 3
+    grid .newwin.general.dump.ev -row 2 -column 1 -sticky news -padx 3 -pady 3
+    grid .newwin.general.dump.mv -row 2 -column 2 -sticky news -padx 3 -pady 3
+    grid .newwin.general.dump.ts -row 3 -column 0 -sticky news -padx 3 -pady 3 -columnspan 3
 
     # Pack the general widgets
     pack .newwin.general.cdd  -fill x
