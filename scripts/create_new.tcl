@@ -287,7 +287,6 @@ proc create_new_cdd {} {
     $m add command -label "Source File..." -command {
       set value [tk_getOpenFile -title "Select Verilog Source File"]
       if {$value ne ""} {
-        set value "-v $value"
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
           .newwin.bot.opts.lbf.lb insert end [list "Source File" $value]
@@ -299,7 +298,6 @@ proc create_new_cdd {} {
     $m add command -label "Library Directory..." -command {
       set value [tk_chooseDirectory -title "Select Verilog Library Directory" -mustexist true]
       if {$value ne ""} {
-        set value "-y $value"
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
           .newwin.bot.opts.lbf.lb insert end [list "Library Directory" $value]
@@ -308,10 +306,20 @@ proc create_new_cdd {} {
         }
       }
     }
+    $m add command -label "Library Extension(s)..." -command {
+      set value [get_library_extensions ""]
+      if {$value ne ""} {
+        set index [.newwin.bot.opts.lbf.lb curselection]
+        if {$index eq ""} {
+          .newwin.bot.opts.lbf.lb insert end [list "Library Extension" $value]
+        } else {
+          .newwin.bot.opts.lbf.lb insert $index [list "Library Extension" $value]
+        }
+      }
+    }
     $m add command -label "Include Directory..." -command {
       set value [tk_chooseDirectory -title "Select Include Directory" -mustexist true]
       if {$value ne ""} {
-        set value "-I $value"
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
           .newwin.bot.opts.lbf.lb insert end [list "Include Directory" $value]
@@ -380,7 +388,6 @@ proc create_new_cdd {} {
     $m add command -label "Command File..." -command {
       set value [tk_getOpenFile -title "Select Command File"]
       if {$value ne ""} {
-        set value "-f $value"
         set index [.newwin.bot.opts.lbf.lb curselection]
         if {$index eq ""} {
           .newwin.bot.opts.lbf.lb insert end [list "Command File" $value]
@@ -394,40 +401,30 @@ proc create_new_cdd {} {
       set index  [.newwin.bot.opts.lbf.lb curselection]
       set values [.newwin.bot.opts.lbf.lb get $index]
       set type   [lindex $values 0]
-      set value  [split [lindex $values 1]]
-      if {[lindex $value 0] eq "-v"} {
-        set value [tk_getOpenFile -title "Select Verilog Source File" -initialfile [lindex $value 1]]
-        if {$value ne ""} {
-          set value "-v $value"
-        }
-      } elseif {[lindex $value 0] eq "-y"} {
-        set value [tk_chooseDirectory -title "Select Verilog Library Directory" -mustexist true -initialdir [lindex $value 1]]
-        if {$value ne ""} {
-          set value "-y $value"
-        }
-      } elseif {[lindex $value 0] eq "-I"} {
-        set value [tk_chooseDirectory -title "Select Include Directory" -mustexist true -initialdir [lindex $value 1]]
-        if {$value ne ""} {
-          set value "-I $value"
-        }
-      } elseif {[lindex $value 0] eq "-f"} {
-        set value [tk_getOpenFile -title "Select Command File" -initialfile [lindex $value 1]]
-        if {$value ne ""} {
-          set value "-f $value"
-        }
-      } elseif {[lindex $value 0] eq "-e"} {
-        set value [get_module_exclusion [lindex $value 1]]
-      } elseif {[lindex $value 0] eq "-g"} {
-        set old_value [split [lindex $value 1] "="]]
+      set value  [lindex $values 1]
+      if {$type eq "Source File"} {
+        set value [tk_getOpenFile -title "Select Verilog Source File" -initialfile $value]
+      } elseif {$type eq "Library Directory"} {
+        set value [tk_chooseDirectory -title "Select Verilog Library Directory" -mustexist true -initialdir $value]
+      } elseif {$type eq "Library Extension(s)"} {
+        set value [get_library_extensions $value]
+      } elseif {$type eq "Include Directory"} {
+        set value [tk_chooseDirectory -title "Select Include Directory" -mustexist true -initialdir $value]
+      } elseif {$type eq "Command File"} {
+        set value [tk_getOpenFile -title "Select Command File" -initialfile $value]
+      } elseif {$type eq "Module Exclusion"} {
+        set value [get_module_exclusion $value]
+      } elseif {$type eq "Module Generation"} {
+        set old_value [split $value "="]
         set value [get_module_generation [lindex $old_value 0] [lindex $old_value 1]]
-      } elseif {[lindex $value 0] eq "-D"} {
-        set old_value [split [lindex $value 1] "="]
+      } elseif {$type eq "Define"} {
+        set old_value [split $value "="]
         set value [get_define [lindex $old_value 0] [lindex $old_value 1]]
-      } elseif {[lindex $value 0] eq "-P"} {
-        set old_value [split [lindex $value 1] "="]
+      } elseif {$type eq "Param Override"} {
+        set old_value [split $value "="]
         set value [get_parameter_override [lindex $old_value 0] [lindex $old_value 1]]
-      } elseif {[lindex $value 0] eq "-F"} {
-        set old_value1 [split [lindex $value 1] "="]
+      } elseif {$type eq "FSM"} {
+        set old_value1 [split $value "="]
         set old_value2 [split [lindex $old_value1 1] ","]
         set value [get_fsm [lindex $old_value1 0] [lindex $old_value2 0] [lindex $old_value2 1]]
       }
@@ -583,11 +580,11 @@ proc get_module_generation {modname gen} {
   frame  .mgenwin.bf -relief raised
   button .mgenwin.bf.ok -text "OK" -width 10 -state disabled -command {
     if {$modgen eq "Verilog 1995"} {
-      set mod_gen_retval "-g $mod_gen_modname=1"
+      set mod_gen_retval "$mod_gen_modname=1"
     } elseif {$modgen eq "Verilog 2001"} {
-      set mod_gen_retval "-g $mod_gen_modname=2"
+      set mod_gen_retval "$mod_gen_modname=2"
     } elseif {$modgen eq "System Verilog"} {
-      set mod_gen_retval "-g $mod_gen_modname=3"
+      set mod_gen_retval "$mod_gen_modname=3"
     }
     destroy .mgenwin
   }
@@ -646,7 +643,7 @@ proc get_module_exclusion {modname} {
   # Add button frame widgets
   frame .mexclwin.bf -relief raised
   button .mexclwin.bf.ok -text "OK" -width 10 -state disabled -command {
-    set mod_excl_retval "-e $mod_excl_modname"
+    set mod_excl_retval "$mod_excl_modname"
     destroy .mexclwin
   }
   bind .mexclwin.bf.ok <Return> {%W invoke}
@@ -680,6 +677,117 @@ proc get_module_exclusion {modname} {
   tkwait window .mexclwin
 
   return $mod_excl_retval
+
+}
+
+proc get_library_extensions {extensions} {
+
+  global lib_ext_retval
+  global lib_ext_name
+
+  set lib_ext_retval ""
+  set lib_ext_name   ""
+
+  # Create new window
+  toplevel .lextwin
+  wm title .lextwin "Specify library extensions"
+
+  # Add selection widgets
+  frame     .lextwin.f
+  frame     .lextwin.f.ef
+  entry     .lextwin.f.ef.e -validate all -textvariable lib_ext_name -takefocus 1
+  button    .lextwin.f.ef.b -text "Update" -width 10 -state disabled
+  pack .lextwin.f.ef.e -side left  -fill x -expand 1 -padx 3 -pady 3
+  pack .lextwin.f.ef.b -side right -padx 3 -pady 3
+  frame     .lextwin.f.lf
+  listbox   .lextwin.f.lf.lb -xscrollcommand {.lextwin.f.lf.hb set} -yscrollcommand {.lextwin.f.lf.vb set} -exportselection 0
+  scrollbar .lextwin.f.lf.hb -orient horizontal -command {.lextwin.f.lf.lb xset}
+  scrollbar .lextwin.f.lf.vb -command {.lextwin.f.lf.lb yset}
+  grid rowconfigure    .lextwin.f.lf 0 -weight 1
+  grid columnconfigure .lextwin.f.lf 0 -weight 1
+  grid .lextwin.f.lf.lb -row 0 -column 0 -sticky news -padx 3 -pady 3
+  grid .lextwin.f.lf.vb -row 0 -column 1 -sticky ns   -padx 3 -pady 3
+  grid .lextwin.f.lf.hb -row 1 -column 0 -sticky ew   -padx 3 -pady 3
+  pack .lextwin.f.ef -fill x    -expand 1 -padx 3 -pady 3
+  pack .lextwin.f.lf -fill both -expand 1 -padx 3 -pady 3
+
+  # Update the listbox with any previous values
+  foreach extension $extensions {
+    .lextwin.f.lf.lb insert end $extension
+  }
+  .lextwin.f.lf.lb insert end "Add New Extension"
+  .lextwin.f.lf.lb selection set end
+
+  # Create bindings
+  bind .lextwin.f.lf.lb <<ListboxSelect>> {
+    puts "FOCUS BEFORE [focus]"
+    set index [.lextwin.f.lf.lb curselection]
+    if {$index ne ""} {
+      if {[.lextwin.f.lf.lb get $index] eq "Add New Extension"} {
+        set lib_ext_name ""
+      } elseif {[.lextwin.f.lf.lb get $index] eq "<None>"} {
+        set lib_ext_name ""
+      } else {
+        set lib_ext_name [.lextwin.f.lf.lb get [.lextwin.f.lf.lb curselection]]
+      }
+      puts "Generating button press..."
+      event generate .lextwin.f.ef.e <ButtonPress-1>
+    }
+    puts "FOCUS AFTER  [focus]"
+  }
+  .lextwin.f.ef.e configure -vcmd {
+    if {$lib_ext_name eq ""} {
+      .lextwin.f.ef.b configure -state normal
+    } elseif {[string index $lib_ext_name 0] eq "."} {
+      .lextwin.f.ef.b configure -state normal
+    } else {
+      .lextwin.f.ef.b configure -state disabled
+    }
+    return 1
+  }
+  .lextwin.f.ef.b configure -command {
+    set index       [.lextwin.f.lf.lb curselection]
+    set add_new_ext 0
+    if {[.lextwin.f.lf.lb get $index] eq "Add New Extension"} {
+      set add_new_ext 1
+    }
+    .lextwin.f.lf.lb delete $index
+    if {$lib_ext_name eq ""} {
+      .lextwin.f.lf.lb insert $index "<None>"
+    } else {
+      .lextwin.f.lf.lb insert $index $lib_ext_name
+    }
+    if {$add_new_ext == 1} {
+      .lextwin.f.lf.lb insert end "Add New Extension"
+    }
+    .lextwin.f.lf.lb selection set end
+    set lib_ext_name ""
+  }
+  bind .lextwin.f.ef.e <Return>  {.lextwin.f.ef.b invoke}
+  bind .lextwin.f.ef.e <ButtonPress-1> +{puts {Entry received button press event}}
+
+  # Add button frame and buttons
+  frame  .lextwin.bf
+  button .lextwin.bf.ok -text "OK" -width 10 -command {
+    destroy .lextwin
+  }
+  button .lextwin.bf.cancel -text "Cancel" -width 10 -command {
+    set lib_ext_retval ""
+    destroy .lextwin
+  }
+  pack .lextwin.bf.cancel -side right -padx 3 -pady 3
+  pack .lextwin.bf.ok     -side right -padx 3 -pady 3
+
+  # Pack the window
+  pack .lextwin.f  -fill both -expand 1
+  pack .lextwin.bf -fill x
+
+  # Make sure that this window is transient and sets focus to first widget
+  wm transient .lextwin .newwin
+  focus .lextwin.f.ef.e
+
+  # Wait for the module exclusion window to be destroyed before returning
+  tkwait window .lextwin
 
 }
 
@@ -753,9 +861,9 @@ proc get_define {defname value} {
   frame .defwin.bf
   button .defwin.bf.ok -text "OK" -width 10 -state disabled -command {
     if {[.defwin.f.b cget -relief] eq "raised"} {
-      set def_retval "-D $define_name"
+      set def_retval "$define_name"
     } else {
-       set def_retval "-D $define_name=$define_value"
+       set def_retval "$define_name=$define_value"
     }
     destroy .defwin
   }
@@ -833,7 +941,7 @@ proc get_parameter_override {parmname value} {
   # Add button frame and widgets
   frame .parmwin.bf -relief raised
   button .parmwin.bf.ok -text "OK" -width 10 -state disabled -command {
-    set param_retval "-P $param_name=$param_value"
+    set param_retval "$param_name=$param_value"
     destroy .parmwin
   }
   bind .parmwin.bf.ok <Return> {%W invoke}
@@ -922,7 +1030,7 @@ proc get_fsm {modname input output} {
   # Add button frame and widgets
   frame .fsmdwin.bf -relief raised
   button .fsmdwin.bf.ok -text "OK" -width 10 -state disabled -command {
-    set fsmd_retval "-F $fsmd_modname=$fsmd_input,$fsmd_output"
+    set fsmd_retval "$fsmd_modname=$fsmd_input,$fsmd_output"
     destroy .fsmdwin
   }
   bind .fsmdwin.bf.ok <Return> {%W invoke}
