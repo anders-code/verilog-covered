@@ -11,7 +11,7 @@ proc create_new_cdd {} {
   global cdd_filename toplevel_name delay_type
   global race_cond_action race_cond_pragma race_cond_pragma_name
   global exclude_always exclude_assign exclude_initial exclude_final exclude_pragma exclude_pragma_name
-  global assert_ovl
+  global assert_ovl design_generation
   global dump_vpi_none dump_file vpi_file vpi_ts vpi_ts_num1 vpi_ts_scale1 vpi_ts_num2 vpi_ts_scale2 simulator
 
   # Now create the window and raise it to the front
@@ -35,9 +35,14 @@ proc create_new_cdd {} {
       if {[file isfile $cdd_filename]} {
         set_widget_state .newwin.parse    disabled
         set_widget_state .newwin.bot.opts disabled
+        set dump_vpi_none "dump"
+        .newwin.general.dump.rn configure -state disabled
+        .newwin.general.dump.ed configure -state normal
+        .newwin.general.dump.bd configure -state normal
       } else {
         set_widget_state .newwin.parse    normal
         set_widget_state .newwin.bot.opts normal
+        .newwin.general.dump.rn configure -state normal
       }
       return 1
     }
@@ -208,6 +213,14 @@ proc create_new_cdd {} {
     checkbutton .newwin.parse.assert.ovl -text "Include OVL Assertions" -variable assert_ovl
     pack .newwin.parse.assert.ovl -side left -padx 3 -pady 3
 
+    # Add generation options
+    set design_generation "System Verilog"
+    frame .newwin.parse.gen
+    label .newwin.parse.gen.l -text "Universal Verilog Generation:"
+    tk_optionMenu .newwin.parse.gen.m design_generation {Verilog 1995} {Verilog 2001} {System Verilog}
+    pack .newwin.parse.gen.l -side left -padx 3 -pady 3
+    pack .newwin.parse.gen.m -side left -padx 3 -pady 3
+
     # Add exclusion options
     set exclude_always      0
     set exclude_assign      0
@@ -244,6 +257,7 @@ proc create_new_cdd {} {
     grid .newwin.parse.delay   -row 1 -column 0 -sticky news -padx 3 -pady 3
     grid .newwin.parse.race    -row 1 -column 1 -sticky news -padx 3 -pady 3
     grid .newwin.parse.assert  -row 2 -column 0 -sticky news -padx 3 -pady 3
+    grid .newwin.parse.gen     -row 2 -column 1 -sticky news -padx 3 -pady 3
     grid .newwin.parse.exclude -row 3 -column 0 -sticky news -padx 3 -pady 3 -columnspan 2
 
     ############################################################
@@ -260,16 +274,19 @@ proc create_new_cdd {} {
 
     # Create and pack the listbox frame
     frame     .newwin.bot.opts.lbf
-    tablelist::tablelist .newwin.bot.opts.lbf.lb \
-      -columns {0 "Type" 0 "Argument"} \
-      -labelcommand tablelist::sortByColumn -xscrollcommand {.newwin.bot.opts.lbf.hb set} -yscrollcommand {.newwin.bot.opts.lbf.vb set} -stretch all
-    scrollbar .newwin.bot.opts.lbf.vb -command ".newwin.bot.opts.lbf.lb yview" -takefocus 0
+    tablelist::tablelist .newwin.bot.opts.lbf.lb -exportselection 0 -movablerows 1 -selectmode single -columns {0 "Type" 0 "Argument"} \
+      -labelcommand tablelist::sortByColumn -xscrollcommand {.newwin.bot.opts.lbf.hb set} -yscrollcommand {.newwin.bot.opts.lbf.vf.vb set} -stretch all
+    frame     .newwin.bot.opts.lbf.vf
+    label     .newwin.bot.opts.lbf.vf.l
+    scrollbar .newwin.bot.opts.lbf.vf.vb -command ".newwin.bot.opts.lbf.lb yview" -takefocus 0
+    pack .newwin.bot.opts.lbf.vf.l  -fill x
+    pack .newwin.bot.opts.lbf.vf.vb -fill y -expand 1
     scrollbar .newwin.bot.opts.lbf.hb -orient horizontal -command ".newwin.bot.opts.lbf.lb xview" -takefocus 0
 
     grid rowconfigure    .newwin.bot.opts.lbf 0 -weight 1
     grid columnconfigure .newwin.bot.opts.lbf 0 -weight 1
     grid .newwin.bot.opts.lbf.lb -row 0 -column 0 -sticky news
-    grid .newwin.bot.opts.lbf.vb -row 0 -column 1 -sticky ns
+    grid .newwin.bot.opts.lbf.vf -row 0 -column 1 -sticky ns
     grid .newwin.bot.opts.lbf.hb -row 1 -column 0 -sticky ew
 
     # Create and pack the button frame
@@ -507,20 +524,20 @@ proc create_new_cdd {} {
       destroy .newwin
     }
     bind .newwin.bf.cancel <Return> {%W invoke}
-    pack .newwin.bf.help   -side right -pady 4 -padx 8
-    pack .newwin.bf.cancel -side right -pady 4 -padx 8
-    pack .newwin.bf.gen    -side right -pady 4 -padx 8
+    pack .newwin.bf.help   -side right -pady 3 -padx 3
+    pack .newwin.bf.cancel -side right -pady 3 -padx 3
+    pack .newwin.bf.gen    -side right -pady 3 -padx 3
 
     # Pack the main frames
     pack .newwin.general -side top    -fill x
     pack .newwin.parse   -side top    -fill x
     pack .newwin.bot     -side top    -fill both -expand 1
-    pack .newwin.bf      -side bottom -fill both
+    pack .newwin.bf      -side bottom -fill x
 
     # Cause this window to stay on top of main window
     wm transient .newwin .
 
-  } 
+  }
 
   # Set beginning focus
   focus .newwin.general.cdd.e
@@ -701,7 +718,7 @@ proc get_library_extensions {extensions} {
   pack .lextwin.f.ef.e -side left  -fill x -expand 1 -padx 3 -pady 3
   pack .lextwin.f.ef.b -side right -padx 3 -pady 3
   frame     .lextwin.f.lf
-  listbox   .lextwin.f.lf.lb -xscrollcommand {.lextwin.f.lf.hb set} -yscrollcommand {.lextwin.f.lf.vb set} -exportselection 0
+  listbox   .lextwin.f.lf.lb -xscrollcommand {.lextwin.f.lf.hb set} -yscrollcommand {.lextwin.f.lf.vb set} -exportselection 0 -selectmode single
   scrollbar .lextwin.f.lf.hb -orient horizontal -command {.lextwin.f.lf.lb xset}
   scrollbar .lextwin.f.lf.vb -command {.lextwin.f.lf.lb yset}
   grid rowconfigure    .lextwin.f.lf 0 -weight 1
@@ -731,10 +748,11 @@ proc get_library_extensions {extensions} {
         set lib_ext_name ""
       } elseif {[.lextwin.f.lf.lb get $index] eq "<None>"} {
         set lib_ext_name ""
+        .lextwin.f.lf.lb delete $index
       } else {
         set lib_ext_name [.lextwin.f.lf.lb get $index]
+        .lextwin.f.lf.lb delete $index
       }
-      .lextwin.f.lf.lb delete $index
       .lextwin.f.lf.lb selection set 0
       .lextwin.f.ef.e  selection range 0 end
       .lextwin.f.ef.e  icursor end
@@ -767,16 +785,10 @@ proc get_library_extensions {extensions} {
     return 1
   }
   .lextwin.f.ef.b configure -command {
-    set index [.lextwin.f.lf.lb curselection]
-    if {[.lextwin.f.lf.lb get $index] eq "Click to Add New Extension"} {
-      incr index
-    } else {
-      .lextwin.f.lf.lb delete $index
-    }
     if {$lib_ext_name eq ""} {
-      .lextwin.f.lf.lb insert $index "<None>"
+      .lextwin.f.lf.lb insert end "<None>"
     } else {
-      .lextwin.f.lf.lb insert $index $lib_ext_name
+      .lextwin.f.lf.lb insert end $lib_ext_name
     }
     .lextwin.f.lf.lb selection set 0
     set lib_ext_name ""
