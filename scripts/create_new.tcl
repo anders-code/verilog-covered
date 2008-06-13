@@ -406,8 +406,8 @@ proc create_new_cdd {} {
         set value [tk_getOpenFile -title "Select Verilog Source File" -initialfile $value]
       } elseif {$type eq "Library Directory"} {
         set value [tk_chooseDirectory -title "Select Verilog Library Directory" -mustexist true -initialdir $value]
-      } elseif {$type eq "Library Extension(s)"} {
-        set value [get_library_extensions $value]
+      } elseif {$type eq "Library Extension"} {
+        set value [get_library_extensions [lrange [split $value "+"] 1 end-1]]
       } elseif {$type eq "Include Directory"} {
         set value [tk_chooseDirectory -title "Select Include Directory" -mustexist true -initialdir $value]
       } elseif {$type eq "Command File"} {
@@ -428,6 +428,7 @@ proc create_new_cdd {} {
         set old_value2 [split [lindex $old_value1 1] ","]
         set value [get_fsm [lindex $old_value1 0] [lindex $old_value2 0] [lindex $old_value2 1]]
       }
+      set index  [.newwin.bot.opts.lbf.lb curselection]
       if {$value ne ""} {
         .newwin.bot.opts.lbf.lb delete $index
         .newwin.bot.opts.lbf.lb insert $index [list $type $value]
@@ -695,7 +696,7 @@ proc get_library_extensions {extensions} {
   # Add selection widgets
   frame     .lextwin.f
   frame     .lextwin.f.ef
-  entry     .lextwin.f.ef.e -validate all -textvariable lib_ext_name -takefocus 1
+  entry     .lextwin.f.ef.e -validate all -textvariable lib_ext_name
   button    .lextwin.f.ef.b -text "Update" -width 10 -state disabled
   pack .lextwin.f.ef.e -side left  -fill x -expand 1 -padx 3 -pady 3
   pack .lextwin.f.ef.b -side right -padx 3 -pady 3
@@ -712,63 +713,87 @@ proc get_library_extensions {extensions} {
   pack .lextwin.f.lf -fill both -expand 1 -padx 3 -pady 3
 
   # Update the listbox with any previous values
+  .lextwin.f.lf.lb insert end "Click to Add New Extension"
   foreach extension $extensions {
-    .lextwin.f.lf.lb insert end $extension
+    if {$extension eq ""} {
+      .lextwin.f.lf.lb insert end "<None>"
+    } else {
+      .lextwin.f.lf.lb insert end $extension
+    }
   }
-  .lextwin.f.lf.lb insert end "Add New Extension"
-  .lextwin.f.lf.lb selection set end
+  .lextwin.f.lf.lb selection set 0
 
   # Create bindings
   bind .lextwin.f.lf.lb <<ListboxSelect>> {
-    puts "FOCUS BEFORE [focus]"
     set index [.lextwin.f.lf.lb curselection]
     if {$index ne ""} {
-      if {[.lextwin.f.lf.lb get $index] eq "Add New Extension"} {
+      if {[.lextwin.f.lf.lb get $index] eq "Click to Add New Extension"} {
         set lib_ext_name ""
       } elseif {[.lextwin.f.lf.lb get $index] eq "<None>"} {
         set lib_ext_name ""
       } else {
-        set lib_ext_name [.lextwin.f.lf.lb get [.lextwin.f.lf.lb curselection]]
+        set lib_ext_name [.lextwin.f.lf.lb get $index]
       }
-      puts "Generating button press..."
-      event generate .lextwin.f.ef.e <ButtonPress-1>
+      .lextwin.f.lf.lb delete $index
+      .lextwin.f.lf.lb selection set 0
+      .lextwin.f.ef.e  selection range 0 end
+      .lextwin.f.ef.e  icursor end
     }
-    puts "FOCUS AFTER  [focus]"
   }
   .lextwin.f.ef.e configure -vcmd {
-    if {$lib_ext_name eq ""} {
-      .lextwin.f.ef.b configure -state normal
-    } elseif {[string index $lib_ext_name 0] eq "."} {
-      .lextwin.f.ef.b configure -state normal
+    # See if the current name exists in the listbox
+    if {[llength %P] == 0} {
+      set curr_val "<None>"
+    } else {
+      set curr_val "%P"
+    }
+    for {set i 1} {$i < [.lextwin.f.lf.lb size]} {incr i} {
+      if {[.lextwin.f.lf.lb get $i] eq $curr_val} {
+        break
+      }
+    }
+    if {$i == [.lextwin.f.lf.lb size]} {
+      if {[llength %P] == 0} {
+        .lextwin.f.ef.b configure -state normal
+      } elseif {[string index "%P" 0] eq "."} {
+        .lextwin.f.ef.b configure -state normal
+      } else {
+        .lextwin.f.ef.b configure -state disabled
+      }
     } else {
       .lextwin.f.ef.b configure -state disabled
     }
+    focus .lextwin.f.ef.e
     return 1
   }
   .lextwin.f.ef.b configure -command {
-    set index       [.lextwin.f.lf.lb curselection]
-    set add_new_ext 0
-    if {[.lextwin.f.lf.lb get $index] eq "Add New Extension"} {
-      set add_new_ext 1
+    set index [.lextwin.f.lf.lb curselection]
+    if {[.lextwin.f.lf.lb get $index] eq "Click to Add New Extension"} {
+      incr index
+    } else {
+      .lextwin.f.lf.lb delete $index
     }
-    .lextwin.f.lf.lb delete $index
     if {$lib_ext_name eq ""} {
       .lextwin.f.lf.lb insert $index "<None>"
     } else {
       .lextwin.f.lf.lb insert $index $lib_ext_name
     }
-    if {$add_new_ext == 1} {
-      .lextwin.f.lf.lb insert end "Add New Extension"
-    }
-    .lextwin.f.lf.lb selection set end
+    .lextwin.f.lf.lb selection set 0
     set lib_ext_name ""
   }
-  bind .lextwin.f.ef.e <Return>  {.lextwin.f.ef.b invoke}
-  bind .lextwin.f.ef.e <ButtonPress-1> +{puts {Entry received button press event}}
+  bind .lextwin.f.ef.e <Return> {.lextwin.f.ef.b invoke}
 
   # Add button frame and buttons
   frame  .lextwin.bf
   button .lextwin.bf.ok -text "OK" -width 10 -command {
+    set lib_ext_retval "+"
+    for {set i 1} {$i < [.lextwin.f.lf.lb size]} {incr i} {
+      if {[.lextwin.f.lf.lb get $i] eq "<None>"} {
+        set lib_ext_retval "$lib_ext_retval+"
+      } else {
+        set lib_ext_retval "$lib_ext_retval[.lextwin.f.lf.lb get $i]+"
+      }
+    }
     destroy .lextwin
   }
   button .lextwin.bf.cancel -text "Cancel" -width 10 -command {
@@ -788,6 +813,8 @@ proc get_library_extensions {extensions} {
 
   # Wait for the module exclusion window to be destroyed before returning
   tkwait window .lextwin
+
+  return $lib_ext_retval
 
 }
 
