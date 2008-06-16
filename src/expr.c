@@ -1445,9 +1445,7 @@ void expression_db_read(
 
   if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
 
-    printf( "old line: %s\n", *line );
     *line = *line + chars_read;
-    printf( "new line: %s\n", *line );
 
     /* Find functional unit instance name */
     if( curr_funit == NULL ) {
@@ -5616,6 +5614,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.334  2008/06/16 04:34:45  phase1geo
+ Removing unnecessary output.
+
  Revision 1.333  2008/06/16 04:32:43  phase1geo
  Fixing issue pertaining to bad sscanf handling when compiled on a 64-bit machine
  with the -m32 option to the compiler.  Also checking in the fixed lxt2_read.c for
