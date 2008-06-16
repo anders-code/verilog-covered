@@ -379,7 +379,7 @@ void vector_db_read(
   int    chars_read;  /* Number of characters read */
 
   /* Read in vector information */
-  if( sscanf( *line, "%d %d%n", &width, &suppl, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%d %hhu%n", &width, &suppl, &chars_read ) == 2 ) {
 
     *line = *line + chars_read;
 
@@ -508,7 +508,7 @@ void vector_db_merge(
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d%n", &width, &suppl, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%d %hhu%n", &width, &suppl, &chars_read ) == 2 ) {
 
     *line = *line + chars_read;
 
@@ -4731,6 +4731,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.142.2.2  2008/06/16 04:35:21  phase1geo
+ Fixing reading issue with vectors that seems to pop up when running on a 64-bit
+ machine with the -m32 option.
+
  Revision 1.142.2.1  2008/06/10 05:06:30  phase1geo
  Fixed bug 1989398.
 
