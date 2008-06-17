@@ -101,7 +101,7 @@ static void merge_parse_args(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          printf( "merge Throw A\n" );
+          // printf( "merge Throw A\n" ); - HIT
           Throw 0;
         }
       }
@@ -209,6 +209,11 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.48  2008/06/17 14:40:54  phase1geo
+ Adding merge_err1 diagnostic to regression suite (which is a new script style
+ of diagnostic running) and adding support for script-based regression runs
+ to diagnostic Makefile structures.
+
  Revision 1.47  2008/05/30 05:38:31  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.
