@@ -641,7 +641,7 @@ void db_read(
 
 #ifdef DEBUG_MODE
   /* Display the instance trees, if we are debugging */
-  if( debug_mode ) {
+  if( debug_mode && (db_list != NULL) ) {
     inst_link_display( db_list[curr_db]->inst_head );
   }
 #endif
@@ -2969,6 +2969,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.311  2008/06/17 23:03:28  phase1geo
+ Fixing segmentation fault in db.c when a CDD file is found to be empty but the
+ -D global option is specified.  Also enhancing the regression script environment.
+
  Revision 1.310  2008/06/09 02:56:55  phase1geo
  Adding a few new diagnostics to verify holes in coverage for db.c.  Still a
  lot more work to go here.
