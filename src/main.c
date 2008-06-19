@@ -108,10 +108,9 @@ static void usage() {
 */
 int main( int argc, const char** argv ) {
 
-  int          retval    = EXIT_SUCCESS;  /* Return value of this utility */
-  int          curr_arg  = 1;             /* Current position in argument list */
-  bool         cmd_found = FALSE;         /* Set to TRUE when command found in arg list */
-  unsigned int rv;                        /* Temporary return value from functions */
+  int  retval    = EXIT_SUCCESS;  /* Return value of this utility */
+  int  curr_arg  = 1;             /* Current position in argument list */
+  bool cmd_found = FALSE;         /* Set to TRUE when command found in arg list */
 
   /* Initialize the exception context */
   init_exception_context( the_exception_context );
@@ -246,6 +245,10 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.36  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.35  2008/05/08 18:59:15  phase1geo
  Fixing bug 1950946.
 
