@@ -301,7 +301,7 @@ void report_parse_args(
         i++;
         report_parse_metrics( argv[i] );
       } else {
-        printf( "report Throw B\n" );
+        // printf( "report Throw B\n" ); - HIT
         Throw 0;
       }
 
@@ -1013,6 +1013,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.107  2008/06/19 12:34:16  phase1geo
+ Adding missed report3 diagnostic from regression suite and removing unnecessary
+ output from report.c source file.
+
  Revision 1.106  2008/06/19 05:52:35  phase1geo
  Fixing bug 1997423.  Added report coverage diagnostics.
 
