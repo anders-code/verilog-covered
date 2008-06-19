@@ -41,8 +41,7 @@
 #include "vsignal.h"
 
 
-extern nibble or_optab[OPTAB_SIZE];
-extern char   user_msg[USER_MSG_LENGTH];
+extern char user_msg[USER_MSG_LENGTH];
 
 
 /*!
@@ -800,6 +799,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.73  2008/06/19 16:14:56  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.72  2008/05/30 05:38:33  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

@@ -162,8 +162,8 @@ void vector_display_value_ulong(
 );
 
 /*@-exportlocal@*/
-/*! \brief Outputs nibble to standard output. */
-void vector_display_nibble_ulong(
+/*! \brief Outputs ulong vector to standard output. */
+void vector_display_ulong(
   ulong** value,
   int     width,
   int     type
@@ -579,6 +579,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.61  2008/06/19 16:14:56  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.60  2008/05/30 23:00:48  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 
