@@ -25,6 +25,7 @@
 #include "defines.h"
 #include "func_iter.h"
 #include "func_unit.h"
+#include "iter.h"
 #include "util.h"
 
 
@@ -244,6 +245,10 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.8  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.7  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

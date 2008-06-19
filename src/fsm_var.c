@@ -30,15 +30,17 @@
 #include <string.h>
 #endif
 
-#include "defines.h"
-#include "fsm_var.h"
-#include "util.h"
-#include "codegen.h"
-#include "link.h"
 #include "binding.h"
-#include "fsm.h"
+#include "codegen.h"
 #include "db.h"
+#include "defines.h"
+#include "expr.h"
+#include "fsm.h"
+#include "fsm_var.h"
+#include "link.h"
 #include "obfuscate.h"
+#include "statement.h"
+#include "util.h"
 
 
 extern char         user_msg[USER_MSG_LENGTH];
@@ -579,6 +581,10 @@ void fsm_var_cleanup() { PROFILE(FSM_VAR_CLEANUP);
 
 /*
  $Log$
+ Revision 1.48  2008/06/19 16:14:54  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.47  2008/04/15 20:37:10  phase1geo
  Fixing database array support.  Full regression passes.
 

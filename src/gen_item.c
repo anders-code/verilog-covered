@@ -784,7 +784,7 @@ void gen_item_assign_expr_ids(
 */
 void gen_item_db_write(
   gen_item* gi,
-  control   type,
+  uint32    type,
   FILE*     ofile
 ) { PROFILE(GEN_ITEM_DB_WRITE);
 
@@ -1209,6 +1209,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.69  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.68  2008/05/30 05:38:31  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.
