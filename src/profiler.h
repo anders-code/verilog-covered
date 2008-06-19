@@ -27,11 +27,13 @@
 #include "util.h"
 
 
-#define PROFILE(index) int foobar
+//#define PROFILE(index) int foobar
+#define PROFILE(index)
 #define PROFILE_START(index)
-#define PROFILE_END    foobar = 0
-#define MALLOC_CALL
-#define FREE_CALL
+//#define PROFILE_END    foobar = 0
+#define PROFILE_END
+#define MALLOC_CALL(index)
+#define FREE_CALL(index)
 
 #ifdef PROFILER
 #ifdef HAVE_SYS_TIME_H
@@ -74,6 +76,10 @@ void profiler_report();
 
 /*
  $Log$
+ Revision 1.8  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.7  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 
