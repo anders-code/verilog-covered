@@ -337,14 +337,14 @@ void report_parse_args(
         } else if( argv[i][0] == 'v' ) {
           report_comb_depth = REPORT_VERBOSE;
         } else {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s\n", argv[i] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          printf( "report Throw D\n" );
+          // printf( "report Throw D\n" ); - HIT
           Throw 0;
         }
       } else {
-        printf( "report Throw E\n" );
+        // printf( "report Throw E\n" ); - HIT
         Throw 0;
       }
 
@@ -361,12 +361,12 @@ void report_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is unwritable", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "report Throw F\n" );
+            // printf( "report Throw F\n" ); - HIT
             Throw 0;
           }
         }
       } else {
-        printf( "report Throw G\n" );
+        // printf( "report Throw G\n" ); - HIT
         Throw 0;
       }
 
@@ -868,7 +868,7 @@ void command_report(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "report Throw K\n" );
+        // printf( "report Throw K\n" ); - HIT
         Throw 0;
 
       } else {
@@ -1013,6 +1013,11 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.108  2008/06/20 05:32:55  phase1geo
+ Adding several new diagnostics to regression suite to verify report command
+ error handling and detailed verbosity.  Fixing error formatting for one
+ error in report.c and removing unnecessary output.  Checkpointing.
+
  Revision 1.107  2008/06/19 12:34:16  phase1geo
  Adding missed report3 diagnostic from regression suite and removing unnecessary
  output from report.c source file.
