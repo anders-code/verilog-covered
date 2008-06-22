@@ -25,9 +25,6 @@
 
 #include "defines.h"
 
-/*! \brief Collects array of uncovered/covered lines from given functional unit. */
-bool line_collect( const char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt );
-
 /*! \brief Returns hit and total information for specified functional unit. */
 bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
 
@@ -42,6 +39,11 @@ bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int*
 
 /*
  $Log$
+ Revision 1.11  2008/06/22 05:08:40  phase1geo
+ Fixing memory testing error in tcl_funcs.c.  Removed unnecessary output in main_view.tcl.
+ Added a few more report diagnostics and started to remove width report files (these will
+ no longer be needed and will improve regression runtime and diagnostic memory footprint.
+
  Revision 1.10  2008/01/07 23:59:54  phase1geo
  More splint updates.
 
