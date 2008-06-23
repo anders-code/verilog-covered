@@ -219,7 +219,6 @@ void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
 
       } else {
         print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-        printf( "info Throw B\n" );
         Throw 0;
       }
 
@@ -308,6 +307,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.35  2008/06/23 02:33:39  phase1geo
+ Adding err9 diagnostic to regression suite.
+
  Revision 1.34  2008/06/22 22:02:01  phase1geo
  Fixing regression issues.
 
