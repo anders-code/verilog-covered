@@ -698,7 +698,6 @@ static void score_parse_args(
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
-        printf( "score Throw W\n" );
         Throw 0;
       }
 
@@ -722,7 +721,6 @@ static void score_parse_args(
             break;
           case DUMP_FMT_VCD :
             print_output( "Only one -vcd option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
-            printf( "score Throw Y\n" );
             Throw 0;
             /*@-unreachable@*/
             break;
@@ -739,7 +737,6 @@ static void score_parse_args(
             break;
         }
       } else {
-        printf( "score Throw AA\n" );
         Throw 0;
       }
 
@@ -801,7 +798,6 @@ static void score_parse_args(
           score_add_arg( argv[i] );
         }
       } else {
-        printf( "score Throw AF\n" );
         Throw 0;
       }
 
@@ -833,7 +829,6 @@ static void score_parse_args(
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
-        printf( "score Throw AG\n" );
         Throw 0;
       }
 
@@ -850,7 +845,6 @@ static void score_parse_args(
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
-        printf( "score Throw AH\n" );
         Throw 0;
       }
  
@@ -874,7 +868,6 @@ static void score_parse_args(
           }
         }
       } else {
-        printf( "score Throw AJ\n" );
         Throw 0;
       }
         
@@ -910,7 +903,6 @@ static void score_parse_args(
         }
         free_safe( tmp, (strlen( argv[i] ) + 1) );
       } else {
-        printf( "score Throw AM\n" );
         Throw 0;
       }
       
@@ -966,7 +958,6 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown race condition value %c (available types are E, W, S, I or P)", argv[i][2] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "score Throw AP\n" );
             Throw 0;
           }
           /*@-unreachable@*/
@@ -1016,10 +1007,9 @@ static void score_parse_args(
         } else if( argv[i][(strlen( argv[i] ) - 1)] == '3' ) {
           generation = GENERATION_SV;
         } else {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown generation value '%c'.  Legal values are 1, 2 or 3.\n", argv[i][(strlen( argv[i] ) - 1)] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown generation value '%c'.  Legal values are 1, 2 or 3.", argv[i][(strlen( argv[i] ) - 1)] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ ); 
-          printf( "score Throw AS\n" );
           Throw 0;
         }
         if( strlen( argv[i] ) == 1 ) {
@@ -1035,14 +1025,12 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal -g syntax \"%s\".  See \"covered score -h\" for correct syntax.", tmp );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "score Throw AT\n" );
             Throw 0;
           }
         }
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
-        printf( "score Throw AU\n" );
         Throw 0;
       }
 
@@ -1077,7 +1065,6 @@ static void score_parse_args(
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "score Throw AW\n" );
       Throw 0;
 
     }
@@ -1207,6 +1194,10 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.132  2008/06/25 04:47:19  phase1geo
+ Adding several error diagnostics for the score command to the regression suite.
+ Removing unnecessary output in score.c.
+
  Revision 1.131  2008/06/24 23:15:32  phase1geo
  Adding several new diagnostics to regression.  Removing unnecessary output in
  source files for user errors hit in regressions.  Fixed memory leak in substitute_env_vars
