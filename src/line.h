@@ -29,9 +29,9 @@
 
 /*! \brief Calculates line coverage numbers for the specified expression list. */
 void line_get_stats(
-            func_unit* funit,
-  /*@out@*/ int*       total,
-  /*@out@*/ int*       hit
+            func_unit*    funit,
+  /*@out@*/ unsigned int* total,
+  /*@out@*/ unsigned int* hit
 );
 
 /*! \brief Gathers line numbers from specified functional unit that were not hit during simulation. */
@@ -54,6 +54,9 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.20  2008/06/27 14:02:02  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.19  2008/06/22 05:08:40  phase1geo
  Fixing memory testing error in tcl_funcs.c.  Removed unnecessary output in main_view.tcl.
  Added a few more report diagnostics and started to remove width report files (these will
