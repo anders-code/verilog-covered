@@ -93,6 +93,8 @@ bool funit_get_list(
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -116,6 +118,8 @@ char* funit_get_filename(
   if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
     fname = strdup_safe( funitl->funit->filename );
   }
+
+  PROFILE_END;
 
   return( fname );
 
@@ -149,12 +153,17 @@ bool funit_get_start_and_end_lines(
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.16  2008/06/27 14:02:01  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.15  2008/06/19 16:14:55  phase1geo
  leaned up all warnings in source code from -Wall.  This also seems to have cleared
  up a few runtime issues.  Full regression passes.
