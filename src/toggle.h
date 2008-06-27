@@ -30,11 +30,11 @@
 
 /*! \brief Calculates the toggle coverage for the specifed expression and signal lists. */
 void toggle_get_stats(
-            sig_link* sigl,
-  /*@out@*/ int*      total,
-  /*@out@*/ int*      hit01,
-  /*@out@*/ int*      hit10,
-  /*@out@*/ bool*     cov_found
+            sig_link*     sigl,
+  /*@out@*/ unsigned int* total,
+  /*@out@*/ unsigned int* hit01,
+  /*@out@*/ unsigned int* hit10,
+  /*@out@*/ bool*         cov_found
 );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
@@ -75,6 +75,9 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.19  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.18  2008/06/19 05:52:36  phase1geo
  Fixing bug 1997423.  Added report coverage diagnostics.
 

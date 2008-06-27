@@ -94,7 +94,7 @@ bool flag_check_races = TRUE;
 static bool flag_display_sim_stats = FALSE;
 
 /*! Specifies the supported global generation value */
-int flag_global_generation = GENERATION_SV;
+unsigned int flag_global_generation = GENERATION_SV;
 
 /*! Specifies whether the command-line debugger should be enabled */
 bool flag_use_command_line_debug = FALSE;
@@ -1194,6 +1194,9 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.133  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.132  2008/06/25 04:47:19  phase1geo
  Adding several error diagnostics for the score command to the regression suite.
  Removing unnecessary output in score.c.
