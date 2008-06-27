@@ -92,7 +92,7 @@ bool file_exists( const char* file );
 bool util_readline(
             FILE*  file,
   /*@out@*/ char** line,
-  /*@out@*/ int*   line_size
+  /*@out@*/ unsigned int*   line_size
 );
 
 /*! \brief Searches the specified string for environment variables and substitutes their value if found */
@@ -172,6 +172,9 @@ void set_timestep( sim_time* st, char* value );
 
 /*
  $Log$
+ Revision 1.42  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.41  2008/04/08 23:58:17  phase1geo
  Fixing test mode code so that it works properly in regression and stand-alone
  runs.
