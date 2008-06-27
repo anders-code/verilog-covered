@@ -27,11 +27,11 @@
 #include "util.h"
 
 
-//#define PROFILE(index) int foobar
-#define PROFILE(index)
+#define PROFILE(index) int foobar
+//#define PROFILE(index)
 #define PROFILE_START(index)
-//#define PROFILE_END    foobar = 0
-#define PROFILE_END
+#define PROFILE_END    foobar = 0
+//#define PROFILE_END
 #define MALLOC_CALL(index)
 #define FREE_CALL(index)
 
@@ -76,6 +76,9 @@ void profiler_report();
 
 /*
  $Log$
+ Revision 1.9  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.8  2008/06/19 16:14:55  phase1geo
  leaned up all warnings in source code from -Wall.  This also seems to have cleared
  up a few runtime issues.  Full regression passes.
