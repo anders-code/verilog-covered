@@ -30,10 +30,10 @@
 symtable* symtable_create();
 
 /*! \brief Creates a new symtable entry and adds it to the specified symbol table. */
-void symtable_add( char* sym, vsignal* sig, int msb, int lsb );
+void symtable_add( const char* sym, vsignal* sig, int msb, int lsb );
 
 /*! \brief Sets all matching symtable entries to specified value */
-void symtable_set_value( char* sym, char* value );
+void symtable_set_value( const char* sym, const char* value );
 
 /*! \brief Assigns stored values to all associated signals stored in specified symbol table. */
 void symtable_assign( const sim_time* time );
@@ -44,6 +44,9 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.19  2008/06/28 03:46:29  phase1geo
+ More code updates for warning removal.
+
  Revision 1.18  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related
