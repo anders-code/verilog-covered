@@ -17,6 +17,7 @@
 
 
 extern char user_msg[USER_MSG_LENGTH];
+extern const exp_info exp_op_info[EXP_OP_NUM];
 
 
 /*!
@@ -91,6 +92,75 @@ static inline unsigned int rank_count_bits_uint64(
 }
 
 /*!
+ Clears the contents of the given compressed CDD coverage structure.
+*/
+static void rank_clear_comp_cdd(
+  comp_cdd_cov* comp_cov  /*!< Pointer to compressed CDD coverage structure to clear */
+) { PROFILE(RANK_CLEAR_COMP_CDD);
+
+  unsigned int i, j;
+
+  comp_cov->total_cps  = 0;
+  comp_cov->unique_cps = 0;
+  
+  for( i=0; i<CP_TYPE_NUM; i++ ) {
+    for( j=0; j<((num_cps[i]>>3)+1); j++ ) {
+      comp_cov->cps[i][j] = 0;
+    }
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Merges the contents of the other compressed CDD coverage structure into the base.
+*/
+static void rank_merge_comp_cdd(
+  comp_cdd_cov* base,  /*!< Base compressed CDD coverage structure */
+  comp_cdd_cov* other  /*!< Compressed CDD coverage that will be merged into the base */
+) { PROFILE(RANK_MERGE);
+
+  unsigned int i, j;
+
+  base->total_cps  += other->unique_cps;
+  base->unique_cps += other->unique_cps;
+
+  for( i=0; i<CP_TYPE_NUM; i++ ) {
+    for( j=0; j<((num_cps[i]>>3)+1); j++ ) {
+      base->cps[i][j] |= other->cps[i][j];
+    }
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Performs difference of the merged and other compressed CDD coverage structures, storing the results
+ in the other compressed CDD coverage structure.
+*/
+static void rank_diff_comp_cdd(
+  comp_cdd_cov* merged,  /*!< Merged version of all other compared CDD coverage structures */
+  comp_cdd_cov* other    /*!< Singular compressed CDD coverage structure to check difference and populate with result */
+) { PROFILE(RANK_DIFF);
+
+  unsigned int  i, j;
+  unsigned char diff;
+
+  other->unique_cps = 0;
+
+  for( i=0; i<CP_TYPE_NUM; i++ ) {
+    for( j=0; j<((num_cps[i]>>3)+1); j++ ) {
+      other->unique_cps += (uint64)rank_count_bits_uchar( merged->cps[i][j] ^ other->cps[i][j] );
+    }
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns a pointer to a newly allocated and initialized compressed CDD coverage structure.
 */
 comp_cdd_cov* rank_create_comp_cdd_cov(
@@ -102,11 +172,11 @@ comp_cdd_cov* rank_create_comp_cdd_cov(
   unsigned int  i;
 
   /* Allocate and initialize */
-  comp_cov               = (comp_cdd_cov*)malloc_safe( sizeof( comp_cdd_cov* ) );
-  comp_cov->cdd_name     = strdup_safe( cdd_name );
-  comp_cov->sim_events   = sim_events;
-  comp_cov->total_cps    = 0;
-  comp_cov->unique_cps   = 0;
+  comp_cov             = (comp_cdd_cov*)malloc_safe( sizeof( comp_cdd_cov* ) );
+  comp_cov->cdd_name   = strdup_safe( cdd_name );
+  comp_cov->sim_events = sim_events;
+  comp_cov->total_cps  = 0;
+  comp_cov->unique_cps = 0;
 
   for( i=0; i<CP_TYPE_NUM; i++ ) {
     comp_cov->cps_index[i] = 0;
@@ -320,12 +390,104 @@ static void rank_parse_signal(
 ) { PROFILE(RANK_PARSE_SIGNAL);
 
   func_unit curr_funit;
+  vsignal*  sig;
 
   /* Initialize the signal list pointers */
   curr_funit.sig_head = curr_funit.sig_tail = NULL;
 
   /* Parse the signal */
   vsignal_db_read( line, &curr_funit );
+  sig = curr_funit.sig_head->sig;
+
+  /* Populate toggle coverage information */
+  if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
+      (sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+      (sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
+      (sig->suppl.part.mba == 0) ) {
+
+    unsigned int i;
+    if( sig->suppl.part.excluded == 1 ) {
+      for( i=0; i<sig->value->width; i++ ) {
+        uint64 index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
+        comp_cov->cps[CP_TYPE_TOGGLE][index >> 3] |= 0x1 << (index & 0x7);
+        index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
+        comp_cov->cps[CP_TYPE_TOGGLE][index >> 3] |= 0x1 << (index & 0x7);
+      }
+    } else {
+      switch( sig->value->suppl.part.data_type ) {
+        case VDATA_UL :
+          for( i=0; i<sig->value->width; i++ ) {
+            uint64 index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
+            comp_cov->cps[CP_TYPE_TOGGLE][index >> 3] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_SIG_TOG01] >> UL_MOD(i)) << (index & 0x7);
+            index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
+            comp_cov->cps[CP_TYPE_TOGGLE][index >> 3] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_SIG_TOG10] >> UL_MOD(i)) << (index & 0x7);
+          }
+        break;
+        default :  assert( 0 );  break;
+      }
+    }
+
+  }
+
+  /* Populate memory coverage information */
+  if( (sig->suppl.part.type == SSUPPL_TYPE_MEM) && (sig->udim_num > 0) ) {
+ 
+    unsigned int i;
+    unsigned int pwidth = 1;
+
+    for( i=(sig->udim_num); i<(sig->udim_num + sig->pdim_num); i++ ) {
+      if( sig->dim[i].msb > sig->dim[i].lsb ) {
+        pwidth *= (sig->dim[i].msb - sig->dim[i].lsb) + 1;
+      } else {
+        pwidth *= (sig->dim[i].lsb - sig->dim[i].msb) + 1;
+      }
+    }
+
+    /* Calculate total number of addressable elements and their write/read information */
+    for( i=0; i<sig->value->width; i+=pwidth ) {
+      if( sig->suppl.part.excluded == 1 ) {
+        uint64 index = comp_cov->cps_index[CP_TYPE_MEM]++;
+        comp_cov->cps[CP_TYPE_MEM][index >> 3] |= 0x1 << (index & 0x7);
+        index = comp_cov->cps_index[CP_TYPE_MEM]++;
+        comp_cov->cps[CP_TYPE_MEM][index >> 3] |= 0x1 << (index & 0x7);
+      } else {
+        unsigned int wr = 0;
+        unsigned int rd = 0;
+        uint64       index;
+        vector_mem_rw_count( sig->value, (int)i, (int)((i + pwidth) - 1), &wr, &rd );
+        index = comp_cov->cps_index[CP_TYPE_MEM]++;
+        comp_cov->cps[CP_TYPE_MEM][index >> 3] |= ((wr > 0) ? 1 : 0) << (index & 0x7);
+        index = comp_cov->cps_index[CP_TYPE_MEM]++;
+        comp_cov->cps[CP_TYPE_MEM][index >> 3] |= ((rd > 0) ? 1 : 0) << (index & 0x7);
+      }
+    }
+  
+    /* Calculate toggle coverage information for the memory */
+    if( sig->suppl.part.excluded == 1 ) {
+      for( i=0; i<sig->value->width; i++ ) {
+        uint64 index = comp_cov->cps_index[CP_TYPE_MEM]++;
+        comp_cov->cps[CP_TYPE_MEM][index >> 3] |= 0x1 << (index & 0x7);
+        index = comp_cov->cps_index[CP_TYPE_MEM]++;
+        comp_cov->cps[CP_TYPE_MEM][index >> 3] |= 0x1 << (index & 0x7);
+      }
+    } else {
+      switch( sig->value->suppl.part.data_type ) {
+        case VDATA_UL :
+          for( i=0; i<sig->value->width; i++ ) {
+            uint64 index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
+            comp_cov->cps[CP_TYPE_MEM][index >> 3] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_MEM_TOG01] >> UL_MOD(i)) << (index & 0x7);
+            index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
+            comp_cov->cps[CP_TYPE_MEM][index >> 3] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_MEM_TOG10] >> UL_MOD(i)) << (index & 0x7);
+          }
+          break;
+        default :  assert( 0 );  break;
+      }
+    }
+
+  }
+
+  /* Deallocate signal and signal list */
+  sig_link_delete_list( curr_funit.sig_head, TRUE );
 
   PROFILE_END;
 
@@ -341,13 +503,83 @@ static void rank_parse_expression(
   comp_cdd_cov* comp_cov
 ) { PROFILE(RANK_PARSE_EXPRESSION);
 
-  func_unit curr_funit;
+  func_unit   curr_funit;
+  expression* exp;
 
   /* Initialize the signal list pointers */
   curr_funit.exp_head = curr_funit.exp_tail = NULL;
 
   /* Parse the expression */
   expression_db_read( line, &curr_funit, FALSE );
+  exp = curr_funit.exp_head->exp;
+
+  /* Calculate line coverage information (NOTE:  we currently ignore the excluded status of the line */
+  if( (exp->suppl.part.root == 1) &&
+      (exp->op != EXP_OP_DELAY)   &&
+      (exp->op != EXP_OP_CASE)    &&
+      (exp->op != EXP_OP_CASEX)   &&
+      (exp->op != EXP_OP_CASEZ)   &&
+      (exp->op != EXP_OP_DEFAULT) &&
+      (exp->op != EXP_OP_NB_CALL) &&
+      (exp->op != EXP_OP_FORK)    &&
+      (exp->op != EXP_OP_JOIN)    &&
+      (exp->op != EXP_OP_NOOP)    &&
+      (exp->line != 0) ) {
+    uint64 index = comp_cov->cps_index[CP_TYPE_LINE]++;
+    if( exp->exec_num > 0 ) {
+      comp_cov->cps[CP_TYPE_LINE][index >> 3] |= 0x1 << (index & 0x7);
+    }
+  }
+
+  /* Calculate combinational logic coverage information */
+  if( EXPR_IS_MEASURABLE( exp ) == 1 ) {
+
+    /* Calculate current expression combination coverage */
+    if( !expression_is_static_only( exp ) ) {
+
+      uint64 index;
+
+      if( EXPR_IS_COMB( exp ) == 1 ) {
+        if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
+          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= (exp->suppl.part.eval_00 | exp->suppl.part.eval_01) << (index & 0x7);
+          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= (exp->suppl.part.eval_00 | exp->suppl.part.eval_10) << (index & 0x7);
+          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_11 << (index & 0x7);
+        } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
+          uint64 index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= (exp->suppl.part.eval_10 | exp->suppl.part.eval_11) << (index & 0x7);
+          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= (exp->suppl.part.eval_01 | exp->suppl.part.eval_11) << (index & 0x7);
+          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_00 << (index & 0x7);
+        } else {
+          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_00 << (index & 0x7);
+          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_01 << (index & 0x7);
+          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_10 << (index & 0x7);
+          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_11 << (index & 0x7);
+        }
+      } else if( EXPR_IS_EVENT( exp ) == 1 ) {
+        index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+        comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_TRUE( exp->suppl ) << (index & 0x7);
+      } else {
+        index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+        comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_TRUE( exp->suppl ) << (index & 0x7);
+        index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+        comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_FALSE( exp->suppl ) << (index & 0x7);
+      }
+
+    }
+
+  }
+
+  /* Deallocate the expression link and expression */
+  exp_link_delete_list( curr_funit.exp_head, TRUE );
 
   PROFILE_END;
 
@@ -363,13 +595,52 @@ static void rank_parse_fsm(
   comp_cdd_cov* comp_cov
 ) { PROFILE(RANK_PARSE_FSM);
 
-  func_unit curr_funit;
+  func_unit  curr_funit;
+  fsm_table* table;
 
   /* Initialize the signal list pointers */
   curr_funit.fsm_head = curr_funit.fsm_tail = NULL;
 
   /* Parse the FSM */
   fsm_db_read( line, &curr_funit );
+  table = curr_funit.fsm_head->table->table;
+
+  /* We can only create a compressed version of FSM coverage information if it is known */
+  if( table->suppl.part.known == 0 ) {
+
+    int*         state_hits = (int*)malloc_safe( sizeof( int ) * table->num_fr_states );
+    unsigned int i;
+
+    /* Initialize state_hits array */
+    for( i=0; i<table->num_fr_states; i++ ) {
+      state_hits[i] = 0;
+    }
+
+    /* Iterate through arc transition array and count unique hits */
+    for( i=0; i<table->num_arcs; i++ ) {
+      uint64 index;
+      if( (table->arcs[i]->suppl.part.hit || table->arcs[i]->suppl.part.excluded) ) {
+        if( state_hits[table->arcs[i]->from]++ == 0 ) {
+          index = comp_cov->cps_index[CP_TYPE_FSM]++;
+          comp_cov->cps[CP_TYPE_FSM][index >> 3] |= 0x1 << (index & 0x7);
+        }
+        index = comp_cov->cps_index[CP_TYPE_FSM]++;
+        comp_cov->cps[CP_TYPE_FSM][index >> 3] |= 0x1 << (index & 0x7);
+      } else {
+        if( state_hits[table->arcs[i]->from]++ == 0 ) {
+          comp_cov->cps_index[CP_TYPE_FSM]++;
+        }
+        comp_cov->cps_index[CP_TYPE_FSM]++;
+      }
+    }
+
+    /* Deallocate state_hits array */
+    free_safe( state_hits, (sizeof( int ) * table->num_fr_states) );
+
+  }
+
+  /* Deallocate FSM and FSM list */
+  fsm_link_delete_list( curr_funit.fsm_head );
 
   PROFILE_END;
 
@@ -461,15 +732,75 @@ static void rank_perform(
             unsigned int   comp_cdd_num  /*!< Number of allocated structures in comp_cdds array */
 ) { PROFILE(RANK_PERFORM);
 
-  comp_cdd_cov* merged;  /* Contains the merged results of ranked CDD files */
+  unsigned int i, j, k;
+  uint16*      merged;
+  uint16       merged_index = 0;
+  uint64       total        = 0;
+  unsigned int next_cdd     = 0;
+  unsigned int most_unique;
 
-  /* Allocate and initialize the merged structure with the contents of the first element in comp_cdds */
-  merged = rank_create_comp_cdd_cov( "merged", 0 );
+  /* Calculate the total number of needed merged entries to store accumulated information */
+  for( i=0; i<comp_cdd_num; i++ ) {
+    total += num_cps[i];
+  }
+  assert( total > 0 );
 
-  /* TBD - Perform ranking algorithm here */
+  /* Allocate merged array */
+  merged = (uint16*)malloc_safe_nolimit( sizeof( uint16 ) * total );
+
+  /* Step 1 - Initialize merged results array, calculate uniqueness and total values of each compressed CDD coverage structure */
+  for( i=0; i<CP_TYPE_NUM; i++ ) {
+    for( j=0; j<num_cps[i]; j++ ) {
+      uint16       bit_total = 0;
+      unsigned int set_cdd;
+      for( k=0; k<comp_cdd_num; k++ ) {
+        if( comp_cdds[k]->cps[i][j>>3] & (0x1 << (j & 0x7)) ) {
+          comp_cdds[k]->total_cps++;
+          set_cdd = k;
+          bit_total++;
+        }
+      }
+      merged[merged_index++] = bit_total;
+
+      /* If we found exactly one CDD file that hit this coverage point, mark it in the corresponding CDD file */
+      if( bit_total == 1) {
+        comp_cdds[set_cdd]->unique_cps++;
+      }
+    }
+  }
+
+  /* Step 2 - Start with the most unique CDDs */
+  do {
+    most_unique = next_cdd;
+    for( i=(next_cdd+1); i<comp_cdd_num; i++ ) {
+      if( comp_cdds[i]->unique_cps > comp_cdds[most_unique]->unique_cps ) {
+        most_unique = i;
+      }
+    }
+    if( comp_cdds[most_unique]->unique_cps > 0 ) {
+
+      /* Move the most unique CDD to the next position */
+      comp_cdd_cov* tmp      = comp_cdds[next_cdd];
+      comp_cdds[next_cdd]    = comp_cdds[most_unique];
+      comp_cdds[most_unique] = tmp;
+
+      /* Subtract all of the set coverage points from the merged value */
+      merged_index = 0;
+      for( i=0; i<CP_TYPE_NUM; i++ ) {
+        for( j=0; j<num_cps[i]; j++ ) {
+          if( comp_cdds[next_cdd]->cps[i][j>>3] & (0x1 << (j & 0x7)) ) {
+            merged[merged_index] = 0;
+          }
+        }
+      }
+      next_cdd++;
+    }
+  } while( (next_cdd < comp_cdd_num) && (comp_cdds[most_unique]->unique_cps > 0) );
+
+  /* Step 3 - TBD */
 
   /* Deallocate merged CDD coverage structure */
-  rank_dealloc_comp_cdd_cov( merged );
+  free_safe( merged, (sizeof( uint16 ) * total ) );
 
   PROFILE_END;
 
@@ -594,6 +925,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.2.2  2008/06/30 23:02:42  phase1geo
+ More work on the rank command.  Checkpointing.
+
  Revision 1.1.2.1  2008/06/30 13:14:22  phase1geo
  Starting to work on new 'rank' command.  Checkpointing.
 
