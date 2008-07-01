@@ -10,15 +10,20 @@
 #include "defines.h"
 #include "expr.h"
 #include "fsm.h"
+#include "func_iter.h"
 #include "profiler.h"
 #include "rank.h"
 #include "util.h"
 #include "vsignal.h"
 
 
-extern char user_msg[USER_MSG_LENGTH];
+extern char           user_msg[USER_MSG_LENGTH];
 extern const exp_info exp_op_info[EXP_OP_NUM];
-extern db** db_list;
+extern db**           db_list;
+extern uint64         num_timesteps;
+extern bool           output_suppressed;
+extern bool           debug_mode;
+extern int64          largest_malloc_size;
 
 
 /*!
@@ -39,7 +44,18 @@ static char* rank_file = NULL;
 /*!
  Array containing the number of coverage points for each metric for all compressed CDD coverage structures.
 */
-unsigned int num_cps[CP_TYPE_NUM] = {0};
+static unsigned int num_cps[CP_TYPE_NUM] = {0};
+
+/*!
+ Array containing the weights to be used for each of the CDD metric types.
+*/
+static unsigned int cdd_type_weight[CP_TYPE_NUM] = {10,1,2,5,3,0};
+
+/*!
+ If set to TRUE, outputs only the names of the CDD files in the order that they should be run.  This value
+ is set to TRUE when the -names_only option is specified.
+*/
+static bool flag_names_only = FALSE;
 
 
 /*!
@@ -173,7 +189,7 @@ comp_cdd_cov* rank_create_comp_cdd_cov(
   unsigned int  i;
 
   /* Allocate and initialize */
-  comp_cov             = (comp_cdd_cov*)malloc_safe( sizeof( comp_cdd_cov* ) );
+  comp_cov             = (comp_cdd_cov*)malloc_safe( sizeof( comp_cdd_cov ) );
   comp_cov->cdd_name   = strdup_safe( cdd_name );
   comp_cov->timesteps  = timesteps;
   comp_cov->total_cps  = 0;
@@ -183,6 +199,8 @@ comp_cdd_cov* rank_create_comp_cdd_cov(
     comp_cov->cps_index[i] = 0;
     if( num_cps[i] > 0 ) {
       comp_cov->cps[i] = (unsigned char*)calloc_safe( ((num_cps[i] >> 3) + 1), sizeof( unsigned char ) );
+    } else {
+      comp_cov->cps[i] = NULL;
     }
   }
 
@@ -208,11 +226,11 @@ void rank_dealloc_comp_cdd_cov(
 
     /* Deallocate compressed coverage point information */
     for( i=0; i<CP_TYPE_NUM; i++ ) {
-      free_safe( comp_cov->cps[i], (sizeof( unsigned char* ) * ((num_cps[i] >> 3) + 1)) );
+      free_safe( comp_cov->cps[i], (sizeof( unsigned char ) * ((num_cps[i] >> 3) + 1)) );
     }
 
     /* Now deallocate ourselves */
-    free_safe( comp_cov, sizeof( comp_cdd_cov* ) );
+    free_safe( comp_cov, sizeof( comp_cdd_cov ) );
 
   }
 
@@ -226,11 +244,26 @@ void rank_dealloc_comp_cdd_cov(
 static void rank_usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered rank [<options>] <database_to_rank> <database_to_rank>+\n" );
+  printf( "Usage:  covered rank [<options>] <database_to_rank> <database_to_rank>*\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-  printf( "      -o <filename>           Name of file to output ranking information to.  Default is stdout.\n" );
-  printf( "      -h                      Displays this help information.\n" );
+  printf( "      -line_weight <number>     Specifies a relative weighting for line coverage used to rank\n" );
+  printf( "                                  non-unique coverage points.\n" );
+  printf( "      -toggle_weight <number>   Specifies a relative weighting for toggle coverage used to rank\n" );
+  printf( "                                  non-unique coverage points.\n" );
+  printf( "      -memory_weight <number>   Specifies a relative weighting for memory coverage used to rank\n" );
+  printf( "                                  non-unique coverage points.\n" );
+  printf( "      -comb_weight <number>     Specifies a relative weighting for combinational logic coverage used\n" );
+  printf( "                                  to rank non-unique coverage points.\n" );
+  printf( "      -fsm_weight <number>      Specifies a relative weighting for FSM state/state transition coverage\n" );
+  printf( "                                  used to rank non-unique coverage points.\n" );
+  printf( "      -assert_weight <number>   Specifies a relative weighting for assertion coverage used to rank\n" );
+  printf( "                                  non-unique coverage points.\n" );
+  printf( "      -names_only               If specified, outputs only the needed CDD filenames that need to be\n" );
+  printf( "                                  run in the order they need to be run.  If this option is not set, a\n" );
+  printf( "                                  report-style output is provided with additional information.\n" );
+  printf( "      -o <filename>             Name of file to output ranking information to.  Default is stdout.\n" );
+  printf( "      -h                        Displays this help information.\n" );
   printf( "\n" );
 
 }
@@ -280,6 +313,82 @@ static void rank_parse_args(
         Throw 0;
       } 
 
+    } else if( strncmp( "-line_weight", argv[i], 12 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_LINE] ) != 1 ) {
+          print_output( "Value specified after -line_weight is not a number", FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-toggle_weight", argv[i], 14 ) == 0 ) {
+  
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_TOGGLE] ) != 1 ) {
+          print_output( "Value specified after -toggle_weight is not a number", FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-memory_weight", argv[i], 14 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_MEM] ) != 1 ) {
+          print_output( "Value specified after -memory_weight is not a number", FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-comb_weight", argv[i], 12 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++; 
+        if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_LOGIC] ) != 1 ) {
+          print_output( "Value specified after -comb_weight is not a number", FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-fsm_weight", argv[i], 11 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_FSM] ) != 1 ) {
+          print_output( "Value specified after -fsm_weight is not a number", FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-assert_weight", argv[i], 14 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_ASSERT] ) != 1 ) {
+          print_output( "Value specified after -assert_weight is not a number", FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-names_only", argv[i], 11 ) == 0 ) {
+
+      flag_names_only = TRUE;
+
     } else {
 
       /* The name of a file to rank */
@@ -310,51 +419,6 @@ static void rank_parse_args(
     print_output( "Must specify at least two CDD files to rank", FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
-
-  /* If -o option was not specified, default its value to stdout */
-  if( rank_file == NULL ) {
-    rank_file = strdup_safe( "stdout" );
-  }
-
-}
-
-/*!
- Parses the information line of a CDD file, extracts the information that is pertanent to
- coverage ranking, and allocates/initializes a new compressed CDD coverage structure.
-*/
-static void rank_parse_info(
-  const char*    cdd_name,  /*!< Name of the CDD file that is being parsed */
-  char**         line,      /*!< Read line from CDD file to parse */
-  comp_cdd_cov** comp_cov   /*!< Reference to compressed CDD coverage structure to create */
-) { PROFILE(RANK_PARSE_INFO);
-
-  unsigned int version;
-  isuppl       suppl;
-  uint64       timesteps;
-  unsigned int i;
-  int          chars_read;
-
-  if( sscanf( *line, "%x %x %llu%n", &version, &(suppl.all), &timesteps, &chars_read ) == 3 ) {
-   
-    *line += chars_read;
-
-    /* Make sure that the CDD version matches our CDD version */
-    if( version != CDD_VERSION ) {
-      print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-      Throw 0;
-    }
-
-    /* Now that we have the information we need, create and populate the compressed CDD coverage structure */
-    *comp_cov = rank_create_comp_cdd_cov( cdd_name, timesteps );
-
-  } else {
-
-    print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-    Throw 0;
-
-  }
-
-  PROFILE_END;
 
 }
 
@@ -458,53 +522,82 @@ static void rank_gather_signal_cov(
 }
 
 /*!
- Parses a signal line of a CDD file and extracts the toggle and/or memory coverage information
- from the line, compressing the coverage point information and storing it into the comp_cov
- structure.
+ Recursively iterates through the given expression tree, gathering all combinational logic coverage information and
+ populating the given compressed CDD coverage structure accordingly.
 */
-static void rank_parse_signal(
-  char**        line,     /*!< Line containing signal information from CDD file */
-  comp_cdd_cov* comp_cov  /*!< Pointer to compressed CDD coverage structure */
-) { PROFILE(RANK_PARSE_SIGNAL);
+static void rank_gather_comb_cov(
+            expression*   exp,      /*!< Pointer to current expression to gather combinational logic coverage from */
+  /*@out@*/ comp_cdd_cov* comp_cov  /*!< Pointer to compressed CDD coverage structure to populate */
+) { PROFILE(RANK_GATHER_COMB_COV);
 
-  func_unit curr_funit;
-  vsignal*  sig;
+  if( exp != NULL ) {
 
-  /* Initialize the signal list pointers */
-  curr_funit.sig_head = curr_funit.sig_tail = NULL;
+    /* Gather combination coverage information from children */
+    rank_gather_comb_cov( exp->left,  comp_cov );
+    rank_gather_comb_cov( exp->right, comp_cov );
 
-  /* Parse the signal */
-  vsignal_db_read( line, &curr_funit );
+    /* Calculate combinational logic coverage information */
+    if( EXPR_IS_MEASURABLE( exp ) == 1 ) {
+  
+      /* Calculate current expression combination coverage */
+      if( !expression_is_static_only( exp ) ) {
+    
+        uint64 index;
 
-  /* Gather signal coverages */
-  rank_gather_signal_cov( curr_funit.sig_head->sig, comp_cov );
+        if( EXPR_IS_COMB( exp ) == 1 ) {
+          if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
+            index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= (exp->suppl.part.eval_00 | exp->suppl.part.eval_01) << (index & 0x7);
+            index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= (exp->suppl.part.eval_00 | exp->suppl.part.eval_10) << (index & 0x7);
+            index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_11 << (index & 0x7);
+          } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
+            uint64 index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= (exp->suppl.part.eval_10 | exp->suppl.part.eval_11) << (index & 0x7);
+            index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= (exp->suppl.part.eval_01 | exp->suppl.part.eval_11) << (index & 0x7);
+            index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_00 << (index & 0x7);
+          } else {
+            index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_00 << (index & 0x7);
+            index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_01 << (index & 0x7);
+            index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_10 << (index & 0x7);
+            index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_11 << (index & 0x7);
+          }
+        } else if( EXPR_IS_EVENT( exp ) == 1 ) {
+          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_TRUE( exp->suppl ) << (index & 0x7);
+        } else {
+          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_TRUE( exp->suppl ) << (index & 0x7);
+          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
+          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_FALSE( exp->suppl ) << (index & 0x7);
+        }
 
-  /* Deallocate signal and signal list */
-  sig_link_delete_list( curr_funit.sig_head, TRUE );
+      }
+
+    }
+
+  }
 
   PROFILE_END;
 
 }
 
 /*!
- Parses a signal line of a CDD file and extracts the line and/or combinational logic coverage information
- from the line, compressing the coverage point information and storing it into the comp_cov
- structure.
+ Gathers line and combinational logic coverage point information from the given expression and populates
+ the specified compressed CDD coverage structure accordingly.
 */
-static void rank_parse_expression(
-  char**        line,
-  comp_cdd_cov* comp_cov
-) { PROFILE(RANK_PARSE_EXPRESSION);
-
-  func_unit   curr_funit;
-  expression* exp;
-
-  /* Initialize the signal list pointers */
-  curr_funit.exp_head = curr_funit.exp_tail = NULL;
-
-  /* Parse the expression */
-  expression_db_read( line, &curr_funit, FALSE );
-  exp = curr_funit.exp_head->exp;
+static void rank_gather_expression_cov(
+            expression*   exp,      /*!< Pointer to expression to gather coverage information from */
+            unsigned int  exclude,  /*!< Specifies whether line coverage information should be excluded */
+  /*@out@*/ comp_cdd_cov* comp_cov  /*!< Pointer to compressed CDD coverage structure to populate */
+) { PROFILE(RANK_GATHER_EXPRESSION_COV);
 
   /* Calculate line coverage information (NOTE:  we currently ignore the excluded status of the line */
   if( (exp->suppl.part.root == 1) &&
@@ -519,60 +612,13 @@ static void rank_parse_expression(
       (exp->op != EXP_OP_NOOP)    &&
       (exp->line != 0) ) {
     uint64 index = comp_cov->cps_index[CP_TYPE_LINE]++;
-    if( exp->exec_num > 0 ) {
+    if( (exp->exec_num > 0) || exclude ) {
       comp_cov->cps[CP_TYPE_LINE][index >> 3] |= 0x1 << (index & 0x7);
     }
   }
 
   /* Calculate combinational logic coverage information */
-  if( EXPR_IS_MEASURABLE( exp ) == 1 ) {
-
-    /* Calculate current expression combination coverage */
-    if( !expression_is_static_only( exp ) ) {
-
-      uint64 index;
-
-      if( EXPR_IS_COMB( exp ) == 1 ) {
-        if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
-          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= (exp->suppl.part.eval_00 | exp->suppl.part.eval_01) << (index & 0x7);
-          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= (exp->suppl.part.eval_00 | exp->suppl.part.eval_10) << (index & 0x7);
-          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_11 << (index & 0x7);
-        } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
-          uint64 index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= (exp->suppl.part.eval_10 | exp->suppl.part.eval_11) << (index & 0x7);
-          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= (exp->suppl.part.eval_01 | exp->suppl.part.eval_11) << (index & 0x7);
-          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_00 << (index & 0x7);
-        } else {
-          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_00 << (index & 0x7);
-          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_01 << (index & 0x7);
-          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_10 << (index & 0x7);
-          index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-          comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_11 << (index & 0x7);
-        }
-      } else if( EXPR_IS_EVENT( exp ) == 1 ) {
-        index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-        comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_TRUE( exp->suppl ) << (index & 0x7);
-      } else {
-        index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-        comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_TRUE( exp->suppl ) << (index & 0x7);
-        index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
-        comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_FALSE( exp->suppl ) << (index & 0x7);
-      }
-
-    }
-
-  }
-
-  /* Deallocate the expression link and expression */
-  exp_link_delete_list( curr_funit.exp_head, TRUE );
+  rank_gather_comb_cov( exp, comp_cov );
 
   PROFILE_END;
 
@@ -626,39 +672,11 @@ static void rank_gather_fsm_cov(
 }
 
 /*!
- Parses a signal line of a CDD file and extracts the FSM state/state transition coverage information
- from the line, compressing the coverage point information and storing it into the comp_cov
- structure.
-*/
-static void rank_parse_fsm(
-  char**        line,
-  comp_cdd_cov* comp_cov
-) { PROFILE(RANK_PARSE_FSM);
-
-  func_unit  curr_funit;
-  fsm_table* table;
-
-  /* Initialize the signal list pointers */
-  curr_funit.fsm_head = curr_funit.fsm_tail = NULL;
-
-  /* Parse the FSM */
-  fsm_db_read( line, &curr_funit );
-
-  /* Gather the FSM coverage point information */
-  rank_gather_fsm_cov( curr_funit.fsm_head->table->table, comp_cov );
-
-  /* Deallocate FSM and FSM list */
-  fsm_link_delete_list( curr_funit.fsm_head );
-
-  PROFILE_END;
-
-}
-
-/*!
  Recursively iterates through the instance tree, accumulating values for num_cps array.
 */
 static void rank_calc_num_cps(
-  funit_inst* inst  /*!< Pointer to instance tree to calculate num_cps array */
+            funit_inst*  inst,              /*!< Pointer to instance tree to calculate num_cps array */
+  /*@out@*/ unsigned int nums[CP_TYPE_NUM]  /*!< Array of coverage point numbers to populate */
 ) { PROFILE(RANK_CALC_NUM_CPS);
 
   funit_inst* child;  /* Pointer to child instance */
@@ -666,22 +684,73 @@ static void rank_calc_num_cps(
   /* Iterate through children instances */
   child = inst->child_head;
   while( child != NULL ) {
-    rank_calc_num_cps( child );
+    rank_calc_num_cps( child, nums );
     child = child->next;
   }
 
   /* Add totals to global num_cps array */
-  num_cps[CP_TYPE_LINE]   += inst->stat->line_total;
-  num_cps[CP_TYPE_TOGGLE] += inst->stat->tog_total;
-  num_cps[CP_TYPE_MEM]    += inst->stat->mem_ae_total + inst->stat->mem_tog_total;
-  num_cps[CP_TYPE_LOGIC]  += inst->stat->comb_total;
+  nums[CP_TYPE_LINE]   += inst->stat->line_total;
+  nums[CP_TYPE_TOGGLE] += (inst->stat->tog_total * 2);
+  nums[CP_TYPE_MEM]    += (inst->stat->mem_ae_total * 2) + (inst->stat->mem_tog_total * 2);
+  nums[CP_TYPE_LOGIC]  += inst->stat->comb_total;
   if( inst->stat->state_total > 0 ) {
-    num_cps[CP_TYPE_FSM] += (unsigned int)inst->stat->state_total;
+    nums[CP_TYPE_FSM] += (unsigned int)inst->stat->state_total;
   }
   if( inst->stat->arc_total > 0 ) {
-    num_cps[CP_TYPE_FSM] += (unsigned int)inst->stat->arc_total;
+    nums[CP_TYPE_FSM] += (unsigned int)inst->stat->arc_total;
   }
-  num_cps[CP_TYPE_ASSERT] += inst->stat->assert_total;
+  nums[CP_TYPE_ASSERT] += inst->stat->assert_total;
+
+  PROFILE_END;
+
+}
+
+/*!
+ Gathers all coverage point information from the given functional unit instance and populates
+ the specified compressed CDD coverage structure accordingly.
+*/
+static void rank_gather_comp_cdd_cov(
+  funit_inst*   inst,
+  comp_cdd_cov* comp_cov
+) { PROFILE(RANK_GATHER_COMP_CDD_COV);
+
+  sig_link*   sigl;   /* Pointer to signal link */
+  fsm_link*   fsml;   /* Pointer to FSM link */
+  funit_inst* child;  /* Pointer to current child instance */
+
+  /* Gather coverage information from expressions */
+  if( !funit_is_unnamed( inst->funit ) ) {
+    func_iter  fi;
+    statement* stmt;
+    func_iter_init( &fi, inst->funit );
+    stmt = func_iter_get_next_statement( &fi );
+    while( stmt != NULL ) {
+      rank_gather_expression_cov( stmt->exp, stmt->suppl.part.excluded, comp_cov );
+      stmt = func_iter_get_next_statement( &fi );
+    }
+    func_iter_dealloc( &fi );
+  }
+
+  /* Gather coverage information from signals */
+  sigl = inst->funit->sig_head;
+  while( sigl != NULL ) {
+    rank_gather_signal_cov( sigl->sig, comp_cov );
+    sigl = sigl->next;
+  }
+
+  /* Gather coverage information from FSMs */
+  fsml = inst->funit->fsm_head;
+  while( fsml != NULL ) {
+    rank_gather_fsm_cov( fsml->table->table, comp_cov );
+    fsml = fsml->next;
+  }
+
+  /* Gather coverage information from children */
+  child = inst->child_head;
+  while( child != NULL ) {
+    rank_gather_comp_cdd_cov( child, comp_cov );
+    child = child->next;
+  }
 
   PROFILE_END;
 
@@ -697,89 +766,64 @@ static void rank_read_cdd(
   /*@out@*/ unsigned int*   comp_cdd_num  /*!< Number of compressed CDD structures in comp_cdds array */
 ) { PROFILE(RANK_READ_CDD);
 
-  FILE*        ifile;           /* Pointer to CDD file handle */
-  char*        curr_line;       /* Pointer to currently read CDD line */
-  char*        rest_line;       /* The line that has not been parsed */
-  unsigned int curr_line_size;  /* Number of bytes allocated for curr_line */
-  int          type;            /* Current line type */
-  int          chars_read;      /* Number of characters read from current line */
+  comp_cdd_cov* comp_cov;
 
-  if( first ) {
+  Try {
 
-    inst_link* curr_instl;
+    inst_link*   instl;
+    unsigned int tmp_nums[CP_TYPE_NUM] = {0};
 
     /* Read in database */
     db_read( cdd_name, READ_MODE_NO_MERGE );
 
-    /* Iterate through all of the instances */
-    curr_instl = db_list[0]->inst_head;
-    while( curr_instl != NULL ) {
-      report_gather_instance_stats( curr_instl->inst );
-      rank_calc_num_cps( curr_instl->inst );
-      curr_instl = curr_instl->next;
-    }
-
-    /* Close the database */
-    db_close();
-
-  }
-
-  /* Open the CDD file */
-  if( (ifile = fopen( cdd_name, "r" )) != NULL ) {
-
-    comp_cdd_cov* comp_cov = NULL;
-    unsigned int  rv;
-
-    /* Read the entire next line */
-    while( util_readline( ifile, &curr_line, &curr_line_size ) ) {
-
-      /* If the line contains a legal CDD file line, continue to parse it */
-      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-
-        rest_line = curr_line + chars_read;    
-
-        /* Determine the current information type, and if it contains coverage information, send it the proper parser */
-        switch( type ) {
-          case DB_TYPE_INFO       :  rank_parse_info( cdd_name, &rest_line, &comp_cov );  break;
-          case DB_TYPE_SIGNAL     :  rank_parse_signal( &rest_line, comp_cov );      break;
-          case DB_TYPE_EXPRESSION :  rank_parse_expression( &rest_line, comp_cov );  break;
-          case DB_TYPE_FSM        :  rank_parse_fsm( &rest_line, comp_cov );         break;
-          default                 :  break;
-        }
-
+    /* Calculate the num_cps array if we are the first or check our coverage points to verify that they match */
+    instl = db_list[0]->inst_head;
+    while( instl != NULL ) {
+      report_gather_instance_stats( instl->inst );
+      if( first ) {
+        rank_calc_num_cps( instl->inst, num_cps );
       } else {
-
-        rv = snprintf( user_msg, USER_MSG_LENGTH, "CDD file \"%s\" is not formatted correctly", cdd_name );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        Throw 0;
-
+        rank_calc_num_cps( instl->inst, tmp_nums );
       }
-
-      /* Deallocate memory for current line */
-      free_safe( curr_line, curr_line_size );
-
+      instl = instl->next;
     }
 
-    /* Close the CDD file */
-    rv = fclose( ifile );
-    assert( rv == 0 );
-
-    /* Store the new coverage point structure in the global list if it contains information */
-    if( comp_cov != NULL ) {
-      *comp_cdds = (comp_cdd_cov**)realloc_safe( *comp_cdds, (sizeof( comp_cdd_cov* ) * (*comp_cdd_num)), (sizeof( comp_cdd_cov* ) * ((*comp_cdd_num) + 1)) );
-      (*comp_cdds)[*comp_cdd_num] = comp_cov;
-      (*comp_cdd_num)++;
+    /* If we are not the first CDD file being read in, verify that our values match */
+    if( !first ) {
+      unsigned int i;
+      for( i=0; i<CP_TYPE_NUM; i++ ) {
+        if( num_cps[i] != tmp_nums[i] ) {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "CDD file \"%s\" does not match previously read CDD files", cdd_name );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      }
     }
 
-  } else {
+    /* Allocate the memory needed for the compressed CDD coverage structure */
+    comp_cov = rank_create_comp_cdd_cov( cdd_name, num_timesteps );
 
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read CDD file \"%s\" for ranking", cdd_name );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    /* Finally, populate compressed CDD coverage structure with coverage information from database signals */
+    instl = db_list[0]->inst_head;
+    while( instl != NULL ) {
+      rank_gather_comp_cdd_cov( instl->inst, comp_cov );
+      instl = instl->next;
+    }
+
+    /* Add compressed CDD coverage structure to array */
+    *comp_cdds = (comp_cdd_cov**)realloc_safe( *comp_cdds, (sizeof( comp_cdd_cov* ) * (*comp_cdd_num)), (sizeof( comp_cdd_cov* ) * (*comp_cdd_num + 1)) );
+    (*comp_cdds)[*comp_cdd_num] = comp_cov;
+    (*comp_cdd_num)++;
+
+  } Catch_anonymous {
+    db_close();
+    rank_dealloc_comp_cdd_cov( comp_cov );
     Throw 0;
-
   }
+
+  /* Close the database */
+  db_close();
 
   PROFILE_END;
 
@@ -788,22 +832,107 @@ static void rank_read_cdd(
 /*-----------------------------------------------------------------------------------------------------------------------*/
 
 /*!
+ Sorts the selected CDD coverage structure into the comp_cdds list and performs post-placement calculations.
+*/
+static void rank_selected_cdd_cov(
+  /*@out@*/ comp_cdd_cov** comp_cdds,        /*!< Pointer to array of compressed CDD coverage structures being sorted */
+            unsigned int   comp_cdd_num,     /*!< Total number of elements in comp_cdds array */
+  /*@out@*/ uint16*        ranked_merged,    /*!< Array of merged information for ranked CDDs */
+  /*@out@*/ uint16*        unranked_merged,  /*!< Array of merged information for unranked CDDs */
+            unsigned int   next_cdd,         /*!< Index into comp_cdds array that the selected CDD should be stored at */
+            unsigned int   selected_cdd      /*!< Index into comp_cdds array of the selected CDD for ranking */
+) { PROFILE(RANK_SELECTED_CDD_COV);
+
+  unsigned int        i, j;
+  uint64              merged_index = 0;
+  static unsigned int dots_output  = 0;
+
+  /* Output status indicator, if necessary */
+  if( !output_suppressed || debug_mode ) {
+    while( ((unsigned int)(((next_cdd + 1) / (float)comp_cdd_num) * 100) - (dots_output * 10)) >= 10 ) { 
+      printf( "." );
+      fflush( stdout );
+      dots_output++;
+    }
+  }
+
+  /* Move the most unique CDD to the next position */
+  comp_cdd_cov* tmp       = comp_cdds[next_cdd];
+  comp_cdds[next_cdd]     = comp_cdds[selected_cdd];
+  comp_cdds[selected_cdd] = tmp;
+
+  /* Zero out uniqueness value */
+  comp_cdds[next_cdd]->unique_cps = 0;
+
+  /* Subtract all of the set coverage points from the merged value */
+  for( i=0; i<CP_TYPE_NUM; i++ ) {
+    for( j=0; j<num_cps[i]; j++ ) {
+      if( comp_cdds[next_cdd]->cps[i][j>>3] & (0x1 << (j & 0x7)) ) {
+        /*
+         If we have not seen this coverage point get hit in the ranked list, increment the unique_cps value for the
+         selected compressed CDD coverage structure.
+        */
+        if( ranked_merged[merged_index] == 0 ) {
+          comp_cdds[next_cdd]->unique_cps++;
+        }
+        unranked_merged[merged_index]--;
+        ranked_merged[merged_index]++;
+      }
+      merged_index++;
+    }
+  }
+
+  if( !output_suppressed || debug_mode ) {
+    if( (next_cdd + 1) == comp_cdd_num ) {
+      if( dots_output < 10 ) {
+        printf( "." );
+      }
+      printf( "\n" );
+      fflush( stdout );
+    }
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  Performs ranking according to scores that are calculated from the user-specified weights and the amount of
  coverage points left to be hit.  Ranks all compressed CDD coverage structures between next_cdd and the end of
  the array (comp_cdd_num - 1), inclusive.
 */
 static void rank_perform_weighted_selection(
-  /*@out@*/ comp_cdd_cov** comp_cdds,     /*!< Reference to partially sorted list of compressed CDD coverage structures to sort */
-            unsigned int   comp_cdd_num,  /*!< Number of compressed CDD coverage structures in the comp_cdds array */
-            uint16*        merged,        /*!< Array of merged information from all of the compressed CDD coverage structures */
-            uint64         merged_num,    /*!< Number of elements in merged array */
-            unsigned int   next_cdd       /*!< Next index in comp_cdds array to set */
+  /*@out@*/ comp_cdd_cov** comp_cdds,        /*!< Reference to partially sorted list of compressed CDD coverage structures to sort */
+            unsigned int   comp_cdd_num,     /*!< Number of compressed CDD coverage structures in the comp_cdds array */
+            uint16*        ranked_merged,    /*!< Array of ranked merged information from all of the compressed CDD coverage structures */
+            uint16*        unranked_merged,  /*!< Array of unranked merged information from all of the compressed CDD coverage structures */
+            uint64         merged_num,       /*!< Number of elements in merged array */
+            unsigned int   next_cdd          /*!< Next index in comp_cdds array to set */
 ) { PROFILE(RANK_PERFORM_WEIGHTED_SELECTION);
 
   /* Perform this loop for each remaining coverage file */
   for( ; next_cdd<comp_cdd_num; next_cdd++ ) {
 
-    /* TBD */
+    unsigned int i, j, k;
+    unsigned int highest_score = next_cdd;
+
+    /* Calculate current scores */
+    for( i=next_cdd; i<comp_cdd_num; i++ ) {
+      comp_cdds[i]->score = 0;
+      for( j=0; j<CP_TYPE_NUM; j++ ) {
+        unsigned int total = 0;
+        for( k=0; k<num_cps[j]; k++ ) {
+          total += rank_count_bits_uchar( comp_cdds[i]->cps[j][k] );
+        }
+        comp_cdds[i]->score += ((total / (float)comp_cdds[i]->timesteps) * 100) * cdd_type_weight[j];
+      }
+      if( comp_cdds[i]->score > comp_cdds[highest_score]->score ) {
+        highest_score = i;
+      }
+    } 
+
+    /* Store the selected CDD into the next slot of the comp_cdds array */
+    rank_selected_cdd_cov( comp_cdds, comp_cdd_num, ranked_merged, unranked_merged, next_cdd, highest_score );
 
   }
 
@@ -821,20 +950,27 @@ static void rank_perform(
 ) { PROFILE(RANK_PERFORM);
 
   unsigned int i, j, k;
-  uint16*      merged;
+  uint16*      ranked_merged;
+  uint16*      unranked_merged;
   uint16       merged_index = 0;
   uint64       total        = 0;
   unsigned int next_cdd     = 0;
   unsigned int most_unique;
 
+  if( !output_suppressed || debug_mode ) {
+    printf( "Ranking CDD files " );
+    fflush( stdout );
+  }
+
   /* Calculate the total number of needed merged entries to store accumulated information */
-  for( i=0; i<comp_cdd_num; i++ ) {
+  for( i=0; i<CP_TYPE_NUM; i++ ) {
     total += num_cps[i];
   }
   assert( total > 0 );
 
   /* Allocate merged array */
-  merged = (uint16*)malloc_safe_nolimit( sizeof( uint16 ) * total );
+  ranked_merged   = (uint16*)calloc_safe( total, sizeof( uint16 ) );
+  unranked_merged = (uint16*)malloc_safe_nolimit( sizeof( uint16 ) * total );
 
   /* Step 1 - Initialize merged results array, calculate uniqueness and total values of each compressed CDD coverage structure */
   for( i=0; i<CP_TYPE_NUM; i++ ) {
@@ -848,7 +984,7 @@ static void rank_perform(
           bit_total++;
         }
       }
-      merged[merged_index++] = bit_total;
+      unranked_merged[merged_index++] = bit_total;
 
       /* If we found exactly one CDD file that hit this coverage point, mark it in the corresponding CDD file */
       if( bit_total == 1) {
@@ -866,32 +1002,19 @@ static void rank_perform(
       }
     }
     if( comp_cdds[most_unique]->unique_cps > 0 ) {
-
-      /* Move the most unique CDD to the next position */
-      comp_cdd_cov* tmp      = comp_cdds[next_cdd];
-      comp_cdds[next_cdd]    = comp_cdds[most_unique];
-      comp_cdds[most_unique] = tmp;
-
-      /* Subtract all of the set coverage points from the merged value */
-      merged_index = 0;
-      for( i=0; i<CP_TYPE_NUM; i++ ) {
-        for( j=0; j<num_cps[i]; j++ ) {
-          if( comp_cdds[next_cdd]->cps[i][j>>3] & (0x1 << (j & 0x7)) ) {
-            merged[merged_index] = 0;
-          }
-        }
-      }
+      rank_selected_cdd_cov( comp_cdds, comp_cdd_num, ranked_merged, unranked_merged, next_cdd, most_unique );
       next_cdd++;
     }
   } while( (next_cdd < comp_cdd_num) && (comp_cdds[most_unique]->unique_cps > 0) );
 
   /* Step 3 - Select coverage based on user-specified factors */
   if( next_cdd < comp_cdd_num ) {
-    rank_perform_weighted_selection( comp_cdds, comp_cdd_num, merged, total, next_cdd );
+    rank_perform_weighted_selection( comp_cdds, comp_cdd_num, ranked_merged, unranked_merged, total, next_cdd );
   }
 
   /* Deallocate merged CDD coverage structure */
-  free_safe( merged, (sizeof( uint16 ) * total ) );
+  free_safe( ranked_merged,   (sizeof( uint16 ) * total ) );
+  free_safe( unranked_merged, (sizeof( uint16 ) * total ) );
 
   PROFILE_END;
 
@@ -909,35 +1032,85 @@ static void rank_output(
 
   FILE* ofile;
 
-  if( (ofile = fopen( rank_file, "w" )) != NULL ) {
+  if( rank_file == NULL ) {
+    print_output( "Generating report output to standard output...", NORMAL, __FILE__, __LINE__ );
+  } else {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Generating report file \"%s\"...", rank_file );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+  }
+
+  if( (ofile = ((rank_file == NULL) ? stdout : fopen( rank_file, "w" ))) != NULL ) {
 
     unsigned int rv;
     unsigned int i;
-    uint64       acc_timesteps = 0;
-    bool         unique_found  = TRUE;
-    float        total_cps     = 0;
+    uint64       acc_timesteps  = 0;
+    uint64       acc_unique_cps = 0;
+    bool         unique_found   = TRUE;
+    uint64       total_cps      = 0;
 
     /* Calculate the total number of coverage points */
     for( i=0; i<CP_TYPE_NUM; i++ ) {
-      total_cps = num_cps[i];
+      total_cps += num_cps[i];
     }
 
-    /* TBD - Header information output */
+    /* If we are outputting to standard output, make sure we have a few newlines for readability purposes */
+    if( ofile == stdout ) {
+      fprintf( ofile, "\n\n\n" );
+    }
 
-    for( i=0; i<comp_cdd_num; i++ ) {
-      acc_timesteps += comp_cdds[i]->timesteps; 
-      if( (comp_cdds[i]->unique_cps == 0) && unique_found ) {
-        fprintf( ofile, "\n--------------------------------  The following CDD files add no additional coverage  --------------------------------\n\n" );
-        unique_found = FALSE;
+    if( flag_names_only ) {
+
+      for( i=0; i<comp_cdd_num; i++ ) {
+        if( comp_cdds[i]->unique_cps > 0 ) {
+          fprintf( ofile, "%s\n", comp_cdds[i]->cdd_name );
+        }
       }
-      fprintf( ofile, "%3.0f%%  %s  %3.0f%%  %lld  %lld\n",
-               (comp_cdds[0]->unique_cps / total_cps), comp_cdds[i]->cdd_name, (comp_cdds[0]->total_cps / total_cps), comp_cdds[i]->timesteps, acc_timesteps );
+
+    } else {
+
+      /* Header information output */
+      fprintf( ofile, "                                           ::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
+      fprintf( ofile, "                                           ::                                                ::\n" );
+      fprintf( ofile, "                                           ::     Covered -- Simulation Ranked Run Order     ::\n" );
+      fprintf( ofile, "                                           ::                                                ::\n" );
+      fprintf( ofile, "                                           ::::::::::::::::::::::::::::::::::::::::::::::::::::\n\n\n" );
+      fprintf( ofile, "\n\n" );
+      fprintf( ofile, "-----------+-------------------------------------------+----------------------------------------------------------------------------------------------\n" );
+      fprintf( ofile, "           |                ACCUMULATIVE               |                                               CDD\n" );
+      fprintf( ofile, "Simulation |-------------------------------------------+----------------------------------------------------------------------------------------------\n" );
+      fprintf( ofile, "Order      |        Hit /      Total     %%   Timesteps |  Name                                                      Hit /      Total     %%   Timesteps\n" );
+      fprintf( ofile, "-----------+-------------------------------------------+----------------------------------------------------------------------------------------------\n" );
+      fprintf( ofile, "\n" );
+
+      for( i=0; i<comp_cdd_num; i++ ) {
+        acc_timesteps  += comp_cdds[i]->timesteps; 
+        acc_unique_cps += comp_cdds[i]->unique_cps;
+        if( (comp_cdds[i]->unique_cps == 0) && unique_found ) {
+          fprintf( ofile, "\n---------------------------------------  The following CDD files add no additional coverage  ----------------------------------------------\n\n" );
+          unique_found = FALSE;
+        }
+        fprintf( ofile, "%10u   %10llu   %10llu  %3.0f%%  %10llu   %-50s  %10llu   %10llu  %3.0f%%  %10llu\n",
+                (i + 1),
+                acc_unique_cps,
+                total_cps,
+                ((acc_unique_cps / (float)total_cps) * 100),
+                acc_timesteps,
+                comp_cdds[i]->cdd_name,
+                comp_cdds[i]->total_cps,
+                total_cps,
+                ((comp_cdds[i]->total_cps / (float)total_cps) * 100),
+                comp_cdds[i]->timesteps );
+      }
+      fprintf( ofile, "\n\n" );
+
     }
 
-    /* TBD - Footer information output - if any needed */
-
-    rv = fclose( ofile );
-    assert( rv == 0 );
+    /* Close the file if it was opened via fopen */
+    if( rank_file != NULL ) {
+      rv = fclose( ofile );
+      assert( rv == 0 );
+    }
 
   } else {
 
@@ -977,6 +1150,8 @@ void command_rank(
 
   Try {
 
+    unsigned int rv;
+
     /* Parse score command-line */
     rank_parse_args( argc, last_arg, argv );
 
@@ -993,6 +1168,14 @@ void command_rank(
 
     /* Output the results */
     rank_output( comp_cdds, comp_cdd_num );
+
+    /*@-duplicatequals -formattype@*/
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
+    assert( rv < USER_MSG_LENGTH );
+    /*@=duplicatequals =formattype@*/
+    print_output( "", NORMAL, __FILE__, __LINE__ );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    print_output( "", NORMAL, __FILE__, __LINE__ );
 
   } Catch_anonymous {}
 
@@ -1016,6 +1199,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.2.4  2008/07/01 23:08:58  phase1geo
+ Initial working version of rank command.  Ranking algorithm needs some more
+ testing at this point.  Checkpointing.
+
  Revision 1.1.2.3  2008/07/01 06:17:22  phase1geo
  More updates to rank command.  Updating IV/Cver regression for these changes (full
  regression not passing at this point).  Checkpointing.

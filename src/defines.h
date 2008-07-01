@@ -2824,6 +2824,7 @@ struct comp_cdd_cov_s {
   uint64         timesteps;               /*!< Number of simulations timesteps stored in the CDD file */
   uint64         total_cps;               /*!< Number of total coverage points this CDD file represents */
   uint64         unique_cps;              /*!< Number of unique coverage points this CDD file represents */
+  uint64         score;                   /*!< Storage for current score */
   unsigned char* cps[CP_TYPE_NUM];        /*!< Compressed coverage points for each coverage metric */
   unsigned int   cps_index[CP_TYPE_NUM];  /*!< Contains index of current bit to populate */
 };
@@ -2837,6 +2838,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.300.2.3  2008/07/01 23:08:58  phase1geo
+ Initial working version of rank command.  Ranking algorithm needs some more
+ testing at this point.  Checkpointing.
+
  Revision 1.300.2.2  2008/07/01 06:17:22  phase1geo
  More updates to rank command.  Updating IV/Cver regression for these changes (full
  regression not passing at this point).  Checkpointing.
