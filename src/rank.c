@@ -18,6 +18,7 @@
 
 extern char user_msg[USER_MSG_LENGTH];
 extern const exp_info exp_op_info[EXP_OP_NUM];
+extern db** db_list;
 
 
 /*!
@@ -164,8 +165,8 @@ static void rank_diff_comp_cdd(
  \return Returns a pointer to a newly allocated and initialized compressed CDD coverage structure.
 */
 comp_cdd_cov* rank_create_comp_cdd_cov(
-  const char* cdd_name,   /*!< Name of CDD file that this structure was created from */
-  uint64      sim_events  /*!< Number of simulation events that occurred in the CDD */
+  const char* cdd_name,  /*!< Name of CDD file that this structure was created from */
+  uint64      timesteps  /*!< Number of simulation timesteps that occurred in the CDD */
 ) { PROFILE(RANK_CREATE_COMP_CDD_COV);
 
   comp_cdd_cov* comp_cov;
@@ -174,7 +175,7 @@ comp_cdd_cov* rank_create_comp_cdd_cov(
   /* Allocate and initialize */
   comp_cov             = (comp_cdd_cov*)malloc_safe( sizeof( comp_cdd_cov* ) );
   comp_cov->cdd_name   = strdup_safe( cdd_name );
-  comp_cov->sim_events = sim_events;
+  comp_cov->timesteps  = timesteps;
   comp_cov->total_cps  = 0;
   comp_cov->unique_cps = 0;
 
@@ -324,19 +325,16 @@ static void rank_parse_args(
 static void rank_parse_info(
   const char*    cdd_name,  /*!< Name of the CDD file that is being parsed */
   char**         line,      /*!< Read line from CDD file to parse */
-  comp_cdd_cov** comp_cov,  /*!< Reference to compressed CDD coverage structure to create */
-  bool           first      /*!< If set to TRUE, populate num_cps array with found information; otherwise,
-                                 verify that our coverage point numbers match the global values and error
-                                 if we do not match. */
+  comp_cdd_cov** comp_cov   /*!< Reference to compressed CDD coverage structure to create */
 ) { PROFILE(RANK_PARSE_INFO);
 
   unsigned int version;
   isuppl       suppl;
-  uint64       sim_events;
+  uint64       timesteps;
   unsigned int i;
   int          chars_read;
 
-  if( sscanf( *line, "%x %x %lld%n", &version, &(suppl.all), &sim_events, &chars_read ) == 3 ) {
+  if( sscanf( *line, "%x %x %llu%n", &version, &(suppl.all), &timesteps, &chars_read ) == 3 ) {
    
     *line += chars_read;
 
@@ -346,27 +344,8 @@ static void rank_parse_info(
       Throw 0;
     }
 
-    /* Parse and handle coverage point information */
-    for( i=0; i<CP_TYPE_NUM; i++ ) {
-      unsigned int cp_num;
-      if( sscanf( *line, "%u%n", &cp_num, &chars_read ) == 1 ) {
-        *line += chars_read;
-        if( first ) {
-          num_cps[i] = cp_num;
-        } else if( num_cps[i] != cp_num ) {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified CDD file \"%s\" that is not mergeable with its previous CDD files", cdd_name );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          Throw 0;
-        }
-      } else {
-        print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-        Throw 0;
-      }
-    }
-
     /* Now that we have the information we need, create and populate the compressed CDD coverage structure */
-    *comp_cov = rank_create_comp_cdd_cov( cdd_name, sim_events );
+    *comp_cov = rank_create_comp_cdd_cov( cdd_name, timesteps );
 
   } else {
 
@@ -380,24 +359,12 @@ static void rank_parse_info(
 }
 
 /*!
- Parses a signal line of a CDD file and extracts the toggle and/or memory coverage information
- from the line, compressing the coverage point information and storing it into the comp_cov
- structure.
+ Gathers all coverage point information from the given signal and populates the comp_cov structure accordingly.
 */
-static void rank_parse_signal(
-  char**        line,     /*!< Line containing signal information from CDD file */
-  comp_cdd_cov* comp_cov  /*!< Pointer to compressed CDD coverage structure */
-) { PROFILE(RANK_PARSE_SIGNAL);
-
-  func_unit curr_funit;
-  vsignal*  sig;
-
-  /* Initialize the signal list pointers */
-  curr_funit.sig_head = curr_funit.sig_tail = NULL;
-
-  /* Parse the signal */
-  vsignal_db_read( line, &curr_funit );
-  sig = curr_funit.sig_head->sig;
+static void rank_gather_signal_cov(
+  vsignal* sig,           /*!< Pointer to signal to gather coverage information from */
+  comp_cdd_cov* comp_cov  /*!< Pointer to compressed CDD coverage structure to populate */
+) { PROFILE(RANK_GATHER_SIGNAL_COV);
 
   /* Populate toggle coverage information */
   if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
@@ -431,7 +398,7 @@ static void rank_parse_signal(
 
   /* Populate memory coverage information */
   if( (sig->suppl.part.type == SSUPPL_TYPE_MEM) && (sig->udim_num > 0) ) {
- 
+
     unsigned int i;
     unsigned int pwidth = 1;
 
@@ -461,7 +428,7 @@ static void rank_parse_signal(
         comp_cov->cps[CP_TYPE_MEM][index >> 3] |= ((rd > 0) ? 1 : 0) << (index & 0x7);
       }
     }
-  
+
     /* Calculate toggle coverage information for the memory */
     if( sig->suppl.part.excluded == 1 ) {
       for( i=0; i<sig->value->width; i++ ) {
@@ -473,7 +440,7 @@ static void rank_parse_signal(
     } else {
       switch( sig->value->suppl.part.data_type ) {
         case VDATA_UL :
-          for( i=0; i<sig->value->width; i++ ) {
+          for( i=0; i<sig->value->width; i++ ) {  
             uint64 index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
             comp_cov->cps[CP_TYPE_MEM][index >> 3] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_MEM_TOG01] >> UL_MOD(i)) << (index & 0x7);
             index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
@@ -481,10 +448,36 @@ static void rank_parse_signal(
           }
           break;
         default :  assert( 0 );  break;
-      }
-    }
+      } 
+    }   
+        
+  }   
 
-  }
+  PROFILE_END;
+
+}
+
+/*!
+ Parses a signal line of a CDD file and extracts the toggle and/or memory coverage information
+ from the line, compressing the coverage point information and storing it into the comp_cov
+ structure.
+*/
+static void rank_parse_signal(
+  char**        line,     /*!< Line containing signal information from CDD file */
+  comp_cdd_cov* comp_cov  /*!< Pointer to compressed CDD coverage structure */
+) { PROFILE(RANK_PARSE_SIGNAL);
+
+  func_unit curr_funit;
+  vsignal*  sig;
+
+  /* Initialize the signal list pointers */
+  curr_funit.sig_head = curr_funit.sig_tail = NULL;
+
+  /* Parse the signal */
+  vsignal_db_read( line, &curr_funit );
+
+  /* Gather signal coverages */
+  rank_gather_signal_cov( curr_funit.sig_head->sig, comp_cov );
 
   /* Deallocate signal and signal list */
   sig_link_delete_list( curr_funit.sig_head, TRUE );
@@ -586,24 +579,13 @@ static void rank_parse_expression(
 }
 
 /*!
- Parses a signal line of a CDD file and extracts the FSM state/state transition coverage information
- from the line, compressing the coverage point information and storing it into the comp_cov
- structure.
+ Gathers the FSM coverage points from the given FSM and populates the compressed CDD coverage structure
+ accordingly.
 */
-static void rank_parse_fsm(
-  char**        line,
-  comp_cdd_cov* comp_cov
-) { PROFILE(RANK_PARSE_FSM);
-
-  func_unit  curr_funit;
-  fsm_table* table;
-
-  /* Initialize the signal list pointers */
-  curr_funit.fsm_head = curr_funit.fsm_tail = NULL;
-
-  /* Parse the FSM */
-  fsm_db_read( line, &curr_funit );
-  table = curr_funit.fsm_head->table->table;
+static void rank_gather_fsm_cov(
+  fsm_table*    table,    /*!< Pointer to FSM table to gather coverage information from */
+  comp_cdd_cov* comp_cov  /*!< Pointer to compressed CDD coverage structure to populate */
+) { PROFILE(RANK_GATHER_FSM_COV);
 
   /* We can only create a compressed version of FSM coverage information if it is known */
   if( table->suppl.part.known == 0 ) {
@@ -639,8 +621,67 @@ static void rank_parse_fsm(
 
   }
 
+  PROFILE_END;
+
+}
+
+/*!
+ Parses a signal line of a CDD file and extracts the FSM state/state transition coverage information
+ from the line, compressing the coverage point information and storing it into the comp_cov
+ structure.
+*/
+static void rank_parse_fsm(
+  char**        line,
+  comp_cdd_cov* comp_cov
+) { PROFILE(RANK_PARSE_FSM);
+
+  func_unit  curr_funit;
+  fsm_table* table;
+
+  /* Initialize the signal list pointers */
+  curr_funit.fsm_head = curr_funit.fsm_tail = NULL;
+
+  /* Parse the FSM */
+  fsm_db_read( line, &curr_funit );
+
+  /* Gather the FSM coverage point information */
+  rank_gather_fsm_cov( curr_funit.fsm_head->table->table, comp_cov );
+
   /* Deallocate FSM and FSM list */
   fsm_link_delete_list( curr_funit.fsm_head );
+
+  PROFILE_END;
+
+}
+
+/*!
+ Recursively iterates through the instance tree, accumulating values for num_cps array.
+*/
+static void rank_calc_num_cps(
+  funit_inst* inst  /*!< Pointer to instance tree to calculate num_cps array */
+) { PROFILE(RANK_CALC_NUM_CPS);
+
+  funit_inst* child;  /* Pointer to child instance */
+
+  /* Iterate through children instances */
+  child = inst->child_head;
+  while( child != NULL ) {
+    rank_calc_num_cps( child );
+    child = child->next;
+  }
+
+  /* Add totals to global num_cps array */
+  num_cps[CP_TYPE_LINE]   += inst->stat->line_total;
+  num_cps[CP_TYPE_TOGGLE] += inst->stat->tog_total;
+  num_cps[CP_TYPE_MEM]    += inst->stat->mem_ae_total + inst->stat->mem_tog_total;
+  num_cps[CP_TYPE_LOGIC]  += inst->stat->comb_total;
+  if( inst->stat->state_total > 0 ) {
+    num_cps[CP_TYPE_FSM] += (unsigned int)inst->stat->state_total;
+  }
+  if( inst->stat->arc_total > 0 ) {
+    num_cps[CP_TYPE_FSM] += (unsigned int)inst->stat->arc_total;
+  }
+  num_cps[CP_TYPE_ASSERT] += inst->stat->assert_total;
 
   PROFILE_END;
 
@@ -663,6 +704,26 @@ static void rank_read_cdd(
   int          type;            /* Current line type */
   int          chars_read;      /* Number of characters read from current line */
 
+  if( first ) {
+
+    inst_link* curr_instl;
+
+    /* Read in database */
+    db_read( cdd_name, READ_MODE_NO_MERGE );
+
+    /* Iterate through all of the instances */
+    curr_instl = db_list[0]->inst_head;
+    while( curr_instl != NULL ) {
+      report_gather_instance_stats( curr_instl->inst );
+      rank_calc_num_cps( curr_instl->inst );
+      curr_instl = curr_instl->next;
+    }
+
+    /* Close the database */
+    db_close();
+
+  }
+
   /* Open the CDD file */
   if( (ifile = fopen( cdd_name, "r" )) != NULL ) {
 
@@ -679,7 +740,7 @@ static void rank_read_cdd(
 
         /* Determine the current information type, and if it contains coverage information, send it the proper parser */
         switch( type ) {
-          case DB_TYPE_INFO       :  rank_parse_info( cdd_name, &rest_line, &comp_cov, first );  break;
+          case DB_TYPE_INFO       :  rank_parse_info( cdd_name, &rest_line, &comp_cov );  break;
           case DB_TYPE_SIGNAL     :  rank_parse_signal( &rest_line, comp_cov );      break;
           case DB_TYPE_EXPRESSION :  rank_parse_expression( &rest_line, comp_cov );  break;
           case DB_TYPE_FSM        :  rank_parse_fsm( &rest_line, comp_cov );         break;
@@ -694,6 +755,9 @@ static void rank_read_cdd(
         Throw 0;
 
       }
+
+      /* Deallocate memory for current line */
+      free_safe( curr_line, curr_line_size );
 
     }
 
@@ -722,6 +786,30 @@ static void rank_read_cdd(
 }
 
 /*-----------------------------------------------------------------------------------------------------------------------*/
+
+/*!
+ Performs ranking according to scores that are calculated from the user-specified weights and the amount of
+ coverage points left to be hit.  Ranks all compressed CDD coverage structures between next_cdd and the end of
+ the array (comp_cdd_num - 1), inclusive.
+*/
+static void rank_perform_weighted_selection(
+  /*@out@*/ comp_cdd_cov** comp_cdds,     /*!< Reference to partially sorted list of compressed CDD coverage structures to sort */
+            unsigned int   comp_cdd_num,  /*!< Number of compressed CDD coverage structures in the comp_cdds array */
+            uint16*        merged,        /*!< Array of merged information from all of the compressed CDD coverage structures */
+            uint64         merged_num,    /*!< Number of elements in merged array */
+            unsigned int   next_cdd       /*!< Next index in comp_cdds array to set */
+) { PROFILE(RANK_PERFORM_WEIGHTED_SELECTION);
+
+  /* Perform this loop for each remaining coverage file */
+  for( ; next_cdd<comp_cdd_num; next_cdd++ ) {
+
+    /* TBD */
+
+  }
+
+  PROFILE_END;
+
+}
 
 /*!
  Performs the task of ranking the CDD files and rearranging them in the comp_cdds array such that the
@@ -797,7 +885,10 @@ static void rank_perform(
     }
   } while( (next_cdd < comp_cdd_num) && (comp_cdds[most_unique]->unique_cps > 0) );
 
-  /* Step 3 - TBD */
+  /* Step 3 - Select coverage based on user-specified factors */
+  if( next_cdd < comp_cdd_num ) {
+    rank_perform_weighted_selection( comp_cdds, comp_cdd_num, merged, total, next_cdd );
+  }
 
   /* Deallocate merged CDD coverage structure */
   free_safe( merged, (sizeof( uint16 ) * total ) );
@@ -822,9 +913,9 @@ static void rank_output(
 
     unsigned int rv;
     unsigned int i;
-    uint64       acc_sim_events = 0;
-    bool         unique_found   = TRUE;
-    float        total_cps      = 0;
+    uint64       acc_timesteps = 0;
+    bool         unique_found  = TRUE;
+    float        total_cps     = 0;
 
     /* Calculate the total number of coverage points */
     for( i=0; i<CP_TYPE_NUM; i++ ) {
@@ -834,13 +925,13 @@ static void rank_output(
     /* TBD - Header information output */
 
     for( i=0; i<comp_cdd_num; i++ ) {
-      acc_sim_events += comp_cdds[i]->sim_events; 
+      acc_timesteps += comp_cdds[i]->timesteps; 
       if( (comp_cdds[i]->unique_cps == 0) && unique_found ) {
         fprintf( ofile, "\n--------------------------------  The following CDD files add no additional coverage  --------------------------------\n\n" );
         unique_found = FALSE;
       }
       fprintf( ofile, "%3.0f%%  %s  %3.0f%%  %lld  %lld\n",
-               (comp_cdds[0]->unique_cps / total_cps), comp_cdds[i]->cdd_name, (comp_cdds[0]->total_cps / total_cps), comp_cdds[i]->sim_events, acc_sim_events );
+               (comp_cdds[0]->unique_cps / total_cps), comp_cdds[i]->cdd_name, (comp_cdds[0]->total_cps / total_cps), comp_cdds[i]->timesteps, acc_timesteps );
     }
 
     /* TBD - Footer information output - if any needed */
@@ -925,6 +1016,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.2.3  2008/07/01 06:17:22  phase1geo
+ More updates to rank command.  Updating IV/Cver regression for these changes (full
+ regression not passing at this point).  Checkpointing.
+
  Revision 1.1.2.2  2008/06/30 23:02:42  phase1geo
  More work on the rank command.  Checkpointing.
 

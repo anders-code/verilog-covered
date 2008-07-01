@@ -51,7 +51,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        14
+#define CDD_VERSION        15
 
 /*!
  This contains the header information specified when executing this tool.
@@ -2821,7 +2821,7 @@ struct db_s {
 */
 struct comp_cdd_cov_s {
   char*          cdd_name;                /*!< Name of CDD that this coverage information is for */
-  uint64         sim_events;              /*!< Number of simulations events stored in the CDD file */
+  uint64         timesteps;               /*!< Number of simulations timesteps stored in the CDD file */
   uint64         total_cps;               /*!< Number of total coverage points this CDD file represents */
   uint64         unique_cps;              /*!< Number of unique coverage points this CDD file represents */
   unsigned char* cps[CP_TYPE_NUM];        /*!< Compressed coverage points for each coverage metric */
@@ -2837,6 +2837,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.300.2.2  2008/07/01 06:17:22  phase1geo
+ More updates to rank command.  Updating IV/Cver regression for these changes (full
+ regression not passing at this point).  Checkpointing.
+
  Revision 1.300.2.1  2008/06/30 13:14:21  phase1geo
  Starting to work on new 'rank' command.  Checkpointing.
 
