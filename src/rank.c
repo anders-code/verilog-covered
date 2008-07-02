@@ -774,7 +774,7 @@ static void rank_read_cdd(
     unsigned int tmp_nums[CP_TYPE_NUM] = {0};
 
     /* Read in database */
-    db_read( cdd_name, READ_MODE_MERGE_NO_MERGE );
+    db_read( cdd_name, READ_MODE_REPORT_NO_MERGE );
 
     /* Calculate the num_cps array if we are the first or check our coverage points to verify that they match */
     instl = db_list[0]->inst_head;
@@ -993,15 +993,10 @@ static void rank_perform(
       unranked_merged[merged_index++] = bit_total;
 
       /* If we found exactly one CDD file that hit this coverage point, mark it in the corresponding CDD file */
-      if( bit_total == 1) {
+      if( bit_total == 1 ) {
         comp_cdds[set_cdd]->unique_cps++;
       }
     }
-  }
-
-  /* TBD - Temporary */
-  for( i=0; i<comp_cdd_num; i++ ) {
-    printf( "%s  %llu\n", comp_cdds[i]->cdd_name, comp_cdds[i]->unique_cps );
   }
 
   /* Step 2 - Start with the most unique CDDs */
@@ -1210,6 +1205,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.2.6  2008/07/02 13:51:24  phase1geo
+ Fixing bug in read mode chosen for ranking.  Should have been a report-no-merge
+ rather than a merge-no-merge flavor.
+
  Revision 1.1.2.5  2008/07/02 04:40:18  phase1geo
  Adding merge5* diagnostics to verify rank function (this is not complete yet).  The
  rank function is a bit broken at this point.  Checkpointing.
