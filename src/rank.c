@@ -774,7 +774,7 @@ static void rank_read_cdd(
     unsigned int tmp_nums[CP_TYPE_NUM] = {0};
 
     /* Read in database */
-    db_read( cdd_name, READ_MODE_NO_MERGE );
+    db_read( cdd_name, READ_MODE_MERGE_NO_MERGE );
 
     /* Calculate the num_cps array if we are the first or check our coverage points to verify that they match */
     instl = db_list[0]->inst_head;
@@ -918,15 +918,21 @@ static void rank_perform_weighted_selection(
 
     /* Calculate current scores */
     for( i=next_cdd; i<comp_cdd_num; i++ ) {
+      bool unique_found = FALSE;
       comp_cdds[i]->score = 0;
       for( j=0; j<CP_TYPE_NUM; j++ ) {
         unsigned int total = 0;
         for( k=0; k<num_cps[j]; k++ ) {
-          total += rank_count_bits_uchar( comp_cdds[i]->cps[j][k] );
+	  if( comp_cdds[i]->cps[j][k>>3] & (0x1 << (k & 0x7)) ) {
+            total++;
+            if( ranked_merged[k] == 0 ) {
+              unique_found = TRUE;
+            }
+          }
         }
         comp_cdds[i]->score += ((total / (float)comp_cdds[i]->timesteps) * 100) * cdd_type_weight[j];
       }
-      if( comp_cdds[i]->score > comp_cdds[highest_score]->score ) {
+      if( (comp_cdds[i]->score > comp_cdds[highest_score]->score) && unique_found ) {
         highest_score = i;
       }
     } 
@@ -991,6 +997,11 @@ static void rank_perform(
         comp_cdds[set_cdd]->unique_cps++;
       }
     }
+  }
+
+  /* TBD - Temporary */
+  for( i=0; i<comp_cdd_num; i++ ) {
+    printf( "%s  %llu\n", comp_cdds[i]->cdd_name, comp_cdds[i]->unique_cps );
   }
 
   /* Step 2 - Start with the most unique CDDs */
@@ -1199,6 +1210,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.2.5  2008/07/02 04:40:18  phase1geo
+ Adding merge5* diagnostics to verify rank function (this is not complete yet).  The
+ rank function is a bit broken at this point.  Checkpointing.
+
  Revision 1.1.2.4  2008/07/01 23:08:58  phase1geo
  Initial working version of rank command.  Ranking algorithm needs some more
  testing at this point.  Checkpointing.
