@@ -38,6 +38,7 @@
 extern char** merge_in;
 extern int    merge_in_num;
 extern uint64 num_timesteps;
+extern char*  cdd_message;
 
 
 /*!
@@ -163,6 +164,11 @@ void info_db_write(
 
   fprintf( file, "\n" );
 
+  /* Display the CDD message, if there is one */
+  if( cdd_message != NULL ) {
+    fprintf( file, "%d %s\n", DB_TYPE_MESSAGE, cdd_message );
+  }
+
   PROFILE_END;
 
 }
@@ -286,6 +292,22 @@ void args_db_read(
 }
 
 /*!
+ Read user-specified message from specified string and stores its information.
+*/
+void message_db_read(
+  char** line  /*!< Pointer to string containing information line to parse */
+) { PROFILE(MESSAGE_DB_READ);
+
+  /* All we need to do is copy the message */
+  if( strlen( *line + 1 ) > 0 ) {
+    cdd_message = strdup_safe( *line + 1 );
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  Deallocates all memory associated with the database information section.  Needs to be called
  when the database is closed.
 */
@@ -317,12 +339,21 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
   }
   free_safe( merge_in, (sizeof( char* ) * merge_in_num) );
 
+  /* Free user message */
+  free_safe( cdd_message, (strlen( cdd_message ) + 1) );
+  cdd_message = NULL;
+
   PROFILE_END;
 
 }
 
 /*
  $Log$
+ Revision 1.36.2.2  2008/07/02 23:10:38  phase1geo
+ Checking in work on rank function and addition of -m option to score
+ function.  Added new diagnostics to verify beginning functionality.
+ Checkpointing.
+
  Revision 1.36.2.1  2008/07/01 06:17:22  phase1geo
  More updates to rank command.  Updating IV/Cver regression for these changes (full
  regression not passing at this point).  Checkpointing.

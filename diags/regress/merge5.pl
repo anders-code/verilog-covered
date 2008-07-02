@@ -23,7 +23,8 @@ if( $USE_VPI == 0 ) {
   &runRankCommand( "-o merge5.err merge5a.cdd merge5b.cdd merge5c.cdd merge5d.cdd merge5e.cdd merge5f.cdd merge5g.cdd" );
 
   # Check the difference and remove the CDD files, if necessary
-  &checkTest( "merge5", 7, 1 );
+  system( "touch merge5.cdd" ) && die;
+  &checkTest( "merge5", 8, 1 );
 
 }
 

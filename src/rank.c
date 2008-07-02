@@ -1,3 +1,18 @@
+/*
+ Copyright (c) 2006 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 /*!
  \file     rank.c
  \author   Trevor Williams  (phase1geo@gmail.com)
@@ -50,12 +65,25 @@ static unsigned int num_cps[CP_TYPE_NUM] = {0};
  Array containing the weights to be used for each of the CDD metric types.
 */
 static unsigned int cdd_type_weight[CP_TYPE_NUM] = {10,1,2,5,3,0};
+//static unsigned int cdd_type_weight[CP_TYPE_NUM] = {1,1,1,1,1,0};
+
+/*!
+ Set to TRUE when the user has specified the corresponding weight value on the command-line.  Allows us to
+ display a warning message to the user when multiple values are specified.
+*/
+static bool cdd_type_set[CP_TYPE_NUM] = {0};
 
 /*!
  If set to TRUE, outputs only the names of the CDD files in the order that they should be run.  This value
  is set to TRUE when the -names_only option is specified.
 */
 static bool flag_names_only = FALSE;
+
+/*!
+ Specifies the number of CDDs that must hit each coverage point before a CDD will be considered
+ unneeded.
+*/
+static unsigned int cp_depth = 0;
 
 
 /*!
@@ -105,75 +133,6 @@ static inline unsigned int rank_count_bits_uint64(
   v = (v & 0x00000000ffffffffLL) + ((v >> 32) & 0x00000000ffffffffLL);
   
   return( (unsigned int)v );
-
-}
-
-/*!
- Clears the contents of the given compressed CDD coverage structure.
-*/
-static void rank_clear_comp_cdd(
-  comp_cdd_cov* comp_cov  /*!< Pointer to compressed CDD coverage structure to clear */
-) { PROFILE(RANK_CLEAR_COMP_CDD);
-
-  unsigned int i, j;
-
-  comp_cov->total_cps  = 0;
-  comp_cov->unique_cps = 0;
-  
-  for( i=0; i<CP_TYPE_NUM; i++ ) {
-    for( j=0; j<((num_cps[i]>>3)+1); j++ ) {
-      comp_cov->cps[i][j] = 0;
-    }
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
- Merges the contents of the other compressed CDD coverage structure into the base.
-*/
-static void rank_merge_comp_cdd(
-  comp_cdd_cov* base,  /*!< Base compressed CDD coverage structure */
-  comp_cdd_cov* other  /*!< Compressed CDD coverage that will be merged into the base */
-) { PROFILE(RANK_MERGE);
-
-  unsigned int i, j;
-
-  base->total_cps  += other->unique_cps;
-  base->unique_cps += other->unique_cps;
-
-  for( i=0; i<CP_TYPE_NUM; i++ ) {
-    for( j=0; j<((num_cps[i]>>3)+1); j++ ) {
-      base->cps[i][j] |= other->cps[i][j];
-    }
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
- Performs difference of the merged and other compressed CDD coverage structures, storing the results
- in the other compressed CDD coverage structure.
-*/
-static void rank_diff_comp_cdd(
-  comp_cdd_cov* merged,  /*!< Merged version of all other compared CDD coverage structures */
-  comp_cdd_cov* other    /*!< Singular compressed CDD coverage structure to check difference and populate with result */
-) { PROFILE(RANK_DIFF);
-
-  unsigned int  i, j;
-  unsigned char diff;
-
-  other->unique_cps = 0;
-
-  for( i=0; i<CP_TYPE_NUM; i++ ) {
-    for( j=0; j<((num_cps[i]>>3)+1); j++ ) {
-      other->unique_cps += (uint64)rank_count_bits_uchar( merged->cps[i][j] ^ other->cps[i][j] );
-    }
-  }
-
-  PROFILE_END;
 
 }
 
@@ -247,22 +206,24 @@ static void rank_usage() {
   printf( "Usage:  covered rank [<options>] <database_to_rank> <database_to_rank>*\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-  printf( "      -line_weight <number>     Specifies a relative weighting for line coverage used to rank\n" );
-  printf( "                                  non-unique coverage points.\n" );
-  printf( "      -toggle_weight <number>   Specifies a relative weighting for toggle coverage used to rank\n" );
-  printf( "                                  non-unique coverage points.\n" );
-  printf( "      -memory_weight <number>   Specifies a relative weighting for memory coverage used to rank\n" );
-  printf( "                                  non-unique coverage points.\n" );
-  printf( "      -comb_weight <number>     Specifies a relative weighting for combinational logic coverage used\n" );
-  printf( "                                  to rank non-unique coverage points.\n" );
-  printf( "      -fsm_weight <number>      Specifies a relative weighting for FSM state/state transition coverage\n" );
-  printf( "                                  used to rank non-unique coverage points.\n" );
-  printf( "      -assert_weight <number>   Specifies a relative weighting for assertion coverage used to rank\n" );
-  printf( "                                  non-unique coverage points.\n" );
-  printf( "      -names_only               If specified, outputs only the needed CDD filenames that need to be\n" );
+  printf( "      -depth <number>           Specifies the minimum number of CDD files to hit each coverage point.\n" );
+  printf( "                                  The value of <number> should be a value of 1 or more.  Default is 1.\n" );
+  printf( "      -names-only               If specified, outputs only the needed CDD filenames that need to be\n" );
   printf( "                                  run in the order they need to be run.  If this option is not set, a\n" );
   printf( "                                  report-style output is provided with additional information.\n" );
   printf( "      -o <filename>             Name of file to output ranking information to.  Default is stdout.\n" );
+  printf( "      -weight-line <number>     Specifies a relative weighting for line coverage used to rank\n" );
+  printf( "                                  non-unique coverage points.\n" );
+  printf( "      -weight-toggle <number>   Specifies a relative weighting for toggle coverage used to rank\n" );
+  printf( "                                  non-unique coverage points.\n" );
+  printf( "      -weight-memory <number>   Specifies a relative weighting for memory coverage used to rank\n" );
+  printf( "                                  non-unique coverage points.\n" );
+  printf( "      -weight-comb <number>     Specifies a relative weighting for combinational logic coverage used\n" );
+  printf( "                                  to rank non-unique coverage points.\n" );
+  printf( "      -weight-fsm <number>      Specifies a relative weighting for FSM state/state transition coverage\n" );
+  printf( "                                  used to rank non-unique coverage points.\n" );
+  printf( "      -weight-assert <number>   Specifies a relative weighting for assertion coverage used to rank\n" );
+  printf( "                                  non-unique coverage points.\n" );
   printf( "      -h                        Displays this help information.\n" );
   printf( "\n" );
 
@@ -313,81 +274,133 @@ static void rank_parse_args(
         Throw 0;
       } 
 
-    } else if( strncmp( "-line_weight", argv[i], 12 ) == 0 ) {
+    } else if( strncmp( "-weight-line", argv[i], 12 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_LINE] ) != 1 ) {
-          print_output( "Value specified after -line_weight is not a number", FATAL, __FILE__, __LINE__ );
-          Throw 0;
+        if( cdd_type_set[CP_TYPE_LINE] ) {
+          print_output( "Only one -weight-line option is allowed on the rank command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        } else {
+          if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_LINE] ) != 1 ) {
+            print_output( "Value specified after -weight-line must be a number", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          } else {
+            cdd_type_set[CP_TYPE_LINE] = TRUE;
+          }
         }
       } else {
         Throw 0;
       }
 
-    } else if( strncmp( "-toggle_weight", argv[i], 14 ) == 0 ) {
+    } else if( strncmp( "-weight-toggle", argv[i], 14 ) == 0 ) {
   
       if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_TOGGLE] ) != 1 ) {
-          print_output( "Value specified after -toggle_weight is not a number", FATAL, __FILE__, __LINE__ );
-          Throw 0;
+        if( cdd_type_set[CP_TYPE_TOGGLE] ) {
+          print_output( "Only one -weight-toggle option is allowed on the rank command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        } else {
+          if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_TOGGLE] ) != 1 ) {
+            print_output( "Value specified after -weight-toggle must be a number", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          } else {
+            cdd_type_set[CP_TYPE_TOGGLE] = TRUE;
+          }
         }
       } else {
         Throw 0;
       }
 
-    } else if( strncmp( "-memory_weight", argv[i], 14 ) == 0 ) {
+    } else if( strncmp( "-weight-memory", argv[i], 14 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_MEM] ) != 1 ) {
-          print_output( "Value specified after -memory_weight is not a number", FATAL, __FILE__, __LINE__ );
-          Throw 0;
+        if( cdd_type_set[CP_TYPE_MEM] ) {
+          print_output( "Only one -weight-memory option is allowed on the rank command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        } else {
+          if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_MEM] ) != 1 ) {
+            print_output( "Value specified after -weight-memory must be a number", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          } else {
+            cdd_type_set[CP_TYPE_MEM] = TRUE;
+          }
         }
       } else {
         Throw 0;
       }
 
-    } else if( strncmp( "-comb_weight", argv[i], 12 ) == 0 ) {
+    } else if( strncmp( "-weight-comb", argv[i], 12 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
         i++; 
-        if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_LOGIC] ) != 1 ) {
-          print_output( "Value specified after -comb_weight is not a number", FATAL, __FILE__, __LINE__ );
-          Throw 0;
+        if( cdd_type_set[CP_TYPE_LOGIC] ) {
+          print_output( "Only one -weight-comb option is allowed on the rank command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        } else {
+          if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_LOGIC] ) != 1 ) {
+            print_output( "Value specified after -weight-comb must be a number", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          } else {
+            cdd_type_set[CP_TYPE_LOGIC] = TRUE;
+          }
         }
       } else {
         Throw 0;
       }
 
-    } else if( strncmp( "-fsm_weight", argv[i], 11 ) == 0 ) {
+    } else if( strncmp( "-weight-fsm", argv[i], 11 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_FSM] ) != 1 ) {
-          print_output( "Value specified after -fsm_weight is not a number", FATAL, __FILE__, __LINE__ );
-          Throw 0;
+        if( cdd_type_set[CP_TYPE_FSM] ) {
+          print_output( "Only one -weight-fsm option is allowed on the rank command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        } else {
+          if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_FSM] ) != 1 ) {
+            print_output( "Value specified after -weight-fsm must be a number", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          } else {
+            cdd_type_set[CP_TYPE_FSM] = TRUE;
+          }
         }
       } else {
         Throw 0;
       }
 
-    } else if( strncmp( "-assert_weight", argv[i], 14 ) == 0 ) {
+    } else if( strncmp( "-weight-assert", argv[i], 14 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_ASSERT] ) != 1 ) {
-          print_output( "Value specified after -assert_weight is not a number", FATAL, __FILE__, __LINE__ );
-          Throw 0;
+        if( cdd_type_set[CP_TYPE_ASSERT] ) {
+          print_output( "Only one -weight-assert option is allowed on the rank command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        } else {
+          if( sscanf( argv[i], "%u", &cdd_type_weight[CP_TYPE_ASSERT] ) != 1 ) {
+            print_output( "Value specified after -weight-assert must be a number", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          } else {
+            cdd_type_set[CP_TYPE_ASSERT] = TRUE;
+          }
         }
       } else {
         Throw 0;
       }
 
-    } else if( strncmp( "-names_only", argv[i], 11 ) == 0 ) {
+    } else if( strncmp( "-names-only", argv[i], 11 ) == 0 ) {
 
       flag_names_only = TRUE;
+
+    } else if( strncmp( "-depth", argv[i], 6 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( cp_depth == 0 ) {
+          print_output( "Only one -depth option is allowed on the rank command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        } else {
+          if( (sscanf( argv[i], "%u", &cp_depth ) != 1) || (cp_depth == 0) ) {
+            print_output( "Value specified after -depth must be a positive, non-zero number", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
+        }
+      } else {
+        Throw 0;
+      }
 
     } else {
 
@@ -418,6 +431,11 @@ static void rank_parse_args(
   if( rank_in_num < 2 ) {
     print_output( "Must specify at least two CDD files to rank", FATAL, __FILE__, __LINE__ );
     Throw 0;
+  }
+
+  /* If no -depth option was specified, set its value to 1 */
+  if( cp_depth == 0 ) {
+    cp_depth = 1;
   }
 
 }
@@ -869,10 +887,10 @@ static void rank_selected_cdd_cov(
     for( j=0; j<num_cps[i]; j++ ) {
       if( comp_cdds[next_cdd]->cps[i][j>>3] & (0x1 << (j & 0x7)) ) {
         /*
-         If we have not seen this coverage point get hit in the ranked list, increment the unique_cps value for the
-         selected compressed CDD coverage structure.
+         If we have not seen this coverage point get hit the needed "depth" amount in the ranked
+         list, increment the unique_cps value for the selected compressed CDD coverage structure.
         */
-        if( ranked_merged[merged_index] == 0 ) {
+        if( ranked_merged[merged_index] < cp_depth ) {
           comp_cdds[next_cdd]->unique_cps++;
         }
         unranked_merged[merged_index]--;
@@ -915,6 +933,7 @@ static void rank_perform_weighted_selection(
 
     unsigned int i, j, k;
     unsigned int highest_score = next_cdd;
+    uint64       x;
 
     /* Calculate current scores */
     for( i=next_cdd; i<comp_cdd_num; i++ ) {
@@ -925,10 +944,11 @@ static void rank_perform_weighted_selection(
         for( k=0; k<num_cps[j]; k++ ) {
 	  if( comp_cdds[i]->cps[j][k>>3] & (0x1 << (k & 0x7)) ) {
             total++;
-            if( ranked_merged[k] == 0 ) {
+            if( ranked_merged[x] < cp_depth ) {
               unique_found = TRUE;
             }
           }
+          x++;
         }
         comp_cdds[i]->score += ((total / (float)comp_cdds[i]->timesteps) * 100) * cdd_type_weight[j];
       }
@@ -941,6 +961,100 @@ static void rank_perform_weighted_selection(
     rank_selected_cdd_cov( comp_cdds, comp_cdd_num, ranked_merged, unranked_merged, next_cdd, highest_score );
 
   }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Re-sorts the compressed CDD coverage array to order them based on a "most coverage points per timestep" basis.
+*/
+static void rank_perform_greedy_sort(
+  /*@out@*/ comp_cdd_cov** comp_cdds,      /*!< Pointer to compressed CDD coverage structure array to re-sort */
+            unsigned int   comp_cdd_num,   /*!< Number of elements in comp-cdds array */
+            uint16*        ranked_merged,  /*!< Array for recalculating uniqueness of sorted elements */
+            uint64         num_ranked      /*!< Number of elements in ranked_merged array */
+) { PROFILE(RANK_PERFORM_GREEDY_SORT);
+
+  unsigned int  i, j, k, l;
+  unsigned int  best;
+  uint64        x;
+  comp_cdd_cov* tmp;
+
+#ifdef OBSOLETE
+  /* First, perform the sort */
+  for( i=0; i<comp_cdd_num; i++ ) {
+    best = i;
+    for( j=(i+1); j<comp_cdd_num; j++ ) {
+      if( (comp_cdds[best]->total_cps / (float)comp_cdds[best]->timesteps) < (comp_cdds[j]->total_cps / (float)comp_cdds[j]->timesteps) ) {
+        best = j;
+      }
+    }
+    tmp             = comp_cdds[i];
+    comp_cdds[i]    = comp_cdds[best];
+    comp_cdds[best] = tmp;
+  }
+
+  /* Recalcuate uniqueness information */
+  for( x=0; x<num_ranked; x++ ) {
+    ranked_merged[x] = 0;
+  }
+  for( i=0; i<comp_cdd_num; i++ ) {
+    x = 0;
+    comp_cdds[i]->unique_cps = 0;
+    for( j=0; j<CP_TYPE_NUM; j++ ) {
+      for( k=0; k<num_cps[j]; k++ ) {
+        if( comp_cdds[i]->cps[j][k>>3] & (0x1 << (k & 0x7)) ) {
+          if( ranked_merged[x] == 0 ) {
+            comp_cdds[i]->unique_cps++;
+          }
+          ranked_merged[x]++;
+        }
+        x++;
+      }
+    }
+  }
+#else
+  /* First, reset the ranked_merged array */
+  for( x=0; x<num_ranked; x++ ) {
+    ranked_merged[x] = 0;
+  }
+
+  /* Rank based on most unique from previously ranked CDDs */
+  for( i=0; i<comp_cdd_num; i++ ) {
+    best = i;
+    for( j=i; j<comp_cdd_num; j++ ) {
+      x = 0;
+      comp_cdds[j]->unique_cps = 0;
+      for( k=0; k<CP_TYPE_NUM; k++ ) {
+        for( l=0; l<num_cps[k]; l++ ) {
+          if( comp_cdds[j]->cps[k][l>>3] & (0x1 << (l & 0x7)) ) {
+            if( ranked_merged[x] == 0 ) {
+              comp_cdds[j]->unique_cps++;
+            }
+          }
+          x++;
+        }
+      }
+      if( (comp_cdds[best]->unique_cps < comp_cdds[j]->unique_cps) ||
+          (comp_cdds[best]->unique_cps == comp_cdds[j]->unique_cps) && (comp_cdds[best]->timesteps < comp_cdds[j]->timesteps) ) {
+        best = j;
+      }
+    }
+    tmp             = comp_cdds[i];
+    comp_cdds[i]    = comp_cdds[best];
+    comp_cdds[best] = tmp;
+    x = 0;
+    for( j=0; j<CP_TYPE_NUM; j++ ) {
+      for( k=0; k<num_cps[j]; k++ ) {
+        if( comp_cdds[i]->cps[j][k>>3] & (0x1 << (k & 0x7)) ) {
+          ranked_merged[x]++;
+        }
+        x++;
+      }
+    }
+  }
+#endif
 
   PROFILE_END;
 
@@ -1017,6 +1131,9 @@ static void rank_perform(
   if( next_cdd < comp_cdd_num ) {
     rank_perform_weighted_selection( comp_cdds, comp_cdd_num, ranked_merged, unranked_merged, total, next_cdd );
   }
+
+  /* Step 4 - Re-sort the list using a greedy algorithm */
+  rank_perform_greedy_sort( comp_cdds, comp_cdd_num, ranked_merged, total );
 
   /* Deallocate merged CDD coverage structure */
   free_safe( ranked_merged,   (sizeof( uint16 ) * total ) );
@@ -1205,6 +1322,11 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.2.7  2008/07/02 23:10:38  phase1geo
+ Checking in work on rank function and addition of -m option to score
+ function.  Added new diagnostics to verify beginning functionality.
+ Checkpointing.
+
  Revision 1.1.2.6  2008/07/02 13:51:24  phase1geo
  Fixing bug in read mode chosen for ranking.  Should have been a report-no-merge
  rather than a merge-no-merge flavor.

@@ -446,6 +446,13 @@ void db_read(
                 args_db_read( &rest_line );
               }
             
+            } else if( type == DB_TYPE_MESSAGE ) {
+ 
+              assert( !merge_mode );
+ 
+              /* Parse rest of line for user-supplied message */
+              message_db_read( &rest_line );
+    
             } else if( type == DB_TYPE_SIGNAL ) {
   
               assert( !merge_mode );
@@ -2901,6 +2908,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.316.2.2  2008/07/02 23:10:37  phase1geo
+ Checking in work on rank function and addition of -m option to score
+ function.  Added new diagnostics to verify beginning functionality.
+ Checkpointing.
+
  Revision 1.316.2.1  2008/07/01 06:17:21  phase1geo
  More updates to rank command.  Updating IV/Cver regression for these changes (full
  regression not passing at this point).  Checkpointing.

@@ -633,6 +633,46 @@ bool util_readline(
 }
 
 /*!
+ \return Returns TRUE if a quoted string was properly parsed; otherwise, returns FALSE.
+
+ Parses a double-quoted string from the file pointer if one exists.  Removes quotes.
+*/
+bool get_quoted_string(
+            FILE* file,  /*!< Pointer to file to parse */
+  /*@out@*/ char* line   /*!< User supplied character array to hold quoted string */
+) { PROFILE(GET_QUOTED_STRING);
+
+  bool found = FALSE;  /* Return value for this function */
+  char c[128];         /* Temporary whitespace storage */
+  int  i     = 0;      /* Loop iterator */
+
+  /* First, remove any whitespace and temporarily store it */
+  while( ((c[i] = getc( file )) != EOF) && isspace( c[i] ) ) i++;
+
+  /* If the character we are looking at is a double-quote, continue parsing */
+  if( c[i] == '"' ) {
+
+    i = 0;
+    while( ((line[i] = getc( file )) != EOF) && (line[i] != '"') ) i++;
+    line[i]  = '\0';
+    found = TRUE;
+
+  /* Otherwise, ungetc the collected characters */
+  } else {
+
+    for( ; i >= 0; i-- ) {
+      ungetc( c[i], file );
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( found );
+
+}
+
+/*!
  \param value  Input string that will be searched for environment variables
 
  \return Returns the given value with environment variables substituted in.  This value should
@@ -1371,6 +1411,11 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.98.2.2  2008/07/02 23:10:38  phase1geo
+ Checking in work on rank function and addition of -m option to score
+ function.  Added new diagnostics to verify beginning functionality.
+ Checkpointing.
+
  Revision 1.98.2.1  2008/07/01 23:08:58  phase1geo
  Initial working version of rank command.  Ranking algorithm needs some more
  testing at this point.  Checkpointing.

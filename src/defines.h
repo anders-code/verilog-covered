@@ -251,6 +251,11 @@
 */
 #define DB_TYPE_SU_END       10
 
+/*!
+ Specifies that the current coverage database line contains user-specified information
+*/
+#define DB_TYPE_MESSAGE      11
+
 /*! @} */
 
 /*!
@@ -2838,6 +2843,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.300.2.4  2008/07/02 23:10:37  phase1geo
+ Checking in work on rank function and addition of -m option to score
+ function.  Added new diagnostics to verify beginning functionality.
+ Checkpointing.
+
  Revision 1.300.2.3  2008/07/01 23:08:58  phase1geo
  Initial working version of rank command.  Ranking algorithm needs some more
  testing at this point.  Checkpointing.
