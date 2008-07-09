@@ -59,7 +59,7 @@ Causes OVL assertions to be used for assertion coverage.  This flag must be give
 \fB\-cdd\fR \fIdatabase</R>
 Same as the \-o option.
 .TP 
-\fB\-cli\fR \fI[filename]\fR
+\fB\-cli\fR [\fIfilename\fR]
 Causes the command\-line debugger to be used during VCD/LXT dumpfile scoring.  If \fIfilename\fR is specified, this file contains information saved in a previous call to savehist on the CLI and causes the history contained in this file to be replayed prior to the CLI command prompt.  If \fIfilename\fR is not specified, the CLI prompt will be immediately available at the start of simulation.  This option is only available when Covered is configured with the \fI\-\-enable\-debug\fR option.
 .TP 
 \fB\-D\fR \fIdefine_name\fR
@@ -83,7 +83,7 @@ Excludes all initial blocks from being considered for coverage.
 \fB\-ef\fR
 Excludes all final blocks from being considered for coverage.
 .TP 
-\fB\-ep [name]\fR
+\fB\-ep\fR [\fIname\fR]
 Excludes all code found between '// coverage off' and '// coverage on' pragmas embedded within the design.  If \fIname\fR is specified, the keyword in the pragma will be changed to that name instead of the default "coverage", allowing the user to change the look of the pragma if it conflicts with any other tools.
 .TP 
 \fB\-F\fR \fImodule_name=[in_expr,]out_expr\fR
@@ -205,34 +205,34 @@ Specifies the maximum line width (in characters) that can be used to output Veri
 The following options are valid with the rank command:
 .TP 
 \fB\-depth\fR \fInumber\fR
-Specifies the minimum number of CDD files to hit each coverage point.  The value of \fInumber\fR should be a value of 1 or more.  Default is 1.
-.TP 
+Specifies the minimum number of needed CDD files to hit each coverage point.  The value of \fInumber\fR should be greater than zero.  Default is 1.
+.TP
 \fB\-h\fR
-Displays help information to standard output.
-.TP 
-\fB\-names\-only\fR
-If specified, outputs only the needed CDD filenames that need to be run in the order they need to be run.  If this option is not set, a report\-style output is provided with additional statistical information.
-.TP 
+Displays help information for the rank command.
+.TP
+\fB-names-only\fR
+If specified, outputs only the needed CDD filenames that need to be run in the order they need to be run.  If this option is not set, a report-style output is provided with additional information.  This option is meant to be useful in scripts that only want CDD filenames to run as output.
+.TP
 \fB\-o\fR \fIfilename\fR
-Name of file to output ranking information to.  Default is stdout.
-.TP 
+Name of file to output ranking information to.  Default is standard output.
+.TP
 \fB\-weight\-assert\fR \fInumber\fR
-Specifies a relative weighting for assertion coverage used to rank non\-unique coverage points.
-.TP 
+Specifies a relative weighting for assertion coverage used to rank non-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-toggle\fR, \fB\-weight\-memory\fR, \fB\-weight\-comb\fR, \fB\-weight\-fsm\fR and \fB\-weight\-line\fR rank command options.
+.TP
 \fB\-weight\-comb\fR \fInumber\fR
-Specifies a relative weighting for combinational logic coverage used to rank non\-unique coverage points.
-.TP 
+Specifies a relative weighting for combinational logic coverage used to rank non-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-toggle\fR, \fB\-weight\-memory\fR, \fB\-weight\-assert\fR, \fB\-weight\-fsm\fR and \fB\-weight\-line\fR rank command options.
+.TP
 \fB\-weight\-fsm\fR \fInumber\fR
-Specifies a relative weighting for FSM state/state transition coverage used to rank non\-unique coverage points.
-.TP 
+Specifies a relative weighting for FSM state and state transition coverage used to rank non-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-toggle\fR, \fB\-weight\-memory\fR, \fB\-weight\-comb\fR, \fB\-weight\-assert\fR and \fB\-weight\-line\fR rank command options.
+.TP
 \fB\-weight\-line\fR \fInumber\fR
-Specifies a relative weighting for line coverage used to rank non\-unique coverage points.
-.TP 
+Specifies a relative weighting for line coverage used to rank non-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-toggle\fR, \fB\-weight\-memory\fR, \fB\-weight\-comb\fR, \fB\-weight\-fsm\fR and \fB\-weight\-assert\fR rank command options.
+.TP
 \fB\-weight\-memory\fR \fInumber\fR
-Specifies a relative weighting for memory coverage used to rank non\-unique coverage points.
-.TP 
+Specifies a relative weighting for memory coverage used to rank non-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-toggle\fR, \fB\-weight\-line\fR, \fB\-weight\-comb\fR, \fB\-weight\-fsm\fR and \fB\-weight\-assert\fR rank command options.
+.TP
 \fB\-weight\-toggle\fR \fInumber\fR
-Specifies a relative weighting for toggle coverage used to rank non\-unique coverage points.
+Specifies a relative weighting for toggle coverage used to rank non-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-memory\fR, \fB\-weight\-line\fR, \fB\-weight\-comb\fR, \fB\-weight\-fsm\fR and \fB\-weight\-assert\fR rank command options.
 .SH "USING COVERED AS A VPI MODULE"
 .TP 
 In addition to using Covered's score command to parse a VCD or LXT file to abstract coverage information, Covered may also be used as a VPI module within a simulator to extract this information.  The advantages to using Covered as a VPI over a dumpfile reader include the following.  First, VCD files can be extrememly large, especially for long simulations, using up valuable disk space.  Second, if you are using a simulator that dumps files in a different format than VCD or LXT and you want to convert these dump file types to one of these versions, the cost of disk space and time can make creating dumpfiles that Covered requires undesirable.  Additionally, though using Covered as a VPI module will slow down your simulation speed, it is most likely that the total time spent simulating your design and scoring the design in one step will be shorter than doing so in two steps.  As a result, Covered's configure utility can generate VPI\-ready libraries for the following free and commercial simulators (Icarus Verilog, CVER and VCS).
