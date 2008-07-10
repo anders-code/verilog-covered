@@ -31,8 +31,8 @@
       To get the MSB of the vector, simply add the width to the LSB and subtract one.
    -# A value array which contains the vector's current value and other coverage
       information gained during simulation.  This array is an array of unsigned long values
-      (or nibbles) whose length is determined by the width of the vector divided by four.
-      We divide the width by 4 because one nibble contains all of the information for
+      (or uint8s) whose length is determined by the width of the vector divided by four.
+      We divide the width by 4 because one uint8 contains all of the information for
       up to 4 bits of four-state data.  For a break-down of the bits within a nibble,
       please consult the \ref nibble table.
 */
@@ -143,8 +143,7 @@ vector* vector_create(
   bool data        /*!< If FALSE only initializes width but does not allocate a value array */
 ) { PROFILE(VECTOR_CREATE);
 
-  vector* new_vec;       /* Pointer to newly created vector */
-  ulong** value = NULL;  /* Temporarily stores newly created vector value */
+  vector* new_vec;  /* Pointer to newly created vector */
 
   assert( width > 0 );
 
@@ -156,7 +155,7 @@ vector* vector_create(
         ulong** value = NULL;
         if( data == TRUE ) {
           int          num  = vector_type_sizes[type];
-          int          size = UL_SIZE(width);
+          unsigned int size = UL_SIZE(width);
           unsigned int i;
           value = (ulong**)malloc_safe( sizeof( ulong* ) * size );
           for( i=0; i<size; i++ ) {
@@ -295,7 +294,7 @@ void vector_db_write(
   bool    net
 ) { PROFILE(VECTOR_DB_WRITE);
 
-  nibble mask;   /* Mask value for vector value nibbles */
+  uint8 mask;   /* Mask value for vector values */
 
   assert( vec != NULL );
   assert( vec->width > 0 );
@@ -312,7 +311,7 @@ void vector_db_write(
 
   /* Output vector information to specified file */
   /*@-formatcode@*/
-  fprintf( file, "%d %hhu",
+  fprintf( file, "%u %hhu",
     vec->width,
     (vec->suppl.all & VSUPPL_MASK)
   );
@@ -374,12 +373,14 @@ void vector_db_read(
   char**   line
 ) { PROFILE(VECTOR_DB_READ);
 
-  int    width;       /* Vector bit width */
-  vsuppl suppl;       /* Temporary supplemental value */
-  int    chars_read;  /* Number of characters read */
+  unsigned int width;       /* Vector bit width */
+  vsuppl       suppl;       /* Temporary supplemental value */
+  int          chars_read;  /* Number of characters read */
 
   /* Read in vector information */
-  if( sscanf( *line, "%d %hhu%n", &width, &suppl, &chars_read ) == 2 ) {
+  /*@-formatcode@*/
+  if( sscanf( *line, "%u %hhu%n", &width, &(suppl.all), &chars_read ) == 2 ) {
+  /*@=formatcode@*/
 
     *line = *line + chars_read;
 
@@ -409,7 +410,6 @@ void vector_db_read(
                       *line += chars_read;
                     } else {
                       print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                      // printf( "vector Throw A\n" ); - HIT
                       Throw 0;
                     }
 
@@ -447,7 +447,6 @@ void vector_db_read(
                   /* Otherwise, we don't know how to convert the value, so flag an error */
                   } else {
                     print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                    // printf( "vector Throw A.3\n" ); - HIT
                     Throw 0;
                   }
                 }
@@ -460,7 +459,6 @@ void vector_db_read(
       } Catch_anonymous {
         vector_dealloc( *vec );
         *vec = NULL;
-        // printf( "vector Throw B\n" ); - HIT
         Throw 0;
       }
 
@@ -474,7 +472,6 @@ void vector_db_read(
   } else {
 
     print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-    // printf( "vector Throw C\n" ); - HIT
     Throw 0;
 
   }
@@ -484,31 +481,29 @@ void vector_db_read(
 }
 
 /*!
- \param base  Base vector to merge data into.
- \param line  Pointer to line to parse for vector information.
- \param same  Specifies if vector to merge needs to be exactly the same as the existing vector.
-
  \throws anonymous Throw Throw Throw
 
  Parses current file line for vector information and performs vector merge of 
  base vector and read vector information.  If the vectors are found to be different
  (width is not equal), an error message is sent to the user and the
  program is halted.  If the vectors are found to be equivalents, the merge is
- performed on the vector nibbles.
+ performed on the vector elements.
 */
 void vector_db_merge(
-  vector* base,
-  char**  line,
-  bool    same
+  vector* base,  /*!< Base vector to merge data into */
+  char**  line,  /*!< Pointer to line to parse for vector information */
+  bool    same   /*!< Specifies if vector to merge needs to be exactly the same as the existing vector */
 ) { PROFILE(VECTOR_DB_MERGE);
 
-  int    width;       /* Width of read vector */
-  vsuppl suppl;       /* Supplemental value of vector */
-  int    chars_read;  /* Number of characters read */
+  unsigned int width;       /* Width of read vector */
+  vsuppl       suppl;       /* Supplemental value of vector */
+  int          chars_read;  /* Number of characters read */
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %hhu%n", &width, &suppl, &chars_read ) == 2 ) {
+  /*@-formatcode@*/
+  if( sscanf( *line, "%u %hhu%n", &width, &(suppl.all), &chars_read ) == 2 ) {
+  /*@=formatcode@*/
 
     *line = *line + chars_read;
 
@@ -517,7 +512,6 @@ void vector_db_merge(
       if( same ) {
         print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                       FATAL, __FILE__, __LINE__ );
-        // printf( "vector Throw D\n" ); - HIT
         Throw 0;
       }
 
@@ -546,7 +540,6 @@ void vector_db_merge(
                     }
                   } else {
                     print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-                    // printf( "vector Throw E\n" ); - HIT
                     Throw 0;
                   }
 
@@ -588,7 +581,6 @@ void vector_db_merge(
                 /* Otherwise, we don't know how to convert the value, so flag an error */
                 } else {
                   print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-                  // printf( "vector Throw E.3\n" ); - HIT
                   Throw 0;
                 }
               }
@@ -603,7 +595,6 @@ void vector_db_merge(
   } else {
 
     print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-    // printf( "vector Throw F\n" ); - HIT
     Throw 0;
 
   }
@@ -913,7 +904,7 @@ void vector_display_toggle01_ulong(
 
   for( i=UL_SIZE(width); i--; ) {
     for( j=bits_left; j>=0; j-- ) {
-      nib |= (((value[i][VTYPE_INDEX_SIG_TOG01] >> j) & 0x1) << ((unsigned)j % 4));
+      nib |= (((value[i][VTYPE_INDEX_SIG_TOG01] >> (unsigned int)j) & 0x1) << ((unsigned int)j % 4));
       if( (j % 4) == 0 ) {
         fprintf( ofile, "%1x", nib );
         nib = 0;
@@ -978,10 +969,10 @@ void vector_display_value_ulong(
 
   for( i=UL_SIZE(width); i--; ) {
     for( j=bits_left; j>=0; j-- ) {
-      if( ((value[i][VTYPE_INDEX_VAL_VALH] >> j) & 0x1) == 0 ) {
-        printf( "%d", ((value[i][VTYPE_INDEX_VAL_VALL] >> j) & 0x1) );
+      if( ((value[i][VTYPE_INDEX_VAL_VALH] >> (unsigned int)j) & 0x1) == 0 ) {
+        printf( "%lu", ((value[i][VTYPE_INDEX_VAL_VALL] >> (unsigned int)j) & 0x1) );
       } else {
-        if( ((value[i][VTYPE_INDEX_VAL_VALL] >> j) & 0x1) == 0 ) {
+        if( ((value[i][VTYPE_INDEX_VAL_VALL] >> (unsigned int)j) & 0x1) == 0 ) {
           printf( "x" );
         } else {
           printf( "z" );
@@ -997,13 +988,13 @@ void vector_display_value_ulong(
  Outputs the specified ulong value array to standard output as described by the
  width parameter.
 */
-void vector_display_nibble_ulong(
-  ulong** value,  /*!< Value array to display */
-  int     width,  /*!< Number of bits in array to display */
-  int      type   /*!< Type of vector to display */
+void vector_display_ulong(
+  ulong**      value,  /*!< Value array to display */
+  unsigned int width,  /*!< Number of bits in array to display */
+  unsigned int type   /*!< Type of vector to display */
 ) {
 
-  int i, j;  /* Loop iterator */
+  unsigned int i, j;  /* Loop iterator */
 
   for( i=0; i<vector_type_sizes[type]; i++ ) {
     for( j=UL_SIZE(width); j--; ) {
@@ -1013,7 +1004,7 @@ void vector_display_nibble_ulong(
     }
   }
 
-  /* Display nibble value */
+  /* Display value */
   printf( ", " );
   vector_display_value_ulong( value, width );
 
@@ -1021,11 +1012,11 @@ void vector_display_nibble_ulong(
 
     case VTYPE_SIG :
 
-      /* Display nibble toggle01 history */
+      /* Display toggle01 history */
       printf( ", 0->1: " );
       vector_display_toggle01_ulong( value, width, stdout );
 
-      /* Display nibble toggle10 history */
+      /* Display toggle10 history */
       printf( ", 1->0: " );
       vector_display_toggle10_ulong( value, width, stdout );
 
@@ -1034,7 +1025,7 @@ void vector_display_nibble_ulong(
     case VTYPE_EXP :
 
       /* Display eval_a information */
-      printf( ", a: %d'h", width );
+      printf( ", a: %u'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
@@ -1048,7 +1039,7 @@ void vector_display_nibble_ulong(
       }
 
       /* Display eval_b information */
-      printf( ", b: %d'h", width );
+      printf( ", b: %u'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
@@ -1060,7 +1051,7 @@ void vector_display_nibble_ulong(
       }
 
       /* Display eval_c information */
-      printf( ", c: %d'h", width );
+      printf( ", c: %u'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
@@ -1072,7 +1063,7 @@ void vector_display_nibble_ulong(
       }
 
       /* Display eval_d information */
-      printf( ", d: %d'h", width );
+      printf( ", d: %u'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
@@ -1087,16 +1078,16 @@ void vector_display_nibble_ulong(
 
     case VTYPE_MEM :
   
-      /* Display nibble toggle01 history */
+      /* Display toggle01 history */
       printf( ", 0->1: " );
       vector_display_toggle01_ulong( value, width, stdout );
 
-      /* Display nibble toggle10 history */
+      /* Display toggle10 history */
       printf( ", 1->0: " );
       vector_display_toggle10_ulong( value, width, stdout );
 
       /* Write history */
-      printf( ", wr: %d'h", width );
+      printf( ", wr: %u'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
@@ -1108,7 +1099,7 @@ void vector_display_nibble_ulong(
       }
 
       /* Read history */
-      printf( ", rd: %d'h", width );
+      printf( ", rd: %u'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
@@ -1139,12 +1130,12 @@ void vector_display(
   assert( vec != NULL );
 
   /*@-formatcode@*/
-  printf( "Vector (%p) => width: %d, suppl: %hhx\n", vec, vec->width, vec->suppl.all );
+  printf( "Vector (%p) => width: %u, suppl: %hhx\n", vec, vec->width, vec->suppl.all );
   /*@=formatcode@*/
 
   if( (vec->width > 0) && (vec->value.ul != NULL) ) {
     switch( vec->suppl.part.data_type ) {
-      case VDATA_UL :  vector_display_nibble_ulong( vec->value.ul, vec->width, vec->suppl.part.type );  break;
+      case VDATA_UL :  vector_display_ulong( vec->value.ul, vec->width, vec->suppl.part.type );  break;
       default       :  assert( 0 );  break;
     }
   } else {
@@ -1156,18 +1147,14 @@ void vector_display(
 }
 
 /*!
- \param vec        Pointer to vector to parse.
- \param tog01_cnt  Number of bits in vector that toggled from 0 to 1.
- \param tog10_cnt  Number of bits in vector that toggled from 1 to 0.
-
  Walks through specified vector counting the number of toggle01 bits that
  are set and the number of toggle10 bits that are set.  Adds these values
  to the contents of tog01_cnt and tog10_cnt.
 */
 void vector_toggle_count(
-  vector* vec,
-  int*    tog01_cnt,
-  int*    tog10_cnt
+            vector*       vec,        /*!< Pointer to vector to parse */
+  /*@out@*/ unsigned int* tog01_cnt,  /*!< Number of bits in vector that toggled from 0 to 1 */
+  /*@out@*/ unsigned int* tog10_cnt   /*!< Number of bits in vector that toggled from 1 to 0 */
 ) { PROFILE(VECTOR_TOGGLE_COUNT);
 
   if( (vec->suppl.part.type == VTYPE_SIG) || (vec->suppl.part.type == VTYPE_MEM) ) {
@@ -1197,11 +1184,11 @@ void vector_toggle_count(
  vector.
 */
 void vector_mem_rw_count(
-  vector* vec,     /*!< Pointer to vector to parse */
-  int     lsb,     /*!< Least-significant bit of memory element to get information for */
-  int     msb,     /*!< Most-significant bit of memory element to get information for */
-  int*    wr_cnt,  /*!< Pointer to number of bits in vector that were written */
-  int*    rd_cnt   /*!< Pointer to number of bits in vector that were read */
+  vector*       vec,     /*!< Pointer to vector to parse */
+  int           lsb,     /*!< Least-significant bit of memory element to get information for */
+  int           msb,     /*!< Most-significant bit of memory element to get information for */
+  unsigned int* wr_cnt,  /*!< Pointer to number of bits in vector that were written */
+  unsigned int* rd_cnt   /*!< Pointer to number of bits in vector that were read */
 ) { PROFILE(VECTOR_MEM_RW_COUNT);
 
   unsigned int i, j;  /* Loop iterator */
@@ -1248,16 +1235,16 @@ bool vector_set_assigned(
   bool prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
 
   assert( vec != NULL );
-  assert( (msb - lsb) < vec->width );
+  assert( ((msb - lsb) < 0) || ((unsigned int)(msb - lsb) < vec->width) );
   assert( vec->suppl.part.type == VTYPE_SIG );
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
       {
-        ulong        lmask     = UL_LMASK(lsb);
-        ulong        hmask     = UL_HMASK(msb);
-        unsigned int i         = UL_DIV(lsb);
-        unsigned int msb_index = UL_DIV(msb);
+        ulong lmask     = UL_LMASK(lsb);
+        ulong hmask     = UL_HMASK(msb);
+        int   i         = UL_DIV(lsb);
+        int   msb_index = UL_DIV(msb);
         if( i == msb_index ) {
           lmask &= hmask;
           prev_assigned = ((vec->value.ul[i][VTYPE_INDEX_SIG_MISC] & lmask) != 0);
@@ -1310,7 +1297,7 @@ bool vector_set_coverage_and_assign_ulong(
   ulong        lmask   = UL_LMASK(lsb);  /* Mask to be used in lower element */
   ulong        hmask   = UL_HMASK(msb);  /* Mask to be used in upper element */
   unsigned int i;                        /* Loop iterator */
-  nibble       prev_set;                 /* Specifies if this vector value has previously been set */
+  uint8        prev_set;                 /* Specifies if this vector value has previously been set */
 
   /* If the lindex and hindex are the same, set lmask to the AND of the high and low masks */
   if( lindex == hindex ) {
@@ -1405,6 +1392,8 @@ inline static void vector_get_sign_extend_vector_ulong(
   *signl = ((entry[VTYPE_INDEX_VAL_VALL] & last_mask) != 0) ? UL_SET : 0;
   *signh = ((entry[VTYPE_INDEX_VAL_VALH] & last_mask) != 0) ? UL_SET : 0;
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -1415,17 +1404,22 @@ static void vector_sign_extend_ulong(
   ulong* valh,   /*!< Pointer to upper value array to bit fill */
   ulong  signl,  /*!< Sign-extension value for the lower value (call vector_get_sign_extend_vector_ulong) */
   ulong  signh,  /*!< Sign-extension value for the upper value (call vector_get_sign_extend_vector_ulong) */
-  int     last,   /*!< Index of last bit in vall/h to evalulate for bit fill */
-  int     width   /*!< Width of vall/h to fill */
+  int    last,   /*!< Index of last bit in vall/h to evalulate for bit fill */
+  int    width   /*!< Width of vall/h to fill */
 ) { PROFILE(VECTOR_SIGN_EXTEND_ULONG);
 
   /* If any special sign-extension is necessary, handle it now */
   if( (signl != 0) || (signh != 0) ) {
-    unsigned int i     = UL_DIV(last + 1);
-    ulong        fmask = UL_LMASK(last + 1);
-    unsigned int size  = UL_SIZE( width );
-    vall[i] |= signl & fmask;
-    valh[i] |= signh & fmask;
+    unsigned int i    = UL_DIV(last + 1);
+    unsigned int size = UL_SIZE( width );
+    if( UL_MOD(last + 1) == 0 ) {
+      vall[i] = signl;
+      valh[i] = signh;
+    } else {
+      ulong fmask = UL_LMASK(last + 1);
+      vall[i] |= signl & fmask;
+      valh[i] |= signh & fmask;
+    }
     for( i++; i<size; i++ ) {
       vall[i] = signl;
       valh[i] = signh;
@@ -1444,8 +1438,8 @@ static void vector_lshift_ulong(
   const vector* vec,   /*!< Pointer to vector containing value that we want to left-shift */
   ulong*        vall,  /*!< Pointer to intermediate value array containing lower bits of shifted value */
   ulong*        valh,  /*!< Pointer to intermediate value array containing upper bits of shifted value */
-  unsigned int  lsb,   /*!< LSB offset */
-  unsigned int  msb    /*!< MSB offset */
+  int           lsb,   /*!< LSB offset */
+  int           msb    /*!< MSB offset */
 ) { PROFILE(VECTOR_LSHIFT_ULONG);
 
   unsigned int diff = UL_DIV(msb) - UL_DIV(vec->width - 1);
@@ -1533,8 +1527,8 @@ static void vector_rshift_ulong(
   const vector* vec,   /*!< Pointer to vector containing value that we want to right-shift */
   ulong*        vall,  /*!< Pointer to intermediate value array containing lower bits of shifted value */
   ulong*        valh,  /*!< Pointer to intermediate value array containing upper bits of shifted value */
-  unsigned int  lsb,   /*!< LSB of vec range to shift */
-  unsigned int  msb    /*!< MSB of vec range to shift */
+  int           lsb,   /*!< LSB of vec range to shift */
+  int           msb    /*!< MSB of vec range to shift */
 ) { PROFILE(VECTOR_RSHIFT_ULONG);
 
   int          diff   = UL_DIV(lsb);
@@ -1573,7 +1567,7 @@ static void vector_rshift_ulong(
     vall[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & lmask;
     valh[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & lmask;
 
-    for( i=((i-diff)+1); i<=UL_DIV(vec->width); i++ ) {
+    for( i=((i-diff)+1); i<UL_DIV(vec->width); i++ ) {
       vall[i] = 0;
       valh[i] = 0;
     }
@@ -1612,10 +1606,6 @@ static void vector_rshift_ulong(
 }
 
 /*!
- \param vec    Pointer to vector to set value to.
- \param value  New value to set vector value to.
- \param width  Width of new value.
-
  \return Returns TRUE if assignment was performed; otherwise, returns FALSE.
 
  Allows the calling function to set any bit vector within the vector
@@ -1625,9 +1615,9 @@ static void vector_rshift_ulong(
  toggle values, sets the new value to this value and returns.
 */
 bool vector_set_value_ulong(
-  vector* vec,
-  ulong** value,
-  int     width
+  vector*      vec,    /*!< Pointer to vector to set value to */
+  ulong**      value,  /*!< New value to set vector value to */
+  unsigned int width   /*!< Width of new value */
 ) { PROFILE(VECTOR_SET_VALUE);
 
   bool  retval = FALSE;                   /* Return value for this function */
@@ -1647,7 +1637,7 @@ bool vector_set_value_ulong(
   v2st = vec->suppl.part.is_2state << 1;
 
   /* Set upper bits to 0 */
-  for( i=UL_DIV(vec->width - 1); i>UL_DIV(width - 1); i-- ) {
+  for( i=UL_DIV(vec->width - 1); (unsigned int)i>UL_DIV(width - 1); i-- ) {
     scratchl[i] = 0;
     scratchh[i] = 0;
   }
@@ -1740,7 +1730,7 @@ bool vector_part_select_push(
         vector_get_sign_extend_vector_ulong( src, &signl, &signh );
 
         /* If the LSB to assign exceeds the size of the actual vector, just create a value based on the signedness */
-        if( src_lsb >= src->width ) {
+        if( (src_lsb > 0) && ((unsigned int)src_lsb >= src->width) ) {
 
           if( sign_extend && ((signl != 0) || (signh != 0)) ) {
             vector_sign_extend_ulong( vall, valh, signl, signh, (tgt_lsb - 1), tgt->width );
@@ -1844,8 +1834,8 @@ void vector_set_and_comb_evals(
 
         for( i=0; i<size; i++ ) {
           ulong* val    = tgt->value.ul[i];
-          ulong* lval   = left->value.ul[i];
-          ulong* rval   = right->value.ul[i];
+          ulong* lval   = (i < lsize) ? left->value.ul[i]  : 0;
+          ulong* rval   = (i < rsize) ? right->value.ul[i] : 0;
           ulong  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
           ulong  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : UL_SET;
           ulong  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
@@ -1889,8 +1879,8 @@ void vector_set_or_comb_evals(
 
         for( i=0; i<size; i++ ) {
           ulong* val    = tgt->value.ul[i];
-          ulong* lval   = left->value.ul[i];
-          ulong* rval   = right->value.ul[i];
+          ulong* lval   = (i < lsize) ? left->value.ul[i]  : 0;
+          ulong* rval   = (i < rsize) ? right->value.ul[i] : 0;
           ulong  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
           ulong  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : UL_SET;
           ulong  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
@@ -1934,8 +1924,8 @@ void vector_set_other_comb_evals(
 
         for( i=0; i<size; i++ ) { 
           ulong* val    = tgt->value.ul[i];
-          ulong* lval   = left->value.ul[i];
-          ulong* rval   = right->value.ul[i];
+          ulong* lval   = (i < lsize) ? left->value.ul[i]  : 0;
+          ulong* rval   = (i < rsize) ? right->value.ul[i] : 0;
           ulong  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
           ulong  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : UL_SET;
           ulong  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
@@ -2048,6 +2038,8 @@ bool vector_set_to_x(
 
   PROFILE_END;
 
+  return( retval );
+
 }
 
 /*!
@@ -2072,7 +2064,7 @@ int vector_to_int(
 
   /* If the vector is signed, sign-extend the integer */
   if( vec->suppl.part.is_signed == 1 ) {
-    int width = (vec->width > 32) ? 32 : vec->width;
+    unsigned int width = (vec->width > 32) ? 32 : vec->width;
     retval |= (UL_SET * ((retval >> (width - 1)) & 0x1)) << width;
   }
 
@@ -2110,7 +2102,7 @@ uint64 vector_to_uint64(
 
   /* If the vector is signed, sign-extend the integer */
   if( vec->suppl.part.is_signed == 1 ) {
-    int width = (vec->width > 64) ? 64 : vec->width;
+    unsigned int width = (vec->width > 64) ? 64 : vec->width;
     retval |= (UINT64(0xffffffffffffffff) * ((retval >> (width - 1)) & 0x1)) << width;
   }
 
@@ -2206,24 +2198,18 @@ void vector_from_uint64(
 }
 
 /*!
- \param vec            Pointer to vector to add static value to.
- \param str            Value string to add.
- \param bits_per_char  Number of bits necessary to store a value character (1, 3, or 4).
-
  Iterates through string str starting at the left-most character, calculates the int value
  of the character and sets the appropriate number of bits in the specified vector locations.
 */
 static void vector_set_static(
-  vector* vec,
-  char*   str,
-  int     bits_per_char
+  vector*      vec,           /*!< Pointer to vector to add static value to */
+  char*        str,           /*!< Value string to add */
+  unsigned int bits_per_char  /*!< Number of bits necessary to store a value character (1, 3, or 4) */
 ) { PROFILE(VECTOR_SET_STATIC);
 
   char*        ptr       = str + (strlen( str ) - 1);  /* Pointer to current character evaluating */
   unsigned int pos       = 0;                          /* Current bit position in vector */
   unsigned int i;                                      /* Loop iterator */
-  ulong        ull       = 0;                          /* unsigned long */
-  ulong        ulh       = 0;                          /* unsigned long */
   int          data_type = vec->suppl.part.data_type;  /* Copy of data type for performance reasons */
 
   while( ptr >= str ) {
@@ -2357,18 +2343,18 @@ char* vector_to_string(
 
   } else if( base == DECIMAL ) {
 
-    char width_str[20];
-
-    snprintf( width_str, 20, "%d", vector_to_int( vec ) );
+    char         width_str[20];
+    unsigned int rv = snprintf( width_str, 20, "%d", vector_to_int( vec ) );
+    assert( rv < 20 );
     str = strdup_safe( width_str );
  
   } else {
 
     unsigned int rv;
     char*        tmp;
-    int          str_size;
-    unsigned int group;
-    char         type_char;
+    unsigned int str_size;
+    unsigned int group     = 1;
+    char         type_char = 'b';
     char         width_str[20];
     int          vec_size  = ((vec->width - 1) >> 3) + 2;
     int          pos       = 0;
@@ -2450,14 +2436,14 @@ char* vector_to_string(
 
     tmp[pos] = '\0';
 
-    rv = snprintf( width_str, 20, "%d", vec->width );
+    rv = snprintf( width_str, 20, "%u", vec->width );
     assert( rv < 20 );
     str_size = strlen( width_str ) + 2 + strlen( tmp ) + 1 + vec->suppl.part.is_signed;
     str      = (char*)malloc_safe( str_size );
     if( vec->suppl.part.is_signed == 0 ) {
-      rv = snprintf( str, str_size, "%d'%c%s", vec->width, type_char, tmp );
+      rv = snprintf( str, str_size, "%u'%c%s", vec->width, type_char, tmp );
     } else {
-      rv = snprintf( str, str_size, "%d's%c%s", vec->width, type_char, tmp );
+      rv = snprintf( str, str_size, "%u's%c%s", vec->width, type_char, tmp );
     }
     assert( rv < str_size );
 
@@ -2483,14 +2469,13 @@ void vector_from_string(
   int*     base    /*!< Base type of string value parsed */
 ) { PROFILE(VECTOR_FROM_STRING);
 
-  int          bits_per_char;         /* Number of bits represented by a single character in the value string str */
-  int          size;                  /* Specifies bit width of vector to create */
-  char         value[MAX_BIT_WIDTH];  /* String to store string value in */
-  char         stype[2];              /* Temporary holder for type of string being parsed */
-  int          chars_read;            /* Number of characters read by a sscanf() function call */
-  int          i;                     /* Loop iterator */
-  unsigned int j;                     /* Loop iterator */
-  int          pos;                   /* Bit position */
+  int  bits_per_char;         /* Number of bits represented by a single character in the value string str */
+  int  size;                  /* Specifies bit width of vector to create */
+  char value[MAX_BIT_WIDTH];  /* String to store string value in */
+  char stype[3];              /* Temporary holder for type of string being parsed */
+  int  chars_read;            /* Number of characters read by a sscanf() function call */
+  int  i;                     /* Loop iterator */
+  int  pos;                   /* Bit position */
 
   if( quoted ) {
 
@@ -2603,11 +2588,6 @@ void vector_from_string(
 }
 
 /*!
- \param vec    Pointer to vector to set value to.
- \param value  String version of VCD value.
- \param msb    Most significant bit to assign to.
- \param lsb    Least significant bit to assign to.
-
  \return Returns TRUE if assigned value differs from the original value; otherwise,
          returns FALSE.
 
@@ -2618,19 +2598,19 @@ void vector_from_string(
  of the vector.  The specified value string is assumed to be in binary format.
 */
 bool vector_vcd_assign(
-  vector*     vec,
-  const char* value,
-  int         msb,
-  int         lsb
+  vector*     vec,    /*!< Pointer to vector to set value to */
+  const char* value,  /*!< String version of VCD value */
+  int         msb,    /*!< Most significant bit to assign to */
+  int         lsb     /*!< Least significant bit to assign to */
 ) { PROFILE(VECTOR_VCD_ASSIGN);
 
-  bool          retval = FALSE;  /* Return value for this function */
-  const char*   ptr;             /* Pointer to current character under evaluation */
-  int           i;               /* Loop iterator */
+  bool        retval = FALSE;  /* Return value for this function */
+  const char* ptr;             /* Pointer to current character under evaluation */
+  int         i;               /* Loop iterator */
 
   assert( vec != NULL );
   assert( value != NULL );
-  assert( msb <= vec->width );
+  assert( (msb < 0) || ((unsigned int)msb <= vec->width) );
 
   /* Set pointer to LSB */
   ptr = (value + strlen( value )) - 1;
@@ -2686,10 +2666,6 @@ bool vector_vcd_assign(
 }
 
 /*!
- \param tgt    Target vector for operation results to be stored.
- \param src1   Source vector 1 to perform operation on.
- \param src2   Source vector 2 to perform operation on.
-
  \return Returns TRUE if assigned value differs from original vector value; otherwise,
          returns FALSE.
 
@@ -2697,9 +2673,9 @@ bool vector_vcd_assign(
  placing zeroes.
 */
 bool vector_bitwise_and_op(
-  vector* tgt,
-  vector* src1,
-  vector* src2
+  vector* tgt,   /*!< Target vector for operation results to be stored */
+  vector* src1,  /*!< Source vector 1 to perform operation on */
+  vector* src2   /*!< Source vector 2 to perform operation on */
 ) { PROFILE(VECTOR_BITWISE_AND_OP);
   
   bool retval;  /* Return value for this function */
@@ -2709,8 +2685,8 @@ bool vector_bitwise_and_op(
       { 
         ulong        scratchl[UL_DIV(MAX_BIT_WIDTH)];
         ulong        scratchh[UL_DIV(MAX_BIT_WIDTH)];
-        int          src1_size = UL_SIZE(src1->width);
-        int          src2_size = UL_SIZE(src2->width);
+        unsigned int src1_size = UL_SIZE(src1->width);
+        unsigned int src2_size = UL_SIZE(src2->width);
         unsigned int i;
         for( i=0; i<UL_SIZE(tgt->width); i++ ) {
           ulong* entry1 = src1->value.ul[i];
@@ -2758,9 +2734,9 @@ bool vector_bitwise_nand_op(
       {
         static ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];
         static ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];
-        int          src1_size = UL_SIZE(src1->width);
-        int          src2_size = UL_SIZE(src2->width);
-        unsigned int  i;
+        unsigned int src1_size = UL_SIZE(src1->width);
+        unsigned int src2_size = UL_SIZE(src2->width);
+        unsigned int i;
         for( i=0; i<UL_SIZE(tgt->width); i++ ) {
           ulong* entry1 = src1->value.ul[i];
           ulong* entry2 = src2->value.ul[i];
@@ -2807,9 +2783,9 @@ bool vector_bitwise_or_op(
       {
         static ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];
         static ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];
-        int          src1_size = UL_SIZE(src1->width);
-        int          src2_size = UL_SIZE(src2->width);
-        unsigned int  i;
+        unsigned int src1_size = UL_SIZE(src1->width);
+        unsigned int src2_size = UL_SIZE(src2->width);
+        unsigned int i;
         for( i=0; i<UL_SIZE(tgt->width); i++ ) {
           ulong* entry1 = src1->value.ul[i];
           ulong* entry2 = src2->value.ul[i];
@@ -2833,10 +2809,6 @@ bool vector_bitwise_or_op(
 }
 
 /*!
- \param tgt    Target vector for operation results to be stored.
- \param src1   Source vector 1 to perform operation on.
- \param src2   Source vector 2 to perform operation on.
-
  \return Returns TRUE if assigned value differs from original vector value; otherwise,
          returns FALSE.
 
@@ -2844,9 +2816,9 @@ bool vector_bitwise_or_op(
  placing zeroes.
 */
 bool vector_bitwise_nor_op(
-  vector* tgt,
-  vector* src1,
-  vector* src2
+  vector* tgt,   /*!< Target vector for operation results to be stored */
+  vector* src1,  /*!< Source vector 1 to perform operation on */
+  vector* src2   /*!< Source vector 2 to perform operation on */
 ) { PROFILE(VECTOR_BITWISE_NOR_OP);
 
   bool retval;  /* Return value for this function */
@@ -2856,9 +2828,9 @@ bool vector_bitwise_nor_op(
       {
         static ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];
         static ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];
-        int          src1_size = UL_SIZE(src1->width);
-        int          src2_size = UL_SIZE(src2->width);
-        unsigned int  i;
+        unsigned int src1_size = UL_SIZE(src1->width);
+        unsigned int src2_size = UL_SIZE(src2->width);
+        unsigned int i;
         for( i=0; i<UL_SIZE(tgt->width); i++ ) {
           ulong* entry1 = src1->value.ul[i];
           ulong* entry2 = src2->value.ul[i];
@@ -2905,9 +2877,9 @@ bool vector_bitwise_xor_op(
       {
         static ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];
         static ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];
-        int          src1_size = UL_SIZE(src1->width);
-        int          src2_size = UL_SIZE(src2->width);
-        unsigned int  i;
+        unsigned int src1_size = UL_SIZE(src1->width);
+        unsigned int src2_size = UL_SIZE(src2->width);
+        unsigned int i;
         for( i=0; i<UL_SIZE(tgt->width); i++ ) {
           ulong* entry1 = src1->value.ul[i];
           ulong* entry2 = src2->value.ul[i];
@@ -2954,9 +2926,9 @@ bool vector_bitwise_nxor_op(
       { 
         static ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];
         static ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];
-        int          src1_size = UL_SIZE(src1->width);
-        int          src2_size = UL_SIZE(src2->width);
-        unsigned int  i;
+        unsigned int src1_size = UL_SIZE(src1->width);
+        unsigned int src2_size = UL_SIZE(src2->width);
+        unsigned int i;
         for( i=0; i<UL_SIZE(tgt->width); i++ ) {
           ulong* entry1 = src1->value.ul[i];
           ulong* entry2 = src2->value.ul[i];
@@ -3880,8 +3852,7 @@ bool vector_op_add(
 */
 bool vector_op_negate(
   vector*       tgt,  /*!< Pointer to vector that will be assigned the new value */
-  const vector* src,  /*!< Pointer to vector that will be negated */
-  vecblk*       tvb   /*!< Pointer to extra memory that can be used for temporary data storage */
+  const vector* src   /*!< Pointer to vector that will be negated */
 ) { PROFILE(VECTOR_OP_NEGATE);
 
   bool retval;  /* Return value for this function */
@@ -3946,7 +3917,6 @@ bool vector_op_negate(
  \param tgt    Target vector for storage of results.
  \param left   Expression value on left side of - sign.
  \param right  Expression value on right side of - sign.
- \param tvb    Pointer to vector block
 
  \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
 
@@ -3957,8 +3927,7 @@ bool vector_op_negate(
 bool vector_op_subtract(
   vector*       tgt,
   const vector* left,
-  const vector* right,
-  vecblk*       tvb
+  const vector* right
 ) { PROFILE(VECTOR_OP_SUBTRACT);
 
   bool retval;  /* Return value for this function */
@@ -3982,7 +3951,6 @@ bool vector_op_subtract(
           ulong        lvall, lvalh;
           ulong        rvall, rvalh;
           unsigned int i;
-          ulong        signl, signh;
           for( i=0; i<UL_SIZE( tgt->width ); i++ ) {
             vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
             vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh ); 
@@ -4207,7 +4175,7 @@ bool vector_op_dec(
   }
 
   /* Finally add the values and assign them back to the target */
-  (void)vector_op_subtract( tgt, tmp1, tmp2, tvb );
+  (void)vector_op_subtract( tgt, tmp1, tmp2 );
 
   PROFILE_END;
 
@@ -4731,6 +4699,41 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.142.2.3  2008/07/10 22:43:55  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.150  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
+ Revision 1.149  2008/06/25 12:38:32  phase1geo
+ Fixing one issue with an array overflow in the stype array (array should have
+ been 3 characters long when it was only two).  This is an attempt to fix bug
+ 2001894 though I am unable to confirm it at this time.
+
+ Revision 1.148  2008/06/23 15:55:25  phase1geo
+ Fixing other vector issues related to bug 2000732.
+
+ Revision 1.147  2008/06/23 15:48:33  phase1geo
+ Fixing bug 2000732.
+
+ Revision 1.146  2008/06/22 22:02:02  phase1geo
+ Fixing regression issues.
+
+ Revision 1.145  2008/06/20 15:48:23  phase1geo
+ Fixing bug 1994896.  Also removing some commented out printf lines that are
+ no longer necessary.
+
+ Revision 1.144  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
+ Revision 1.143  2008/06/16 23:10:43  phase1geo
+ Fixing cdd_diff script for error found while running regressions.  Also integrating
+ source code fixes from the covered-20080603-branch2 branch.  Full regression passes.
+
  Revision 1.142.2.2  2008/06/16 04:35:21  phase1geo
  Fixing reading issue with vectors that seems to pop up when running on a 64-bit
  machine with the -m32 option.
