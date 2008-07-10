@@ -116,8 +116,14 @@ proc menu_create {} {
   $tfm add cascade -label "Generate" -menu $tfm.gen -underline 0
   menu $tfm.gen -tearoff false
   # FILE-GEN - entry 0
+  $tfm.gen add command -label "New CDD..." -accelerator "Ctrl-n" -command {
+    create_new_cdd
+  }
   $tfm.gen add command -label "ASCII Report..." -accelerator "Ctrl-r" -state disabled -command {
     create_report_selection_window
+  }
+  $tfm.gen add command -label "CDD Ranking Report..." -accelerator "Ctrl-g" -state disabled -command {
+    puts "NEED TO ADD CDD ranking report support"
   }
 
   # We don't need the exit function if we are running the Aqua version

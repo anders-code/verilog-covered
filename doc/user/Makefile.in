@@ -14,7 +14,6 @@
 
 @SET_MAKE@
 
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -33,7 +32,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = scripts
+subdir = doc/user
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -43,19 +42,22 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(tcldir)" "$(DESTDIR)$(cfgdir)"
-tclSCRIPT_INSTALL = $(INSTALL_SCRIPT)
-SCRIPTS = $(tcl_SCRIPTS)
 SOURCES =
 DIST_SOURCES =
+man1dir = $(mandir)/man1
+am__installdirs = "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(docdir)" \
+	"$(DESTDIR)$(imgdir)"
+NROFF = nroff
+MANS = $(man_MANS)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-cfgDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(cfg_DATA)
+docDATA_INSTALL = $(INSTALL_DATA)
+imgDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(doc_DATA) $(img_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -146,7 +148,7 @@ build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
-docdir = @docdir@
+docdir = $(datadir)/covered/doc/user
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
@@ -180,32 +182,60 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 use_tcltk = @use_tcltk@
-tcldir = $(datadir)/covered/scripts
-tcl_SCRIPTS = assert.tcl \
-              banner.gif \
-              cdd_view.tcl \
-              comb.tcl \
-              cov_create.tcl \
-              cov_icon.gif \
-              create_new.tcl \
-              fsm.tcl \
-              help.tcl \
-              help_wrapper.tcl \
-              help_tbl.tcl \
-              left_arrow.gif \
-              main_view.tcl \
-              memory.tcl \
-              menu_create.tcl \
-              preferences.tcl \
-              process_file.tcl \
-              right_arrow.gif \
-              summary.tcl \
-              toggle.tcl \
-              verilog.tcl \
-              wizard.tcl
+man_MANS = covered.1
+doc_DATA = 001.html \
+           002.html \
+           003.html \
+           004.html \
+           005.html \
+           006.html \
+           007.html \
+           008.html \
+           009.html \
+           010.html \
+           011.html \
+           012.html \
+           013.html \
+           014.html \
+           015.html \
+           016.html \
+           017.html \
+           018.html \
+           019.html \
+           020.html \
+           021.html \
+           022.html \
+           023.html \
+           024.html \
+           025.html \
+           026.html \
+           027.html \
+           028.html \
+           029.html \
+           030.html \
+           banner.gif \
+           test/example.rptI.html \
+           test/example.rptM.html \
+           test/example.v.html \
+           index.html \
+           styles.css
 
-cfgdir = $(datadir)/covered
-cfg_DATA = .coveredrc
+imgdir = $(datadir)/covered/doc/user/img
+img_DATA = img/000000.gif \
+           img/12568c.gif \
+           img/butprev.png \
+           img/fsm_example.png \
+           img/tile.jpeg \
+           img/toolbar_cont.png \
+           img/toolbar_first.png \
+           img/toolbar_home.png \
+           img/toolbar_last.png \
+           img/toolbar_left.png \
+           img/toolbar_next.png \
+           img/toolbar_prev.png \
+           img/toolbar_right.png \
+           img/vhier.png
+
 all: all-am
 
 .SUFFIXES:
@@ -218,9 +248,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  scripts/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  doc/user/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  scripts/Makefile
+	  $(AUTOMAKE) --gnu  doc/user/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -238,41 +268,84 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-tclSCRIPTS: $(tcl_SCRIPTS)
+install-man1: $(man1_MANS) $(man_MANS)
 	@$(NORMAL_INSTALL)
-	test -z "$(tcldir)" || $(MKDIR_P) "$(DESTDIR)$(tcldir)"
-	@list='$(tcl_SCRIPTS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  if test -f $$d$$p; then \
-	    f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
-	    echo " $(tclSCRIPT_INSTALL) '$$d$$p' '$(DESTDIR)$(tcldir)/$$f'"; \
-	    $(tclSCRIPT_INSTALL) "$$d$$p" "$(DESTDIR)$(tcldir)/$$f"; \
-	  else :; fi; \
+	test -z "$(man1dir)" || $(MKDIR_P) "$(DESTDIR)$(man1dir)"
+	@list='$(man1_MANS) $(dist_man1_MANS) $(nodist_man1_MANS)'; \
+	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
+	for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+	  else file=$$i; fi; \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  case "$$ext" in \
+	    1*) ;; \
+	    *) ext='1' ;; \
+	  esac; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed -e 's/^.*\///'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
+	  $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst"; \
 	done
-
-uninstall-tclSCRIPTS:
+uninstall-man1:
 	@$(NORMAL_UNINSTALL)
-	@list='$(tcl_SCRIPTS)'; for p in $$list; do \
-	  f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
-	  echo " rm -f '$(DESTDIR)$(tcldir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(tcldir)/$$f"; \
+	@list='$(man1_MANS) $(dist_man1_MANS) $(nodist_man1_MANS)'; \
+	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
+	for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  case "$$ext" in \
+	    1*) ;; \
+	    *) ext='1' ;; \
+	  esac; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed -e 's/^.*\///'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " rm -f '$(DESTDIR)$(man1dir)/$$inst'"; \
+	  rm -f "$(DESTDIR)$(man1dir)/$$inst"; \
 	done
-install-cfgDATA: $(cfg_DATA)
+install-docDATA: $(doc_DATA)
 	@$(NORMAL_INSTALL)
-	test -z "$(cfgdir)" || $(MKDIR_P) "$(DESTDIR)$(cfgdir)"
-	@list='$(cfg_DATA)'; for p in $$list; do \
+	test -z "$(docdir)" || $(MKDIR_P) "$(DESTDIR)$(docdir)"
+	@list='$(doc_DATA)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(cfgDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(cfgdir)/$$f'"; \
-	  $(cfgDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(cfgdir)/$$f"; \
+	  echo " $(docDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(docdir)/$$f'"; \
+	  $(docDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(docdir)/$$f"; \
 	done
 
-uninstall-cfgDATA:
+uninstall-docDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(cfg_DATA)'; for p in $$list; do \
+	@list='$(doc_DATA)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(cfgdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(cfgdir)/$$f"; \
+	  echo " rm -f '$(DESTDIR)$(docdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(docdir)/$$f"; \
+	done
+install-imgDATA: $(img_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(imgdir)" || $(MKDIR_P) "$(DESTDIR)$(imgdir)"
+	@list='$(img_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(imgDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(imgdir)/$$f'"; \
+	  $(imgDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(imgdir)/$$f"; \
+	done
+
+uninstall-imgDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(img_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(imgdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(imgdir)/$$f"; \
 	done
 tags: TAGS
 TAGS:
@@ -309,9 +382,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(SCRIPTS) $(DATA)
+all-am: Makefile $(MANS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(tcldir)" "$(DESTDIR)$(cfgdir)"; do \
+	for dir in "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(docdir)" "$(DESTDIR)$(imgdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -356,7 +429,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-cfgDATA install-tclSCRIPTS
+install-data-am: install-docDATA install-imgDATA install-man
 
 install-dvi: install-dvi-am
 
@@ -366,7 +439,7 @@ install-html: install-html-am
 
 install-info: install-info-am
 
-install-man:
+install-man: install-man1
 
 install-pdf: install-pdf-am
 
@@ -390,21 +463,24 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-cfgDATA uninstall-tclSCRIPTS
+uninstall-am: uninstall-docDATA uninstall-imgDATA uninstall-man
+
+uninstall-man: uninstall-man1
 
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic distclean \
 	distclean-generic distdir dvi dvi-am html html-am info info-am \
-	install install-am install-cfgDATA install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip install-tclSCRIPTS \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am uninstall uninstall-am uninstall-cfgDATA \
-	uninstall-tclSCRIPTS
+	install install-am install-data install-data-am \
+	install-docDATA install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-imgDATA \
+	install-info install-info-am install-man install-man1 \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am \
+	uninstall-docDATA uninstall-imgDATA uninstall-man \
+	uninstall-man1
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
