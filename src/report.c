@@ -194,34 +194,35 @@ static void report_usage() {
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -m [l][t][c][f][r][a][m]  Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic,\n" );
-  printf( "                                 f=FSM state/arc, r=race condition, a=assertion, m=memory.  Default is ltcf.\n" );
+  printf( "                                  f=FSM state/arc, r=race condition, a=assertion, m=memory.  Default is ltcf.\n" );
   printf( "      -d (s|d|v)                Level of report detail (s=summary, d=detailed, v=verbose).\n" );
-  printf( "                                 Default is to display summary coverage information.\n" );
+  printf( "                                  Default is to display summary coverage information.\n" );
   printf( "      -i                        Provides coverage information for instances instead of module/task/function.\n" );
   printf( "      -c                        If '-d d' or '-d v' is specified, displays covered line, toggle\n" );
-  printf( "                                 and combinational cases.  Default is to display uncovered results.\n" );
+  printf( "                                  and combinational cases.  Default is to display uncovered results.\n" );
   printf( "      -o <filename>             File to output report information to.  Default is standard output.\n" );
   printf( "      -w [<line_width>]         Causes expressions to be output to best-fit to the specified line\n" );
-  printf( "                                 width.  If the -w option is specified without a value, the default\n" );
-  printf( "                                 line width of 80 is used.  If the -w option is not specified, all\n" );
-  printf( "                                 expressions are output in the format that the user specified in the\n" );
-  printf( "                                 Verilog source.\n" );
+  printf( "                                  width.  If the -w option is specified without a value, the default\n" );
+  printf( "                                  line width of 80 is used.  If the -w option is not specified, all\n" );
+  printf( "                                  expressions are output in the format that the user specified in the\n" );
+  printf( "                                  Verilog source.\n" );
   printf( "      -s                        Suppress outputting modules/instances that do not contain any coverage metrics.\n" );
   printf( "      -b                        If combinational logic verbose output is reported and the expression is a\n" );
-  printf( "                                 vector operation, this option outputs the coverage information on a bitwise basis.\n" );
+  printf( "                                  vector operation, this option outputs the coverage information on a bitwise basis.\n" );
+  printf( "      -f <filename>             Name of file containing additional arguments to parse.\n" );
   printf( "\n" );
 
 }
 
 /*!
- \param metrics  Specified metrics to calculate coverage for.
-
  Parses the specified string containing the metrics to test.  If
  a legal metric character is found, its corresponding flag is set
  to TRUE.  If a character is found that does not correspond to a
  metric, an error message is flagged to the user (a warning).
 */
-static void report_parse_metrics( const char* metrics ) { PROFILE(REPORT_PARSE_METRICS);
+static void report_parse_metrics(
+  const char* metrics  /*!< Specified metrics to calculate coverage for */
+) { PROFILE(REPORT_PARSE_METRICS);
 
   const char* ptr;  /* Pointer to current character being evaluated */
 
@@ -262,13 +263,11 @@ static void report_parse_metrics( const char* metrics ) { PROFILE(REPORT_PARSE_M
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param argc      Number of arguments in argument list argv.
- \param last_arg  Index of last parsed argument from list.
- \param argv      Argument list passed to this program.
-
  \throws anonymous Throw Throw Throw Throw Throw Throw Throw Throw
 
  Parses the argument list for options.  If a legal option is
@@ -277,13 +276,12 @@ static void report_parse_metrics( const char* metrics ) { PROFILE(REPORT_PARSE_M
  message is reported to the user and the program terminates immediately.
 */
 void report_parse_args(
-  int          argc,
-  int          last_arg,
-  const char** argv
+  int          argc,      /*!< Number of arguments in argument list argv */
+  int          last_arg,  /*!< Index of last parsed argument from list */
+  const char** argv       /*!< Argument list passed to this program */
 ) { PROFILE(REPORT_PARSE_ARGS);
 
-  int  i;           /* Loop iterator */
-  int  chars_read;  /* Number of characters read in from sscanf */
+  int i;  /* Loop iterator */
 
   i = last_arg + 1;
 
@@ -292,7 +290,6 @@ void report_parse_args(
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
  
       report_usage();
-      // printf( "report Throw A\n" ); - HIT
       Throw 0;
 
     } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
@@ -301,7 +298,6 @@ void report_parse_args(
         i++;
         report_parse_metrics( argv[i] );
       } else {
-        printf( "report Throw B\n" );
         Throw 0;
       }
 
@@ -314,7 +310,6 @@ void report_parse_args(
       report_memory       = TRUE;
 #else
       print_output( "The -view option is not available with this build", FATAL, __FILE__, __LINE__ );
-      printf( "report Throw C\n" );
       Throw 0;
 #endif
 
@@ -337,14 +332,12 @@ void report_parse_args(
         } else if( argv[i][0] == 'v' ) {
           report_comb_depth = REPORT_VERBOSE;
         } else {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s\n", argv[i] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          printf( "report Throw D\n" );
           Throw 0;
         }
       } else {
-        printf( "report Throw E\n" );
         Throw 0;
       }
 
@@ -361,12 +354,10 @@ void report_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is unwritable", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "report Throw F\n" );
             Throw 0;
           }
         }
       } else {
-        printf( "report Throw G\n" );
         Throw 0;
       }
 
@@ -375,12 +366,8 @@ void report_parse_args(
       flag_use_line_width = TRUE;
 
       /* Check to see if user specified a line width value */
-      if( ((i+1) < argc) && (sscanf( argv[i+1], "%d%n", &line_width, &chars_read ) == 1) ) {
-        if( strlen( argv[i+1] ) != chars_read ) {
-          line_width = DEFAULT_LINE_WIDTH;
-        } else {
-          i++;
-        }
+      if( ((i+1) < argc) && (sscanf( argv[i+1], "%d", &line_width ) == 1) ) {
+        i++;
       } else {
         line_width = DEFAULT_LINE_WIDTH;
       }
@@ -393,6 +380,31 @@ void report_parse_args(
 
       report_bitwise = TRUE;
 
+    } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        char**       arg_list = NULL;
+        int          arg_num  = 0;
+        unsigned int j;
+        i++;
+        Try {
+          read_command_file( argv[i], &arg_list, &arg_num );
+          report_parse_args( arg_num, -1, (const char**)arg_list );
+        } Catch_anonymous {
+          for( j=0; j<arg_num; j++ ) {
+            free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
+          }
+          free_safe( arg_list, (sizeof( char* ) * arg_num) );
+          Throw 0;
+        }
+        for( j=0; j<arg_num; j++ ) {
+          free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
+        }
+        free_safe( arg_list, (sizeof( char* ) * arg_num) );
+      } else {
+        Throw 0;
+      }
+ 
     } else if( (i + 1) == argc ) {
 
       if( file_exists( argv[i] ) ) {
@@ -404,7 +416,6 @@ void report_parse_args(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find %s database file for opening", argv[i] );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        //printf( "report Throw H\n" ); - HIT
         Throw 0;
 
       }
@@ -414,7 +425,6 @@ void report_parse_args(
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown report command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "report Throw I\n" );
       Throw 0;
 
     }
@@ -423,18 +433,20 @@ void report_parse_args(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param root   Pointer to root of instance tree to search.
- 
  Recursively parses instance tree, creating statistic structures for each
  of the instances in the tree.  Calculates summary coverage information for
  children nodes first and parent nodes after.  In this way, the parent nodes
  will have the accumulated information from themselves and all of their
  children.
 */
-static void report_gather_instance_stats( funit_inst* root ) { PROFILE(REPORT_GATHER_INSTANCE_STATS);
+void report_gather_instance_stats(
+  funit_inst* root  /*!< Pointer to root of instance tree to search */
+) { PROFILE(REPORT_GATHER_INSTANCE_STATS);
 
   funit_inst* curr;        /* Pointer to current instance being evaluated */
 
@@ -462,7 +474,8 @@ static void report_gather_instance_stats( funit_inst* root ) { PROFILE(REPORT_GA
       toggle_get_stats( root->funit->sig_head, 
                         &(root->stat->tog_total), 
                         &(root->stat->tog01_hit), 
-                        &(root->stat->tog10_hit) );
+                        &(root->stat->tog10_hit),
+                        &(root->stat->tog_cov_found) );
     }
 
     if( report_combination ) {
@@ -510,15 +523,17 @@ static void report_gather_instance_stats( funit_inst* root ) { PROFILE(REPORT_GA
     root->stat->show = !statistic_is_empty( root->stat );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param head  Pointer to head of functional unit list to search.
- 
  Traverses functional unit list, creating statistic structures for each
  of the functional units in the tree, and calculates summary coverage information.
 */
-static void report_gather_funit_stats( funit_link* head ) { PROFILE(REPORT_GATHER_FUNIT_STATS);
+static void report_gather_funit_stats(
+  funit_link* head  /*!< Pointer to head of functional unit list to search */
+) { PROFILE(REPORT_GATHER_FUNIT_STATS);
 
   while( head != NULL ) {
 
@@ -536,7 +551,8 @@ static void report_gather_funit_stats( funit_link* head ) { PROFILE(REPORT_GATHE
         toggle_get_stats( head->funit->sig_head, 
                           &(head->funit->stat->tog_total), 
                           &(head->funit->stat->tog01_hit), 
-                          &(head->funit->stat->tog10_hit) );
+                          &(head->funit->stat->tog10_hit),
+                          &(head->funit->stat->tog_cov_found) );
       }
 
       if( report_combination ) {
@@ -586,14 +602,16 @@ static void report_gather_funit_stats( funit_link* head ) { PROFILE(REPORT_GATHE
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile    Pointer to output stream to display report information to.
-
  Generates generic report header for all reports.
 */
-void report_print_header( FILE* ofile ) { PROFILE(REPORT_PRINT_HEADER);
+void report_print_header(
+  FILE* ofile  /*!< Pointer to output stream to display report information to */
+) { PROFILE(REPORT_PRINT_HEADER);
 
   int i;  /* Loop iterator */
 
@@ -692,18 +710,18 @@ void report_print_header( FILE* ofile ) { PROFILE(REPORT_PRINT_HEADER);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile  Pointer to output stream to display report information to.
-
  \throws anonymous combination_report
 
  Generates a coverage report based on the options specified on the command line
  to the specified output stream.
 */
 static void report_generate(
-  FILE* ofile
+  FILE* ofile  /*!< Pointer to output stream to display report information to */
 ) { PROFILE(REPORT_GENERATE);
 
   report_print_header( ofile );
@@ -748,12 +766,11 @@ static void report_generate(
     race_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ifile      Name of CDD file to read from.
- \param read_mode  Specifies mode to read from CDD file (merge or replace).
- 
  \return Returns TRUE if CDD file was read properly; otherwise, returns FALSE.
 
  \throws anonymous db_read Throw bind_perform
@@ -762,8 +779,8 @@ static void report_generate(
  interaction with this CDD file. 
 */
 void report_read_cdd_and_ready(
-  const char* ifile,
-  int         read_mode
+  const char* ifile,     /*!< Name of CDD file to read from */
+  int         read_mode  /*!< Specifies mode to read from CDD file (merge or replace) */
 ) { PROFILE(REPORT_READ_CDD_AND_READY);
 
   /* Open database file for reading */
@@ -794,6 +811,8 @@ void report_read_cdd_and_ready(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -805,37 +824,35 @@ void report_close_cdd() { PROFILE(REPORT_CLOSE_CDD);
 
   db_close();
 
+  PROFILE_END;
+
 }
 
 /*!
- \param filename  Name to use for saving the currently loaded filename
-
  \throws anonymous db_write
 
  Saves the currently loaded CDD database to the given filename.
 */
 void report_save_cdd(
-  const char* filename
+  const char* filename  /*!< Name to use for saving the currently loaded filename */
 ) { PROFILE(REPORT_SAVE_CDD);
 
   db_write( filename, FALSE, TRUE );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param argc      Number of arguments in report command-line.
- \param last_arg  Index of last parsed argument from list.
- \param argv      Arguments passed to report command to parse.
-
  Performs report command functionality.
 */
 void command_report(
-  int          argc,
-  int          last_arg,
-  const char** argv
+  int          argc,      /*!< Number of arguments in report command-line */
+  int          last_arg,  /*!< Index of last parsed argument from list */
+  const char** argv       /*!< Arguments passed to report command to parse */
 ) { PROFILE(COMMAND_REPORT);
 
-  FILE*        ofile;                   /* Pointer to output stream */
+  FILE*        ofile           = NULL;  /* Pointer to output stream */
 #ifdef HAVE_TCLTK
   char*        covered_home    = NULL;  /* Pathname to Covered's home installation directory */
   char*        covered_browser;         /* Name of browser to use for GUI help pages */
@@ -866,7 +883,6 @@ void command_report(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "report Throw K\n" );
         Throw 0;
 
       } else {
@@ -882,13 +898,7 @@ void command_report(
           /* Open output stream */
           if( output_file != NULL ) {
             ofile = fopen( output_file, "w" );
-            if( ofile == NULL ) {
-              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
-              assert( rv < USER_MSG_LENGTH );
-              print_output( user_msg, FATAL, __FILE__, __LINE__ );
-              printf( "report Throw L\n" );
-              Throw 0;
-            }
+            assert( ofile != NULL );  /* We should have already verified that the file is writable */
           } else {
             ofile = stdout;
           }
@@ -931,13 +941,11 @@ void command_report(
 
         if( Tcl_Init( interp ) == TCL_ERROR ) {
           printf( "ERROR: %s\n", interp->result );
-          printf( "report Throw N\n" );
           Throw 0;
         }
 
         if( Tk_SafeInit( interp ) == TCL_ERROR ) {
           printf( "ERROR: %s\n", interp->result );
-          // printf( "report Throw O\n" ); - HIT
           Throw 0;
         }
 
@@ -975,7 +983,6 @@ void command_report(
         if( rv != TCL_OK ) {
           rv = snprintf( user_msg, USER_MSG_LENGTH, "TCL/TK: %s\n", Tcl_ErrnoMsg( Tcl_GetErrno() ) );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          // printf( "report Throw Q\n" ); - HIT
           Throw 0;
         }
 
@@ -985,7 +992,6 @@ void command_report(
       } Catch_anonymous {
         free_safe( covered_home, (strlen( covered_home ) + 1) );
         free_safe( main_file, (strlen( main_file ) + 1) );
-        // printf( "report Throw R\n" ); - HIT
         Throw 0;
       }
 
@@ -1011,6 +1017,44 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104.2.3  2008/07/10 22:43:54  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.111.2.1  2008/07/01 06:17:22  phase1geo
+ More updates to rank command.  Updating IV/Cver regression for these changes (full
+ regression not passing at this point).  Checkpointing.
+
+ Revision 1.111  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
+ Revision 1.110  2008/06/20 18:12:55  phase1geo
+ Adding a few more diagnostics to regressions.  Cleaning up check_test script
+ to properly cleanup diagnostics that left CDD files around after regressions.
+ Cleaning up output in source code that is no longer necessary.  Full regressions
+ pass.
+
+ Revision 1.109  2008/06/20 14:19:20  phase1geo
+ Updating merge.c and report.c to remove unnecessary code and output.
+
+ Revision 1.108  2008/06/20 05:32:55  phase1geo
+ Adding several new diagnostics to regression suite to verify report command
+ error handling and detailed verbosity.  Fixing error formatting for one
+ error in report.c and removing unnecessary output.  Checkpointing.
+
+ Revision 1.107  2008/06/19 12:34:16  phase1geo
+ Adding missed report3 diagnostic from regression suite and removing unnecessary
+ output from report.c source file.
+
+ Revision 1.106  2008/06/19 05:52:35  phase1geo
+ Fixing bug 1997423.  Added report coverage diagnostics.
+
+ Revision 1.105  2008/06/16 23:10:43  phase1geo
+ Fixing cdd_diff script for error found while running regressions.  Also integrating
+ source code fixes from the covered-20080603-branch2 branch.  Full regression passes.
+
  Revision 1.104.2.2  2008/06/06 05:00:35  phase1geo
  Updates for GUI.  Checkpointing.
 
