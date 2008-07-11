@@ -130,7 +130,7 @@ int main( int argc, const char** argv ) {
 
     if( argc == 1 ) {
 
-      print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL, __FILE__, __LINE__ );
+      print_output( "Must specify a command (score, merge, report, rank, -v, or -h)", FATAL, __FILE__, __LINE__ );
       retval = -1;
 
     } else {
@@ -252,6 +252,9 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.36.2.2  2008/07/11 17:00:40  phase1geo
+ Fixing output to include rank command if no command is specified.
+
  Revision 1.36.2.1  2008/06/30 13:14:22  phase1geo
  Starting to work on new 'rank' command.  Checkpointing.
 
