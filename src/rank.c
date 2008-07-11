@@ -39,6 +39,12 @@ extern uint64         num_timesteps;
 extern bool           output_suppressed;
 extern bool           debug_mode;
 extern int64          largest_malloc_size;
+extern bool           report_line;
+extern bool           report_toggle;
+extern bool           report_combination;
+extern bool           report_fsm;
+extern bool           report_assertion;
+extern bool           report_memory;
 
 
 /*!
@@ -1278,6 +1284,14 @@ void command_rank(
     /* Parse score command-line */
     rank_parse_args( argc, last_arg, argv );
 
+    /* Make sure that all coverage points are accumulated */
+    report_line        = TRUE;
+    report_toggle      = TRUE;
+    report_combination = TRUE;
+    report_fsm         = TRUE;
+    report_assertion   = TRUE;
+    report_memory      = TRUE;
+
     /* Read in databases to merge */
     for( i=0; i<rank_in_num; i++ ) {
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", rank_in[i] );
@@ -1322,6 +1336,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.2.8  2008/07/11 18:47:30  phase1geo
+ Attempting to fix bug 2016187.
+
  Revision 1.1.2.7  2008/07/02 23:10:38  phase1geo
  Checking in work on rank function and addition of -m option to score
  function.  Added new diagnostics to verify beginning functionality.
