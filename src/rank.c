@@ -45,6 +45,7 @@ extern bool           report_combination;
 extern bool           report_fsm;
 extern bool           report_assertion;
 extern bool           report_memory;
+extern bool           allow_multi_expr;
 
 
 /*!
@@ -1291,6 +1292,7 @@ void command_rank(
     report_fsm         = TRUE;
     report_assertion   = TRUE;
     report_memory      = TRUE;
+    allow_multi_expr   = FALSE;
 
     /* Read in databases to merge */
     for( i=0; i<rank_in_num; i++ ) {
@@ -1336,6 +1338,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.2.10  2008/07/14 22:15:04  phase1geo
+ Removing multi-expressions from ranking coverage point consideration.  Treating
+ these as individual expressions.
+
  Revision 1.1.2.9  2008/07/14 18:43:43  phase1geo
  Fixing issue with toggle index getting incremented when calculating memory toggle coverage.
 
