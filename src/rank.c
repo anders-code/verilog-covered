@@ -529,9 +529,9 @@ static void rank_gather_signal_cov(
       switch( sig->value->suppl.part.data_type ) {
         case VDATA_UL :
           for( i=0; i<sig->value->width; i++ ) {  
-            uint64 index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
+            uint64 index = comp_cov->cps_index[CP_TYPE_MEM]++;
             comp_cov->cps[CP_TYPE_MEM][index >> 3] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_MEM_TOG01] >> UL_MOD(i)) << (index & 0x7);
-            index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
+            index = comp_cov->cps_index[CP_TYPE_MEM]++;
             comp_cov->cps[CP_TYPE_MEM][index >> 3] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_MEM_TOG10] >> UL_MOD(i)) << (index & 0x7);
           }
           break;
@@ -1336,6 +1336,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.2.9  2008/07/14 18:43:43  phase1geo
+ Fixing issue with toggle index getting incremented when calculating memory toggle coverage.
+
  Revision 1.1.2.8  2008/07/11 18:47:30  phase1geo
  Attempting to fix bug 2016187.
 
