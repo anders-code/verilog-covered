@@ -368,151 +368,168 @@ proc open_files {} {
 
 proc create_report_selection_window {} {
 
-  global rsel_wsel rsel_width rsel_sup rsel_cu rsel_mi rsel_sdv rsel_view
-  global rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r
-  global rsel_fname cdd_name
-
   if {[winfo exists .rselwin] == 0} {
 
     toplevel .rselwin
     wm title .rselwin "Create ASCII Report"
 
-    # Create default report filename
-    set rsel_fname "[file rootname $cdd_name].rpt"
+    # Create labelframe that will hold the contents
+    panedwindow .rselwin.p
 
-    frame      .rselwin.f
-    labelframe .rselwin.f.misc -labelanchor nw -text "Set ASCII Report Generation Options" -padx 4 -pady 6
+    # Add panes
+    .rselwin.p add [create_report_selection .rselwin.p.rs]
 
-    # Create width area
-    checkbutton .rselwin.f.misc.width_val -text "Limit line width to:" -variable rsel_wsel -anchor w -command {
-      if {$rsel_wsel == 0} {
-        .rselwin.f.misc.width_w configure -state disabled
-      } else {
-        .rselwin.f.misc.width_w configure -state normal
-      }
-    }
-    entry .rselwin.f.misc.width_w -textvariable rsel_width -width 3 -validate key -vcmd {string is int %P} -invalidcommand bell -state disabled
-    label .rselwin.f.misc.width_lbl -text "characters" -anchor w
-    
-    # Create empty module/instance suppression area
-    checkbutton .rselwin.f.misc.sup_val -text "Suppress modules/instances from output if they contain no coverage information" \
-                                        -variable rsel_sup -onvalue "-s" -offvalue "None" -anchor w
-
-    # Allow the user to specify if they would like to view the report after it is generated
-    checkbutton .rselwin.f.misc.view -text "View the report in the GUI after it is created" -variable rsel_view -anchor w
-  
-    grid .rselwin.f.misc.width_val -row 0 -column 0 -sticky news -pady 4
-    grid .rselwin.f.misc.width_w   -row 0 -column 1 -sticky news -pady 4
-    grid .rselwin.f.misc.width_lbl -row 0 -column 2 -sticky news -pady 4
-    grid .rselwin.f.misc.sup_val   -row 1 -column 0 -columnspan 3 -sticky nw -pady 4
-    grid .rselwin.f.misc.view      -row 2 -column 0 -columnspan 3 -sticky nw -pady 4
-  
-    # Create and pack detail selection area
-    labelframe  .rselwin.f.sdv -text "Level of Detail" -labelanchor nw -padx 4 -pady 6
-    radiobutton .rselwin.f.sdv.s -text "Summary"  -variable rsel_sdv -value "s" -anchor w
-    radiobutton .rselwin.f.sdv.d -text "Detailed" -variable rsel_sdv -value "d" -anchor w
-    radiobutton .rselwin.f.sdv.v -text "Verbose"  -variable rsel_sdv -value "v" -anchor w
-
-    pack .rselwin.f.sdv.s -anchor w
-    pack .rselwin.f.sdv.d -anchor w
-    pack .rselwin.f.sdv.v -anchor w
-
-    # Create module/instance selection area
-    labelframe  .rselwin.f.mi -text "Accumulate By" -labelanchor nw -padx 4 -pady 6
-    radiobutton .rselwin.f.mi.m -text "Module"   -variable rsel_mi -value "None" -anchor w
-    radiobutton .rselwin.f.mi.i -text "Instance" -variable rsel_mi -value "-i" -anchor w
-
-    pack .rselwin.f.mi.m -anchor w
-    pack .rselwin.f.mi.i -anchor w
-
-    # Create metric selection area
-    labelframe  .rselwin.f.metric -text "Show Metrics" -labelanchor nw -padx 4 -pady 6
-    checkbutton .rselwin.f.metric.l -text "Line"            -variable rsel_l -onvalue "l" -offvalue "None" -anchor w
-    checkbutton .rselwin.f.metric.t -text "Toggle"          -variable rsel_t -onvalue "t" -offvalue "None" -anchor w
-    checkbutton .rselwin.f.metric.m -text "Memory"          -variable rsel_m -onvalue "m" -offvalue "None" -anchor w
-    checkbutton .rselwin.f.metric.c -text "Logic"           -variable rsel_c -onvalue "c" -offvalue "None" -anchor w
-    checkbutton .rselwin.f.metric.f -text "FSM"             -variable rsel_f -onvalue "f" -offvalue "None" -anchor w
-    checkbutton .rselwin.f.metric.a -text "Assertion"       -variable rsel_a -onvalue "a" -offvalue "None" -anchor w
-    checkbutton .rselwin.f.metric.r -text "Race Conditions" -variable rsel_r -onvalue "r" -offvalue "None" -anchor w
-
-    pack .rselwin.f.metric.l -anchor w
-    pack .rselwin.f.metric.t -anchor w
-    pack .rselwin.f.metric.m -anchor w
-    pack .rselwin.f.metric.c -anchor w
-    pack .rselwin.f.metric.f -anchor w
-    pack .rselwin.f.metric.a -anchor w
-    pack .rselwin.f.metric.r -anchor w
-
-    # Create covered/uncovered selection area
-    labelframe  .rselwin.f.cu -text "Coverage Type" -labelanchor nw -padx 4 -pady 6
-    radiobutton .rselwin.f.cu.u -text "Uncovered" -variable rsel_cu -value "None" -anchor w
-    radiobutton .rselwin.f.cu.c -text "Covered"   -variable rsel_cu -value "-c" -anchor w
-
-    pack .rselwin.f.cu.u -anchor w
-    pack .rselwin.f.cu.c -anchor w
-  
-    # Now pack all of the labelframes
-    grid columnconfigure .rselwin.f 2 -weight 1
-    grid .rselwin.f.misc   -row 0 -column 0 -columnspan 3 -sticky news -pady 4 -padx 6
-    grid .rselwin.f.sdv    -row 1 -column 0               -sticky news -pady 4 -padx 6
-    grid .rselwin.f.metric -row 1 -column 2 -rowspan 3    -sticky news -pady 4 -padx 6
-    grid .rselwin.f.mi     -row 2 -column 0               -sticky news -pady 4 -padx 6
-    grid .rselwin.f.cu     -row 3 -column 0               -sticky news -pady 4 -padx 6
-
-    # Create filename frame
-    frame .rselwin.fname
-    label .rselwin.fname.lbl -text "Save to file:" -anchor e
-    entry .rselwin.fname.e -textvariable rsel_fname
-    button .rselwin.fname.b -text "Browse..." -anchor e -command {
-      set rsel_fname [tk_getSaveFile -filetypes $rpt_file_types -initialfile $rsel_fname -title "Save Generated Report As"]
-    }
-    grid .rselwin.fname.lbl -row 0 -column 0 -sticky news -pady 4
-    grid .rselwin.fname.e   -row 0 -column 1 -sticky news -pady 4
-    grid .rselwin.fname.b   -row 0 -column 2 -sticky news -pady 4
-    grid columnconfigure .rselwin.fname 1 -weight 1
-
-    # Create button frame
-    frame  .rselwin.bf
-    button .rselwin.bf.create -width 10 -text "Create" -command {
-      # Create command-line to report command of Covered
-      if {$rsel_wsel == 0} { set w "" } else { set w "-w $rsel_width" }
-      if {$rsel_mi  == "None"} { set mi  "" } else { set mi  $rsel_mi }
-      if {$rsel_cu  == "None"} { set cu  "" } else { set cu  $rsel_cu }
-      if {$rsel_sup == "None"} { set sup "" } else { set sup $rsel_sup }
-      if {$rsel_l   == "None"} { set l   "" } else { set l   $rsel_l }
-      if {$rsel_t   == "None"} { set t   "" } else { set t   $rsel_t }
-      if {$rsel_m   == "None"} { set m   "" } else { set m   $rsel_m }
-      if {$rsel_c   == "None"} { set c   "" } else { set c   $rsel_c }
-      if {$rsel_f   == "None"} { set f   "" } else { set f   $rsel_f }
-      if {$rsel_a   == "None"} { set a   "" } else { set a   $rsel_a }
-      if {$rsel_r   == "None"} { set r   "" } else { set r   $rsel_r }
-      set cmd "-d $rsel_sdv $mi $cu -m $l$t$m$c$f$a$r $w -o $rsel_fname $sup $cdd_name"
-      puts "cmd: $cmd"
-      eval "tcl_func_generate_report $cmd"
-      destroy .rselwin
-      if {$rsel_view == 1} {
-        viewer_show rpt "ASCII Report" $rsel_fname
-      }
-    }
-    button .rselwin.bf.cancel -width 10 -text "Cancel" -command {
-      destroy .rselwin
-    }
-    button .rselwin.bf.help -width 10 -text "Help" -command {
-      help_show_manual report_gen
-    }
-    pack .rselwin.bf.help   -side right -padx 8 -pady 4
-    pack .rselwin.bf.cancel -side right -padx 8 -pady 4
-    pack .rselwin.bf.create -side right -padx 8 -pady 4
-
-    # Now pack all of the frames
-    pack .rselwin.f     -fill both -side top
-    pack .rselwin.fname -fill both -expand 1
-    pack .rselwin.bf    -fill both -side bottom
+    # Pack the panedwindow
+    pack .rselwin.p
 
   }
 
   # Finally, raise this window
   raise .rselwin
+
+}
+
+proc create_report_selection {w} {
+
+  global rsel_wsel rsel_width rsel_sup rsel_cu rsel_mi rsel_sdv rsel_view
+  global rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r
+  global rsel_fname cdd_name
+
+  # Create default report filename
+  set rsel_fname "[file rootname $cdd_name].rpt"
+
+  frame $w
+
+  frame      $w.f
+  labelframe $w.f.misc -labelanchor nw -text "Set ASCII Report Generation Options" -padx 4 -pady 6
+
+  # Create width area
+  checkbutton $w.f.misc.width_val -text "Limit line width to:" -variable rsel_wsel -anchor w -command "
+    if {$rsel_wsel == 0} {
+      $w.f.misc.width_w configure -state disabled
+    } else {
+      $w.f.misc.width_w configure -state normal
+    }
+  "
+  entry $w.f.misc.width_w -textvariable rsel_width -width 3 -validate key -vcmd {string is int %P} -invalidcommand bell -state disabled
+  label $w.f.misc.width_lbl -text "characters" -anchor w
+  
+  # Create empty module/instance suppression area
+  checkbutton $w.f.misc.sup_val -text "Suppress modules/instances from output if they contain no coverage information" \
+                                        -variable rsel_sup -onvalue "-s" -offvalue "None" -anchor w
+
+  # Allow the user to specify if they would like to view the report after it is generated
+  checkbutton $w.f.misc.view -text "View the report in the GUI after it is created" -variable rsel_view -anchor w
+
+  grid $w.f.misc.width_val -row 0 -column 0 -sticky news -pady 4
+  grid $w.f.misc.width_w   -row 0 -column 1 -sticky news -pady 4
+  grid $w.f.misc.width_lbl -row 0 -column 2 -sticky news -pady 4
+  grid $w.f.misc.sup_val   -row 1 -column 0 -columnspan 3 -sticky nw -pady 4
+  grid $w.f.misc.view      -row 2 -column 0 -columnspan 3 -sticky nw -pady 4
+
+  # Create and pack detail selection area
+  labelframe  $w.f.sdv -text "Level of Detail" -labelanchor nw -padx 4 -pady 6
+  radiobutton $w.f.sdv.s -text "Summary"  -variable rsel_sdv -value "s" -anchor w
+  radiobutton $w.f.sdv.d -text "Detailed" -variable rsel_sdv -value "d" -anchor w
+  radiobutton $w.f.sdv.v -text "Verbose"  -variable rsel_sdv -value "v" -anchor w
+
+  pack $w.f.sdv.s -anchor w
+  pack $w.f.sdv.d -anchor w
+  pack $w.f.sdv.v -anchor w
+
+  # Create module/instance selection area
+  labelframe  $w.f.mi -text "Accumulate By" -labelanchor nw -padx 4 -pady 6
+  radiobutton $w.f.mi.m -text "Module"   -variable rsel_mi -value "None" -anchor w
+  radiobutton $w.f.mi.i -text "Instance" -variable rsel_mi -value "-i" -anchor w
+
+  pack $w.f.mi.m -anchor w
+  pack $w.f.mi.i -anchor w
+
+  # Create metric selection area
+  labelframe  $w.f.metric -text "Show Metrics" -labelanchor nw -padx 4 -pady 6
+  checkbutton $w.f.metric.l -text "Line"            -variable rsel_l -onvalue "l" -offvalue "None" -anchor w
+  checkbutton $w.f.metric.t -text "Toggle"          -variable rsel_t -onvalue "t" -offvalue "None" -anchor w
+  checkbutton $w.f.metric.m -text "Memory"          -variable rsel_m -onvalue "m" -offvalue "None" -anchor w
+  checkbutton $w.f.metric.c -text "Logic"           -variable rsel_c -onvalue "c" -offvalue "None" -anchor w
+  checkbutton $w.f.metric.f -text "FSM"             -variable rsel_f -onvalue "f" -offvalue "None" -anchor w
+  checkbutton $w.f.metric.a -text "Assertion"       -variable rsel_a -onvalue "a" -offvalue "None" -anchor w
+  checkbutton $w.f.metric.r -text "Race Conditions" -variable rsel_r -onvalue "r" -offvalue "None" -anchor w
+
+  pack $w.f.metric.l -anchor w
+  pack $w.f.metric.t -anchor w
+  pack $w.f.metric.m -anchor w
+  pack $w.f.metric.c -anchor w
+  pack $w.f.metric.f -anchor w
+  pack $w.f.metric.a -anchor w
+  pack $w.f.metric.r -anchor w
+
+  # Create covered/uncovered selection area
+  labelframe  $w.f.cu -text "Coverage Type" -labelanchor nw -padx 4 -pady 6
+  radiobutton $w.f.cu.u -text "Uncovered" -variable rsel_cu -value "None" -anchor w
+  radiobutton $w.f.cu.c -text "Covered"   -variable rsel_cu -value "-c" -anchor w
+
+  pack $w.f.cu.u -anchor w
+  pack $w.f.cu.c -anchor w
+
+  # Now pack all of the labelframes
+  grid columnconfigure $w.f 2 -weight 1
+  grid $w.f.misc   -row 0 -column 0 -columnspan 3 -sticky news -pady 4 -padx 6
+  grid $w.f.sdv    -row 1 -column 0               -sticky news -pady 4 -padx 6
+  grid $w.f.metric -row 1 -column 2 -rowspan 3    -sticky news -pady 4 -padx 6
+  grid $w.f.mi     -row 2 -column 0               -sticky news -pady 4 -padx 6
+  grid $w.f.cu     -row 3 -column 0               -sticky news -pady 4 -padx 6
+
+  # Create filename frame
+  frame  $w.fname
+  label  $w.fname.lbl -text "Save to file:" -anchor e
+  entry  $w.fname.e -textvariable rsel_fname
+  button $w.fname.b -text "Browse..." -anchor e -command {
+    set rsel_fname [tk_getSaveFile -filetypes $rpt_file_types -initialfile $rsel_fname -title "Save Generated Report As"]
+  }
+  grid $w.fname.lbl -row 0 -column 0 -sticky news -pady 4
+  grid $w.fname.e   -row 0 -column 1 -sticky news -pady 4
+  grid $w.fname.b   -row 0 -column 2 -sticky news -pady 4
+  grid columnconfigure $w.fname 1 -weight 1
+
+  # Create button frame
+  frame  $w.bf
+  button $w.bf.create -width 10 -text "Create" -command {
+    # Create command-line to report command of Covered
+    if {$rsel_wsel == 0} { set w "" } else { set w "-w $rsel_width" }
+    if {$rsel_mi  == "None"} { set mi  "" } else { set mi  $rsel_mi }
+    if {$rsel_cu  == "None"} { set cu  "" } else { set cu  $rsel_cu }
+    if {$rsel_sup == "None"} { set sup "" } else { set sup $rsel_sup }
+    if {$rsel_l   == "None"} { set l   "" } else { set l   $rsel_l }
+    if {$rsel_t   == "None"} { set t   "" } else { set t   $rsel_t }
+    if {$rsel_m   == "None"} { set m   "" } else { set m   $rsel_m }
+    if {$rsel_c   == "None"} { set c   "" } else { set c   $rsel_c }
+    if {$rsel_f   == "None"} { set f   "" } else { set f   $rsel_f }
+    if {$rsel_a   == "None"} { set a   "" } else { set a   $rsel_a }
+    if {$rsel_r   == "None"} { set r   "" } else { set r   $rsel_r }
+    set cmd "-d $rsel_sdv $mi $cu -m $l$t$m$c$f$a$r $w -o $rsel_fname $sup $cdd_name"
+    puts "cmd: $cmd"
+    eval "tcl_func_generate_report $cmd"
+    destroy .rselwin
+    if {$rsel_view == 1} {
+      viewer_show rpt "ASCII Report" $rsel_fname
+    }
+  }
+  button $w.bf.cancel -width 10 -text "Cancel" -command {
+    destroy .rselwin
+  }
+  button $w.bf.help -width 10 -text "Help" -command {
+    help_show_manual report_gen
+  }
+  pack $w.bf.help   -side right -padx 8 -pady 4
+  pack $w.bf.cancel -side right -padx 8 -pady 4
+  pack $w.bf.create -side right -padx 8 -pady 4
+
+  # Now pack all of the frames
+  pack $w.f     -fill both -side top
+  pack $w.fname -fill both -expand 1
+  pack $w.bf    -fill both -side bottom
+
+  return $w
 
 }
 
