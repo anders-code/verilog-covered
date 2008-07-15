@@ -17,24 +17,25 @@ source [file join $HOME scripts verilog.tcl]
 source [file join $HOME scripts memory.tcl]
 source [file join $HOME scripts wizard.tcl]
 source [file join $HOME scripts create_new.tcl]
+source [file join $HOME scripts viewer.tcl]
 
 # The Tablelist package is used for displaying instance/module hit/miss/total/percent hit information
 package require Tablelist
 #package require tile
 #package require tablelist_tile 4.8
 
-set last_lb_index      ""
-set lwidth             -1 
-set lwidth_h1          -1
-set start_search_index 1.0
-set curr_uncov_index   ""
-set prev_uncov_index   ""
-set next_uncov_index   ""
+set last_lb_index           ""
+set lwidth                  -1 
+set lwidth_h1               -1
+set main_start_search_index 1.0
+set curr_uncov_index        ""
+set prev_uncov_index        ""
+set next_uncov_index        ""
 
 proc main_view {} {
 
   global race_msgs prev_uncov_index next_uncov_index
-  global HOME tableCol
+  global HOME tableCol main_start_search_index
 
   # Start off 
 
@@ -72,16 +73,16 @@ proc main_view {} {
   }
   frame .bot.right.h.search
   button .bot.right.h.search.find -text "Find:" -state disabled -command {
-    perform_search [.bot.right.h.search.e get]
+    perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
   }
   entry .bot.right.h.search.e -width 15 -relief sunken -state disabled
   bind .bot.right.h.search.e <Return> {
-    perform_search [.bot.right.h.search.e get]
+    perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
   }
   button .bot.right.h.search.clear -text "Clear" -state disabled -command {
     .bot.right.txt tag delete search_found
     .bot.right.h.search.e delete 0 end
-    set start_search_index 1.0
+    set main_start_search_index 1.0
   }
 
   # Pack the previous/next frame
@@ -337,24 +338,31 @@ proc clear_text {} {
 
 }
 
-proc perform_search {value} {
+proc perform_search {tbox ebox ibox index} {
 
-  global start_search_index
+  upvar $index start_search_index 
 
-  set index [.bot.right.txt search $value $start_search_index]
+  set value [$ebox get]
+  set index [$tbox search $value $start_search_index]
 
   # Delete search_found tag
-  .bot.right.txt tag delete search_found
+  $tbox tag delete search_found
 
   if {$index != ""} {
 
+    if {$start_search_index > $index} {
+      $ibox configure -text "End of file reached.  Searching from the beginning..."
+    } else {
+      $ibox configure -text ""
+    }
+
     # Highlight found text
     set value_len [string length $value]
-    .bot.right.txt tag add search_found $index "$index + $value_len chars"
-    .bot.right.txt tag configure search_found -background orange1
+    $tbox tag add search_found $index "$index + $value_len chars"
+    $tbox tag configure search_found -background orange1
 
     # Make the text visible
-    .bot.right.txt see $index 
+    $tbox see $index 
 
     # Calculate next starting index
     set indices [split $index .]
@@ -363,10 +371,10 @@ proc perform_search {value} {
   } else {
 
     # Output a message specifying that the searched string could not be found
-    tk_messageBox -message "String \"$value\" not found" -type ok -parent .
+    $ibox configure -text "String \"$value\" not found"
 
     # Clear the contents of the search entry box
-    .bot.right.h.search.e delete 0 end
+    $ebox delete 0 end
 
     # Reset search index
     set start_search_index 1.0
@@ -374,7 +382,7 @@ proc perform_search {value} {
   }
 
   # Set focus to text box
-  focus .bot.right.txt
+  focus $tbox
 
   return 1
 

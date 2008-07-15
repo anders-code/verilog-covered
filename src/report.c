@@ -203,7 +203,7 @@ static void report_usage() {
   printf( "      -o <filename>             File to output report information to.  Default is standard output.\n" );
   printf( "      -w [<line_width>]         Causes expressions to be output to best-fit to the specified line\n" );
   printf( "                                  width.  If the -w option is specified without a value, the default\n" );
-  printf( "                                  line width of 80 is used.  If the -w option is not specified, all\n" );
+  printf( "                                  line width of %d is used.  If the -w option is not specified, all\n", DEFAULT_LINE_WIDTH );
   printf( "                                  expressions are output in the format that the user specified in the\n" );
   printf( "                                  Verilog source.\n" );
   printf( "      -s                        Suppress outputting modules/instances that do not contain any coverage metrics.\n" );
@@ -1017,6 +1017,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104.2.4  2008/07/15 23:01:51  phase1geo
+ Added file viewer and started to update the generate report window.
+
  Revision 1.104.2.3  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

@@ -20,6 +20,7 @@ tcl_SCRIPTS = assert.tcl \
               summary.tcl \
               toggle.tcl \
               verilog.tcl \
+              viewer.tcl \
               wizard.tcl
 
 cfgdir      = $(datadir)/covered
