@@ -368,6 +368,8 @@ proc open_files {} {
 
 proc create_report_generation_window {} {
 
+  global rptgen_fname rptgen_sel
+
   if {[winfo exists .rselwin] == 0} {
 
     toplevel .rselwin
@@ -376,6 +378,10 @@ proc create_report_generation_window {} {
     # Create labelframe that will hold the contents
     panedwindow .rselwin.p
 
+    # Initialize global values
+    set rptgen_sel   "options"
+    set rptgen_fname ""
+    
     # Add panes
     .rselwin.p add [create_report_generation_source  .rselwin.p.rs] -width 600 -height 550
     .rselwin.p add [create_report_generation_options .rselwin.p.ro] -width 600 -height 550 -hide true
@@ -401,6 +407,7 @@ proc read_report_option_file {fname} {
   }
  
   set contents [split [read $fp] " \r\b\t\n"]
+  puts "contents: $contents"
  
   for {set i 0} {$i<[llength $contents]} {incr i} {
     
@@ -488,18 +495,18 @@ proc create_report_cmd_options {} {
   
   # Create command-line to report command of Covered
   if {$rsel_wsel == 0} { set w "" } else { set w "-w $rsel_width" }
-  if {$rsel_mi  == "None"} { set mi  "" } else { set mi  $rsel_mi }
-  if {$rsel_cu  == "None"} { set cu  "" } else { set cu  $rsel_cu }
-  if {$rsel_sup == "None"} { set sup "" } else { set sup $rsel_sup }
-  if {$rsel_l   == "None"} { set l   "" } else { set l   $rsel_l }
-  if {$rsel_t   == "None"} { set t   "" } else { set t   $rsel_t }
-  if {$rsel_m   == "None"} { set m   "" } else { set m   $rsel_m }
-  if {$rsel_c   == "None"} { set c   "" } else { set c   $rsel_c }
-  if {$rsel_f   == "None"} { set f   "" } else { set f   $rsel_f }
-  if {$rsel_a   == "None"} { set a   "" } else { set a   $rsel_a }
-  if {$rsel_r   == "None"} { set r   "" } else { set r   $rsel_r }
+  if {$rsel_mi  == "None"} { set mi  "" } else { set mi  " $rsel_mi" }
+  if {$rsel_cu  == "None"} { set cu  "" } else { set cu  " $rsel_cu" }
+  if {$rsel_sup == "None"} { set sup "" } else { set sup " $rsel_sup" }
+  if {$rsel_l   == "None"} { set l   "" } else { set l   " $rsel_l" }
+  if {$rsel_t   == "None"} { set t   "" } else { set t   " $rsel_t" }
+  if {$rsel_m   == "None"} { set m   "" } else { set m   " $rsel_m" }
+  if {$rsel_c   == "None"} { set c   "" } else { set c   " $rsel_c" }
+  if {$rsel_f   == "None"} { set f   "" } else { set f   " $rsel_f" }
+  if {$rsel_a   == "None"} { set a   "" } else { set a   " $rsel_a" }
+  if {$rsel_r   == "None"} { set r   "" } else { set r   " $rsel_r" }
   
-  set cmd "-d $rsel_sdv $mi $cu -m $l$t$m$c$f$a$r $w $sup"
+  set cmd "-d $rsel_sdv$mi$cu-m $l$t$m$c$f$a$r$w$sup"
   
   return $cmd
   
@@ -523,9 +530,6 @@ proc create_report_generation_source {w} {
  
   global rptgen_sel rptgen_fname
   
-  set rptgen_sel   "options"
-  set rptgen_fname ""
-  
   # Create the upper widget frame for this pane
   frame $w
   
@@ -545,6 +549,7 @@ proc create_report_generation_source {w} {
   entry $w.f.e -state disabled -textvariable rptgen_fname
   button $w.f.b -text "Browse..." -state disabled -command {
     set rptgen_fname [tk_getOpenFile -filetypes {{{Command Configuration Files} {.cfg}} {{All Files} *}} -title "Select a Report Option File"]
+    puts "B rptgen_fname: $rptgen_fname"
   }
   grid columnconfigure $w.f 1 -weight 1
   grid $w.f.rb_opts -row 0 -column 0 -columnspan 3 -sticky news
@@ -560,6 +565,7 @@ proc create_report_generation_source {w} {
   }
   button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   button $w.bf.next -width 10 -text "Next" -command "
+    puts {A rptgen_fname: $rptgen_fname}
     if {[string length $rptgen_fname] > 0} {
       set rsel_wsel  0
       set rsel_width 105
