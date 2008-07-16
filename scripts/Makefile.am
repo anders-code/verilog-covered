@@ -5,8 +5,9 @@ tcl_SCRIPTS = assert.tcl \
               comb.tcl \
               cov_create.tcl \
               cov_icon.gif \
-              create_new.tcl \
               fsm.tcl \
+              gen_new.tcl \
+              gen_report.tcl \
               help.tcl \
               help_wrapper.tcl \
               help_tbl.tcl \
