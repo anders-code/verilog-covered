@@ -120,7 +120,7 @@ proc menu_create {} {
     create_new_cdd
   }
   $tfm.gen add command -label "ASCII Report..." -accelerator "Ctrl-r" -state disabled -command {
-    create_report_selection_window
+    create_report_generation_window
   }
   $tfm.gen add command -label "CDD Ranking Report..." -accelerator "Ctrl-g" -state disabled -command {
     puts "NEED TO ADD CDD ranking report support"
@@ -366,7 +366,7 @@ proc open_files {} {
 
 }
 
-proc create_report_selection_window {} {
+proc create_report_generation_window {} {
 
   if {[winfo exists .rselwin] == 0} {
 
@@ -377,11 +377,12 @@ proc create_report_selection_window {} {
     panedwindow .rselwin.p
 
     # Add panes
-    .rselwin.p add [create_report_selection .rselwin.p.rs]
+    .rselwin.p add [create_report_generation_source  .rselwin.p.rs] -width 600 -height 550
+    .rselwin.p add [create_report_generation_options .rselwin.p.ro] -width 600 -height 550 -hide true
 
     # Pack the panedwindow
-    pack .rselwin.p
-
+    pack .rselwin.p -fill both -expand yes
+    
   }
 
   # Finally, raise this window
@@ -389,14 +390,229 @@ proc create_report_selection_window {} {
 
 }
 
-proc create_report_selection {w} {
+proc read_report_option_file {fname} {
+  
+  global rsel_wsel rsel_width rsel_sdv rsel_cu rsel_mi rsel_sup
+  global rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r
+  global rsel_fname
+    
+  if {[catch {set fp [open $rptgen_fname "r"]}]} {
+    tk_messageBox -message "File $fname Not Found!" -title "No File" -icon error
+  }
+ 
+  set contents [split [read $fp] " \r\b\t\n"]
+ 
+  for {set i 0} {$i<[llength $contents]} {incr i} {
+    
+    if {[lindex $contents $i] eq "-d"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        if {[string first [lindex $contents $i] "sdv"] != -1} {
+          set rsel_sdv [lindex $contents $i]
+        }
+      } else {
+        set i [expr $i - 1]
+      }
+      
+    } elseif {[lindex $contents $i] eq "-w"} {
+      set rsel_wsel 1
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        if {[string is integer [lindex $contents $i]] == 1} {
+          set rsel_width [lindex $contents $i]
+        }
+      } else {
+        set i [expr $i - 1]
+      }
+      
+    } elseif {[lindex $contents $i] eq "-m"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        foreach $val [split [lindex $contents $i] ""] {
+          if {$val eq "l"} {
+            set rsel_l "l"
+          } elseif {$val eq "t"} {
+            set rsel_t "t"
+          } elseif {$val eq "m"} {
+            set rsel_m "m"
+          } elseif {$val eq "c"} {
+            set rsel_c "c"
+          } elseif {$val eq "f"} {
+            set rsel_f "f"
+          } elseif {$val eq "a"} {
+            set rsel_a "a"
+          } elseif {$val eq "r"} {
+            set rsel_r "r"
+          }
+        }
+      } else {
+        set i [expr $i - 1]
+      }
+      
+    } elseif {[lindex $contents $i] eq "-o"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        set rsel_fname [lindex $contents $i]
+      } else {
+        set i [expr $i - 1]
+      }
+      
+    } elseif {[lindex $contents $i] eq "-s"} {
+      set rsel_sup "-s"
+      
+    } elseif {[lindex $contents $i] eq "-i"} {
+      set rsel_mi "-i"
+      
+    } elseif {[lindex $contents $i] eq "-c"} {
+      set rsel_cu "-c"
+      
+    } elseif {[lindex $contents $i] eq "-f"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        read_report_option_file [lindex $contents $i]
+      } else {
+        set i [expr $i - 1]
+      }
+    }
+  } 
+ 
+  close $fp
+  
+}
+
+proc create_report_cmd_options {} {
+  
+  global rsel_wsel rsel_width rsel_sdv rsel_mi rsel_cu rsel_sup
+  global rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r
+  global rsel_fname cdd_name
+  
+  # Create command-line to report command of Covered
+  if {$rsel_wsel == 0} { set w "" } else { set w "-w $rsel_width" }
+  if {$rsel_mi  == "None"} { set mi  "" } else { set mi  $rsel_mi }
+  if {$rsel_cu  == "None"} { set cu  "" } else { set cu  $rsel_cu }
+  if {$rsel_sup == "None"} { set sup "" } else { set sup $rsel_sup }
+  if {$rsel_l   == "None"} { set l   "" } else { set l   $rsel_l }
+  if {$rsel_t   == "None"} { set t   "" } else { set t   $rsel_t }
+  if {$rsel_m   == "None"} { set m   "" } else { set m   $rsel_m }
+  if {$rsel_c   == "None"} { set c   "" } else { set c   $rsel_c }
+  if {$rsel_f   == "None"} { set f   "" } else { set f   $rsel_f }
+  if {$rsel_a   == "None"} { set a   "" } else { set a   $rsel_a }
+  if {$rsel_r   == "None"} { set r   "" } else { set r   $rsel_r }
+  
+  set cmd "-d $rsel_sdv $mi $cu -m $l$t$m$c$f$a$r $w $sup"
+  
+  return $cmd
+  
+}
+
+proc create_report {w} {
+  
+  global rsel_view cdd_name rsel_fname
+  
+  eval "tcl_func_generate_report [create_report_cmd_options] -o $rsel_fname $cdd_name"
+  
+  destroy [winfo toplevel $w]
+  
+  if {$rsel_view == 1} {
+    viewer_show rpt {ASCII Report} $rsel_fname
+  }
+  
+}
+
+proc create_report_generation_source {w} {
+ 
+  global rptgen_sel rptgen_fname
+  
+  set rptgen_sel   "options"
+  set rptgen_fname ""
+  
+  # Create the upper widget frame for this pane
+  frame $w
+  
+  # Create upper widgets
+  frame $w.f
+  radiobutton $w.f.rb_opts -anchor w -text "Create report by interactively selecting options" -variable rptgen_sel -value "options" -command "
+    $w.f.l configure -state disabled
+    $w.f.e configure -state disabled
+    $w.f.b configure -state disabled
+  "
+  radiobutton $w.f.rb_file -anchor w -text "Create report by using option file" -variable rptgen_sel -value "file" -command "
+    $w.f.l configure -state normal
+    $w.f.e configure -state normal
+    $w.f.b configure -state normal
+  "
+  label $w.f.l -text "     Option file:" -state disabled
+  entry $w.f.e -state disabled -textvariable rptgen_fname
+  button $w.f.b -text "Browse..." -state disabled -command {
+    set rptgen_fname [tk_getOpenFile -filetypes {{{Command Configuration Files} {.cfg}} {{All Files} *}} -title "Select a Report Option File"]
+  }
+  grid columnconfigure $w.f 1 -weight 1
+  grid $w.f.rb_opts -row 0 -column 0 -columnspan 3 -sticky news
+  grid $w.f.rb_file -row 1 -column 0 -columnspan 3 -sticky news
+  grid $w.f.l       -row 2 -column 0 -sticky news
+  grid $w.f.e       -row 2 -column 1 -sticky news
+  grid $w.f.b       -row 2 -column 2 -sticky news
+  
+  # Create button frame
+  frame $w.bf
+  button $w.bf.help -width 10 -text "Help" -command {
+    puts "Help!"
+  }
+  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
+  button $w.bf.next -width 10 -text "Next" -command "
+    if {[string length $rptgen_fname] > 0} {
+      set rsel_wsel  0
+      set rsel_width 105
+      set rsel_sdv   s
+      set rsel_cu    None
+      set rsel_mi    None
+      set rsel_sup   None
+      set rsel_l     None
+      set rsel_t     None
+      set rsel_m     None
+      set rsel_c     None
+      set rsel_f     None
+      set rsel_a     None
+      set rsel_r     None
+      read_report_option_file $rptgen_fname
+    } else {
+      set rsel_wsel  0
+      set rsel_width 105
+      set rsel_sdv   s
+      set rsel_cu    None
+      set rsel_mi    None
+      set rsel_sup   None
+      set rsel_l     l
+      set rsel_t     t
+      set rsel_m     m
+      set rsel_c     c
+      set rsel_f     f
+      set rsel_a     None
+      set rsel_r     None
+    }
+    goto_next_pane $w
+  "
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
+  
+  # Pack top-level frames
+  pack $w.f  -fill both -expand yes
+  pack $w.bf -fill x
+  
+  return $w
+   
+}
+
+proc create_report_generation_options {w} {
 
   global rsel_wsel rsel_width rsel_sup rsel_cu rsel_mi rsel_sdv rsel_view
   global rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r
-  global rsel_fname cdd_name
+  global rsel_fname cdd_name rsel_sname
 
   # Create default report filename
   set rsel_fname "[file rootname $cdd_name].rpt"
+  set rsel_sname ""
 
   frame $w
 
@@ -478,6 +694,20 @@ proc create_report_selection {w} {
   grid $w.f.metric -row 1 -column 2 -rowspan 3    -sticky news -pady 4 -padx 6
   grid $w.f.mi     -row 2 -column 0               -sticky news -pady 4 -padx 6
   grid $w.f.cu     -row 3 -column 0               -sticky news -pady 4 -padx 6
+  
+  # Create save frame
+  frame $w.save
+  button $w.save.b -text "Save Options to File" -command {
+    set rsel_sname [tk_getSaveFile -title "Save Report Options to File..." -initialfile $rsel_sname]
+    if {$rsel_sname ne ""} {
+      if {[catch {set fp [open $rsel_sname "w"]}]} {
+        tk_messageBox -message "File $sname Not Writable!" -title "No File" -icon error
+      }
+      puts $fp "[create_report_cmd_options]\n"
+      close $fp
+    }
+  }
+  pack $w.save.b -fill x
 
   # Create filename frame
   frame  $w.fname
@@ -493,39 +723,20 @@ proc create_report_selection {w} {
 
   # Create button frame
   frame  $w.bf
-  button $w.bf.create -width 10 -text "Create" -command {
-    # Create command-line to report command of Covered
-    if {$rsel_wsel == 0} { set w "" } else { set w "-w $rsel_width" }
-    if {$rsel_mi  == "None"} { set mi  "" } else { set mi  $rsel_mi }
-    if {$rsel_cu  == "None"} { set cu  "" } else { set cu  $rsel_cu }
-    if {$rsel_sup == "None"} { set sup "" } else { set sup $rsel_sup }
-    if {$rsel_l   == "None"} { set l   "" } else { set l   $rsel_l }
-    if {$rsel_t   == "None"} { set t   "" } else { set t   $rsel_t }
-    if {$rsel_m   == "None"} { set m   "" } else { set m   $rsel_m }
-    if {$rsel_c   == "None"} { set c   "" } else { set c   $rsel_c }
-    if {$rsel_f   == "None"} { set f   "" } else { set f   $rsel_f }
-    if {$rsel_a   == "None"} { set a   "" } else { set a   $rsel_a }
-    if {$rsel_r   == "None"} { set r   "" } else { set r   $rsel_r }
-    set cmd "-d $rsel_sdv $mi $cu -m $l$t$m$c$f$a$r $w -o $rsel_fname $sup $cdd_name"
-    puts "cmd: $cmd"
-    eval "tcl_func_generate_report $cmd"
-    destroy .rselwin
-    if {$rsel_view == 1} {
-      viewer_show rpt "ASCII Report" $rsel_fname
-    }
-  }
-  button $w.bf.cancel -width 10 -text "Cancel" -command {
-    destroy .rselwin
-  }
+  button $w.bf.back -width 10 -text "Back" -command "goto_prev_pane $w"
+  button $w.bf.create -width 10 -text "Create" -command "create_report $w"
+  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   button $w.bf.help -width 10 -text "Help" -command {
     help_show_manual report_gen
   }
-  pack $w.bf.help   -side right -padx 8 -pady 4
-  pack $w.bf.cancel -side right -padx 8 -pady 4
-  pack $w.bf.create -side right -padx 8 -pady 4
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.create -side right -padx 4 -pady 4
+  pack $w.bf.back   -side left  -padx 4 -pady 4
 
   # Now pack all of the frames
   pack $w.f     -fill both -side top
+  pack $w.save  -fill both -expand 1
   pack $w.fname -fill both -expand 1
   pack $w.bf    -fill both -side bottom
 

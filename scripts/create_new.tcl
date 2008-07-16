@@ -5,6 +5,24 @@ set dump_filetypes {
   {{All Files}     * }
 }
 
+proc check_to_generate {} {
+
+  global dump_vpi_none toplevel_name dump_file
+
+  if {$dump_vpi_none eq "none" && $toplevel_name ne "" && 
+    .newwin.bf.gen configure -state normal
+  } elseif {$dump_vpi_none eq "dump" && $dump_file ne "" &&
+    .newwin.bf.gen configure -state normal
+  } elseif {$dump_vpi_none eq "vpi" && $toplevel_name ne "" &&
+    .newwin.bf.gen configure -state normal
+  } else {
+    .newwin.bf.gen configure -state disabled
+  }
+
+}
+
+# proc create_new_cdd {} {
+
 proc create_new_cdd {} {
 
   global dump_filetypes file_types
@@ -44,6 +62,7 @@ proc create_new_cdd {} {
         set_widget_state .newwin.bot.opts normal
         .newwin.general.dump.rn configure -state normal
       }
+      check_to_generate
       return 1
     }
     button .newwin.general.cdd.b -text "Browse" -width 10 -command {

@@ -578,6 +578,26 @@ proc listbox_xview {args} {
 
 }
 
+proc goto_next_pane {w} {
+  
+  set parent [winfo parent $w]
+  set panes  [$parent panes]
+  
+  $parent paneconfigure $w -hide true
+  $parent paneconfigure [lindex $panes [expr [lsearch $panes $w] + 1]] -hide false
+  
+}
+
+proc goto_prev_pane {w} {
+  
+  set parent [winfo parent $w]
+  set panes  [$parent panes]
+  
+  $parent paneconfigure $w -hide true
+  $parent paneconfigure [lindex $panes [expr [lsearch $panes $w] - 1]] -hide false
+  
+}
+
 # Read configuration file
 read_coveredrc
 
