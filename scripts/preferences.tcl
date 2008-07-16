@@ -28,20 +28,6 @@ set vlog_hl_symbol_color    coral
 set rc_file_to_write        ""
 set hl_mode                 0
 set last_pref_index         -1
-set rsel_sdv                "s"
-set rsel_mi                 "None"
-set rsel_cu                 "None"
-set rsel_l                  "l"
-set rsel_t                  "t"
-set rsel_m                  "m"
-set rsel_c                  "c"
-set rsel_f                  "f"
-set rsel_a                  "None"
-set rsel_r                  "None"
-set rsel_wsel               0
-set rsel_width              "105"
-set rsel_sup                "None"
-
 
 # Create a list from 100 to 0
 for {set i 100} {$i >= 0} {incr i -1} {
