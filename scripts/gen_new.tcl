@@ -43,6 +43,7 @@ proc create_new_cdd {} {
     # Add panes
     .newwin.p add [create_new_cdd_source .newwin.p.source] -width 600 -height 550
     .newwin.p add [create_new_cdd_name   .newwin.p.name]   -width 600 -height 550 -hide true
+    .newwin.p add [create_new_cdd_dump   .newwin.p.dump]   -width 600 -height 550 -hide true
 
     # Pack the panedwindow
     pack .newwin.p -fill both -expand yes
@@ -54,9 +55,159 @@ proc create_new_cdd {} {
 
 }
 
-proc setup_cdd_generate_options {} {
+proc parse_vpi_ts {str rnum rscale} {
 
-  # TBD
+  upvar $rnum   tnum
+  upvar $rscale tscale
+
+  set unknown 0
+
+  if {[string range $str end-1 end] eq "1s"} {
+    set ttnum   [string range $str 0 end-1]
+    set ttscale "s"
+  } elseif {[string range $str end-1 end] eq "0s"} {
+    set ttnum   [string range $str 0 end-1]
+    set ttscale "s"
+  } elseif {[string range $str end-1 end] eq "ms"} {
+    set ttnum   [string range $str 0 end-2]
+    set ttscale "ms"
+  } elseif {[string range $str end-1 end] eq "us"} {
+    set ttnum   [string range $str 0 end-2]
+    set ttscale "us"
+  } elseif {[string range $str end-1 end] eq "ns"} {
+    set ttnum   [string range $str 0 end-2]
+    set ttscale "ns"
+  } elseif {[string range $str end-1 end] eq "ps"} {
+    set ttnum   [string range $str 0 end-2]
+    set ttscale "ps"
+  } elseif {[string range $str end-1 end] eq "fs"} {
+    set ttnum   [string range $str 0 end-2]
+    set ttscale "fs"
+  } else {
+    set unknown 1
+  }
+
+  if {$unknown == 0} {
+    if {$ttnum eq "1" || $ttnum eq "10" || $ttnum eq "100"} {
+      set tnum   $ttnum
+      set tscale $ttscale
+    }
+  }
+
+}
+
+proc read_score_option_file {w fname} {
+
+  global cdd_filename cddgen_fname
+  global dump_vpi_none dump_file
+  global vpi_file vpi_ts vpi_ts_num1 vpi_ts_scale1 vpi_ts_num2 vpi_ts_scale2
+  global simulator
+
+  if {[catch {set fp [open $cddgen_fname "r"]}]} {
+    tk_messageBox -message "File $cddgen_fname Not Found!" -title "No File" -icon error
+  }
+
+  set contents [join [list [read $fp]]]
+
+  for {set i 0} {$i<[llength $contents]} {incr i} {
+
+    if {[lindex $contents $i] eq "-o" || [lindex $contents $i] eq "-cdd"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        set cdd_filename [lindex $contents $i]
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-vcd"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        set dump_vpi_none "dump"
+        set dump_file     [lindex $contents $i]
+        handle_new_cdd_dump_states .newwin.p.dump
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-lxt"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        set dump_vpi_none "dump"
+        set dump_file     [lindex $contents $i]
+        handle_new_cdd_dump_states .newwin.p.dump
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-vpi"} {
+      set dump_vpi_none "vpi"
+      handle_new_cdd_dump_states .newwin.p.dump
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        set vpi_file [lindex $contents $i]
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-vpi_ts"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        set vpi_ts 1
+        set vpi_ts_elems [split [lindex $contents $i] /]
+        parse_vpi_ts [lindex $vpi_ts_elems 0] vpi_ts_num1 vpi_ts_scale1
+        parse_vpi_ts [lindex $vpi_ts_elems 1] vpi_ts_num2 vpi_ts_scale2
+        handle_new_cdd_dump_vpi_timescale .newwin.p.dump
+      } else {
+        set i [expr $i - 1]
+      }
+
+    }
+
+  }
+
+  close $fp
+
+}
+
+proc setup_cdd_generate_options {w} {
+
+  global cddgen_fname
+  global cdd_filename
+  global dump_vpi_none dump_file
+  global vpi_file vpi_ts vpi_ts_num1 vpi_ts_scale1 vpi_ts_num2 vpi_ts_scale2
+  global simulator
+
+  if {$cddgen_fname ne ""} {
+
+    # Perform global variable initialization here
+    set cdd_filename ""
+    set dump_vpi_none "none"
+    set dump_file     ""
+    set vpi_file      ""
+    set vpi_ts        "0"
+    set vpi_ts_num1   "1"
+    set vpi_ts_scale1 "s"
+    set vpi_ts_num2   "1"
+    set vpi_ts_scale2 "s"
+    set simulator     "Icarus Verilog"
+
+    read_score_option_file $w $cddgen_fname
+
+  } else {
+
+    # Otherwise, set global variables to desired default values
+    set cdd_filename ""
+    set dump_vpi_none "none"
+    set dump_file     ""
+    set vpi_file      ""
+    set vpi_ts        "0"
+    set vpi_ts_num1   "1"
+    set vpi_ts_scale1 "s"
+    set vpi_ts_num2   "1"
+    set vpi_ts_scale2 "s"
+    set simulator     "Icarus Verilog"
+
+  }
 
 }
 
@@ -80,11 +231,11 @@ proc create_new_cdd_source {w} {
     $w.f.fc.e configure -state normal
     $w.f.fc.b configure -state normal
   "
-  entry  $w.f.fc.e -state disabled -textvariable rptgen_fname
+  entry  $w.f.fc.e -state disabled -textvariable cddgen_fname
   button $w.f.fc.b -text "Browse..." -state disabled -command {
-    set fname [tk_getOpenFile -title "Select a Report Option File" -parent .rselwin]
+    set fname [tk_getOpenFile -title "Select a Report Option File" -parent .newwin]
     if {$fname ne ""} {
-      set rptgen_fname $fname
+      set cddgen_fname $fname
     }
   }
   grid columnconfigure $w.f.fc 1 -weight 1
@@ -104,7 +255,7 @@ proc create_new_cdd_source {w} {
   }
   button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   button $w.bf.next   -width 10 -text "Next" -command "
-    setup_cdd_generate_options
+    setup_cdd_generate_options $w
     goto_next_pane $w
   "
   pack $w.bf.help   -side right -padx 4 -pady 4
@@ -133,6 +284,18 @@ proc create_new_cdd_name_browse {w} {
 
 }
 
+proc create_new_cdd_name_update_next {w} {
+
+  global cdd_filename
+
+  if {$cdd_filename ne ""} {
+    $w.bf.next configure -state normal
+  } else {
+    $w.bf.next configure -state disabled
+  }
+
+}
+
 proc create_new_cdd_name {w} {
 
   global cdd_filename
@@ -145,14 +308,7 @@ proc create_new_cdd_name {w} {
   frame  $w.fl
   frame  $w.cdd
   label  $w.cdd.l -text "CDD name:"
-  entry  $w.cdd.e -textvariable cdd_filename
-  bind $w.cdd.e <Return> "
-    if {[file isfile $cdd_filename]} {
-      $w.bf.next configure -state normal
-    } else {
-      $w.bf.next configure -state disabled
-    }
-  "
+  entry  $w.cdd.e -textvariable cdd_filename -validate all -vcmd "create_new_cdd_name_update_next $w; return 1"
   button $w.cdd.b -text "Browse" -width 10 -command "create_new_cdd_name_browse $w"
     
   pack $w.cdd.l -side left  -padx 3 -pady 3 -fill y
@@ -164,8 +320,8 @@ proc create_new_cdd_name {w} {
   button $w.bf.help   -width 10 -text "Help" -command {
     puts "TBD"
   }
-  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo parent $w]"
-  button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w"
+  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
+  button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
   button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
   pack $w.bf.help   -side right -padx 4 -pady 4
   pack $w.bf.cancel -side right -padx 4 -pady 4
@@ -177,6 +333,146 @@ proc create_new_cdd_name {w} {
   pack $w.cdd -fill x
   pack $w.fl  -fill both -expand 1
   pack $w.bf  -fill x
+
+  return $w
+
+}
+
+proc handle_new_cdd_dump_states {w} {
+
+  global dump_vpi_none vpi_ts dump_file
+
+  if {$dump_vpi_none eq "none"} {
+
+    $w.dump.ed configure -state disabled
+    $w.dump.bd configure -state disabled
+    $w.dump.ev configure -state disabled
+    $w.dump.mv configure -state disabled
+    $w.bf.next configure -state normal
+    set_widget_state $w.dump.ts disabled
+
+  } elseif {$dump_vpi_none eq "dump"} {
+
+    $w.dump.ed configure -state normal
+    $w.dump.bd configure -state normal
+    $w.dump.ev configure -state disabled
+    $w.dump.mv configure -state disabled
+    if {$dump_file ne ""} {
+      $w.bf.next configure -state normal
+    } else {
+      $w.bf.next configure -state disabled
+    }
+    set_widget_state $w.dump.ts disabled
+
+  } elseif {$dump_vpi_none eq "vpi"} { 
+
+    $w.dump.ed    configure -state disabled
+    $w.dump.bd    configure -state disabled
+    $w.dump.ev    configure -state normal
+    $w.dump.mv    configure -state normal
+    $w.dump.ts.cb configure -state normal
+    $w.bf.next    configure -state normal
+    if {$vpi_ts == 1} {
+      set_widget_state $w.dump.ts normal
+    }
+
+  }
+
+}
+
+proc handle_new_cdd_dump_vpi_timescale {w} {
+
+  global vpi_ts
+
+  if {$vpi_ts == 0} {
+
+    $w.dump.ts.n1 configure -state disabled
+    $w.dump.ts.s1 configure -state disabled
+    $w.dump.ts.l  configure -state disabled
+    $w.dump.ts.n2 configure -state disabled
+    $w.dump.ts.s2 configure -state disabled
+
+  } else {
+
+    $w.dump.ts.n1 configure -state normal
+    $w.dump.ts.s1 configure -state normal
+    $w.dump.ts.l  configure -state normal
+    $w.dump.ts.n2 configure -state normal
+    $w.dump.ts.s2 configure -state normal
+
+  }
+
+}
+
+proc create_new_cdd_dump {w} {
+
+  global dump_filetypes
+  global dump_vpi_none dump_file
+  global vpi_file vpi_ts vpi_ts_num1 vpi_ts_scale1 vpi_ts_num2 vpi_ts_scale2
+  global simulator
+
+  # Add dumpfile widgets
+  frame         $w
+  frame         $w.fu
+  frame         $w.fl
+  frame         $w.dump
+  radiobutton   $w.dump.rn -text "Parse Design Only" -variable dump_vpi_none -value "none" -anchor w -command "handle_new_cdd_dump_states $w"
+  radiobutton   $w.dump.rd -text "Dumpfile:"         -variable dump_vpi_none -value "dump" -anchor w -command "handle_new_cdd_dump_states $w"
+  entry         $w.dump.ed -textvariable dump_file -state disabled
+  button        $w.dump.bd -text "Browse" -width 10 -state disabled -command {
+    set dump_file [tk_getOpenFile -title "Select VCD/LXT Dumpfile" -filetypes $dump_filetypes]
+  }
+  radiobutton   $w.dump.rv -text "VPI Module:" -variable dump_vpi_none -value "vpi" -anchor w -command "handle_new_cdd_dump_states $w"
+  entry         $w.dump.ev -textvariable vpi_file -state disabled
+  tk_optionMenu $w.dump.mv simulator {Icarus Verilog} {Cver} {VCS}
+  frame         $w.dump.ts
+  checkbutton   $w.dump.ts.cb -text "Set VPI Module Timescale:" -anchor w -variable vpi_ts -state disabled -command "handle_new_cdd_dump_vpi_timescale $w"
+  tk_optionMenu $w.dump.ts.n1 vpi_ts_num1   {1} {10} {100}
+  tk_optionMenu $w.dump.ts.s1 vpi_ts_scale1 {s} {ms} {us} {ns} {ps} {fs}
+  label         $w.dump.ts.l  -text "/" -state disabled
+  tk_optionMenu $w.dump.ts.n2 vpi_ts_num2   {1} {10} {100}
+  tk_optionMenu $w.dump.ts.s2 vpi_ts_scale2 {s} {ms} {us} {ns} {ps} {fs}
+  pack $w.dump.ts.cb -side left -padx 3 -pady 3
+  pack $w.dump.ts.n1 -side left -padx 3 -pady 3
+  pack $w.dump.ts.s1 -side left -padx 3 -pady 3
+  pack $w.dump.ts.l  -side left -padx 3 -pady 3
+  pack $w.dump.ts.n2 -side left -padx 3 -pady 3
+  pack $w.dump.ts.s2 -side left -padx 3 -pady 3
+
+  $w.dump.mv    configure -state disabled
+  $w.dump.ts.n1 configure -state disabled
+  $w.dump.ts.s1 configure -state disabled
+  $w.dump.ts.n2 configure -state disabled
+  $w.dump.ts.s2 configure -state disabled
+
+  grid columnconfig $w.dump 1 -weight 1
+  grid $w.dump.rn -row 0 -column 0 -sticky news -padx 3 -pady 3 -columnspan 2
+  grid $w.dump.rd -row 1 -column 0 -sticky news -padx 3 -pady 3
+  grid $w.dump.ed -row 1 -column 1 -sticky news -padx 3 -pady 3
+  grid $w.dump.bd -row 1 -column 2 -sticky news -padx 3 -pady 3
+  grid $w.dump.rv -row 2 -column 0 -sticky news -padx 3 -pady 3
+  grid $w.dump.ev -row 2 -column 1 -sticky news -padx 3 -pady 3
+  grid $w.dump.mv -row 2 -column 2 -sticky news -padx 3 -pady 3
+  grid $w.dump.ts -row 3 -column 0 -sticky news -padx 3 -pady 3 -columnspan 3
+
+  # Create button bar
+  frame  $w.bf
+  button $w.bf.help   -width 10 -text "Help" -command {
+    puts "TBD"
+  }
+  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
+  button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
+  button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
+  pack $w.bf.prev   -side left  -padx 4 -pady 4
+
+  # Pack frames
+  pack $w.fu   -fill both -expand 1
+  pack $w.dump -fill x
+  pack $w.fl   -fill both -expand 1
+  pack $w.bf   -fill x
 
   return $w
 
@@ -234,101 +530,101 @@ proc create_new_cdd_name {w} {
 ##    pack .newwin.general.cdd.l -side left  -padx 3 -pady 3 -fill y
 ##    pack .newwin.general.cdd.e -side left  -padx 3 -pady 3 -fill x -expand 1
 ##    pack .newwin.general.cdd.b -side right -padx 3 -pady 3 -fill y
-#
-#    # Add dumpfile widgets
-#    set dump_vpi_none "none"
-#    set dump_file     ""
-#    set vpi_file      ""
-#    set vpi_ts        "0"
-#    set vpi_ts_num1   "1"
-#    set vpi_ts_scale1 "s"
-#    set vpi_ts_num2   "1"
-#    set vpi_ts_scale2 "s"
-#    set simulator     "Icarus Verilog"
-#    frame  .newwin.general.dump
-#    radiobutton .newwin.general.dump.rn -text "Parse Design Only" -variable dump_vpi_none -value "none" -anchor w
-#    radiobutton .newwin.general.dump.rd -text "Dumpfile:"         -variable dump_vpi_none -value "dump" -anchor w
-#    entry  .newwin.general.dump.ed -textvariable dump_file -state disabled
-#    button .newwin.general.dump.bd -text "Browse" -width 10 -state disabled -command {
-#      set dump_file [tk_getOpenFile -title "Select VCD/LXT Dumpfile" -filetypes $dump_filetypes]
-#    }
-#    bind .newwin.general.dump.bd <Return> {%W invoke}
-#    radiobutton   .newwin.general.dump.rv -text "VPI Module:" -variable dump_vpi_none -value "vpi" -anchor w
-#    entry         .newwin.general.dump.ev -textvariable vpi_file -state disabled
-#    tk_optionMenu .newwin.general.dump.mv simulator {Icarus Verilog} {Cver} {VCS}
-#    frame         .newwin.general.dump.ts
-#    checkbutton   .newwin.general.dump.ts.cb -text "Set VPI Module Timescale:" -anchor w -variable vpi_ts -state disabled
-#    tk_optionMenu .newwin.general.dump.ts.n1 vpi_ts_num1   {1} {10} {100}
-#    tk_optionMenu .newwin.general.dump.ts.s1 vpi_ts_scale1 {s} {ms} {us} {ns} {ps} {fs}
-#    label         .newwin.general.dump.ts.l  -text "/" -state disabled
-#    tk_optionMenu .newwin.general.dump.ts.n2 vpi_ts_num2   {1} {10} {100}
-#    tk_optionMenu .newwin.general.dump.ts.s2 vpi_ts_scale2 {s} {ms} {us} {ns} {ps} {fs}
-#    pack .newwin.general.dump.ts.cb -side left -padx 3 -pady 3
-#    pack .newwin.general.dump.ts.n1 -side left -padx 3 -pady 3
-#    pack .newwin.general.dump.ts.s1 -side left -padx 3 -pady 3
-#    pack .newwin.general.dump.ts.l  -side left -padx 3 -pady 3
-#    pack .newwin.general.dump.ts.n2 -side left -padx 3 -pady 3
-#    pack .newwin.general.dump.ts.s2 -side left -padx 3 -pady 3
-#    .newwin.general.dump.rn configure -command {
-#      if {$dump_vpi_none eq "none"} {
-#        .newwin.general.dump.ed configure -state disabled
-#        .newwin.general.dump.bd configure -state disabled
-#        .newwin.general.dump.ev configure -state disabled
-#        .newwin.general.dump.mv configure -state disabled
-#        set_widget_state .newwin.general.dump.ts disabled
-#      }
-#    }
-#    .newwin.general.dump.rd configure -command {
-#      if {$dump_vpi_none eq "dump"} {
-#        .newwin.general.dump.ed configure -state normal
-#        .newwin.general.dump.bd configure -state normal
-#        .newwin.general.dump.ev configure -state disabled
-#        .newwin.general.dump.mv configure -state disabled
-#        set_widget_state .newwin.general.dump.ts disabled
-#      }
-#    }
-#    .newwin.general.dump.rv configure -command {
-#      if {$dump_vpi_none eq "vpi"} {
-#        .newwin.general.dump.ed configure -state disabled
-#        .newwin.general.dump.bd configure -state disabled
-#        .newwin.general.dump.ev configure -state normal
-#        .newwin.general.dump.mv configure -state normal
-#        if {$vpi_ts == 1} {
-#          set_widget_state .newwin.general.dump.ts normal
-#        }
-#        .newwin.general.dump.ts.cb configure -state normal
-#      }
-#    }
-#    .newwin.general.dump.ts.cb configure -command {
-#      if {$vpi_ts == 0} {
-#        .newwin.general.dump.ts.n1 configure -state disabled
-#        .newwin.general.dump.ts.s1 configure -state disabled
-#        .newwin.general.dump.ts.l  configure -state disabled
-#        .newwin.general.dump.ts.n2 configure -state disabled
-#        .newwin.general.dump.ts.s2 configure -state disabled
-#      } else {
-#        .newwin.general.dump.ts.n1 configure -state normal
-#        .newwin.general.dump.ts.s1 configure -state normal
-#        .newwin.general.dump.ts.l  configure -state normal
-#        .newwin.general.dump.ts.n2 configure -state normal
-#        .newwin.general.dump.ts.s2 configure -state normal
-#      }
-#    }
-#    .newwin.general.dump.mv    configure -state disabled
-#    .newwin.general.dump.ts.n1 configure -state disabled
-#    .newwin.general.dump.ts.s1 configure -state disabled
-#    .newwin.general.dump.ts.n2 configure -state disabled
-#    .newwin.general.dump.ts.s2 configure -state disabled
-#
-#    grid columnconfig .newwin.general.dump 1 -weight 1
-#    grid .newwin.general.dump.rn -row 0 -column 0 -sticky news -padx 3 -pady 3 -columnspan 2
-#    grid .newwin.general.dump.rd -row 1 -column 0 -sticky news -padx 3 -pady 3
-#    grid .newwin.general.dump.ed -row 1 -column 1 -sticky news -padx 3 -pady 3
-#    grid .newwin.general.dump.bd -row 1 -column 2 -sticky news -padx 3 -pady 3
-#    grid .newwin.general.dump.rv -row 2 -column 0 -sticky news -padx 3 -pady 3
-#    grid .newwin.general.dump.ev -row 2 -column 1 -sticky news -padx 3 -pady 3
-#    grid .newwin.general.dump.mv -row 2 -column 2 -sticky news -padx 3 -pady 3
-#    grid .newwin.general.dump.ts -row 3 -column 0 -sticky news -padx 3 -pady 3 -columnspan 3
+##
+##    # Add dumpfile widgets
+##    set dump_vpi_none "none"
+##    set dump_file     ""
+##    set vpi_file      ""
+##    set vpi_ts        "0"
+##    set vpi_ts_num1   "1"
+##    set vpi_ts_scale1 "s"
+##    set vpi_ts_num2   "1"
+##    set vpi_ts_scale2 "s"
+##    set simulator     "Icarus Verilog"
+##    frame  .newwin.general.dump
+##    radiobutton .newwin.general.dump.rn -text "Parse Design Only" -variable dump_vpi_none -value "none" -anchor w
+##    radiobutton .newwin.general.dump.rd -text "Dumpfile:"         -variable dump_vpi_none -value "dump" -anchor w
+##    entry  .newwin.general.dump.ed -textvariable dump_file -state disabled
+##    button .newwin.general.dump.bd -text "Browse" -width 10 -state disabled -command {
+##      set dump_file [tk_getOpenFile -title "Select VCD/LXT Dumpfile" -filetypes $dump_filetypes]
+##    }
+##    bind .newwin.general.dump.bd <Return> {%W invoke}
+##    radiobutton   .newwin.general.dump.rv -text "VPI Module:" -variable dump_vpi_none -value "vpi" -anchor w
+##    entry         .newwin.general.dump.ev -textvariable vpi_file -state disabled
+##    tk_optionMenu .newwin.general.dump.mv simulator {Icarus Verilog} {Cver} {VCS}
+##    frame         .newwin.general.dump.ts
+##    checkbutton   .newwin.general.dump.ts.cb -text "Set VPI Module Timescale:" -anchor w -variable vpi_ts -state disabled
+##    tk_optionMenu .newwin.general.dump.ts.n1 vpi_ts_num1   {1} {10} {100}
+##    tk_optionMenu .newwin.general.dump.ts.s1 vpi_ts_scale1 {s} {ms} {us} {ns} {ps} {fs}
+##    label         .newwin.general.dump.ts.l  -text "/" -state disabled
+##    tk_optionMenu .newwin.general.dump.ts.n2 vpi_ts_num2   {1} {10} {100}
+##    tk_optionMenu .newwin.general.dump.ts.s2 vpi_ts_scale2 {s} {ms} {us} {ns} {ps} {fs}
+##    pack .newwin.general.dump.ts.cb -side left -padx 3 -pady 3
+##    pack .newwin.general.dump.ts.n1 -side left -padx 3 -pady 3
+##    pack .newwin.general.dump.ts.s1 -side left -padx 3 -pady 3
+##    pack .newwin.general.dump.ts.l  -side left -padx 3 -pady 3
+##    pack .newwin.general.dump.ts.n2 -side left -padx 3 -pady 3
+##    pack .newwin.general.dump.ts.s2 -side left -padx 3 -pady 3
+##    .newwin.general.dump.rn configure -command {
+##      if {$dump_vpi_none eq "none"} {
+##        .newwin.general.dump.ed configure -state disabled
+##        .newwin.general.dump.bd configure -state disabled
+##        .newwin.general.dump.ev configure -state disabled
+##        .newwin.general.dump.mv configure -state disabled
+##        set_widget_state .newwin.general.dump.ts disabled
+##      }
+##    }
+##    .newwin.general.dump.rd configure -command {
+##      if {$dump_vpi_none eq "dump"} {
+##        .newwin.general.dump.ed configure -state normal
+##        .newwin.general.dump.bd configure -state normal
+##        .newwin.general.dump.ev configure -state disabled
+##        .newwin.general.dump.mv configure -state disabled
+##        set_widget_state .newwin.general.dump.ts disabled
+##      }
+##    }
+##    .newwin.general.dump.rv configure -command {
+##      if {$dump_vpi_none eq "vpi"} {
+##        .newwin.general.dump.ed configure -state disabled
+##        .newwin.general.dump.bd configure -state disabled
+##        .newwin.general.dump.ev configure -state normal
+##        .newwin.general.dump.mv configure -state normal
+##        if {$vpi_ts == 1} {
+##          set_widget_state .newwin.general.dump.ts normal
+##        }
+##        .newwin.general.dump.ts.cb configure -state normal
+##      }
+##    }
+##    .newwin.general.dump.ts.cb configure -command {
+##      if {$vpi_ts == 0} {
+##        .newwin.general.dump.ts.n1 configure -state disabled
+##        .newwin.general.dump.ts.s1 configure -state disabled
+##        .newwin.general.dump.ts.l  configure -state disabled
+##        .newwin.general.dump.ts.n2 configure -state disabled
+##        .newwin.general.dump.ts.s2 configure -state disabled
+##      } else {
+##        .newwin.general.dump.ts.n1 configure -state normal
+##        .newwin.general.dump.ts.s1 configure -state normal
+##        .newwin.general.dump.ts.l  configure -state normal
+##        .newwin.general.dump.ts.n2 configure -state normal
+##        .newwin.general.dump.ts.s2 configure -state normal
+##      }
+##    }
+##    .newwin.general.dump.mv    configure -state disabled
+##    .newwin.general.dump.ts.n1 configure -state disabled
+##    .newwin.general.dump.ts.s1 configure -state disabled
+##    .newwin.general.dump.ts.n2 configure -state disabled
+##    .newwin.general.dump.ts.s2 configure -state disabled
+##
+##    grid columnconfig .newwin.general.dump 1 -weight 1
+##    grid .newwin.general.dump.rn -row 0 -column 0 -sticky news -padx 3 -pady 3 -columnspan 2
+##    grid .newwin.general.dump.rd -row 1 -column 0 -sticky news -padx 3 -pady 3
+##    grid .newwin.general.dump.ed -row 1 -column 1 -sticky news -padx 3 -pady 3
+##    grid .newwin.general.dump.bd -row 1 -column 2 -sticky news -padx 3 -pady 3
+##    grid .newwin.general.dump.rv -row 2 -column 0 -sticky news -padx 3 -pady 3
+##    grid .newwin.general.dump.ev -row 2 -column 1 -sticky news -padx 3 -pady 3
+##    grid .newwin.general.dump.mv -row 2 -column 2 -sticky news -padx 3 -pady 3
+##    grid .newwin.general.dump.ts -row 3 -column 0 -sticky news -padx 3 -pady 3 -columnspan 3
 #
 #    # Pack the general widgets
 #    pack .newwin.general.cdd  -fill x
