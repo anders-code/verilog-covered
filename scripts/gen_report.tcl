@@ -20,8 +20,8 @@ proc create_report_generation_window {} {
     set rptgen_fname ""
     
     # Add panes
-    .rselwin.p add [create_report_generation_source  .rselwin.p.rs] -width 600 -height 550
-    .rselwin.p add [create_report_generation_options .rselwin.p.ro] -width 600 -height 550 -hide true
+    .rselwin.p add [create_report_generation_source  .rselwin.p.rs] -width 600 -height 600
+    .rselwin.p add [create_report_generation_options .rselwin.p.ro] -width 600 -height 600 -hide true
 
     # Pack the panedwindow
     pack .rselwin.p -fill both -expand yes
