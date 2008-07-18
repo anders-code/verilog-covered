@@ -63,11 +63,11 @@ proc menu_create {} {
 
   # FILE - entry 0
   $tfm add command -label "Open/Merge CDDs..." -accelerator "Ctrl-o" -underline 0 -command {
-    if {[open_files] != ""} {
-      .menubar.file entryconfigure 1 -state normal
-      .menubar.file entryconfigure 4 -state normal
-      .menubar.file.gen entryconfigure 1 -state normal
+    # Get a list of files to open
+    if {[catch {tk_getOpenFile -multiple 1 -filetypes $file_types} fnames_to_open]} {
+      set fnames [tk_getOpenFile -filetypes $file_types]
     }
+    open_files $fnames
   }
   # FILE - entry 1
   $tfm add command -label "View Loaded CDD(s)..." -state disabled -underline 0 -command {
@@ -299,15 +299,10 @@ proc menu_create {} {
 }
 
 # Opens/merges a CDD file and handles the GUI cursors and listbox initialization.
-proc open_files {} {
+proc open_files {fnames} {
 
-  global file_types cdd_name fname global open_type
+  global file_types cdd_name fname open_type
   global win_cursor txt_cursor e_cursor
-
-  # Get a list of files to open
-  if {[catch {tk_getOpenFile -multiple 1 -filetypes $file_types} fnames]} {
-    set fnames [tk_getOpenFile -filetypes $file_types]
-  }
 
   # Get all cursor values from various widgets (so we can properly restore them after the open)
   set win_cursor [. cget -cursor]
@@ -361,6 +356,13 @@ proc open_files {} {
   .                     configure -cursor $win_cursor
   .bot.right.txt        configure -cursor $txt_cursor
   .bot.right.h.search.e configure -cursor $e_cursor
+
+  # Change some of the GUI elements
+  if {$cdd_name ne ""} {
+    .menubar.file     entryconfigure 1 -state normal
+    .menubar.file     entryconfigure 4 -state normal
+    .menubar.file.gen entryconfigure 1 -state normal
+  }
 
   return $cdd_name
 
