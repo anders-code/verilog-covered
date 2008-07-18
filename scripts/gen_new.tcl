@@ -5,22 +5,6 @@ set dump_filetypes {
   {{All Files}     * }
 }
 
-proc check_to_generate {} {
-
-  global dump_vpi_none toplevel_name dump_file
-
-  if {$dump_vpi_none eq "none" && $toplevel_name ne "" && 
-    .newwin.bf.gen configure -state normal
-  } elseif {$dump_vpi_none eq "dump" && $dump_file ne "" &&
-    .newwin.bf.gen configure -state normal
-  } elseif {$dump_vpi_none eq "vpi" && $toplevel_name ne "" &&
-    .newwin.bf.gen configure -state normal
-  } else {
-    .newwin.bf.gen configure -state disabled
-  }
-
-}
-
 proc create_new_cdd {} {
 
   global cddgen_sel cddgen_fname
@@ -41,9 +25,10 @@ proc create_new_cdd {} {
     panedwindow .newwin.p 
     
     # Add panes
-    .newwin.p add [create_new_cdd_source .newwin.p.source] -width 600 -height 550
-    .newwin.p add [create_new_cdd_name   .newwin.p.name]   -width 600 -height 550 -hide true
-    .newwin.p add [create_new_cdd_dump   .newwin.p.dump]   -width 600 -height 550 -hide true
+    .newwin.p add [create_new_cdd_source .newwin.p.source] -width 750 -height 450
+    .newwin.p add [create_new_cdd_name   .newwin.p.name]   -width 750 -height 450 -hide true
+    .newwin.p add [create_new_cdd_dump   .newwin.p.dump]   -width 750 -height 450 -hide true
+    .newwin.p add [create_new_cdd_parse  .newwin.p.parse]  -width 750 -height 450 -hide true
 
     # Pack the panedwindow
     pack .newwin.p -fill both -expand yes
@@ -101,7 +86,10 @@ proc read_score_option_file {w fname} {
   global cdd_filename cddgen_fname
   global dump_vpi_none dump_file
   global vpi_file vpi_ts vpi_ts_num1 vpi_ts_scale1 vpi_ts_num2 vpi_ts_scale2
-  global simulator
+  global toplevel_name inst_name delay_type
+  global race_cond_action race_cond_pragma race_cond_pragma_name
+  global assert_ovl design_generation
+  global exclude_always exclude_assign exclude_initial exclude_final exclude_pragma exclude_pragma_name
 
   if {[catch {set fp [open $cddgen_fname "r"]}]} {
     tk_messageBox -message "File $cddgen_fname Not Found!" -title "No File" -icon error
@@ -161,6 +149,107 @@ proc read_score_option_file {w fname} {
         set i [expr $i - 1]
       }
 
+    } elseif {[lindex $contents $i] eq "-t"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        set toplevel_name [lindex $contents $i]
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-i"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        set inst_name [lindex $contents $i]
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-T"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        if {[lindex $contents $i] eq "min"} {
+          set delay_type "Min"
+        } elseif {[lindex $contents $i] eq "typ"} {
+          set delay_type "Typ"
+        } elseif {[lindex $contents $i] eq "max"} {
+          set delay_type "Max"
+        }
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-rI"} {
+      set race_cond_action "Ignore"
+
+    } elseif {[lindex $contents $i] eq "-rS"} {
+      set race_cond_action "Silent"
+
+    } elseif {[lindex $contents $i] eq "-rW"} {
+      set race_cond_action "Warning"
+
+    } elseif {[lindex $contents $i] eq "-rE"} {
+      set race_cond_action "Error"
+
+    } elseif {[lindex $contents $i] eq "-rP"} {
+      set race_cond_pragma 1
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        set race_cond_pragma_name [lindex $contents $i]
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-A"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        if {[lindex $contents $i] eq "ovl"} {
+          set assert_ovl 1
+        }
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-g"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        if {[string first "=" [lindex $contents $i]] != -1} {
+          set generation_pair [split [lindex $contents $i] =]
+          # TBD
+        } else {
+          if {[lindex $contents $i] eq "1"} {
+            set design_generation "Verilog 1995"
+          } elseif {[lindex $contents $i] eq "2"} {
+            set design_generation "Verilog 2001"
+          } elseif {[lindex $contents $i] eq "3"} {
+            set design_generation "System Verilog"
+          }
+        }
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-ec"} {
+      set exclude_assign 1
+
+    } elseif {[lindex $contents $i] eq "-ea"} {
+      set exclude_always 1
+
+    } elseif {[lindex $contents $i] eq "-ei"} {
+      set exclude_initial 1
+
+    } elseif {[lindex $contents $i] eq "-ef"} {
+      set exclude_final 1
+
+    } elseif {[lindex $contents $i] eq "-ep"} {
+      set exclude_pragma 1
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        set exclude_pragma_name [lindex $contents $i]
+      } else {
+        set i [expr $i - 1]
+      }
+
     }
 
   }
@@ -176,36 +265,68 @@ proc setup_cdd_generate_options {w} {
   global dump_vpi_none dump_file
   global vpi_file vpi_ts vpi_ts_num1 vpi_ts_scale1 vpi_ts_num2 vpi_ts_scale2
   global simulator
+  global toplevel_name inst_name delay_type
+  global race_cond_action race_cond_pragma race_cond_pragma_name
+  global assert_ovl design_generation
+  global exclude_always exclude_assign exclude_initial exclude_final exclude_pragma exclude_pragma_name
 
   if {$cddgen_fname ne ""} {
 
     # Perform global variable initialization here
-    set cdd_filename ""
-    set dump_vpi_none "none"
-    set dump_file     ""
-    set vpi_file      ""
-    set vpi_ts        "0"
-    set vpi_ts_num1   "1"
-    set vpi_ts_scale1 "s"
-    set vpi_ts_num2   "1"
-    set vpi_ts_scale2 "s"
-    set simulator     "Icarus Verilog"
+    set cdd_filename          ""
+    set dump_vpi_none         "none"
+    set dump_file             ""
+    set vpi_file              ""
+    set vpi_ts                "0"
+    set vpi_ts_num1           "1"
+    set vpi_ts_scale1         "s"
+    set vpi_ts_num2           "1"
+    set vpi_ts_scale2         "s"
+    set simulator             "Icarus Verilog"
+    set toplevel_name         ""
+    set inst_name             ""
+    set delay_type            "None"
+    set race_cond_action      "None"
+    set race_cond_pragma      0
+    set race_cond_pragma_name "racecheck"
+    set assert_ovl            0
+    set design_generation     "System Verilog"
+    set exclude_always        0
+    set exclude_assign        0
+    set exclude_initial       0
+    set exclude_final         0
+    set exclude_pragma        0
+    set exclude_pragma_name   "coverage"
 
     read_score_option_file $w $cddgen_fname
 
   } else {
 
     # Otherwise, set global variables to desired default values
-    set cdd_filename ""
-    set dump_vpi_none "none"
-    set dump_file     ""
-    set vpi_file      ""
-    set vpi_ts        "0"
-    set vpi_ts_num1   "1"
-    set vpi_ts_scale1 "s"
-    set vpi_ts_num2   "1"
-    set vpi_ts_scale2 "s"
-    set simulator     "Icarus Verilog"
+    set cdd_filename         ""
+    set dump_vpi_none         "none"
+    set dump_file             ""
+    set vpi_file              ""
+    set vpi_ts                "0"
+    set vpi_ts_num1           "1"
+    set vpi_ts_scale1         "s"
+    set vpi_ts_num2           "1"
+    set vpi_ts_scale2         "s"
+    set simulator             "Icarus Verilog"
+    set toplevel_name         ""
+    set inst_name             ""
+    set delay_type            "None"
+    set race_cond_action      "None"
+    set race_cond_pragma      0
+    set race_cond_pragma_name "racecheck"
+    set assert_ovl            0
+    set design_generation     "System Verilog"
+    set exclude_always        0
+    set exclude_assign        0
+    set exclude_initial       0
+    set exclude_final         0
+    set exclude_pragma        0
+    set exclude_pragma_name   "coverage"
 
   }
 
@@ -274,7 +395,7 @@ proc create_new_cdd_name_browse {w} {
 
   global cdd_filename file_types
 
-  set tmp_cdd [tk_getOpenFile -title {Select CDD Filename} -filetypes $file_types -parent [winfo parent $w]]
+  set tmp_cdd [tk_getSaveFile -title {Select CDD Filename} -filetypes $file_types -parent [winfo parent $w]]
 
   # If a filename was selected, set the cdd_filename and generate an event to the entry widget
   if {$tmp_cdd ne ""} {
@@ -478,6 +599,137 @@ proc create_new_cdd_dump {w} {
 
 }
 
+proc create_new_cdd_parse_race_pragma_name_cmd {w} {
+
+  global race_cond_pragma
+
+  if {$race_cond_pragma == 0} {
+    $w.parse.race_e configure -state disabled
+  } else {
+    $w.parse.race_e configure -state normal
+  }
+  
+}
+
+proc create_new_cdd_parse_exclude_pragma_cmd {w} {
+
+  global exclude_pragma
+
+  if {$exclude_pragma == 0} {
+    $w.exclude.epe configure -state disabled
+  } else {
+    $w.exclude.epe configure -state normal
+  }
+
+}
+
+proc handle_new_cdd_parse_top_name_cmd {w} {
+
+  global toplevel_name
+
+  if {$toplevel_name ne ""} {
+    $w.bf.next configure -state normal
+  } else {
+    $w.bf.next configure -state disabled
+  }
+
+  return 1
+
+}
+
+proc create_new_cdd_parse {w} {
+
+  global toplevel_name inst_name delay_type
+  global race_cond_action race_cond_pragma race_cond_pragma_name
+  global assert_ovl
+  global design_generation
+  global exclude_always exclude_assign exclude_initial exclude_final exclude_pragma exclude_pragma_name
+
+  # Create top-most frame
+  frame $w
+  labelframe $w.parse -text "General Options"
+
+  # Add toplevel design name widgets
+  label $w.parse.top_l -text "Toplevel module name:"
+  entry $w.parse.top_e -textvariable toplevel_name -validate all -vcmd "handle_new_cdd_parse_top_name_cmd $w"
+  
+  # Add root pathname widgets
+  label $w.parse.inst_l -text "Root pathname:"
+  entry $w.parse.inst_e -textvariable inst_name
+  
+  # Add delay specification
+  label         $w.parse.delay_l -text "Delay Type:"
+  tk_optionMenu $w.parse.delay_m delay_type None Min Typ Max
+  
+  # Add race condition option
+  label         $w.parse.race_l  -text "Race Condition Action:"
+  tk_optionMenu $w.parse.race_m race_cond None Silent Warning Error Ignore
+  checkbutton   $w.parse.race_cb -text "Use embedded race condition pragmas" -variable race_cond_pragma
+  entry         $w.parse.race_e  -state disabled -textvariable race_cond_pragma_name
+  $w.parse.race_cb configure -command "create_new_cdd_parse_race_pragma_name_cmd $w"
+  
+  # Add generation options
+  label         $w.parse.gen_l -text "Default Verilog Generation:"
+  tk_optionMenu $w.parse.gen_m design_generation {Verilog 1995} {Verilog 2001} {System Verilog}
+
+  # Add assertion options
+  checkbutton $w.parse.assert_ovl -text "Include OVL Assertions" -variable assert_ovl -anchor w
+  
+  # Create a grid for the above widgets
+  grid columnconfigure $w.parse 3 -weight 1
+  grid $w.parse.top_l      -row 0 -column 0 -padx 3 -pady 3 -sticky nw
+  grid $w.parse.top_e      -row 0 -column 1 -padx 3 -pady 3 -sticky news -columnspan 3
+  grid $w.parse.inst_l     -row 1 -column 0 -padx 3 -pady 3 -sticky nw
+  grid $w.parse.inst_e     -row 1 -column 1 -padx 3 -pady 3 -sticky news -columnspan 3
+  grid $w.parse.delay_l    -row 2 -column 0 -padx 3 -pady 3 -sticky nw
+  grid $w.parse.delay_m    -row 2 -column 1 -padx 3 -pady 3 -sticky nw
+  grid $w.parse.race_l     -row 3 -column 0 -padx 3 -pady 3 -sticky nw
+  grid $w.parse.race_m     -row 3 -column 1 -padx 3 -pady 3 -sticky nw
+  grid $w.parse.race_cb    -row 3 -column 2 -padx 3 -pady 3 -sticky news
+  grid $w.parse.race_e     -row 3 -column 3 -padx 3 -pady 3 -sticky news
+  grid $w.parse.gen_l      -row 4 -column 0 -padx 3 -pady 3 -sticky nw
+  grid $w.parse.gen_m      -row 4 -column 1 -padx 3 -pady 3 -sticky nw
+  grid $w.parse.assert_ovl -row 5 -column 0 -padx 3 -pady 3 -sticky news -columnspan 4
+
+  # Add exclusion options
+  labelframe  $w.exclude -text "Exclude Options"
+  checkbutton $w.exclude.ea -anchor w -text "Exclude Always Blocks"  -variable exclude_always
+  checkbutton $w.exclude.ec -anchor w -text "Exclude Assign Blocks"  -variable exclude_assign
+  checkbutton $w.exclude.ei -anchor w -text "Exclude Initial Blocks" -variable exclude_initial
+  checkbutton $w.exclude.ef -anchor w -text "Exclude Final Blocks"   -variable exclude_final
+  checkbutton $w.exclude.epc -text "Exclude Within Pragma:" -variable exclude_pragma
+  entry       $w.exclude.epe -state disabled -textvariable exclude_pragma_name
+  $w.exclude.epc configure -command "create_new_cdd_parse_exclude_pragma_cmd $w"
+  
+  grid $w.exclude.ea  -row 0 -column 0 -sticky news -padx 3 -pady 3
+  grid $w.exclude.ec  -row 0 -column 1 -sticky news -padx 3 -pady 3
+  grid $w.exclude.ei  -row 1 -column 0 -sticky news -padx 3 -pady 3
+  grid $w.exclude.ef  -row 1 -column 1 -sticky news -padx 3 -pady 3
+  grid $w.exclude.epc -row 2 -column 0 -sticky news -padx 3 -pady 3
+  grid $w.exclude.epe -row 2 -column 1 -sticky news -padx 3 -pady 3
+
+  # Create button bar
+  frame  $w.bf
+  button $w.bf.help   -width 10 -text "Help" -command {
+    puts "TBD"
+  }
+  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
+  button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
+  button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
+  pack $w.bf.prev   -side left  -padx 4 -pady 4
+
+  # Pack frames
+  pack $w.parse   -fill x -pady 10
+  pack $w.exclude -fill x -pady 10
+  pack $w.bf      -side bottom -fill x
+
+  return $w
+
+}
+
 #proc create_new_cdd {} {
 #
 #  global dump_filetypes file_types
@@ -625,114 +877,114 @@ proc create_new_cdd_dump {w} {
 ##    grid .newwin.general.dump.ev -row 2 -column 1 -sticky news -padx 3 -pady 3
 ##    grid .newwin.general.dump.mv -row 2 -column 2 -sticky news -padx 3 -pady 3
 ##    grid .newwin.general.dump.ts -row 3 -column 0 -sticky news -padx 3 -pady 3 -columnspan 3
-#
-#    # Pack the general widgets
-#    pack .newwin.general.cdd  -fill x
-#    pack .newwin.general.dump -fill x
-#
-#    ############################################
-#    # Add widgets to design parsing item frame #
-#    ############################################
-#
-#    labelframe .newwin.parse -text "Design parsing fields" -takefocus 0
-#
-#    # Add toplevel design name widgets
-#    set toplevel_name ""
-#    frame .newwin.parse.top
-#    label .newwin.parse.top.l -text "Toplevel module name:"
-#    entry .newwin.parse.top.e -textvariable toplevel_name
-#    pack  .newwin.parse.top.l -side left -padx 3 -pady 3
-#    pack  .newwin.parse.top.e -side left -padx 3 -pady 3 -fill x -expand 1
-#
-#    # Add root pathname widgets
-#    set inst_name ""
-#    frame .newwin.parse.inst
-#    label .newwin.parse.inst.l -text "Root pathname:"
-#    entry .newwin.parse.inst.e -textvariable inst_name
-#    pack  .newwin.parse.inst.l -side left -padx 3 -pady 3
-#    pack  .newwin.parse.inst.e -side left -padx 3 -pady 3 -fill x -expand 1
-#
-#    # Add delay specification
-#    set delay_type "None"
-#    frame .newwin.parse.delay
-#    label .newwin.parse.delay.l -text "Delay Type:"
-#    tk_optionMenu .newwin.parse.delay.m delay_type None Min Typ Max
-#    pack .newwin.parse.delay.l -side left -padx 3 -pady 3
-#    pack .newwin.parse.delay.m -side left -padx 3 -pady 3 -fill x
-#
-#    # Add race condition option
-#    set race_cond_action      "None"
-#    set race_cond_pragma      0
-#    set race_cond_pragma_name "racecheck"
-#    frame         .newwin.parse.race
-#    label         .newwin.parse.race.l  -text "Race Condition Action:"
-#    tk_optionMenu .newwin.parse.race.m race_cond None Silent Warning Error Ignore
-#    checkbutton   .newwin.parse.race.cb -text "Use embedded race condition pragmas" -variable race_cond_pragma
-#    entry         .newwin.parse.race.e  -state disabled -textvariable race_cond_pragma_name
-#    .newwin.parse.race.cb configure -command {
-#      if {$race_cond_pragma == 0} {
-#        .newwin.parse.race.e configure -state disabled
-#      } else {
-#        .newwin.parse.race.e configure -state normal
-#      }
-#    }
-#    pack .newwin.parse.race.l  -side left -padx 3 -pady 3
-#    pack .newwin.parse.race.m  -side left -padx 3 -pady 3
-#    pack .newwin.parse.race.cb -side left -padx 3 -pady 3
-#    pack .newwin.parse.race.e  -side left -padx 3 -pady 3 -fill x -expand 1
-#
-#    # Add assertion options
-#    set assert_ovl 0
-#    frame .newwin.parse.assert
-#    checkbutton .newwin.parse.assert.ovl -text "Include OVL Assertions" -variable assert_ovl
-#    pack .newwin.parse.assert.ovl -side left -padx 3 -pady 3
-#
-#    # Add generation options
-#    set design_generation "System Verilog"
-#    frame .newwin.parse.gen
-#    label .newwin.parse.gen.l -text "Universal Verilog Generation:"
-#    tk_optionMenu .newwin.parse.gen.m design_generation {Verilog 1995} {Verilog 2001} {System Verilog}
-#    pack .newwin.parse.gen.l -side left -padx 3 -pady 3
-#    pack .newwin.parse.gen.m -side left -padx 3 -pady 3
-#
-#    # Add exclusion options
-#    set exclude_always      0
-#    set exclude_assign      0
-#    set exclude_initial     0
-#    set exclude_final       0
-#    set exclude_pragma      0
-#    set exclude_pragma_name "coverage"
-#    frame       .newwin.parse.exclude
-#    checkbutton .newwin.parse.exclude.ea  -text "Exclude Always Blocks"  -variable exclude_always
-#    checkbutton .newwin.parse.exclude.ec  -text "Exclude Assign Blocks"  -variable exclude_assign
-#    checkbutton .newwin.parse.exclude.ei  -text "Exclude Initial Blocks" -variable exclude_initial
-#    checkbutton .newwin.parse.exclude.ef  -text "Exclude Final Blocks"   -variable exclude_final
-#    checkbutton .newwin.parse.exclude.epc -text "Exclude Within Pragma:" -variable exclude_pragma
-#    entry       .newwin.parse.exclude.epe -state disabled -textvariable exclude_pragma_name
-#    .newwin.parse.exclude.epc configure -command {
-#      if {$exclude_pragma == 0} {
-#        .newwin.parse.exclude.epe configure -state disabled
-#      } else {
-#        .newwin.parse.exclude.epe configure -state normal
-#      }
-#    }
-#    pack .newwin.parse.exclude.ea  -side left -padx 3 -pady 3
-#    pack .newwin.parse.exclude.ec  -side left -padx 3 -pady 3
-#    pack .newwin.parse.exclude.ei  -side left -padx 3 -pady 3
-#    pack .newwin.parse.exclude.ef  -side left -padx 3 -pady 3
-#    pack .newwin.parse.exclude.epc -side left -padx 3 -pady 3
-#    pack .newwin.parse.exclude.epe -side left -padx 3 -pady 3 -fill x -expand 1
-#
-#    # Pack the general options frame
-#    grid columnconfigure .newwin.parse 0 -weight 1
-#    grid columnconfigure .newwin.parse 1 -weight 1
-#    grid .newwin.parse.top     -row 0 -column 0 -sticky news -padx 3 -pady 3
-#    grid .newwin.parse.inst    -row 0 -column 1 -sticky news -padx 3 -pady 3
-#    grid .newwin.parse.delay   -row 1 -column 0 -sticky news -padx 3 -pady 3
-#    grid .newwin.parse.race    -row 1 -column 1 -sticky news -padx 3 -pady 3
-#    grid .newwin.parse.assert  -row 2 -column 0 -sticky news -padx 3 -pady 3
-#    grid .newwin.parse.gen     -row 2 -column 1 -sticky news -padx 3 -pady 3
-#    grid .newwin.parse.exclude -row 3 -column 0 -sticky news -padx 3 -pady 3 -columnspan 2
+##
+##    # Pack the general widgets
+##    pack .newwin.general.cdd  -fill x
+##    pack .newwin.general.dump -fill x
+##
+##    ############################################
+##    # Add widgets to design parsing item frame #
+##    ############################################
+##
+##    labelframe .newwin.parse -text "Design parsing fields" -takefocus 0
+##
+##    # Add toplevel design name widgets
+##    set toplevel_name ""
+##    frame .newwin.parse.top
+##    label .newwin.parse.top.l -text "Toplevel module name:"
+##    entry .newwin.parse.top.e -textvariable toplevel_name
+##    pack  .newwin.parse.top.l -side left -padx 3 -pady 3
+##    pack  .newwin.parse.top.e -side left -padx 3 -pady 3 -fill x -expand 1
+##
+##    # Add root pathname widgets
+##    set inst_name ""
+##    frame .newwin.parse.inst
+##    label .newwin.parse.inst.l -text "Root pathname:"
+##    entry .newwin.parse.inst.e -textvariable inst_name
+##    pack  .newwin.parse.inst.l -side left -padx 3 -pady 3
+##    pack  .newwin.parse.inst.e -side left -padx 3 -pady 3 -fill x -expand 1
+##
+##    # Add delay specification
+##    set delay_type "None"
+##    frame .newwin.parse.delay
+##    label .newwin.parse.delay.l -text "Delay Type:"
+##    tk_optionMenu .newwin.parse.delay.m delay_type None Min Typ Max
+##    pack .newwin.parse.delay.l -side left -padx 3 -pady 3
+##    pack .newwin.parse.delay.m -side left -padx 3 -pady 3 -fill x
+##
+##    # Add race condition option
+##    set race_cond_action      "None"
+##    set race_cond_pragma      0
+##    set race_cond_pragma_name "racecheck"
+##    frame         .newwin.parse.race
+##    label         .newwin.parse.race.l  -text "Race Condition Action:"
+##    tk_optionMenu .newwin.parse.race.m race_cond None Silent Warning Error Ignore
+##    checkbutton   .newwin.parse.race.cb -text "Use embedded race condition pragmas" -variable race_cond_pragma
+##    entry         .newwin.parse.race.e  -state disabled -textvariable race_cond_pragma_name
+##    .newwin.parse.race.cb configure -command {
+##      if {$race_cond_pragma == 0} {
+##        .newwin.parse.race.e configure -state disabled
+##      } else {
+##        .newwin.parse.race.e configure -state normal
+##      }
+##    }
+##    pack .newwin.parse.race.l  -side left -padx 3 -pady 3
+##    pack .newwin.parse.race.m  -side left -padx 3 -pady 3
+##    pack .newwin.parse.race.cb -side left -padx 3 -pady 3
+##    pack .newwin.parse.race.e  -side left -padx 3 -pady 3 -fill x -expand 1
+##
+##    # Add assertion options
+##    set assert_ovl 0
+##    frame .newwin.parse.assert
+##    checkbutton .newwin.parse.assert.ovl -text "Include OVL Assertions" -variable assert_ovl
+##    pack .newwin.parse.assert.ovl -side left -padx 3 -pady 3
+##
+##    # Add generation options
+##    set design_generation "System Verilog"
+##    frame .newwin.parse.gen
+##    label .newwin.parse.gen.l -text "Universal Verilog Generation:"
+##    tk_optionMenu .newwin.parse.gen.m design_generation {Verilog 1995} {Verilog 2001} {System Verilog}
+##    pack .newwin.parse.gen.l -side left -padx 3 -pady 3
+##    pack .newwin.parse.gen.m -side left -padx 3 -pady 3
+##
+##    # Add exclusion options
+##    set exclude_always      0
+##    set exclude_assign      0
+##    set exclude_initial     0
+##    set exclude_final       0
+##    set exclude_pragma      0
+##    set exclude_pragma_name "coverage"
+##    frame       .newwin.parse.exclude
+##    checkbutton .newwin.parse.exclude.ea  -text "Exclude Always Blocks"  -variable exclude_always
+##    checkbutton .newwin.parse.exclude.ec  -text "Exclude Assign Blocks"  -variable exclude_assign
+##    checkbutton .newwin.parse.exclude.ei  -text "Exclude Initial Blocks" -variable exclude_initial
+##    checkbutton .newwin.parse.exclude.ef  -text "Exclude Final Blocks"   -variable exclude_final
+##    checkbutton .newwin.parse.exclude.epc -text "Exclude Within Pragma:" -variable exclude_pragma
+##    entry       .newwin.parse.exclude.epe -state disabled -textvariable exclude_pragma_name
+##    .newwin.parse.exclude.epc configure -command {
+##      if {$exclude_pragma == 0} {
+##        .newwin.parse.exclude.epe configure -state disabled
+##      } else {
+##        .newwin.parse.exclude.epe configure -state normal
+##      }
+##    }
+##    pack .newwin.parse.exclude.ea  -side left -padx 3 -pady 3
+##    pack .newwin.parse.exclude.ec  -side left -padx 3 -pady 3
+##    pack .newwin.parse.exclude.ei  -side left -padx 3 -pady 3
+##    pack .newwin.parse.exclude.ef  -side left -padx 3 -pady 3
+##    pack .newwin.parse.exclude.epc -side left -padx 3 -pady 3
+##    pack .newwin.parse.exclude.epe -side left -padx 3 -pady 3 -fill x -expand 1
+##
+##    # Pack the general options frame
+##    grid columnconfigure .newwin.parse 0 -weight 1
+##    grid columnconfigure .newwin.parse 1 -weight 1
+##    grid .newwin.parse.top     -row 0 -column 0 -sticky news -padx 3 -pady 3
+##    grid .newwin.parse.inst    -row 0 -column 1 -sticky news -padx 3 -pady 3
+##    grid .newwin.parse.delay   -row 1 -column 0 -sticky news -padx 3 -pady 3
+##    grid .newwin.parse.race    -row 1 -column 1 -sticky news -padx 3 -pady 3
+##    grid .newwin.parse.assert  -row 2 -column 0 -sticky news -padx 3 -pady 3
+##    grid .newwin.parse.gen     -row 2 -column 1 -sticky news -padx 3 -pady 3
+##    grid .newwin.parse.exclude -row 3 -column 0 -sticky news -padx 3 -pady 3 -columnspan 2
 #
 #    ############################################################
 #    # Create paned window for verilog paths and console output #
