@@ -34,8 +34,8 @@ proc create_new_cdd {} {
     set cddgen_sel       "options"
     set cddgen_fname     ""
     set cddgen_auto_open 0
-    set cdd_filename     ""
     set cddgen_sname     ""
+    set cdd_filename     ""
   
     # Pack the panedwindow
     pack .newwin.p -fill both -expand yes
@@ -567,6 +567,11 @@ proc setup_cdd_generate_options {w} {
     set exclude_pragma        0
     set exclude_pragma_name   "coverage"
 
+  }
+
+  # If -vcd, -lxt or -vpi was not specified, make sure that we set the "Parse Design Only" bits accordingly
+  if {$dump_vpi_none eq "none"} {
+    handle_new_cdd_dump_states .newwin.p.dump
   }
 
 }
