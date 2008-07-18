@@ -234,7 +234,7 @@ proc create_report_generation_source {w} {
   "
   entry  $w.f.fc.e -state disabled -textvariable rptgen_fname
   button $w.f.fc.b -text "Browse..." -state disabled -command {
-    set fname [tk_getOpenFile -title "Select a Report Option File" -parent .rselwin]
+    set fname [tk_getOpenFile -title "Select a Report Command Option File" -parent .rselwin]
     if {$fname ne ""} {
       set rptgen_fname $fname
     }

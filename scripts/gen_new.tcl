@@ -16,13 +16,6 @@ proc create_new_cdd {} {
     wm title .newwin "Create New CDD"
     wm transient .newwin .
 
-    # Initialize global variables
-    set cddgen_sel       "options"
-    set cddgen_fname     ""
-    set cddgen_auto_open 0
-    set cdd_filename     ""
-    set cddgen_sname     ""
-  
     # Create labelframe that will hold the contents
     panedwindow .newwin.p 
     
@@ -34,6 +27,16 @@ proc create_new_cdd {} {
     .newwin.p add [create_new_cdd_parse2 .newwin.p.parse2] -width 750 -height 450 -hide true
     .newwin.p add [create_new_cdd_output .newwin.p.output] -width 750 -height 450 -hide true
 
+    # Wait for objects to be created
+    update idletasks
+
+    # Initialize global variables
+    set cddgen_sel       "options"
+    set cddgen_fname     ""
+    set cddgen_auto_open 0
+    set cdd_filename     ""
+    set cddgen_sname     ""
+  
     # Pack the panedwindow
     pack .newwin.p -fill both -expand yes
  
@@ -590,7 +593,7 @@ proc create_new_cdd_source {w} {
   "
   entry  $w.f.fc.e -state disabled -textvariable cddgen_fname
   button $w.f.fc.b -text "Browse..." -state disabled -command {
-    set fname [tk_getOpenFile -title "Select a Report Option File" -parent .newwin]
+    set fname [tk_getOpenFile -title "Select a Score Command Option File" -parent .newwin]
     if {$fname ne ""} {
       set cddgen_fname $fname
     }
@@ -651,6 +654,8 @@ proc create_new_cdd_name_update_next {w} {
     $w.bf.next configure -state disabled
   }
 
+  return 1
+
 }
 
 proc create_new_cdd_name {w} {
@@ -665,7 +670,7 @@ proc create_new_cdd_name {w} {
   frame  $w.fl
   frame  $w.cdd
   label  $w.cdd.l -text "CDD name:"
-  entry  $w.cdd.e -textvariable cdd_filename -validate all -vcmd "create_new_cdd_name_update_next $w; return 1"
+  entry  $w.cdd.e -textvariable cdd_filename -validate all
   button $w.cdd.b -text "Browse" -width 10 -command "create_new_cdd_name_browse $w"
     
   pack $w.cdd.l -side left  -padx 3 -pady 3 -fill y
@@ -684,6 +689,8 @@ proc create_new_cdd_name {w} {
   pack $w.bf.cancel -side right -padx 4 -pady 4
   pack $w.bf.next   -side right -padx 4 -pady 4
   pack $w.bf.prev   -side left  -padx 4 -pady 4
+
+  $w.cdd.e configure -vcmd "create_new_cdd_name_update_next $w"
 
   # Pack frames
   pack $w.fu  -fill both -expand 1
@@ -887,7 +894,7 @@ proc create_new_cdd_parse {w} {
 
   # Add toplevel design name widgets
   label $w.parse.top_l -text "Toplevel module name:"
-  entry $w.parse.top_e -textvariable toplevel_name -validate all -vcmd "handle_new_cdd_parse_top_name_cmd $w"
+  entry $w.parse.top_e -textvariable toplevel_name -validate all
   
   # Add root pathname widgets
   label $w.parse.inst_l -text "Root pathname:"
@@ -956,6 +963,8 @@ proc create_new_cdd_parse {w} {
   pack $w.bf.cancel -side right -padx 4 -pady 4
   pack $w.bf.next   -side right -padx 4 -pady 4
   pack $w.bf.prev   -side left  -padx 4 -pady 4
+
+  $w.parse.top_e configure -vcmd "handle_new_cdd_parse_top_name_cmd $w"
 
   # Pack frames
   pack $w.parse   -fill x -pady 10

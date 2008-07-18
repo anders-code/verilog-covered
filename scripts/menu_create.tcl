@@ -64,10 +64,12 @@ proc menu_create {} {
   # FILE - entry 0
   $tfm add command -label "Open/Merge CDDs..." -accelerator "Ctrl-o" -underline 0 -command {
     # Get a list of files to open
-    if {[catch {tk_getOpenFile -multiple 1 -filetypes $file_types} fnames_to_open]} {
+    if {[catch {tk_getOpenFile -multiple 1 -filetypes $file_types} fnames]} {
       set fnames [tk_getOpenFile -filetypes $file_types]
     }
-    open_files $fnames
+    if {$fnames ne ""} {
+      open_files $fnames
+    }
   }
   # FILE - entry 1
   $tfm add command -label "View Loaded CDD(s)..." -state disabled -underline 0 -command {
@@ -122,8 +124,8 @@ proc menu_create {} {
   $tfm.gen add command -label "ASCII Report..." -accelerator "Ctrl-r" -state disabled -command {
     create_report_generation_window
   }
-  $tfm.gen add command -label "CDD Ranking Report..." -accelerator "Ctrl-g" -state disabled -command {
-    puts "NEED TO ADD CDD ranking report support"
+  $tfm.gen add command -label "CDD Ranking Report..." -accelerator "Ctrl-g" -command {
+    create_rank_cdds
   }
 
   # We don't need the exit function if we are running the Aqua version

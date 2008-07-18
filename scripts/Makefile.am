@@ -7,6 +7,7 @@ tcl_SCRIPTS = assert.tcl \
               cov_icon.gif \
               fsm.tcl \
               gen_new.tcl \
+              gen_rank.tcl \
               gen_report.tcl \
               help.tcl \
               help_wrapper.tcl \

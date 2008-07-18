@@ -20,7 +20,9 @@ proc create_wizard {} {
       .menubar.file invoke 0
       destroy .wizwin
     }
-    button .wizwin.f.grade -text "Rank CDD Coverage" -relief flat -state disabled -command {
+    button .wizwin.f.grade -text "Rank CDD Coverage" -relief flat -command {
+      create_rank_cdds
+      destroy .wizwin
     }
     button .wizwin.f.help  -text "Get Help" -relief flat -state disabled -command {
     }

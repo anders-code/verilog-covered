@@ -18,6 +18,7 @@ source [file join $HOME scripts memory.tcl]
 source [file join $HOME scripts wizard.tcl]
 source [file join $HOME scripts gen_new.tcl]
 source [file join $HOME scripts gen_report.tcl]
+source [file join $HOME scripts gen_rank.tcl]
 source [file join $HOME scripts viewer.tcl]
 
 # The Tablelist package is used for displaying instance/module hit/miss/total/percent hit information
@@ -119,7 +120,7 @@ proc main_view {} {
 
   # Create Tablelist and associated scrollbars
   tablelist::tablelist .bot.left.tl \
-    -columns {0 "Instance Name" 0 "Module Name" 0 "Hit" 0 "Miss" 0 "Total" 0 "Hit %" 0 "Index"} \
+    -columns {0 "Instance Name" 0 "Module Name" 0 "Hit" right 0 "Miss" right 0 "Total" right 0 "Hit %" right 0 "Index"} \
     -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.sbf.vb set} -stretch all
   .bot.left.tl columnconfigure 0 -hide true
   .bot.left.tl columnconfigure 2 -sortmode integer -stretchable false
@@ -167,7 +168,8 @@ proc main_view {} {
   bind .lbm <Leave> {.lbm unpost}
 
   # Pack the bottom window
-  .bot add .bot.left
+  update
+  .bot add .bot.left -minsize [expr [winfo reqheight .bot.left] + 100]
   .bot add .bot.right
 
   # Create bottom information bar
