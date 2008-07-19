@@ -13,10 +13,10 @@ proc create_rank_cdds {} {
     panedwindow .rankwin.p
 
     # Add panes
-    .rankwin.p add [create_rank_cdds_source  .rankwin.p.source] -width 750 -height 450
-    .rankwin.p add [create_rank_cdds_options .rankwin.p.opts]   -width 750 -height 450 -hide true
-    .rankwin.p add [create_rank_cdds_files   .rankwin.p.files]  -width 750 -height 450 -hide true
-    .rankwin.p add [create_rank_cdds_output  .rankwin.p.output] -width 750 -height 450 -hide true
+    .rankwin.p add [create_rank_cdds_source  .rankwin.p.source] -width 750 -height 500
+    .rankwin.p add [create_rank_cdds_options .rankwin.p.opts]   -width 750 -height 500 -hide true
+    .rankwin.p add [create_rank_cdds_files   .rankwin.p.files]  -width 750 -height 500 -hide true
+    .rankwin.p add [create_rank_cdds_output  .rankwin.p.output] -width 750 -height 500 -hide true
 
     # Initialize global variables
     set rankgen_sel   "options"
@@ -197,12 +197,12 @@ proc setup_cdd_rank_options {w} {
 
     # Perform global variable initialization here
     set rank_filename     ""
-    set weight_line       0
-    set weight_toggle     0
-    set weight_memory     0
-    set weight_comb       0
-    set weight_fsm        0
-    set weight_assert     0
+    set weight_line       1
+    set weight_toggle     1
+    set weight_memory     1
+    set weight_comb       1
+    set weight_fsm        1
+    set weight_assert     1
     set weight_line_num   1
     set weight_toggle_num 1
     set weight_memory_num 1
@@ -210,6 +210,14 @@ proc setup_cdd_rank_options {w} {
     set weight_fsm_num    1
     set weight_assert_num 1
     set names_only        0
+
+    # Update the corresponding entry widget state to normal
+    .rankwin.p.opts.wf.e_l configure -state normal
+    .rankwin.p.opts.wf.e_t configure -state normal
+    .rankwin.p.opts.wf.e_m configure -state normal
+    .rankwin.p.opts.wf.e_c configure -state normal
+    .rankwin.p.opts.wf.e_f configure -state normal
+    .rankwin.p.opts.wf.e_a configure -state normal
 
     read_rank_option_file $w $rankgen_fname
 
@@ -437,10 +445,13 @@ proc create_rank_cdds_options {w} {
   frame $w
 
   # Create output filename frame
-  frame $w.ff
-  label $w.ff.l -text "Output ranking report name:"
-  entry $w.ff.e -textvariable rank_filename -validate all
+  frame  $w.ff
+  label  $w.ff.l -text "Output ranking report name:"
+  entry  $w.ff.e -textvariable rank_filename -validate all
   button $w.ff.b -text "Browse..." -command "handle_rank_cdds_filename_browse $w"
+  pack   $w.ff.l -side left  -padx 3 -pady 3
+  pack   $w.ff.e -side left  -padx 3 -pady 3 -fill x -expand 1
+  pack   $w.ff.b -side right -padx 3 -pady 3
 
   # Create weight selection frame
   labelframe $w.wf -text "Coverage metric weighting"
