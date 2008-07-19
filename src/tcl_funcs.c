@@ -2199,16 +2199,17 @@ int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const cha
 }
 
 /*!
- \param tcl        Pointer to Tcl interpreter structure
- \param user_home  Name of user's home directory (used to store configuration file information to)
- \param home       Name of Tcl script home directory (from running the configure script)
- \param version    Current version of Covered being run
- \param browser    Name of browser executable to use for displaying help information
-
  Initializes the Tcl interpreter with all procs that are created in this file.  Also sets some global
  variables that come from the environment, the configuration execution or the Covered define file.
 */
-void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* version, char* browser ) { PROFILE(TCL_FUNC_INITIALIZE);
+void tcl_func_initialize(
+  Tcl_Interp* tcl,        /*!< Pointer to Tcl interpreter structure */
+  const char* program,    /*!< Name of Covered program provided by command-line */
+  const char* user_home,  /*!< Name of user's home directory (used to store configuration file information to) */
+  const char* home,       /*!< Name of Tcl script home directory (from running the configure script) */
+  const char* version,    /*!< Current version of Covered being run */
+  const char* browser     /*!< Name of browser executable to use for displaying help information */
+) { PROFILE(TCL_FUNC_INITIALIZE);
 
   Tcl_CreateCommand( tcl, "tcl_func_get_race_reason_msgs",      (Tcl_CmdProc*)(tcl_func_get_race_reason_msgs),      0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_funit_list",            (Tcl_CmdProc*)(tcl_func_get_funit_list),            0, 0 );
@@ -2251,6 +2252,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_set_fsm_exclude",           (Tcl_CmdProc*)(tcl_func_set_fsm_exclude),           0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_set_assert_exclude",        (Tcl_CmdProc*)(tcl_func_set_assert_exclude),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_generate_report",           (Tcl_CmdProc*)(tcl_func_generate_report),           0, 0 );
+
+  /* Provide the pathname to this covered executable */
+  Tcl_SetVar( tcl, "COVERED", program, TCL_GLOBAL_ONLY );
   
   /* Set the USER_HOME variable to location of user's home directory */
   Tcl_SetVar( tcl, "USER_HOME", user_home, TCL_GLOBAL_ONLY );
@@ -2271,6 +2275,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.77.4.2  2008/07/19 00:25:52  phase1geo
+ Forgot to update some files per the last checkin.
+
  Revision 1.77.4.1  2008/07/10 22:43:55  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

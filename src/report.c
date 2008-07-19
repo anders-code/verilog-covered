@@ -972,7 +972,7 @@ void command_report(
         user_home       = getenv( "HOME" );
 
         /* Initialize TCL */
-        tcl_func_initialize( interp, user_home, covered_home, covered_version, covered_browser );
+        tcl_func_initialize( interp, argv[0], user_home, covered_home, covered_version, covered_browser );
 
         /* Call the top-level Tcl file */
         slen      = strlen( covered_home ) + 30;
@@ -1017,6 +1017,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104.2.5  2008/07/19 00:25:52  phase1geo
+ Forgot to update some files per the last checkin.
+
  Revision 1.104.2.4  2008/07/15 23:01:51  phase1geo
  Added file viewer and started to update the generate report window.
 
