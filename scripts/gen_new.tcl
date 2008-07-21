@@ -576,6 +576,32 @@ proc setup_cdd_generate_options {w} {
 
 }
 
+proc handle_new_cdd_source {w {fname ""} {use_fname 0}} {
+
+  global cddgen_sel cddgen_fname
+
+  if {$use_fname == 0} {
+    set fname $cddgen_fname
+  }
+
+  if {$cddgen_sel eq "options"} {
+    $w.f.fc.e configure -state disabled
+    $w.f.fc.b configure -state disabled
+    $w.bf.next configure -state normal
+  } else {
+    $w.f.fc.e configure -state normal
+    $w.f.fc.b configure -state normal
+    if {$fname eq "" || [file isfile $fname] == 0} {
+      $w.bf.next configure -state disabled
+    } else {
+      $w.bf.next configure -state normal
+    }
+  }
+
+  return 1
+
+}
+
 proc create_new_cdd_source {w} {
 
   global cddgen_sel cddgen_fname
@@ -588,15 +614,11 @@ proc create_new_cdd_source {w} {
   frame $w.f.fu
   frame $w.f.fc
   frame $w.f.fl
-  radiobutton $w.f.fc.rb_opts -anchor w -text "Create CDD by interactively selecting options" -variable cddgen_sel -value "options" -command "
-    $w.f.fc.e configure -state disabled
-    $w.f.fc.b configure -state disabled
-  "
-  radiobutton $w.f.fc.rb_file -anchor w -text "Create CDD by using option file" -variable cddgen_sel -value "file" -command "
-    $w.f.fc.e configure -state normal
-    $w.f.fc.b configure -state normal
-  "
-  entry  $w.f.fc.e -state disabled -textvariable cddgen_fname
+  radiobutton $w.f.fc.rb_opts -anchor w -text "Create CDD by interactively selecting options" -variable cddgen_sel -value "options" \
+     -command "handle_new_cdd_source $w"
+  radiobutton $w.f.fc.rb_file -anchor w -text "Create CDD by using option file" -variable cddgen_sel -value "file" \
+     -command "handle_new_cdd_source $w"
+  entry  $w.f.fc.e -state disabled -textvariable cddgen_fname -validate all -vcmd "handle_new_cdd_source $w %P 1"
   button $w.f.fc.b -text "Browse..." -state disabled -command {
     set fname [tk_getOpenFile -title "Select a Score Command Option File" -parent .newwin]
     if {$fname ne ""} {

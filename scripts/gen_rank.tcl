@@ -310,6 +310,32 @@ proc create_rank_cmd_options {} {
   
 }
 
+proc handle_rank_cdds_source {w {fname ""} {use_fname 0}} {
+
+  global rankgen_sel rankgen_fname
+
+  if {$use_fname == 0} {
+    set fname $rankgen_fname
+  }
+
+  if {$rankgen_sel eq "options"} {
+    $w.f.fc.e configure -state disabled
+    $w.f.fc.b configure -state disabled
+    $w.bf.next configure -state normal
+  } else {
+    $w.f.fc.e configure -state normal
+    $w.f.fc.b configure -state normal
+    if {$fname eq "" || [file isfile $fname] == 0} {
+      $w.bf.next configure -state disabled
+    } else {
+      $w.bf.next configure -state normal
+    }
+  }
+
+  return 1
+
+}
+
 proc create_rank_cdds_source {w} {
 
   global rankgen_sel rankgen_fname
@@ -322,15 +348,11 @@ proc create_rank_cdds_source {w} {
   frame $w.f.fu
   frame $w.f.fc
   frame $w.f.fl
-  radiobutton $w.f.fc.rb_opts -anchor w -text "Create CDD ranking by interactively selecting options" -variable rankgen_sel -value "options" -command "
-    $w.f.fc.e configure -state disabled
-    $w.f.fc.b configure -state disabled
-  "
-  radiobutton $w.f.fc.rb_file -anchor w -text "Create CDD ranking by using option file" -variable rankgen_sel -value "file" -command "
-    $w.f.fc.e configure -state normal
-    $w.f.fc.b configure -state normal
-  "
-  entry  $w.f.fc.e -state disabled -textvariable rankgen_fname
+  radiobutton $w.f.fc.rb_opts -anchor w -text "Create CDD ranking by interactively selecting options" -variable rankgen_sel -value "options" \
+    -command "handle_rank_cdds_source $w"
+  radiobutton $w.f.fc.rb_file -anchor w -text "Create CDD ranking by using option file" -variable rankgen_sel -value "file" \
+    -command "handle_rank_cdds_source $w"
+  entry  $w.f.fc.e -state disabled -textvariable rankgen_fname -validate all -vcmd "handle_rank_cdds_source $w %P 1"
   button $w.f.fc.b -text "Browse..." -state disabled -command {
     set fname [tk_getOpenFile -title "Select a Rank Command Option File" -parent .rankwin]
     if {$fname ne ""} {

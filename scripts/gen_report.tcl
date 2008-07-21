@@ -212,6 +212,32 @@ proc setup_report_selection_options {} {
 
 }
 
+proc handle_report_generation_source {w {fname ""} {use_fname 0}} {
+
+  global rptgen_sel rptgen_fname
+
+  if {$use_fname == 0} {
+    set fname $rptgen_fname
+  }
+
+  if {$rptgen_sel eq "options"} {
+    $w.f.fc.e configure -state disabled
+    $w.f.fc.b configure -state disabled
+    $w.bf.next configure -state normal
+  } else {
+    $w.f.fc.e configure -state normal
+    $w.f.fc.b configure -state normal
+    if {$fname eq "" || [file isfile $fname] == 0} {
+      $w.bf.next configure -state disabled
+    } else {
+      $w.bf.next configure -state normal
+    }
+  }
+
+  return 1
+
+}
+
 proc create_report_generation_source {w} {
  
   global rptgen_sel rptgen_fname
@@ -224,15 +250,11 @@ proc create_report_generation_source {w} {
   frame $w.f.fu
   frame $w.f.fc
   frame $w.f.fl
-  radiobutton $w.f.fc.rb_opts -anchor w -text "Create report by interactively selecting options" -variable rptgen_sel -value "options" -command "
-    $w.f.fc.e configure -state disabled
-    $w.f.fc.b configure -state disabled
-  "
-  radiobutton $w.f.fc.rb_file -anchor w -text "Create report by using option file" -variable rptgen_sel -value "file" -command "
-    $w.f.fc.e configure -state normal
-    $w.f.fc.b configure -state normal
-  "
-  entry  $w.f.fc.e -state disabled -textvariable rptgen_fname
+  radiobutton $w.f.fc.rb_opts -anchor w -text "Create report by interactively selecting options" -variable rptgen_sel -value "options" \
+     -command "handle_report_generation_source $w"
+  radiobutton $w.f.fc.rb_file -anchor w -text "Create report by using option file" -variable rptgen_sel -value "file" \
+     -command "handle_report_generation_source $w"
+  entry  $w.f.fc.e -state disabled -textvariable rptgen_fname -validate all -vcmd "handle_report_generation_source $w %P 1"
   button $w.f.fc.b -text "Browse..." -state disabled -command {
     set fname [tk_getOpenFile -title "Select a Report Command Option File" -parent .rselwin]
     if {$fname ne ""} {
