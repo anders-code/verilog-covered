@@ -339,6 +339,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
   }
   free_safe( merge_in, (sizeof( char* ) * merge_in_num) );
 
+  merge_in     = NULL;
+  merge_in_num = 0;
+
   /* Free user message */
   free_safe( cdd_message, (strlen( cdd_message ) + 1) );
   cdd_message = NULL;
@@ -349,6 +352,10 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.32.2.2  2008/07/21 21:35:07  phase1geo
+ Fixing bug with deallocation of merge_in array and a later reallocation.  Needed
+ to reset merge_in to NULL and merge_in_num to 0.
+
  Revision 1.32.2.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
