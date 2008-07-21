@@ -133,6 +133,7 @@ profiler profiles[NUM_PROFILES] = {
   {"search_free_lists", NULL, 0, 0, 0, TRUE},
   {"rank_create_comp_cdd_cov", NULL, 0, 0, 0, TRUE},
   {"rank_dealloc_comp_cdd_cov", NULL, 0, 0, 0, TRUE},
+  {"rank_check_index", NULL, 0, 0, 0, TRUE},
   {"rank_gather_signal_cov", NULL, 0, 0, 0, TRUE},
   {"rank_gather_comb_cov", NULL, 0, 0, 0, TRUE},
   {"rank_gather_expression_cov", NULL, 0, 0, 0, TRUE},
