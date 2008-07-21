@@ -397,12 +397,10 @@ void score_parse_define( const char* def ) { PROFILE(SCORE_PARSE_DEFINE);
 }
 
 /*!
- \param arg  Argument from score command.
- 
  Adds the specified argument to the list of score arguments that will be written to the CDD file.
 */
 static void score_add_arg(
-  const char* arg
+  const char* arg  /*!< Argument from score command */
 ) { PROFILE(SCORE_ADD_ARG);
 
   score_args = (char**)realloc_safe( score_args, (sizeof( char* ) * score_arg_num), (sizeof( char* ) * (score_arg_num + 1)) );
@@ -412,10 +410,6 @@ static void score_add_arg(
 }
 
 /*!
- \param argc      Number of arguments specified in argv parameter list.
- \param last_arg  Index of last parsed argument in list.
- \param argv      List of arguments to parse.
-
  \throws anonymous search_add_directory_path Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw
                    Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw score_parse_args ovl_add_assertions_to_no_score_list
                    fsm_arg_parse read_command_file search_add_file defparam_add search_add_extensions search_add_no_score_funit
@@ -424,9 +418,9 @@ static void score_add_arg(
  on these arguments.
 */
 static void score_parse_args(
-  int          argc,
-  int          last_arg,
-  const char** argv
+  int          argc,      /*!< Number of arguments specified in argv parameter list */
+  int          last_arg,  /*!< Index of last parsed argument in list */
+  const char** argv       /*!< List of arguments to parse */
 ) { PROFILE(SCORE_PARSE_ARGS);
 
   int   i = last_arg + 1;  /* Loop iterator */
@@ -1122,6 +1116,9 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.128.2.2  2008/07/21 06:36:29  phase1geo
+ Updating code from rank-devel-branch branch.
+
  Revision 1.128.2.1  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

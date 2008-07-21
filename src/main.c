@@ -130,7 +130,7 @@ int main( int argc, const char** argv ) {
 
     if( argc == 1 ) {
 
-      print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL, __FILE__, __LINE__ );
+      print_output( "Must specify a command (score, merge, report, rank, -v, or -h)", FATAL, __FILE__, __LINE__ );
       retval = -1;
 
     } else {
@@ -252,6 +252,9 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.35.2.2  2008/07/21 06:36:29  phase1geo
+ Updating code from rank-devel-branch branch.
+
  Revision 1.35.2.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
