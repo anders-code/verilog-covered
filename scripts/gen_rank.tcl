@@ -387,6 +387,9 @@ proc create_rank_cdds_source {w} {
   pack $w.f  -fill both -expand yes
   pack $w.bf -side bottom -fill x
 
+  # Set the input focus on the first checkbutton
+  focus $w.f.fc.rb_opts
+
   return $w
 
 }
@@ -529,6 +532,9 @@ proc create_rank_cdds_options {w} {
   pack $w.nof -padx 3 -pady 3 -fill x
   pack $w.bf  -side bottom -padx 3 -pady 3 -fill x
 
+  # Set the input focus on the first window
+  focus $w.ff.e
+
   return $w
 
 }
@@ -642,8 +648,8 @@ proc create_rank_cdds_files {w} {
   frame     $w.f.t
   tablelist::tablelist $w.f.t.lb -columns {0 "CDD Filename"} -selectmode extended \
     -xscrollcommand "$w.f.t.hb set" -yscrollcommand "$w.f.t.vb set" -stretch all -movablerows 1
-  scrollbar $w.f.t.hb -orient horizontal -command "$w.f.t.lb xview"
-  scrollbar $w.f.t.vb -command "$w.f.t.lb yview"
+  scrollbar $w.f.t.hb -orient horizontal -command "$w.f.t.lb xview" -takefocus 0
+  scrollbar $w.f.t.vb -command "$w.f.t.lb yview" -takefocus 0
   grid rowconfigure    $w.f.t 0 -weight 1
   grid columnconfigure $w.f.t 0 -weight 1
   grid $w.f.t.lb -row 0 -column 0 -sticky news
@@ -709,6 +715,9 @@ proc create_rank_cdds_files {w} {
   # Initialize the number of ranked CDD files
   handle_rank_cdds_num_files $w
 
+  # Set the input focus on the first window
+  focus $w.f.b.addfile
+
   return $w
 
 }
@@ -723,8 +732,8 @@ proc create_rank_cdds_output {w} {
   # Create output textbox and associated scrollbars
   frame     $w.f
   text      $w.f.t -state disabled -xscrollcommand "$w.f.hb set" -yscrollcommand "$w.f.vb set"
-  scrollbar $w.f.vb -command "$w.f.t yview"
-  scrollbar $w.f.hb -orient horizontal -command "$w.f.t.xview"
+  scrollbar $w.f.vb -command "$w.f.t yview" -takefocus 0
+  scrollbar $w.f.hb -orient horizontal -command "$w.f.t.xview" -takefocus 0
   grid rowconfigure    $w.f 0 -weight 1
   grid columnconfigure $w.f 0 -weight 1
   grid $w.f.t  -row 0 -column 0 -sticky news
@@ -752,6 +761,8 @@ proc create_rank_cdds_output {w} {
   pack $w.view -fill x
   pack $w.bf   -fill x -side bottom
 
+  # Set the input focus on the finish button
+  focus $w.bf.finish
 
   return $w
 

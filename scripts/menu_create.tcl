@@ -27,15 +27,27 @@ proc do_keybind {.menubar} {
   }
 
   bind all <Control-o> {.menubar.file invoke 0}
+  bind all <Control-O> {.menubar.file invoke 0}
   bind all <Control-s> {.menubar.file invoke 3}
+  bind all <Control-S> {.menubar.file invoke 3}
   bind all <Control-w> {.menubar.file invoke 4}
+  bind all <Control-W> {.menubar.file invoke 4}
   bind all <Control-x> {.menubar.file invoke 8}
+  bind all <Control-X> {.menubar.file invoke 8}
 
-  bind all <Control-r> {.menubar.file.gen invoke 0}
+  bind all <Shift-Control-n> {.menubar.file.gen invoke 0}
+  bind all <Shift-Control-N> {.menubar.file.gen invoke 0}
+  bind all <Shift-Control-r> {.menubar.file.gen invoke 1}
+  bind all <Shift-Control-R> {.menubar.file.gen invoke 1}
+  bind all <Shift-Control-c> {.menubar.file.gen invoke 2}
+  bind all <Shift-Control-C> {.menubar.file.gen invoke 2}
 
   bind all <Control-n> {.menubar.view invoke 0}
+  bind all <Control-N> {.menubar.view invoke 0}
   bind all <Control-p> {.menubar.view invoke 1}
+  bind all <Control-P> {.menubar.view invoke 1}
   bind all <Control-c> {.menubar.view invoke 2}
+  bind all <Control-C> {.menubar.view invoke 2}
 
 }
 
@@ -118,13 +130,13 @@ proc menu_create {} {
   $tfm add cascade -label "Generate" -menu $tfm.gen -underline 0
   menu $tfm.gen -tearoff false
   # FILE-GEN - entry 0
-  $tfm.gen add command -label "New CDD..." -accelerator "Ctrl-n" -command {
+  $tfm.gen add command -label "New CDD..." -accelerator "Ctrl-Shift-n" -command {
     create_new_cdd
   }
-  $tfm.gen add command -label "ASCII Report..." -accelerator "Ctrl-r" -state disabled -command {
+  $tfm.gen add command -label "ASCII Report..." -accelerator "Ctrl-Shift-r" -state disabled -command {
     create_report_generation_window
   }
-  $tfm.gen add command -label "CDD Ranking Report..." -accelerator "Ctrl-g" -command {
+  $tfm.gen add command -label "CDD Ranking Report..." -accelerator "Ctrl-Shift-c" -command {
     create_rank_cdds
   }
 

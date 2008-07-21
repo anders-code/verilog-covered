@@ -1355,8 +1355,8 @@ proc create_new_cdd_output {w} {
   # Create output textbox and associated scrollbars
   frame     $w.f
   text      $w.f.t -state disabled -xscrollcommand "$w.f.hb set" -yscrollcommand "$w.f.vb set"
-  scrollbar $w.f.vb -command "$w.f.t yview"
-  scrollbar $w.f.hb -orient horizontal -command "$w.f.t.xview"
+  scrollbar $w.f.vb -command "$w.f.t yview" -takefocus 0
+  scrollbar $w.f.hb -orient horizontal -command "$w.f.t.xview" -takefocus 0
   grid rowconfigure    $w.f 0 -weight 1
   grid columnconfigure $w.f 0 -weight 1
   grid $w.f.t  -row 0 -column 0 -sticky news
@@ -1563,8 +1563,8 @@ proc get_library_extensions {extensions} {
   pack .lextwin.f.ef.b -side right -padx 3 -pady 3
   frame     .lextwin.f.lf
   listbox   .lextwin.f.lf.lb -xscrollcommand {.lextwin.f.lf.hb set} -yscrollcommand {.lextwin.f.lf.vb set} -exportselection 0 -selectmode single
-  scrollbar .lextwin.f.lf.hb -orient horizontal -command {.lextwin.f.lf.lb xset}
-  scrollbar .lextwin.f.lf.vb -command {.lextwin.f.lf.lb yset}
+  scrollbar .lextwin.f.lf.hb -orient horizontal -command {.lextwin.f.lf.lb xset} -takefocus 0
+  scrollbar .lextwin.f.lf.vb -command {.lextwin.f.lf.lb yset} -takefocus 0
   grid rowconfigure    .lextwin.f.lf 0 -weight 1
   grid columnconfigure .lextwin.f.lf 0 -weight 1
   grid .lextwin.f.lf.lb -row 0 -column 0 -sticky news -padx 3 -pady 3
