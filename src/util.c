@@ -280,7 +280,7 @@ bool check_option_value( int argc, const char** argv, int option_index ) { PROFI
 
   bool retval = TRUE;  /* Return value for this function */
 
-  if( ((option_index + 1) >= argc) || (argv[option_index+1][0] == '-') ) {
+  if( ((option_index + 1) >= argc) || ((argv[option_index+1][0] == '-') && (strlen(argv[option_index+1]) > 1)) ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Missing option value to the right of the %s option", argv[option_index] );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1427,10 +1427,14 @@ void read_command_file(
   char      tmp_str[4096];   /* Temporary holder for read argument */
   str_link* curr;            /* Pointer to current str_link element */
   int       tmp_num = 0;     /* Temporary argument number holder */
+  bool      use_stdin;       /* If set to TRUE, uses stdin for the cmd_handle */
 
-  if( file_exists( cmd_file ) ) {
+  /* Figure out if we should use stdin */
+  use_stdin = (strcmp( "-", cmd_file ) == 0);
 
-    if( (cmd_handle = fopen( cmd_file, "r" )) != NULL ) {
+  if( use_stdin || file_exists( cmd_file ) ) {
+
+    if( (cmd_handle = (use_stdin ? stdin : fopen( cmd_file, "r" ))) != NULL ) {
 
       unsigned int rv;
 
@@ -1499,6 +1503,10 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.92.2.2  2008/07/21 21:17:18  phase1geo
+ Adding ability to specify -f - to cause each of the commands to read in command options
+ from standard input (instead of an otherwise specified file).
+
  Revision 1.92.2.1  2008/07/10 22:43:55  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
