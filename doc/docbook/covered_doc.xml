@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+<!ENTITY cintro          SYSTEM "chapter_intro.xml">
+<!ENTITY cmetrics        SYSTEM "chapter_metrics.xml">
+<!ENTITY cboundaries     SYSTEM "chapter_boundaries.xml">
+<!ENTITY crace           SYSTEM "chapter_race.xml">
+<!ENTITY cattributes     SYSTEM "chapter_attributes.xml">
+<!ENTITY cinstallation   SYSTEM "chapter_installation.xml">
+<!ENTITY cstarting       SYSTEM "chapter_start.xml">
+<!ENTITY cusing          SYSTEM "chapter_using.xml">
+<!ENTITY cscore          SYSTEM "chapter_score.xml">
+<!ENTITY cmerge          SYSTEM "chapter_merge.xml">
+<!ENTITY creport         SYSTEM "chapter_report.xml">
+<!ENTITY crank           SYSTEM "chapter_rank.xml">
+<!ENTITY creading        SYSTEM "chapter_reading.xml">
+<!ENTITY cdebug          SYSTEM "chapter_debug.xml">
+<!ENTITY cguiintro       SYSTEM "chapter_gui_intro.xml">
+<!ENTITY cguimain        SYSTEM "chapter_gui_main.xml">
+<!ENTITY cguiline        SYSTEM "chapter_gui_line.xml">
+<!ENTITY cguitoggle      SYSTEM "chapter_gui_toggle.xml">
+<!ENTITY cguimemory      SYSTEM "chapter_gui_memory.xml">
+<!ENTITY cguilogic       SYSTEM "chapter_gui_logic.xml">
+<!ENTITY cguifsm         SYSTEM "chapter_gui_fsm.xml">
+<!ENTITY cguiassert      SYSTEM "chapter_gui_assert.xml">
+<!ENTITY cguiassertsrc   SYSTEM "chapter_gui_assert_src.xml">
+<!ENTITY cguireportgen   SYSTEM "chapter_gui_report_gen.xml">
+<!ENTITY cguipreferences SYSTEM "chapter_gui_preferences.xml">
+<!ENTITY cguiwizard      SYSTEM "chapter_gui_wizard.xml">
+<!ENTITY cfaq            SYSTEM "chapter_faq.xml">
+<!ENTITY cepilogue       SYSTEM "chapter_epilogue.xml">
+]>
+
+<!-- Use the following command to generate in the html directory: 
+     openjade -t sgml -d /sw/share/sgml/dsssl/docbook-dsssl-nwalsh/html/docbook.dsl ../covered_doc.xml -->
+
+<book>
+  <bookinfo>
+    <title>Covered - Verilog Code Coverage Analyzer</title>
+    <author>
+      <firstname>Trevor</firstname>
+      <surname>Williams</surname>
+      <affiliation>
+        <address>
+          <email>phase1geo@gmail.com</email>
+        </address>
+      </affiliation>
+    </author>
+    <copyright>
+      <year>2008</year>
+      <holder role="mailto:your e-mail address">Trevor Williams</holder>
+    </copyright>
+  </bookinfo>
+  
+  <part>
+    <title>Overview</title>
+    &cintro;
+    &cmetrics;
+    &cboundaries;
+    &crace; 
+    &cattributes;
+  </part>
+  
+  <part>
+    <title>Installation</title>
+    &cinstallation;
+  </part>
+  
+  <part>
+    <title>Command-line Usage</title>
+    &cstarting;
+    &cusing;
+    &cscore;
+    &cmerge;
+    &creport;
+    &crank;
+    &creading;
+    &cdebug;
+  </part>
+  
+  <part>
+    <title>Graphical User Interface</title>
+    &cguiintro;
+    &cguimain;
+    &cguiline;
+    &cguitoggle;
+    &cguimemory;
+    &cguilogic;
+    &cguifsm;
+    &cguiassert;
+    &cguiassertsrc;
+    &cguireportgen;
+    &cguipreferences;
+    &cguiwizard;
+  </part>
+  
+  <part>
+    <title>FAQ</title>
+    &cfaq;
+  </part>
+  
+  <part>
+    <title>Epilogue</title>
+    &cepilogue;
+  </part>
+
+</book>
+
+
