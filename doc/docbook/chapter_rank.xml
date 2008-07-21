@@ -1,0 +1,120 @@
+<chapter id="chapter.rank" xreflabel="The rank Command">
+  <title>The rank Command</title>
+  <para>
+  TBD
+  </para>
+  
+  <sect1 id="section.rank.options" xreflabel="Rank Options">
+    <title>Options</title>
+    <para>
+      <table>
+        <title>Options to rank Command</title>
+        <tgroup cols='2'>
+          <thead>
+            <row>
+              <entry>
+              Option
+              </entry>
+              <entry>
+              Description
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+              -depth <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies the minimum number of CDD files to hit each coverage point. The value of 
+              <emphasis>number</emphasis> should be a value of 1 or more.  Default is 1.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -f <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+              Name of file containing additional arguments to parse.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -h
+              </entry>
+              <entry>
+              Displays help information for the rank command.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -names-only
+              </entry>
+              <entry>
+              If specified, outputs only the needed CDD filenames that need to be run in the order they need to be run. 
+              If this option is not set, a report-style output is provided with additional information.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -o <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+              Name of file to output ranking information to.  Default is stdout.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -weight-assert <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies a relative weighting for assertion coverage used to rank non-unique coverage points.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -weight-comb <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies a relative weighting for combinational logic coverage used to rank non-unique coverage points.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -weight-fsm <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies a relative weighting for FSM state/state transition coverage used to rank non-unique coverage 
+              points.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -weight-line <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies a relative weighting for line coverage used to rank non-unique coverage points.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -weight-memory <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies a relative weighting for memory coverage used to rank non-unique coverage points.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -weight-toggle <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies a relative weighting for toggle coverage used to rank non-unique coverage points.
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </para>
+  </sect1>
+</chapter>

@@ -1,0 +1,100 @@
+<chapter id="chapter.race" xreflabel="Race Condition Checking">
+  <title>Race Condition Checking</title>
+  
+  <para>
+  Due to Covered's method of abstracting coverage from a dumpfile, a partial "resimulation" of the design is needed 
+  to obtain proper statistics for line, combinational logic and FSM metrics. Therefore, accurately resimulating what 
+  occurred in the actual simulation is a requirement for obtaining correct results. This can be easily achieved so 
+  long as the design doesn't contain any code that could result in potential race conditions.
+  </para>
+  
+  <sect1>
+    <title>Checked Coding Guidelines</title>
+    <para>
+    To avoid this problem Covered performs automatic race condition checking on the specified design after parsing 
+    has been completed but before simulation/scoring is performed. All statement blocks in the design that don't 
+    adhere to certain coding guidelines are removed from coverage consideration by Covered. By following these coding 
+    guidelines, a design should be void of race condition scenarios that would lead to faulty simulation results. The 
+    following coding guidelines are applied by Covered when checking for race conditions:
+    </para>
+    <para>
+      <orderedlist>
+        <listitem><para>All sequential logic and latches use non-blocking assignments.</para></listitem>
+        <listitem><para>All combinational logic in an always block uses blocking assignments.</para></listitem>
+        <listitem><para>All mixed sequential and combinational logic in the same always block uses non-blocking assignments.</para></listitem>
+        <listitem><para>Blocking and non-blocking assignments should not be used in the same always block.</para></listitem>
+        <listitem><para>Assignments made to a variable should only be done within one always block.</para></listitem>
+        <listitem><para>The $strobe system call should only be used to display variables that were assigned using non-blocking assignments. (Not currently implemented)</para></listitem>
+        <listitem><para>No #0 procedural assignments should exist. (Not currently implemented)</para></listitem>
+      </orderedlist>
+    </para>
+  </sect1>
+  
+  <sect1 id="section.race.handling" xreflabel="Race Condition Handling">
+    <title>Race Condition Handling</title>
+    <para>
+    If Covered detects a block as violating any one of the above mentioned coding guidelines, it will do one of two things depending on 
+    options specified to the score command by the user.
+    </para>
+    <para>
+      <orderedlist>
+        <listitem>
+          <para>
+          If the -rS, -rW or none of the -r options are specified, Covered will simply remove the non-conforming always block from coverage consideration 
+          and continue with scoring. -rW will display a message describing detected race conditions during the scoring command while the -rS option will 
+          display no messages.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          If the -rE option is specified, Covered will halt the score command after all race condition checking has been performed with a message to the 
+          user specifying how many always blocks were found to be in non-compliance to the race-condition-free coding guidelines.
+        </para>
+        </listitem>
+      </orderedlist>
+    </para>
+    <para>
+    The first mode of operation is the recommended mode of operation as this will allow Covered to continue calculating coverage information for the design 
+    while still providing accurate coverage information for the logic that is still under consideration. The second mode of operation is meant to allow the 
+    user to use Covered as a race-condition checking tool.
+    </para>
+  </sect1>
+  
+  <sect1>
+    <title>Reporting Race Conditions</title>
+    <para>
+    Even though race condition information is displayed (assuming the -rS option was not specified in the score command-line) during the scoring process, it 
+    may be convenient to view this information in a generated report as well. Because of this need, Covered saves all race condition information to the CDD 
+    file for use in using the report command. By specifying 'r' in the -m option to the report command (race condition report output is not turned on by 
+    default), the statement blocks which were eliminated from coverage consideration will be output to the coverage report file. Summary coverage will contain 
+    the total number of statement blocks eliminated for each module. Verbose coverage will contain each eliminated statement block, organized by module, 
+    specifying both the starting line of the eliminated statement block and the reason for why the statement block was removed.
+    </para>
+  </sect1>
+  
+  <sect1>
+    <title>Skipping Race Condition Checking</title>
+    <para>
+    Though highly discouraged, Covered does have a means to skip the race condition checking step altogether for situations where the user does not believe 
+    race conditions to exist in their design and does not want Covered to automatically throw out those procedural blocks for Covered consideration. The 
+    advantages to doing this are:
+    </para>
+    <para>
+      <orderedlist>
+        <listitem>
+          <para>Better performance in scoring the design (the race condition checking step is skipped entirely)</para>
+        </listitem>
+        <listitem>
+          <para>
+          For designs which do not contain any real race condition (that Covered is saying "might" exist), more logic can be included for coverage.
+          </para>
+        </listitem>
+      </orderedlist>
+    </para>
+    <para>
+    Of course, with these advantages comes a risk. If code is deemed to not contain any race conditions but does indeed contain one or more, the coverage 
+    numbers may be flawed, and these types of "errors" are not assumed to be Covered bugs. With all of that said, to ignore race condition checking completely, 
+    simply add the '-rI' option to the score command-line.
+    </para>
+  </sect1>
+</chapter>
