@@ -93,6 +93,12 @@ extern isuppl         info_suppl;
 
 
 /*!
+ Controls whether multi-expressions are used or not.
+*/
+bool allow_multi_expr = TRUE;
+
+
+/*!
  \return Returns new depth value for specified child expression.
 
  Based on the current point in the expression tree, calculates the left or
@@ -353,7 +359,7 @@ void combination_get_tree_stats(
               ((exp->op == EXP_OP_AND)  ||
                (exp->op == EXP_OP_OR)   ||
                (exp->op == EXP_OP_LAND) ||
-               (exp->op == EXP_OP_LOR)) ) {
+               (exp->op == EXP_OP_LOR)) && allow_multi_expr ) {
             combination_multi_expr_calc( exp, ulid, FALSE, excluded, hit, total );
           } else {
             if( !expression_is_static_only( exp ) ) {
@@ -2939,6 +2945,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.194.2.2  2008/07/21 06:36:26  phase1geo
+ Updating code from rank-devel-branch branch.
+
  Revision 1.194.2.1  2008/07/10 22:43:50  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
