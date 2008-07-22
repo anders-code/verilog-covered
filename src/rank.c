@@ -398,7 +398,7 @@ static void rank_parse_args(
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( cp_depth == 0 ) {
+        if( cp_depth != 0 ) {
           print_output( "Only one -depth option is allowed on the rank command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
           if( (sscanf( argv[i], "%u", &cp_depth ) != 1) || (cp_depth == 0) ) {
@@ -1422,6 +1422,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.3  2008/07/22 03:41:35  phase1geo
+ Fixing small bug with -depth command-line parser.
+
  Revision 1.2  2008/07/21 06:52:18  phase1geo
  Cleanup from rank-devel-branch integration.
 
