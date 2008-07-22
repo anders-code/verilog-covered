@@ -417,7 +417,7 @@ static void rank_parse_args(
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( cp_depth == 0 ) {
+        if( cp_depth != 0 ) {
           print_output( "Only one -depth option is allowed on the rank command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
           if( (sscanf( argv[i], "%u", &cp_depth ) != 1) || (cp_depth == 0) ) {
@@ -1349,6 +1349,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.2  2008/07/22 20:50:27  phase1geo
+ Fixing issue with -depth option.
+
  Revision 1.1.4.1  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
