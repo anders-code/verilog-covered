@@ -410,6 +410,16 @@ HREF="#CHAPTER.RANK"
 HREF="#SECTION.RANK.OPTIONS"
 >Options</A
 ></DT
+><DT
+><A
+HREF="#SECTION.RANK.WEIGHTING"
+>Specifying metric weights</A
+></DT
+><DT
+><A
+HREF="#SECTION.RANK.ALGORITHM"
+>Description of ranking algorithm</A
+></DT
 ></DL
 ></DD
 ><DT
@@ -479,7 +489,7 @@ HREF="#SECTION.PROFILING"
 ></DD
 ><DT
 >IV. <A
-HREF="#AEN1582"
+HREF="#AEN1609"
 >Graphical User Interface</A
 ></DT
 ><DD
@@ -763,7 +773,7 @@ HREF="#CHAPTER.GUI.WIZARD"
 ></DD
 ><DT
 >V. <A
-HREF="#AEN2770"
+HREF="#AEN2797"
 >FAQ</A
 ></DT
 ><DD
@@ -777,7 +787,7 @@ HREF="#CHAPTER.FAQ"
 ></DD
 ><DT
 >VI. <A
-HREF="#AEN2842"
+HREF="#AEN2869"
 >Epilogue</A
 ></DT
 ><DD
@@ -860,12 +870,12 @@ HREF="#AEN1184"
 ></DT
 ><DT
 >14-1. <A
-HREF="#AEN1448"
+HREF="#AEN1475"
 >CLI Command-line Options</A
 ></DT
 ><DT
 >25-1. <A
-HREF="#AEN2599"
+HREF="#AEN2626"
 >Location of Written .coveredrc File According to the Location of Read .coveredrc File</A
 ></DT
 ></DL
@@ -5813,6 +5823,119 @@ CLASS="EMPHASIS"
 >
     </P
 ></DIV
+><DIV
+CLASS="SECT1"
+><HR><H2
+CLASS="SECT1"
+><A
+NAME="SECTION.RANK.WEIGHTING"
+>Specifying metric weights</A
+></H2
+><P
+>    The rank command has several options that allow the user to weight any and all of the coverage metrics that Covered 
+    supplies.  Weights are used to ascribe the importance of its metric in ranking the value of a CDD file.
+    </P
+><P
+>    Weight values are non-negative numbers whose values are relative to each other.  A value of 0 effectively disables 
+    the associated weight from consideration in ranking.  All other values are considered relative to each other.  In
+    other words, if the line weight is set to a value of 5 while the toggle weight is set to 1, line coverage is 
+    considered 5 times more important than toggle coverage in ranking.
+    </P
+><P
+>    By default, each metric is given an equal weight of 1.  Adjust each of the metrics as necessary to potentially
+    modify which CDD files are chosen and what order those CDD files are given in the ranked list of diagnostics to run.
+    </P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H2
+CLASS="SECT1"
+><A
+NAME="SECTION.RANK.ALGORITHM"
+>Description of ranking algorithm</A
+></H2
+><P
+>    This section describes the overall algorithm that is used to rank the specified CDD files. The algorithm is being 
+    presented in this document for the purposes of providing an explanation for how diagnostics are selected for
+    ranking and how they are ranked. Knowing this information is not necessary for using the rank command or 
+    understanding its results.
+    </P
+><P
+>    The algorithm makes use of three different types of structures.  The first structure is a bit-compressed structure
+    where each bit corresponds to one coverage point in the associated CDD file. The purpose of this structure is to 
+    store a large amount of information as concisely and immediately available as possible. In addition to coverage
+    point information, each structure also contains the following information:
+    </P
+><P
+>      <P
+></P
+><UL
+><LI
+><P
+>          Name of CDD file that the structure is associated with (for reporting purposes only).
+          </P
+></LI
+><LI
+><P
+>          The number of timesteps that occurred during the CDD simulation. This is used for calculating the average 
+          number of coverage points hit during a single clock period -- used for ranking selection.
+          </P
+></LI
+><LI
+><P
+>          The total number of coverage points hit by the CDD. This is used for calculating the average number of 
+          coverage points hit during a single clock period -- used for ranking selection.
+          </P
+></LI
+><LI
+><P
+>          The total number of coverage points that were hit by this CDD that were not hit by any other CDD listed in
+          the rank command-line. This information is used to figure out which CDDs are absolutely necessary to be
+          included in the ranked list.
+          </P
+></LI
+><LI
+><P
+>          The current score associated with the CDD file. This value is updated for each selection iteration.
+          </P
+></LI
+></UL
+>
+    </P
+><P
+>    Each of these structures are maintained in an array that is iterated on during the ranking process.
+    </P
+><P
+>    The second structure is an array of 16-bit values where each value corresponds to a single coverage point. Its 
+    value is a sum of the number of unranked CDD files that have hit that coverage point. Each value is decremented
+    by one when a CDD file is moved from the unranked list to the ranked list and that CDD file hits the given
+    coverage point. If a coverage point value is a value of 1 and a CDD file has its corresponding coverage bit set,
+    we know that the CDD is the only one that hits the coverage point.
+    </P
+><P
+>    The third structure is similar to the second and works similarly, except that it stores the number of CDD files in
+    the ranked list that hit a particular coverage point.
+    </P
+><P
+>    The specified CDD files are ranked in a series of steps, some of which are reiterated for each CDD that is
+    selected to be ranked. Here is the algorithm (in pseudo-code):
+    </P
+><P
+>      <PRE
+CLASS="PROGRAMLISTING"
+>      
+  calculate the size of the compressed coverage point structure
+  initialize ranked and unranked
+  
+  foreach CDD in CDD_list {
+    convert CDD to compressed coverage point structure
+  }
+  
+  foreach CDD in CDD_list {
+      </PRE
+>
+    </P
+></DIV
 ></DIV
 ><DIV
 CLASS="CHAPTER"
@@ -6649,7 +6772,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1426"
+NAME="AEN1453"
 >Building Covered for Verbose Debug Outputting</A
 ></H3
 ><P
@@ -6699,7 +6822,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1435"
+NAME="AEN1462"
 >Building Covered for the CLI</A
 ></H3
 ><P
@@ -6720,7 +6843,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1439"
+NAME="AEN1466"
 >Using the CLI</A
 ></H3
 ><P
@@ -6757,7 +6880,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1445"
+NAME="AEN1472"
 >CLI commands</A
 ></H3
 ><P
@@ -6766,7 +6889,7 @@ NAME="AEN1445"
 ><DIV
 CLASS="TABLE"
 ><A
-NAME="AEN1448"
+NAME="AEN1475"
 ></A
 ><P
 ><B
@@ -7103,7 +7226,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1543"
+NAME="AEN1570"
 >Building Covered for Profiling</A
 ></H3
 ><P
@@ -7138,7 +7261,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1549"
+NAME="AEN1576"
 >Using Source Code Profiling</A
 ></H3
 ><P
@@ -7173,7 +7296,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1555"
+NAME="AEN1582"
 >Understanding the Profiling Report</A
 ></H3
 ><P
@@ -7247,7 +7370,7 @@ TYPE="1"
 ><DIV
 CLASS="PART"
 ><A
-NAME="AEN1582"
+NAME="AEN1609"
 ></A
 ><DIV
 CLASS="TITLEPAGE"
@@ -7604,7 +7727,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1671"
+NAME="AEN1698"
 >Open/Merge CDDs...</A
 ></H4
 ><P
@@ -7650,7 +7773,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1682"
+NAME="AEN1709"
 >View Loaded CDD(s)...</A
 ></H4
 ><P
@@ -7722,7 +7845,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1697"
+NAME="AEN1724"
 >Save CDD...</A
 ></H4
 ><P
@@ -7744,7 +7867,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1701"
+NAME="AEN1728"
 >Close CDDs</A
 ></H4
 ><P
@@ -7802,7 +7925,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1714"
+NAME="AEN1741"
 >Generate</A
 ></H4
 ><P
@@ -7869,7 +7992,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1732"
+NAME="AEN1759"
 >Exit</A
 ></H4
 ><P
@@ -7968,7 +8091,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1756"
+NAME="AEN1783"
 >Module-Based</A
 ></H4
 ><P
@@ -7990,7 +8113,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1760"
+NAME="AEN1787"
 >Instance-Based</A
 ></H4
 ><P
@@ -8012,7 +8135,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1764"
+NAME="AEN1791"
 >Show Uncovered</A
 ></H4
 ><P
@@ -8033,7 +8156,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1768"
+NAME="AEN1795"
 >Show Covered</A
 ></H4
 ><P
@@ -8055,7 +8178,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1772"
+NAME="AEN1799"
 >Show Race Conditions</A
 ></H4
 ><P
@@ -8109,7 +8232,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1786"
+NAME="AEN1813"
 >Next Uncovered</A
 ></H4
 ><P
@@ -8143,7 +8266,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1793"
+NAME="AEN1820"
 >Previous Uncovered</A
 ></H4
 ><P
@@ -8176,7 +8299,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1800"
+NAME="AEN1827"
 >Show Current Selection</A
 ></H4
 ><P
@@ -8213,7 +8336,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1810"
+NAME="AEN1837"
 >Wizard...</A
 ></H4
 ><P
@@ -8229,7 +8352,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1814"
+NAME="AEN1841"
 >Preferences...</A
 ></H4
 ><P
@@ -8288,7 +8411,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1829"
+NAME="AEN1856"
 >Manual</A
 ></H4
 ><P
@@ -8300,7 +8423,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1832"
+NAME="AEN1859"
 >About Covered</A
 ></H4
 ><P
@@ -9921,7 +10044,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2227"
+NAME="AEN2254"
 >Simple AND-type Combinational Subexpressions</A
 ></H4
 ><P
@@ -10000,7 +10123,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2252"
+NAME="AEN2279"
 >Simple OR-type Combinational Subexpressions</A
 ></H4
 ><P
@@ -10077,7 +10200,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2276"
+NAME="AEN2303"
 >Simple Other-type Combinational Subexpressions</A
 ></H4
 ><P
@@ -11372,7 +11495,7 @@ CLASS="EMPHASIS"
 >      <DIV
 CLASS="TABLE"
 ><A
-NAME="AEN2599"
+NAME="AEN2626"
 ></A
 ><P
 ><B
@@ -12028,7 +12151,7 @@ CLASS="EMPHASIS"
 ><DIV
 CLASS="PART"
 ><A
-NAME="AEN2770"
+NAME="AEN2797"
 ></A
 ><DIV
 CLASS="TITLEPAGE"
@@ -12076,7 +12199,7 @@ CLASS="QANDASET"
 ><DL
 ><DT
 >1. <A
-HREF="#AEN2779"
+HREF="#AEN2806"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12088,7 +12211,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >2. <A
-HREF="#AEN2786"
+HREF="#AEN2813"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12100,7 +12223,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >3. <A
-HREF="#AEN2816"
+HREF="#AEN2843"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12112,7 +12235,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >4. <A
-HREF="#AEN2824"
+HREF="#AEN2851"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12124,7 +12247,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >5. <A
-HREF="#AEN2830"
+HREF="#AEN2857"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12136,7 +12259,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >6. <A
-HREF="#AEN2836"
+HREF="#AEN2863"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12153,7 +12276,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2779"
+NAME="AEN2806"
 ></A
 ><B
 >1. </B
@@ -12189,7 +12312,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2786"
+NAME="AEN2813"
 ></A
 ><B
 >2. </B
@@ -12293,7 +12416,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2816"
+NAME="AEN2843"
 ></A
 ><B
 >3. </B
@@ -12334,7 +12457,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2824"
+NAME="AEN2851"
 ></A
 ><B
 >4. </B
@@ -12363,7 +12486,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2830"
+NAME="AEN2857"
 ></A
 ><B
 >5. </B
@@ -12392,7 +12515,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2836"
+NAME="AEN2863"
 ></A
 ><B
 >6. </B
@@ -12431,7 +12554,7 @@ CLASS="ANSWER"
 ><DIV
 CLASS="PART"
 ><A
-NAME="AEN2842"
+NAME="AEN2869"
 ></A
 ><DIV
 CLASS="TITLEPAGE"
@@ -12633,7 +12756,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2890"
+NAME="AEN2917"
 >Preamble</A
 ></H4
 ><P
@@ -12678,7 +12801,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2900"
+NAME="AEN2927"
 >Terms and Conditions for Copying, Distribution, and Modification</A
 ></H4
 ><P
@@ -12919,7 +13042,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2963"
+NAME="AEN2990"
 >Appendix: How to Apply These Terms to Your New Programs</A
 ></H4
 ><P
@@ -12931,7 +13054,7 @@ NAME="AEN2963"
         exclusion of warranty; and each file should have at least the ``copyright'' line and a pointer to where the full notice is found.
         </P
 ><A
-NAME="AEN2967"
+NAME="AEN2994"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"

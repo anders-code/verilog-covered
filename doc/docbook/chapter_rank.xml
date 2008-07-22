@@ -117,4 +117,104 @@
       </table>
     </para>
   </sect1>
+  
+  <sect1 id="section.rank.weighting" xreflabel="Specifying metric weights">
+    <title>Specifying metric weights</title>
+    <para>
+    The rank command has several options that allow the user to weight any and all of the coverage metrics that Covered 
+    supplies.  Weights are used to ascribe the importance of its metric in ranking the value of a CDD file.
+    </para>
+    <para>
+    Weight values are non-negative numbers whose values are relative to each other.  A value of 0 effectively disables 
+    the associated weight from consideration in ranking.  All other values are considered relative to each other.  In
+    other words, if the line weight is set to a value of 5 while the toggle weight is set to 1, line coverage is 
+    considered 5 times more important than toggle coverage in ranking.
+    </para>
+    <para>
+    By default, each metric is given an equal weight of 1.  Adjust each of the metrics as necessary to potentially
+    modify which CDD files are chosen and what order those CDD files are given in the ranked list of diagnostics to run.
+    </para>
+    </para>
+  </sect1>
+  
+  <sect1 id="section.rank.algorithm" xreflabel="Description of ranking algorithm">
+    <title>Description of ranking algorithm</title>
+    <para>
+    This section describes the overall algorithm that is used to rank the specified CDD files. The algorithm is being 
+    presented in this document for the purposes of providing an explanation for how diagnostics are selected for
+    ranking and how they are ranked. Knowing this information is not necessary for using the rank command or 
+    understanding its results.
+    </para>
+    <para>
+    The algorithm makes use of three different types of structures.  The first structure is a bit-compressed structure
+    where each bit corresponds to one coverage point in the associated CDD file. The purpose of this structure is to 
+    store a large amount of information as concisely and immediately available as possible. In addition to coverage
+    point information, each structure also contains the following information:
+    </para>
+    <para>
+      <itemizedlist>
+        <listitem>
+          <para>
+          Name of CDD file that the structure is associated with (for reporting purposes only).
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          The number of timesteps that occurred during the CDD simulation. This is used for calculating the average 
+          number of coverage points hit during a single clock period -- used for ranking selection.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          The total number of coverage points hit by the CDD. This is used for calculating the average number of 
+          coverage points hit during a single clock period -- used for ranking selection.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          The total number of coverage points that were hit by this CDD that were not hit by any other CDD listed in
+          the rank command-line. This information is used to figure out which CDDs are absolutely necessary to be
+          included in the ranked list.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          The current score associated with the CDD file. This value is updated for each selection iteration.
+          </para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <para>
+    Each of these structures are maintained in an array that is iterated on during the ranking process.
+    </para>
+    <para>
+    The second structure is an array of 16-bit values where each value corresponds to a single coverage point. Its 
+    value is a sum of the number of unranked CDD files that have hit that coverage point. Each value is decremented
+    by one when a CDD file is moved from the unranked list to the ranked list and that CDD file hits the given
+    coverage point. If a coverage point value is a value of 1 and a CDD file has its corresponding coverage bit set,
+    we know that the CDD is the only one that hits the coverage point.
+    </para>
+    <para>
+    The third structure is similar to the second and works similarly, except that it stores the number of CDD files in
+    the ranked list that hit a particular coverage point.
+    </para>
+    <para>
+    The specified CDD files are ranked in a series of steps, some of which are reiterated for each CDD that is
+    selected to be ranked. Here is the algorithm (in pseudo-code):
+    </para>
+    <para>
+      <programlisting><![CDATA[
+      
+  calculate the size of the compressed coverage point structure
+  initialize ranked and unranked
+  
+  foreach CDD in CDD_list {
+    convert CDD to compressed coverage point structure
+  }
+  
+  foreach CDD in CDD_list {
+      ]]></programlisting>
+    </para>
+  </sect1>
+  
 </chapter>
