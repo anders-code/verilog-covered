@@ -163,7 +163,11 @@ void free_safe2( /*@only@*/ /*@out@*/ /*@null@*/ void* ptr, size_t size, const c
 );
 
 /*! \brief Creates a string containing space characters. */
-void gen_space( char* spaces, int num_spaces );
+void gen_char_string(
+  /*@out@*/ char* spaces,
+            char  c,
+            int   num_spaces
+);
 
 #ifdef HAVE_SYS_TIME_H
 /*! \brief Starts timing the specified timer structure. */
@@ -196,6 +200,10 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.41.4.2  2008/07/23 21:38:42  phase1geo
+ Adding better formatting for ranking reports to allow the inclusion of the full
+ pathname for each CDD file listed.
+
  Revision 1.41.4.1  2008/07/10 22:43:55  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

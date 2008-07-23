@@ -1289,22 +1289,23 @@ void* calloc_safe1(
 }
 
 /*!
- Creates a string that contains num_spaces number of space characters,
- adding a NULL character at the end of the string to allow for correct
- usage by the strlen and other string functions.
+ Creates a string that contains num_chars number of characters specified by
+ the value of c, adding a NULL character at the end of the string to allow
+ for correct usage by the strlen and other string functions.
 */
-void gen_space(
-  /*@out@*/ char* spaces,     /*!< Pointer to string to places spaces into */
-            int   num_spaces  /*!< Number of spaces to place in string */
+void gen_char_string(
+  /*@out@*/ char* str,       /*!< Pointer to string to places spaces into */
+            char  c,         /*!< Character to write */
+            int   num_chars  /*!< Number of spaces to place in string */
 ) { PROFILE(GEN_SPACE);
 
   int i;     /* Loop iterator */
 
-  for( i=0; i<num_spaces; i++ ) {
-    spaces[i] = ' ';
+  for( i=0; i<num_chars; i++ ) {
+    str[i] = c;
   }
 
-  spaces[i] = '\0';
+  str[i] = '\0';
 
   PROFILE_END;
   
@@ -1312,11 +1313,11 @@ void gen_space(
 
 #ifdef HAVE_SYS_TIME_H
 /*!
- \param tm  Pointer to timer structure to clear.
-
  Clears the total accumulated time in the specified timer structure.
 */
-static void timer_clear( timer** tm ) {
+static void timer_clear(
+  timer** tm  /*!< Pointer to timer structure to clear */
+) {
 
   if( *tm == NULL ) {
     *tm = (timer*)malloc_safe( sizeof( timer ) );
@@ -1327,11 +1328,11 @@ static void timer_clear( timer** tm ) {
 }
 
 /*!
- \param tm  Pointer to timer structure to start timing.
-
  Starts the timer to start timing a segment of code.
 */
-void timer_start( timer** tm ) {
+void timer_start(
+  timer** tm  /*!< Pointer to timer structure to start timing */
+ ) {
 
   if( *tm == NULL ) {
     *tm = (timer*)malloc_safe( sizeof( timer ) );
@@ -1343,12 +1344,12 @@ void timer_start( timer** tm ) {
 }
 
 /*!
- \param tm  Pointer to timer structure to stop timing.
-
  Stops the specified running counter and totals up the amount
  of user time that has accrued.
 */
-void timer_stop( timer** tm ) {
+void timer_stop(
+  timer** tm  /*!< Pointer to timer structure to stop timing */
+) {
 
   struct timeval tmp;  /* Temporary holder for stop time */
 
@@ -1502,6 +1503,10 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.92.2.4  2008/07/23 21:38:42  phase1geo
+ Adding better formatting for ranking reports to allow the inclusion of the full
+ pathname for each CDD file listed.
+
  Revision 1.92.2.3  2008/07/23 18:51:41  phase1geo
  Removing MAX_MALLOC_SIZE check from calloc_safe1 function call (this function
  will only get called for fairly big memory chunks anyways.
