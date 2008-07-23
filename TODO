@@ -49,7 +49,7 @@ Merge command
 
    1.  Add ability to merge two CDDs from different parts of the same design
 
-   2.  Add -d and -ext options to allow the user to specify a directory and file extension type which Covered will
+X  2.  Add -d and -ext options to allow the user to specify a directory and file extension type which Covered will
        automatically load CDD files from to merge.
 
 
@@ -62,10 +62,10 @@ Report command
 Rank command
 ------------
 
-   1.  Add -d and -ext options to allow the user to specify a directory and file extension type which Covered will
+X  1.  Add -d and -ext options to allow the user to specify a directory and file extension type which Covered will
        automatically load CDD files from to rank.
 
-   2.  Add code to remove duplicate CDD files automatically.
+X  2.  Add code to remove duplicate CDD files automatically.
 
    3.  Fix reports so that the longest CDD name is used for formatting purposes.
 
