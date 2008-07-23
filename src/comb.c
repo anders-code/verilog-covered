@@ -1263,7 +1263,7 @@ static void combination_underline_tree(
             
               /* Create spaces for right side */
               exp_sp = (char*)malloc_safe( r_size + 1 );
-              gen_space( exp_sp, r_size );
+              gen_char_string( exp_sp, ' ', r_size );
 
               /* Merge left side only */
               rv = snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], exp_sp );
@@ -1283,7 +1283,7 @@ static void combination_underline_tree(
 
                 /* Create spaces for left side */
                 exp_sp = (char*)malloc_safe( l_size + 1 );
-                gen_space( exp_sp, l_size );
+                gen_char_string( exp_sp, ' ', l_size );
 
                 /* Merge right side only */
                 rv = snprintf( (*lines)[i], (*size + 1), code_fmt, exp_sp, r_lines[i] );
@@ -2945,6 +2945,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.194.2.3  2008/07/23 21:38:42  phase1geo
+ Adding better formatting for ranking reports to allow the inclusion of the full
+ pathname for each CDD file listed.
+
  Revision 1.194.2.2  2008/07/21 06:36:26  phase1geo
  Updating code from rank-devel-branch branch.
 

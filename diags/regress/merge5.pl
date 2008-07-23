@@ -21,6 +21,7 @@ if( $USE_VPI == 0 ) {
 
   # Run the rank command (Note that this is NOT an error)
   &runRankCommand( "-o merge5.err merge5a.cdd merge5b.cdd merge5c.cdd merge5d.cdd merge5e.cdd merge5f.cdd merge5g.cdd" );
+  #&runRankCommand( "-o /ptmp/devel/covered/diags/verilog/merge5.err /ptmp/devel/covered/diags/verilog/merge5a.cdd /ptmp/devel/covered/diags/verilog/merge5b.cdd /ptmp/devel/covered/diags/verilog/merge5c.cdd /ptmp/devel/covered/diags/verilog/merge5d.cdd /ptmp/devel/covered/diags/verilog/merge5e.cdd /ptmp/devel/covered/diags/verilog/merge5f.cdd /ptmp/devel/covered/diags/verilog/merge5g.cdd" );
 
   # Check the difference and remove the CDD files, if necessary
   system( "touch merge5.cdd" ) && die;

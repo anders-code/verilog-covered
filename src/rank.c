@@ -1335,6 +1335,12 @@ static void rank_output(
 
     } else {
 
+      char* str;
+      char  format[100];
+
+      /* Allocate memory for a spacing string */
+      str = (char*)malloc_safe( longest_name_len + 1 );
+
       /* Header information output */
       fprintf( ofile, "                                           ::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
       fprintf( ofile, "                                           ::                                                ::\n" );
@@ -1352,12 +1358,20 @@ static void rank_output(
         fprintf( ofile, "Reduced %u CDD files down to %u needed to maintain coverage (%3.0f%% reduction)\n", comp_cdd_num, i, (((comp_cdd_num - i) / (float)comp_cdd_num) * 100) );
       }
       fprintf( ofile, "\n" );
-      fprintf( ofile, "-----------+-------------------------------------------+----------------------------------------------------------------------------------------------\n" );
-      fprintf( ofile, "           |                ACCUMULATIVE               |                                               CDD\n" );
-      fprintf( ofile, "Simulation |-------------------------------------------+----------------------------------------------------------------------------------------------\n" );
-      fprintf( ofile, "Order      |        Hit /      Total     %%   Timesteps |  Name                                                      Hit /      Total     %%   Timesteps\n" );
-      fprintf( ofile, "-----------+-------------------------------------------+----------------------------------------------------------------------------------------------\n" );
+      gen_char_string( str, '-', (longest_name_len - 4) );
+      fprintf( ofile, "-----------+-------------------------------------------+------%s------------------------------------------\n", str );
+      gen_char_string( str, ' ', (longest_name_len >> 1) );
+      fprintf( ofile, "           |                ACCUMULATIVE               |      %s                CDD\n", str );
+      gen_char_string( str, '-', (longest_name_len - 4) );
+      fprintf( ofile, "Simulation |-------------------------------------------+------%s------------------------------------------\n", str );
+      gen_char_string( str, ' ', (longest_name_len - 4) );
+      fprintf( ofile, "Order      |        Hit /      Total     %%   Timesteps |  Name%s        Hit /      Total     %%   Timesteps\n", str );
+      gen_char_string( str, '-', (longest_name_len - 4) );
+      fprintf( ofile, "-----------+-------------------------------------------+------%s------------------------------------------\n", str );
       fprintf( ofile, "\n" );
+
+      /* Calculate a string format */
+      snprintf( format, 100, "%%10u   %%10llu   %%10llu  %%3.0f%%%%  %%10llu   %%-%us  %%10llu   %%10llu  %%3.0f%%%%  %%10llu\n", longest_name_len );
 
       for( i=0; i<comp_cdd_num; i++ ) {
         acc_timesteps  += comp_cdds[i]->timesteps; 
@@ -1366,7 +1380,7 @@ static void rank_output(
           fprintf( ofile, "\n---------------------------------------  The following CDD files add no additional coverage  ----------------------------------------------\n\n" );
           unique_found = FALSE;
         }
-        fprintf( ofile, "%10u   %10llu   %10llu  %3.0f%%  %10llu   %-50s  %10llu   %10llu  %3.0f%%  %10llu\n",
+        fprintf( ofile, format,
                 (i + 1),
                 acc_unique_cps,
                 total_cps,
@@ -1379,6 +1393,9 @@ static void rank_output(
                 comp_cdds[i]->timesteps );
       }
       fprintf( ofile, "\n\n" );
+
+      /* Deallocate the spacing string */
+      free_safe( str, (longest_name_len + 1) );
 
     }
 
@@ -1486,6 +1503,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.7  2008/07/23 21:38:42  phase1geo
+ Adding better formatting for ranking reports to allow the inclusion of the full
+ pathname for each CDD file listed.
+
  Revision 1.1.4.6  2008/07/23 18:26:21  phase1geo
  Moving -d command-line parsing to after the -depth so that they do not conflict.
 
