@@ -1149,40 +1149,6 @@ static void rank_perform_greedy_sort(
   uint64        x;
   comp_cdd_cov* tmp;
 
-#ifdef OBSOLETE
-  /* First, perform the sort */
-  for( i=0; i<comp_cdd_num; i++ ) {
-    best = i;
-    for( j=(i+1); j<comp_cdd_num; j++ ) {
-      if( (comp_cdds[best]->total_cps / (float)comp_cdds[best]->timesteps) < (comp_cdds[j]->total_cps / (float)comp_cdds[j]->timesteps) ) {
-        best = j;
-      }
-    }
-    tmp             = comp_cdds[i];
-    comp_cdds[i]    = comp_cdds[best];
-    comp_cdds[best] = tmp;
-  }
-
-  /* Recalcuate uniqueness information */
-  for( x=0; x<num_ranked; x++ ) {
-    ranked_merged[x] = 0;
-  }
-  for( i=0; i<comp_cdd_num; i++ ) {
-    x = 0;
-    comp_cdds[i]->unique_cps = 0;
-    for( j=0; j<CP_TYPE_NUM; j++ ) {
-      for( k=0; k<num_cps[j]; k++ ) {
-        if( comp_cdds[i]->cps[j][k>>3] & (0x1 << (k & 0x7)) ) {
-          if( ranked_merged[x] == 0 ) {
-            comp_cdds[i]->unique_cps++;
-          }
-          ranked_merged[x]++;
-        }
-        x++;
-      }
-    }
-  }
-#else
   /* First, reset the ranked_merged array */
   for( x=0; x<num_ranked; x++ ) {
     ranked_merged[x] = 0;
@@ -1222,7 +1188,6 @@ static void rank_perform_greedy_sort(
       }
     }
   }
-#endif
 
   PROFILE_END;
 
@@ -1511,6 +1476,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.5  2008/07/23 05:34:34  phase1geo
+ More updates.
+
  Revision 1.1.4.4  2008/07/23 05:10:11  phase1geo
  Adding -d and -ext options to rank and merge commands.  Updated necessary files
  per this change and updated regressions.
