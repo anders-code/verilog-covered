@@ -61,7 +61,8 @@ extern char**       score_args;
 extern int          score_arg_num;
 extern void         reset_pplexer( const char* filename, FILE* out );
 extern int          PPVLlex( void );
-extern char**       merge_in;
+extern str_link*    merge_in_head;
+extern str_link*    merge_in_tail;
 extern int          merge_in_num;
 extern char*        output_file;
 extern int          report_comb_depth; 
@@ -1389,8 +1390,7 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
     ifile = strdup_safe( argv[1] );
 
     /* Add the specified merge file to the list */
-    merge_in               = (char**)realloc_safe( merge_in, (sizeof( char* ) * merge_in_num), (sizeof( char* ) * (merge_in_num + 1)) );
-    merge_in[merge_in_num] = ifile;
+    str_link_add( ifile, &merge_in_head, &merge_in_tail );
     merge_in_num++;
 
     Try {
@@ -2275,6 +2275,10 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.77.4.3  2008/07/23 05:10:11  phase1geo
+ Adding -d and -ext options to rank and merge commands.  Updated necessary files
+ per this change and updated regressions.
+
  Revision 1.77.4.2  2008/07/19 00:25:52  phase1geo
  Forgot to update some files per the last checkin.
 

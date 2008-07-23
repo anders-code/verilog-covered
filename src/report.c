@@ -56,8 +56,8 @@
 extern char         user_msg[USER_MSG_LENGTH];
 extern db**         db_list;
 extern unsigned int curr_db;
-extern int          merge_in_num;
-extern char**       merge_in;
+extern str_link*    merge_in_head;
+extern str_link*    merge_in_tail;
 extern char**       leading_hierarchies;
 extern int          leading_hier_num;
 extern bool         leading_hiers_differ;
@@ -676,15 +676,15 @@ void report_print_header(
     fprintf( ofile, "\n" );
   }
 
-  if( merge_in_num > 0 ) {
+  if( merge_in_head != NULL ) {
 
-    if( merge_in_num == 1 ) {
+    if( merge_in_head == merge_in_tail ) {
 
       fprintf( ofile, "* Report generated from CDD file that was merged from the following files with the following leading hierarchies:\n" );
       fprintf( ofile, "    Filename                                           Leading Hierarchy\n" );
       fprintf( ofile, "    -----------------------------------------------------------------------------------------------------------------\n" );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n", input_db,    leading_hierarchies[0] );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in[0], leading_hierarchies[1] ); 
+      fprintf( ofile, "    %-49.49s  %-62.62s\n", input_db,           leading_hierarchies[0] );
+      fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in_head->str, leading_hierarchies[1] ); 
 
       if( report_instance && leading_hiers_differ ) {
         fprintf( ofile, "\n* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
@@ -692,12 +692,16 @@ void report_print_header(
 
     } else {
 
+      str_link* strl = merge_in_head;
+
       fprintf( ofile, "* Report generated from CDD file that was merged from the following files:\n" );
       fprintf( ofile, "    Filename                                           Leading Hierarchy\n" );
       fprintf( ofile, "    -----------------------------------------------------------------------------------------------------------------\n" );
 
-      for( i=0; i<merge_in_num; i++ ) {
-        fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in[i], leading_hierarchies[i+1] );
+      i = 1;
+      while( strl != NULL ) {
+        fprintf( ofile, "    %-49.49s  %-62.62s\n", strl->str, leading_hierarchies[i++] );
+        strl = strl->next;
       }
 
       if( report_instance && leading_hiers_differ ) {
@@ -1017,6 +1021,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104.2.6  2008/07/23 05:10:11  phase1geo
+ Adding -d and -ext options to rank and merge commands.  Updated necessary files
+ per this change and updated regressions.
+
  Revision 1.104.2.5  2008/07/19 00:25:52  phase1geo
  Forgot to update some files per the last checkin.
 

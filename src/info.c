@@ -35,10 +35,11 @@
 #include "util.h"
 
 
-extern char** merge_in;
-extern int    merge_in_num;
-extern uint64 num_timesteps;
-extern char*  cdd_message;
+extern str_link* merge_in_head;
+extern str_link* merge_in_tail;
+extern int       merge_in_num;
+extern uint64    num_timesteps;
+extern char*     cdd_message;
 
 
 /*!
@@ -143,13 +144,19 @@ void info_db_write(
 
   /* Display any merge filename information */
   if( leading_hier_num == merge_in_num ) {
-    for( i=0; i<merge_in_num; i++ ) {
-      fprintf( file, " %s %s", merge_in[i], leading_hierarchies[i] );
+    str_link* strl = merge_in_head;
+    i = 0;
+    while( strl != NULL ) {
+      fprintf( file, " %s %s", strl->str, leading_hierarchies[i++] );
+      strl = strl->next;
     }
   } else {
+    str_link* strl = merge_in_head;
     assert( (leading_hier_num - 1) == merge_in_num );
-    for( i=0; i<merge_in_num; i++ ) {
-      fprintf( file, " %s %s", merge_in[i], leading_hierarchies[i+1] );
+    i = 1;
+    while( strl != NULL ) {
+      fprintf( file, " %s %s", strl->str, leading_hierarchies[i++] );
+      strl = strl->next;
     }
   }
 
@@ -219,8 +226,7 @@ void info_db_read(
         *line = *line + chars_read;
 
         /* Add merged file */
-        merge_in = (char**)realloc_safe( merge_in, (sizeof( char* ) * merge_in_num), (sizeof( char* ) * (merge_in_num + 1)) );
-        merge_in[merge_in_num] = strdup_safe( tmp1 );
+        str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
         merge_in_num++;
 
         /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
@@ -334,13 +340,10 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
   score_arg_num = 0;
 
   /* Free merged arguments */
-  for( i=0; i<merge_in_num; i++ ) {
-    free_safe( merge_in[i], (strlen( merge_in[i] ) + 1) );
-  }
-  free_safe( merge_in, (sizeof( char* ) * merge_in_num) );
-
-  merge_in     = NULL;
-  merge_in_num = 0;
+  str_link_delete_list( merge_in_head );
+  merge_in_head = NULL;
+  merge_in_tail = NULL;
+  merge_in_num  = 0;
 
   /* Free user message */
   free_safe( cdd_message, (strlen( cdd_message ) + 1) );
@@ -352,6 +355,10 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.32.2.3  2008/07/23 05:10:11  phase1geo
+ Adding -d and -ext options to rank and merge commands.  Updated necessary files
+ per this change and updated regressions.
+
  Revision 1.32.2.2  2008/07/21 21:35:07  phase1geo
  Fixing bug with deallocation of merge_in array and a later reallocation.  Needed
  to reset merge_in to NULL and merge_in_num to 0.

@@ -27,6 +27,7 @@
 #include "expr.h"
 #include "fsm.h"
 #include "func_iter.h"
+#include "link.h"
 #include "profiler.h"
 #include "rank.h"
 #include "util.h"
@@ -50,14 +51,14 @@ extern bool           allow_multi_expr;
 
 
 /*!
- List of CDD filenames that need to be read in.
+ Pointer to head of list of CDD filenames that need to be read in.
 */
-static char** rank_in = NULL;
+static str_link* rank_in_head = NULL;
 
 /*!
- Number of CDD filenames in the rank_in array.
+ Pointer to tail of list of CDD filenames that need to be read in.
 */
-static int rank_in_num = 0;
+static str_link* rank_in_tail = NULL;
 
 /*!
  File to be used for outputting rank information.
@@ -219,6 +220,13 @@ static void rank_usage() {
   printf( "      -names-only               If specified, outputs only the needed CDD filenames that need to be\n" );
   printf( "                                  run in the order they need to be run.  If this option is not set, a\n" );
   printf( "                                  report-style output is provided with additional information.\n" );
+  printf( "      -f <filename>             Name of file containing additional arguments to parse.\n" );
+  printf( "      -d <directory>            Directory to search for CDD files to include.  This option is used in\n" );
+  printf( "                                  conjunction with the -ext option which specifies the file extension\n" );
+  printf( "                                  to use for determining which files in the directory are CDD files.\n" );
+  printf( "      -ext <extension>          Used in conjunction with the -d option.  If no -ext options are specified\n" );
+  printf( "                                  on the command-line, the default value of '.cdd' is used.  Note that\n" );
+  printf( "                                  a period (.) should be specified.\n" );
   printf( "      -o <filename>             Name of file to output ranking information to.  Default is stdout.\n" );
   printf( "      -weight-line <number>     Specifies a relative weighting for line coverage used to rank\n" );
   printf( "                                  non-unique coverage points.\n" );
@@ -251,7 +259,13 @@ static void rank_parse_args(
   const char** argv       /*!< Argument list passed to this program */
 ) {
 
-  int i;  /* Loop iterator */
+  int       i;
+  unsigned  rank_in_num = 0;
+  str_link* strl;
+  str_link* ext_head    = NULL;
+  str_link* ext_tail    = NULL;
+  str_link* dir_head    = NULL;
+  str_link* dir_tail    = NULL;
 
   i = last_arg + 1;
 
@@ -281,6 +295,55 @@ static void rank_parse_args(
       } else {
         Throw 0;
       } 
+
+    } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        char**       arg_list = NULL;
+        int          arg_num  = 0;
+        unsigned int j;
+        i++;
+        Try {
+          read_command_file( argv[i], &arg_list, &arg_num );
+          rank_parse_args( arg_num, -1, (const char**)arg_list );
+        } Catch_anonymous {
+          for( j=0; j<arg_num; j++ ) {
+            free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
+          }
+          free_safe( arg_list, (sizeof( char* ) * arg_num) );
+          Throw 0;
+        }
+        for( j=0; j<arg_num; j++ ) {
+          free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
+        }
+        free_safe( arg_list, (sizeof( char* ) * arg_num) );
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-d", argv[i], 2 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( directory_exists( argv[i] ) ) {
+          str_link_add( strdup_safe( argv[i] ), &dir_head, &dir_tail );
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Specified -d directory (%s) does not exist", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-ext", argv[i], 4 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        str_link_add( strdup_safe( argv[i] ), &ext_head, &ext_tail );
+      } else {
+        Throw 0;
+      }
 
     } else if( strncmp( "-weight-line", argv[i], 12 ) == 0 ) {
 
@@ -416,9 +479,7 @@ static void rank_parse_args(
       if( file_exists( argv[i] ) ) {
 
         /* Add the specified rank file to the list */
-        rank_in              = (char**)realloc_safe( rank_in, (sizeof( char* ) * rank_in_num), (sizeof( char* ) * (rank_in_num + 1)) );
-        rank_in[rank_in_num] = strdup_safe( argv[i] );
-        rank_in_num++;
+        str_link_add( strdup_safe( argv[i] ), &rank_in_head, &rank_in_tail );
 
       } else {
 
@@ -433,6 +494,32 @@ static void rank_parse_args(
 
     i++;
 
+  }
+
+  Try {
+
+    /* Load any ranking files found in specified directories */
+    strl = dir_head;
+    while( strl != NULL ) {
+      directory_load( strl->str, ext_head, &rank_in_head, &rank_in_tail );
+      strl = strl->next;
+    }
+
+    /* Deallocate the temporary lists */
+    str_link_delete_list( ext_head );
+    str_link_delete_list( dir_head );
+
+  } Catch_anonymous {
+    str_link_delete_list( ext_head );
+    str_link_delete_list( dir_head );
+    Throw 0;
+  }
+
+  /* Count the number of files being ranked */
+  strl = rank_in_head;
+  while( strl != NULL ) {
+    rank_in_num++;
+    strl = strl->next;
   }
 
   /* Check to make sure that the user specified at least two files to rank */
@@ -1365,6 +1452,8 @@ void command_rank(
   Try {
 
     unsigned int rv;
+    bool         first = TRUE;
+    str_link*    strl;
 
     /* Parse score command-line */
     rank_parse_args( argc, last_arg, argv );
@@ -1379,11 +1468,14 @@ void command_rank(
     allow_multi_expr   = FALSE;
 
     /* Read in databases to merge */
-    for( i=0; i<rank_in_num; i++ ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", rank_in[i] );
+    strl = rank_in_head;
+    while( strl != NULL ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", strl->str );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      rank_read_cdd( rank_in[i], (i == 0), &comp_cdds, &comp_cdd_num );
+      rank_read_cdd( strl->str, first, &comp_cdds, &comp_cdd_num );
+      first = FALSE;
+      strl  = strl->next;
     }
 
     /* Peaform the ranking algorithm */
@@ -1403,10 +1495,7 @@ void command_rank(
   } Catch_anonymous {}
 
   /* Deallocate other allocated variables */
-  for( i=0; i<rank_in_num; i++ ) {
-    free_safe( rank_in[i], (strlen( rank_in[i] ) + 1) );
-  }
-  free_safe( rank_in, (sizeof( char* ) * rank_in_num) );
+  str_link_delete_list( rank_in_head );
 
   /* Deallocate the compressed CDD coverage structures */
   for( i=0; i<comp_cdd_num; i++ ) {
@@ -1422,6 +1511,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.4  2008/07/23 05:10:11  phase1geo
+ Adding -d and -ext options to rank and merge commands.  Updated necessary files
+ per this change and updated regressions.
+
  Revision 1.1.4.3  2008/07/23 04:38:09  phase1geo
  Attempting to update rank.c with latest bug fixes.
 
