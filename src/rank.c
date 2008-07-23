@@ -94,6 +94,11 @@ static bool flag_names_only = FALSE;
 */
 static unsigned int cp_depth = 0;
 
+/*!
+ Specifies the string length of the longest CDD name
+*/
+static unsigned int longest_name_len = 0;
+
 
 /*!
  \return Returns the number of bits that are set in the given unsigned char
@@ -162,6 +167,11 @@ comp_cdd_cov* rank_create_comp_cdd_cov(
   comp_cov->timesteps  = timesteps;
   comp_cov->total_cps  = 0;
   comp_cov->unique_cps = 0;
+
+  /* Save longest name length */
+  if( strlen( comp_cov->cdd_name ) > longest_name_len ) {
+    longest_name_len = strlen( comp_cov->cdd_name );
+  }
 
   for( i=0; i<CP_TYPE_NUM; i++ ) {
     comp_cov->cps_index[i] = 0;
@@ -321,21 +331,6 @@ static void rank_parse_args(
         Throw 0;
       }
 
-    } else if( strncmp( "-d", argv[i], 2 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        if( directory_exists( argv[i] ) ) {
-          str_link_add( strdup_safe( argv[i] ), &dir_head, &dir_tail );
-        } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Specified -d directory (%s) does not exist", argv[i] );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          Throw 0;
-        }
-      } else {
-        Throw 0;
-      }
-
     } else if( strncmp( "-ext", argv[i], 4 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
@@ -468,6 +463,21 @@ static void rank_parse_args(
             print_output( "Value specified after -depth must be a positive, non-zero number", FATAL, __FILE__, __LINE__ );
             Throw 0;
           }
+        }
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-d", argv[i], 2 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( directory_exists( argv[i] ) ) {
+          str_link_add( strdup_safe( argv[i] ), &dir_head, &dir_tail );
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Specified -d directory (%s) does not exist", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          Throw 0;
         }
       } else {
         Throw 0;
@@ -1476,6 +1486,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.6  2008/07/23 18:26:21  phase1geo
+ Moving -d command-line parsing to after the -depth so that they do not conflict.
+
  Revision 1.1.4.5  2008/07/23 05:34:34  phase1geo
  More updates.
 
