@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20080530" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20080731" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -159,6 +159,12 @@ Extensions of Verilog files to allow in scoring.
 .LP 
 The following options are valid for the merge command:
 .TP 
+\fB\-d\fR \fIfilename\fR
+Directory to search for CDD files to include.  This option is used in conjunction with the \fB\-ext\fR option which specifies the file extension to use for determining which files in the directory are CDD files.
+.TP 
+\fB\-ext\fR \fIextension\fR
+Used in conjunction with the \fB\-d\fR option.  If no \fB\-ext\fR options are specified on the command\-line, the default value of '.cdd' is used.  Note that a period (.) should be specified.
+.TP 
 \fB\-f\fR \fIfilename\fR
 Name of file containing additional arguments to parse.
 .TP 
@@ -210,8 +216,14 @@ Specifies the maximum line width (in characters) that can be used to output Veri
 .LP 
 The following options are valid with the rank command:
 .TP 
+\fB\-d\fR \fIfilename\fR
+Directory to search for CDD files to include.  This option is used in conjunction with the \fB\-ext\fR option which specifies the file extension to use for determining which files in the directory are CDD files.
+.TP 
 \fB\-depth\fR \fInumber\fR
 Specifies the minimum number of needed CDD files to hit each coverage point.  The value of \fInumber\fR should be greater than zero.  Default is 1.
+.TP 
+\fB\-ext\fR \fIextension\fR
+Used in conjunction with the \fB\-d\fR option.  If no \fB\-ext\fR options are specified on the command\-line, the default value of '.cdd' is used.  Note that a period (.) should be specified.
 .TP 
 \fB\-f\fR \fIfilename\fR
 Name of file containing additional arguments to parse.
