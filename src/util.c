@@ -1267,7 +1267,6 @@ void* calloc_safe1(
   size_t total = (num * size);
 
   assert( total > 0 );
-  assert( total <= MAX_MALLOC_SIZE );
 
   curr_malloc_size += total;
 
@@ -1503,6 +1502,10 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.92.2.3  2008/07/23 18:51:41  phase1geo
+ Removing MAX_MALLOC_SIZE check from calloc_safe1 function call (this function
+ will only get called for fairly big memory chunks anyways.
+
  Revision 1.92.2.2  2008/07/21 21:17:18  phase1geo
  Adding ability to specify -f - to cause each of the commands to read in command options
  from standard input (instead of an otherwise specified file).
