@@ -1173,7 +1173,7 @@ static void rank_perform_greedy_sort(
       for( k=0; k<CP_TYPE_NUM; k++ ) {
         for( l=0; l<num_cps[k]; l++ ) {
           if( comp_cdds[j]->cps[k][l>>3] & (0x1 << (l & 0x7)) ) {
-            if( ranked_merged[x] == 0 ) {
+            if( ranked_merged[x] < cp_depth ) {
               comp_cdds[j]->unique_cps++;
             }
           }
@@ -1503,6 +1503,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.8  2008/07/24 21:17:13  phase1geo
+ Fixing -depth issue.
+
  Revision 1.1.4.7  2008/07/23 21:38:42  phase1geo
  Adding better formatting for ranking reports to allow the inclusion of the full
  pathname for each CDD file listed.
