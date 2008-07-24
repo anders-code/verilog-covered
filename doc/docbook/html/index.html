@@ -5918,20 +5918,39 @@ NAME="SECTION.RANK.ALGORITHM"
     </P
 ><P
 >    The specified CDD files are ranked in a series of steps, some of which are reiterated for each CDD that is
-    selected to be ranked. Here is the algorithm (in pseudo-code):
+    selected to be ranked. Here is the basic algorithm (in pseudo-code):
     </P
 ><P
 >      <PRE
 CLASS="PROGRAMLISTING"
 >      
   calculate the size of the compressed coverage point structure
-  initialize ranked and unranked
   
   foreach CDD in CDD_list {
     convert CDD to compressed coverage point structure
   }
   
   foreach CDD in CDD_list {
+    if this CDD contains uniquely hit coverage points {
+      move the CDD file into the ranked list
+    }
+  }
+  
+  foreach CDD in unranked list {
+    foreach CDD in unranked list {
+      calculate score (((total_num_cov_points_hit / num_timesteps) * 100) * metric_weight_value)
+      if any unranked elements are less than the -depth option value and are hit by this CDD {
+        set unique_found to true
+      }
+      if our score &#62; highest score and a "unique" coverage point was found {
+        set highest_score to our score
+      }
+    }
+    move the CDD file indexed by highest_score from the unranked list to the ranked list
+  }
+  
+  resort ranked list from most unique to least unique (if there is a tie, select the CDD that hit the most coverage
+    points in the least amount of time
       </PRE
 >
     </P

@@ -118,6 +118,59 @@
     </para>
   </sect1>
   
+  <sect1 id="section.rank.inputting" xreflabel="Methods for specifying CDDs to rank">
+    <title>Methods for specifying CDDs to rank</title>
+    <para>
+    The rank command provides several mechanisms for specifying CDD files to rank.  Feel free to use any combination
+    of methods for providing this information to Covered as it makes sense to do in your environment.  The following is 
+    the list of input methods:
+    </para>
+    <para>
+      <itemizedlist>
+        <listitem>
+          <para>
+          Specify each CDD file after the rank command options have been specified.  This method is best when there are
+          a relatively small number of CDD files to rank as the length of the command-line in a shell is typically
+          limited to a certain number of characters.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          Create a file containing the list of CDD files to rank and pass this file to the rank command's 
+          <emphasis role="bold">-f</emphasis> option.  Using this method, one can selectively specify a large number 
+          of CDD files.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          Use shell commands to create a list of CDD files and pass them to Covered's standard input via command-line 
+          piping and the <emphasis role="bold">-f -</emphasis> command-line option (the - means use standard input).
+          The following line is an example of this usage:
+          </para>
+          <para>
+            <programlisting><![CDATA[
+  ls foo*.cdd | covered rank -f -          
+            ]]></programlisting>
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          Use the <emphasis role="bold">-d <emphasis>directory</emphasis></emphasis> and 
+          <emphasis role="bold">-ext <emphasis>extension</emphasis></emphasis> options to tell
+          Covered to retrieve all files found in the directory specified by <emphasis>directory</emphasis> that contain
+          the file extension of <emphasis>extension</emphasis> (if the <emphasis role="bold">-ext</emphasis> option
+          is not specified, the default extension of ".cdd" is used).  The following is an example of this usage: 
+          </para>
+          <para>
+            <programlisting><![CDATA[
+  covered rank -d /home/bubba/cdd_dir -ext .mycdd          
+            ]]></programlisting>
+          </para>
+        </listitem>
+      </itemizedlist>
+    </para>
+  </sect1>
+  
   <sect1 id="section.rank.weighting" xreflabel="Specifying metric weights">
     <title>Specifying metric weights</title>
     <para>
@@ -231,7 +284,7 @@
   }
   
   resort ranked list from most unique to least unique (if there is a tie, select the CDD that hit the most coverage
-    points in the least amount of time
+    points in the least amount of time)
       ]]></programlisting>
     </para>
   </sect1>
