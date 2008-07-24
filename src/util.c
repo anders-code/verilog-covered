@@ -264,10 +264,6 @@ void print_output(
 }
 
 /*!
- \param argc          Number of arguments in the argv parameter list
- \param argv          List of arguments being parsed
- \param option_index  Index of current option being parsed
-
  \return Returns TRUE if the specified option has a valid argument; otherwise,
          returns FALSE to indicate that there was an error in parsing the command-line.
 
@@ -276,7 +272,11 @@ void print_output(
  the correct type).  Outputs an error message and returns a value of FALSE if a value was
  not specified; otherwise, returns TRUE.
 */
-bool check_option_value( int argc, const char** argv, int option_index ) { PROFILE(CHECK_OPTION_VALUE);
+bool check_option_value(
+  int          argc,         /*!< Number of arguments in the argv parameter list */
+  const char** argv,         /*!< List of arguments being parsed */
+  int          option_index  /*!< Index of current option being parsed */
+) { PROFILE(CHECK_OPTION_VALUE);
 
   bool retval = TRUE;  /* Return value for this function */
 
@@ -294,7 +294,6 @@ bool check_option_value( int argc, const char** argv, int option_index ) { PROFI
 }
 
 /*!
- \param token String to check for valid variable name.
  \return Returns TRUE if the specified string is a legal variable name; otherwise,
          returns FALSE.
 
@@ -302,7 +301,9 @@ bool check_option_value( int argc, const char** argv, int option_index ) { PROFI
  variable (doesn't start with a number, contains only a-zA-Z0-9_ characters),
  returns a value of TRUE; otherwise, returns a value of FALSE.
 */
-bool is_variable( const char* token ) { PROFILE(IS_VARIABLE);
+bool is_variable(
+  const char* token  /*!< String to check for valid variable name */
+) { PROFILE(IS_VARIABLE);
 
   bool retval = TRUE;   /* Return value of this function */
 
@@ -339,12 +340,12 @@ bool is_variable( const char* token ) { PROFILE(IS_VARIABLE);
 }
 
 /*!
- \param token  Pointer to string to parse.
-
  \return Returns TRUE if the specified token is a valid argument representing
          a functional unit.
 */
-bool is_func_unit( const char* token ) { PROFILE(IS_FUNC_UNIT);
+bool is_func_unit(
+  const char* token  /*!< Pointer to string to parse */
+) { PROFILE(IS_FUNC_UNIT);
 
   char* orig;                          /* Temporary string */
   char* rest;                          /* Temporary string */
@@ -378,12 +379,12 @@ bool is_func_unit( const char* token ) { PROFILE(IS_FUNC_UNIT);
 }
 
 /*!
- \param token String to check for valid pathname-ness
-
  \return Returns TRUE if the specified string would be a legal filename to
          write to; otherwise, returns FALSE.
 */
-bool is_legal_filename( const char* token ) { PROFILE(IS_LEGAL_FILENAME);
+bool is_legal_filename(
+  const char* token  /*!< String to check for valid pathname-ness */
+) { PROFILE(IS_LEGAL_FILENAME);
 
   bool  retval = FALSE;  /* Return value for this function */
   FILE* tmpfile;         /* Temporary file pointer */
@@ -401,13 +402,13 @@ bool is_legal_filename( const char* token ) { PROFILE(IS_LEGAL_FILENAME);
 }
 
 /*!
- \param str  String containing pathname to file.
-
  \return Returns pointer to string containing only base filename.
 
  Extracts the file basename of the specified filename string.
 */
-const char* get_basename( const char* str ) { PROFILE(GET_BASENAME);
+const char* get_basename(
+  const char* str  /*!< String containing pathname to file */
+) { PROFILE(GET_BASENAME);
 
   const char* ptr;  /* Pointer to current character in str */
 
@@ -428,8 +429,6 @@ const char* get_basename( const char* str ) { PROFILE(GET_BASENAME);
 }
 
 /*!
- \param str  String containing pathname to file.
-
  \return Returns pointer to string containing only the directory path
 
  Extracts the directory path from the specified filename (or returns NULL
@@ -438,7 +437,9 @@ const char* get_basename( const char* str ) { PROFILE(GET_BASENAME);
  \warning
  Modifies the given string!
 */
-char* get_dirname( char* str ) { PROFILE(GET_DIRNAME);
+char* get_dirname(
+  char* str  /*!< String containing pathname to file */
+) { PROFILE(GET_DIRNAME);
 
   char* ptr;  /* Pointer to current character in str */
 
@@ -457,13 +458,14 @@ char* get_dirname( char* str ) { PROFILE(GET_DIRNAME);
 }
 
 /*!
- \param dir Name of directory to check for existence.
  \return Returns TRUE if the specified directory exists; otherwise, returns FALSE.
 
  Checks to see if the specified directory actually exists in the file structure.
  If the directory is found to exist, returns TRUE; otherwise, returns FALSE.
 */
-bool directory_exists( const char* dir ) { PROFILE(DIRECTORY_EXISTS);
+bool directory_exists(
+  const char* dir  /*!< Name of directory to check for existence */
+) { PROFILE(DIRECTORY_EXISTS);
 
   bool        retval = FALSE;  /* Return value for this function */
   struct stat filestat;        /* Statistics of specified directory */
@@ -485,11 +487,6 @@ bool directory_exists( const char* dir ) { PROFILE(DIRECTORY_EXISTS);
 }
 
 /*!
- \param dir        Name of directory to read files from.
- \param ext_head   Pointer to extension list.
- \param file_head  Pointer to head element of filename string list.
- \param file_tail  Pointer to tail element of filename string list.
-
  \bug Need to order files according to extension first instead of filename.
 
  \throws anonymous Throw
@@ -499,10 +496,10 @@ bool directory_exists( const char* dir ) { PROFILE(DIRECTORY_EXISTS);
  Stores all string filenames to the specified string list.
 */
 void directory_load(
-  const char*     dir,
-  const str_link* ext_head,
-  str_link**      file_head,
-  str_link**      file_tail
+  const char*     dir,        /*!< Name of directory to read files from */
+  const str_link* ext_head,   /*!< Pointer to extension list */
+  str_link**      file_head,  /*!< Pointer to head element of filename string list */
+  str_link**      file_tail   /*!< Pointer to tail element of filename string list */
 ) { PROFILE(DIRECTORY_LOAD);
 
   DIR*            dir_handle;  /* Pointer to opened directory */
@@ -562,13 +559,14 @@ void directory_load(
 }
 
 /*!
- \param file Name of file to check for existence.
  \return Returns TRUE if the specified file exists; otherwise, returns FALSE.
 
  Checks to see if the specified file actually exists in the file structure.
  If the file is found to exist, returns TRUE; otherwise, returns FALSE.
 */
-bool file_exists( const char* file ) { PROFILE(FILE_EXISTS);
+bool file_exists(
+  const char* file  /*!< Name of file to check for existence */
+) { PROFILE(FILE_EXISTS);
 
   bool        retval = FALSE;  /* Return value for this function */
   struct stat filestat;        /* Statistics of specified directory */
@@ -673,15 +671,13 @@ bool get_quoted_string(
 }
 
 /*!
- \param value  Input string that will be searched for environment variables
-
  \return Returns the given value with environment variables substituted in.  This value should
          be freed by the calling function.
  
  \throws anonymous Throw
 */
 char* substitute_env_vars(
-  const char* value
+  const char* value  /*!< Input string that will be searched for environment variables */
 ) { PROFILE(SUBSTITUTE_ENV_VARS);
 
   char*       newvalue      = NULL;   /* New value */
@@ -743,15 +739,15 @@ char* substitute_env_vars(
 }
 
 /*!
- \param scope   Full scope to extract from.
- \param front   Highest level of hierarchy extracted.
- \param rest    Hierarchy left after extraction.
- 
  Extracts the highest level of hierarchy from the specified scope,
  returning that instance name to the value of front and the the
  rest of the hierarchy in the value of rest.
 */
-void scope_extract_front( const char* scope, char* front, char* rest ) { PROFILE(SCOPE_EXTRACT_FRONT);
+void scope_extract_front(
+            const char* scope,  /*!< Full scope to extract from */
+  /*@out@*/ char*       front,  /*!< Highest level of hierarchy extracted */
+  /*@out@*/ char*       rest    /*!< Hierarchy left after extraction */
+) { PROFILE(SCOPE_EXTRACT_FRONT);
   
   const char* ptr;      /* Pointer to current character */
   char        endchar;  /* Set to the character we are searching for */
@@ -788,15 +784,15 @@ void scope_extract_front( const char* scope, char* front, char* rest ) { PROFILE
 }
 
 /*!
- \param scope  Full scope to extract from.
- \param back   Lowest level of hierarchy extracted.
- \param rest   Hierarchy left after extraction.
- 
  Extracts the lowest level of hierarchy from the specified scope,
  returning that instance name to the value of back and the the
  rest of the hierarchy in the value of rest.
 */
-void scope_extract_back( const char* scope, char* back, char* rest ) { PROFILE(SCOPE_EXTRACT_BACK);
+void scope_extract_back(
+            const char* scope,  /*!< Full scope to extract from */
+  /*@out@*/ char*       back,   /*!< Lowest level of hierarchy extracted */
+  /*@out@*/ char*       rest    /*!< Hierarchy left after extraction */
+) { PROFILE(SCOPE_EXTRACT_BACK);
 
   const char* ptr;      /* Pointer to current character */
   char        endchar;  /* Set to the character we are searching for */
@@ -832,12 +828,16 @@ void scope_extract_back( const char* scope, char* back, char* rest ) { PROFILE(S
 }
 
 /*!
- \param scope
- \param front
- \param back
-
+ Parses the given scope and removes the front portion of this scope (if the front portion of the scope
+ matches the beginning portion of scope) and returns the remaining scope in the array pointed to by back.
+ If front does not exist within scope, back is set to a value of the null string.  Assumes that the length
+ of back is allocated and large enough to hold the full value of scope, if necessary.
 */
-void scope_extract_scope( const char* scope, const char* front, char* back ) { PROFILE(SCOPE_EXTRACT_SCOPE);
+void scope_extract_scope(
+            const char* scope,  /*!< Full scope to search */
+            const char* front,  /*!< Leading portion of scope to exclude */
+  /*@out@*/ char*       back    /*!< Following portion of scope that is in scope that is not in front */
+) { PROFILE(SCOPE_EXTRACT_SCOPE);
 
   back[0] = '\0';
 
@@ -850,15 +850,13 @@ void scope_extract_scope( const char* scope, const char* front, char* back ) { P
 }
 
 /*!
- \param str  String to create printable version of
-
  \return Returns printable version of the given string (with any escaped sequences removed)
 
  Allocates memory for and generates a printable version of the given string (a signal or
  instance name).  The calling function is responsible for deallocating the string returned.
 */
 char* scope_gen_printable(
-  const char* str
+  const char* str  /*!< String to create printable version of */
 ) { PROFILE(SCOPE_GEN_PRINTABLE);
 
   char* new_str;  /* New version of string with escaped sequences removed */
@@ -882,15 +880,12 @@ char* scope_gen_printable(
 } 
 
 /*!
- \param str1  Pointer to signal/instance name
- \param str2  Pointer to signal/instance name
-
  \return Returns TRUE if the two strings are equal, properly handling the case where one or
          both are escaped names (start with an escape character and end with a space).
 */
 bool scope_compare(
-  const char* str1,
-  const char* str2
+  const char* str1,  /*!< Pointer to signal/instance name */
+  const char* str2   /*!< Pointer to signal/instance name */
 ) { PROFILE(SCOPE_COMPARE);
 
   bool  retval;    /* Return value for this function */
@@ -915,15 +910,15 @@ bool scope_compare(
 }
 
 /*
- \param scope  Scope of some signal.
-
  \return Returns TRUE if specified scope is local to this module (no hierarchy given);
          otherwise, returns FALSE.
 
  Parses specified scope for '.' character.  If one is found, returns FALSE; otherwise,
  returns TRUE.
 */
-bool scope_local( const char* scope ) { PROFILE(SCOPE_LOCAL);
+bool scope_local(
+  const char* scope  /*!< Scope of some signal */
+) { PROFILE(SCOPE_LOCAL);
 
   const char* ptr;             /* Pointer to current character */
   bool        esc;             /* Set to TRUE if current is escaped */
@@ -952,16 +947,16 @@ bool scope_local( const char* scope ) { PROFILE(SCOPE_LOCAL);
 }
 
 /*!
- \param mname  Name of module extracted.
- \param len    Length of mname string (we cannot exceed this value).
- \param fname  Name of filename to extract module name from.
-
  Takes in a filename (with possible directory information and/or possible extension)
  and transforms it into a filename with the directory and extension information stripped
  off.  Much like the the functionality of the unix command "basename".  Returns the 
  stripped filename in the mname parameter.
 */
-static void convert_file_to_module( char* mname, int len, char* fname ) { PROFILE(CONVERT_FILE_TO_MODULE);
+static void convert_file_to_module(
+  char* mname,  /*!< Name of module extracted */
+  int   len,    /*!< Length of mname string (we cannot exceed this value) */
+  char* fname   /*!< Name of filename to extract module name from */
+) { PROFILE(CONVERT_FILE_TO_MODULE);
 
   char* ptr;   /* Pointer to current character in filename */
   char* lptr;  /* Pointer to last character in module name */
@@ -1004,19 +999,17 @@ static void convert_file_to_module( char* mname, int len, char* fname ) { PROFIL
 
 }
 
-  
-
 /*!
- \param curr  Pointer to current file in list.
- \param mod   Name of module searching for.
-
  \return Returns pointer to next Verilog file to parse or NULL if no files were found.
 
  Iterates through specified file list, searching for next Verilog file to parse.
  If a file is a library file (suppl field is 'D'), the name of the module to search
  for is compared with the name of the file.
 */
-str_link* get_next_vfile( str_link* curr, const char* mod ) { PROFILE(GET_NEXT_VFILE);
+str_link* get_next_vfile(
+  str_link*   curr,  /*!< Pointer to current file in list */
+  const char* mod    /*!< Name of module searching for */
+) { PROFILE(GET_NEXT_VFILE);
 
   str_link* next = NULL;  /* Pointer to next Verilog file to parse */
   char      name[256];    /* String holder for module name of file */
@@ -1046,21 +1039,17 @@ str_link* get_next_vfile( str_link* curr, const char* mod ) { PROFILE(GET_NEXT_V
 }
 
 /*!
- \param size           Number of bytes to allocate.
- \param file           File that called this function.
- \param line           Line number of file that called this function.
- \param profile_index  Profile index of function that called this function
-
  \return Pointer to allocated memory.
 
  Allocated memory like a malloc() call but performs some pre-allocation and
  post-allocation checks to be sure that the malloc call works properly.
 */
 void* malloc_safe1(
-               size_t       size,
-  /*@unused@*/ const char*  file,
-  /*@unused@*/ int          line,
-  /*@unused@*/ unsigned int profile_index ) {
+               size_t       size,          /*!< Number of bytes to allocate */
+  /*@unused@*/ const char*  file,          /*!< File that called this function */
+  /*@unused@*/ int          line,          /*!< Line number of file that called this function */
+  /*@unused@*/ unsigned int profile_index  /*!< Profile index of function that called this function */
+) {
 
   void* obj;  /* Object getting malloc address */
 
@@ -1503,6 +1492,9 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.92.2.5  2008/07/24 23:23:49  phase1geo
+ Adding -required option to the rank command.
+
  Revision 1.92.2.4  2008/07/23 21:38:42  phase1geo
  Adding better formatting for ranking reports to allow the inclusion of the full
  pathname for each CDD file listed.

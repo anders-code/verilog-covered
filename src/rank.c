@@ -155,6 +155,7 @@ static inline unsigned int rank_count_bits_uint64(
 */
 comp_cdd_cov* rank_create_comp_cdd_cov(
   const char* cdd_name,  /*!< Name of CDD file that this structure was created from */
+  bool        required,  /*!< Set to TRUE if this CDD is required to be ranked by the user */
   uint64      timesteps  /*!< Number of simulation timesteps that occurred in the CDD */
 ) { PROFILE(RANK_CREATE_COMP_CDD_COV);
 
@@ -167,6 +168,7 @@ comp_cdd_cov* rank_create_comp_cdd_cov(
   comp_cov->timesteps  = timesteps;
   comp_cov->total_cps  = 0;
   comp_cov->unique_cps = 0;
+  comp_cov->required   = required;
 
   /* Save longest name length */
   if( strlen( comp_cov->cdd_name ) > longest_name_len ) {
@@ -231,6 +233,8 @@ static void rank_usage() {
   printf( "                                  run in the order they need to be run.  If this option is not set, a\n" );
   printf( "                                  report-style output is provided with additional information.\n" );
   printf( "      -f <filename>             Name of file containing additional arguments to parse.\n" );
+  printf( "      -required <filename>      Name of file containing list of CDD files which are required to be in the\n" );
+  printf( "                                  list of ranked CDDs to be run.\n" );
   printf( "      -d <directory>            Directory to search for CDD files to include.  This option is used in\n" );
   printf( "                                  conjunction with the -ext option which specifies the file extension\n" );
   printf( "                                  to use for determining which files in the directory are CDD files.\n" );
@@ -327,6 +331,43 @@ static void rank_parse_args(
           free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
         }
         free_safe( arg_list, (sizeof( char* ) * arg_num) );
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-required", argv[i], 9 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( file_exists( argv[i] ) ) {
+          FILE* file;
+          if( (file = fopen( argv[i], "r" )) != NULL ) {
+            char fname[4096];
+            while( fscanf( file, "%s", fname ) == 1 ) {
+              if( file_exists( fname ) ) {
+                str_link* strl;
+                if( (strl = str_link_find( fname, rank_in_head )) == NULL ) {
+                  strl = str_link_add( strdup_safe( fname ), &rank_in_head, &rank_in_tail );
+                }
+                strl->suppl = 1;
+              } else {
+                snprintf( user_msg, USER_MSG_LENGTH, "Filename (%s) specified in -required file (%s) does not exist", fname, argv[i] );
+                print_output( user_msg, FATAL, __FILE__, __LINE__ );
+                Throw 0;
+              }
+            }
+            fclose( file );
+          } else {
+            snprintf( user_msg, USER_MSG_LENGTH, "Unable to read -required file (%s)", argv[i] );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Filename specified for -required option (%s) does not exist", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      
       } else {
         Throw 0;
       }
@@ -488,8 +529,12 @@ static void rank_parse_args(
       /* The name of a file to rank */
       if( file_exists( argv[i] ) ) {
 
-        /* Add the specified rank file to the list */
-        str_link_add( strdup_safe( argv[i] ), &rank_in_head, &rank_in_tail );
+        if( str_link_find( argv[i], rank_in_head ) == NULL ) {
+
+          /* Add the specified rank file to the list */
+          str_link_add( strdup_safe( argv[i] ), &rank_in_head, &rank_in_tail );
+
+        }
 
       } else {
 
@@ -956,6 +1001,7 @@ static void rank_gather_comp_cdd_cov(
 */
 static void rank_read_cdd(
             const char*     cdd_name,     /*!< Filename of CDD file to read in */
+            bool            required,     /*!< Specifies if CDD file is required to be ranked */
             bool            first,        /*!< Set to TRUE if this if the first CDD being read */
   /*@out@*/ comp_cdd_cov*** comp_cdds,    /*!< Pointer to compressed CDD array */
   /*@out@*/ unsigned int*   comp_cdd_num  /*!< Number of compressed CDD structures in comp_cdds array */
@@ -998,7 +1044,7 @@ static void rank_read_cdd(
     }
 
     /* Allocate the memory needed for the compressed CDD coverage structure */
-    comp_cov = rank_create_comp_cdd_cov( cdd_name, num_timesteps );
+    comp_cov = rank_create_comp_cdd_cov( cdd_name, required, num_timesteps );
 
     /* Finally, populate compressed CDD coverage structure with coverage information from database signals */
     instl = db_list[0]->inst_head;
@@ -1256,7 +1302,15 @@ static void rank_perform(
     }
   }
 
-  /* Step 2 - Start with the most unique CDDs */
+  /* Step 2 - Immediately rank all of the required CDDs */
+  for( i=0; i<comp_cdd_num; i++ ) {
+    if( comp_cdds[i]->required ) {
+      rank_selected_cdd_cov( comp_cdds, comp_cdd_num, ranked_merged, unranked_merged, next_cdd, i );
+      next_cdd++;
+    }
+  }
+
+  /* Step 3 - Start with the most unique CDDs */
   do {
     most_unique = next_cdd;
     for( i=(next_cdd+1); i<comp_cdd_num; i++ ) {
@@ -1270,12 +1324,12 @@ static void rank_perform(
     }
   } while( (next_cdd < comp_cdd_num) && (comp_cdds[most_unique]->unique_cps > 0) );
 
-  /* Step 3 - Select coverage based on user-specified factors */
+  /* Step 4 - Select coverage based on user-specified factors */
   if( next_cdd < comp_cdd_num ) {
     rank_perform_weighted_selection( comp_cdds, comp_cdd_num, ranked_merged, unranked_merged, total, next_cdd );
   }
 
-  /* Step 4 - Re-sort the list using a greedy algorithm */
+  /* Step 5 - Re-sort the list using a greedy algorithm */
   rank_perform_greedy_sort( comp_cdds, comp_cdd_num, ranked_merged, total );
 
   /* Deallocate merged CDD coverage structure */
@@ -1358,20 +1412,20 @@ static void rank_output(
         fprintf( ofile, "Reduced %u CDD files down to %u needed to maintain coverage (%3.0f%% reduction)\n", comp_cdd_num, i, (((comp_cdd_num - i) / (float)comp_cdd_num) * 100) );
       }
       fprintf( ofile, "\n" );
-      gen_char_string( str, '-', (longest_name_len - 4) );
-      fprintf( ofile, "-----------+-------------------------------------------+------%s------------------------------------------\n", str );
+      gen_char_string( str, '-', (longest_name_len - 3) );
+      fprintf( ofile, "-----------+-------------------------------------------+---------%s------------------------------------------\n", str );
       gen_char_string( str, ' ', (longest_name_len >> 1) );
-      fprintf( ofile, "           |                ACCUMULATIVE               |      %s                CDD\n", str );
-      gen_char_string( str, '-', (longest_name_len - 4) );
-      fprintf( ofile, "Simulation |-------------------------------------------+------%s------------------------------------------\n", str );
-      gen_char_string( str, ' ', (longest_name_len - 4) );
-      fprintf( ofile, "Order      |        Hit /      Total     %%   Timesteps |  Name%s        Hit /      Total     %%   Timesteps\n", str );
-      gen_char_string( str, '-', (longest_name_len - 4) );
-      fprintf( ofile, "-----------+-------------------------------------------+------%s------------------------------------------\n", str );
+      fprintf( ofile, "           |                ACCUMULATIVE               |         %s               CDD\n", str );
+      gen_char_string( str, '-', (longest_name_len - 3) );
+      fprintf( ofile, "Simulation |-------------------------------------------+---------%s------------------------------------------\n", str );
+      gen_char_string( str, ' ', (longest_name_len - 3) );
+      fprintf( ofile, "Order      |        Hit /      Total     %%   Timesteps |  R  Name%s        Hit /      Total     %%   Timesteps\n", str );
+      gen_char_string( str, '-', (longest_name_len - 3) );
+      fprintf( ofile, "-----------+-------------------------------------------+---------%s------------------------------------------\n", str );
       fprintf( ofile, "\n" );
 
       /* Calculate a string format */
-      snprintf( format, 100, "%%10u   %%10llu   %%10llu  %%3.0f%%%%  %%10llu   %%-%us  %%10llu   %%10llu  %%3.0f%%%%  %%10llu\n", longest_name_len );
+      snprintf( format, 100, "%%10u   %%10llu   %%10llu  %%3.0f%%%%  %%10llu    %%c  %%-%us  %%10llu   %%10llu  %%3.0f%%%%  %%10llu\n", longest_name_len );
 
       for( i=0; i<comp_cdd_num; i++ ) {
         acc_timesteps  += comp_cdds[i]->timesteps; 
@@ -1386,6 +1440,7 @@ static void rank_output(
                 total_cps,
                 ((acc_unique_cps / (float)total_cps) * 100),
                 acc_timesteps,
+                (comp_cdds[i]->required ? '*' : ' '),
                 comp_cdds[i]->cdd_name,
                 comp_cdds[i]->total_cps,
                 total_cps,
@@ -1465,7 +1520,7 @@ void command_rank(
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", strl->str );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      rank_read_cdd( strl->str, first, &comp_cdds, &comp_cdd_num );
+      rank_read_cdd( strl->str, (strl->suppl == 1), first, &comp_cdds, &comp_cdd_num );
       first = FALSE;
       strl  = strl->next;
     }
@@ -1503,6 +1558,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.9  2008/07/24 23:23:49  phase1geo
+ Adding -required option to the rank command.
+
  Revision 1.1.4.8  2008/07/24 21:17:13  phase1geo
  Fixing -depth issue.
 

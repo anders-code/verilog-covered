@@ -2830,6 +2830,7 @@ struct comp_cdd_cov_s {
   uint64         total_cps;               /*!< Number of total coverage points this CDD file represents */
   uint64         unique_cps;              /*!< Number of unique coverage points this CDD file represents */
   uint64         score;                   /*!< Storage for current score */
+  bool           required;                /*!< Set to TRUE if this CDD is required to be in the ranked list by the user */
   unsigned char* cps[CP_TYPE_NUM];        /*!< Compressed coverage points for each coverage metric */
   unsigned int   cps_index[CP_TYPE_NUM];  /*!< Contains index of current bit to populate */
 };
@@ -2843,6 +2844,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.297.2.2  2008/07/24 23:23:49  phase1geo
+ Adding -required option to the rank command.
+
  Revision 1.297.2.1  2008/07/10 22:43:50  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
