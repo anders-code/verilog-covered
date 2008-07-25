@@ -26,11 +26,11 @@ open( OLD_CDD, "err9.tmp.cdd" ) || die "Can't open err9.tmp.cdd for reading: $!\
 open( NEW_CDD, ">err9.cdd" ) || die "Can't open err9.cdd for writing: $!\n";
 while( <OLD_CDD> ) {
   chomp;
-  if( /^5\s+(\w+)\s+(\w+)\s+(.+)\s+.*$/ ) {
-    $version = $1;
-    $suppl   = $2;
-    $lhier   = $3;
-    print NEW_CDD "5 $version $suppl $lhier 2\n";
+  if( /^5\s+(\w+)\s+(\w+)\s+(\d+)\s+.*$/ ) {
+    $version   = $1;
+    $suppl     = $2;
+    $timesteps = $3;
+    print NEW_CDD "5 $version $suppl $timesteps\n";
   } else {
     print NEW_CDD $_ . "\n";
   }
