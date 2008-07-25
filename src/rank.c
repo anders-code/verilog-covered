@@ -224,7 +224,9 @@ void rank_dealloc_comp_cdd_cov(
 static void rank_usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered rank [<options>] <database_to_rank> <database_to_rank>*\n" );
+  printf( "Usage:  covered rank (-h | ([<options>] <database_to_rank> <database_to_rank>+)\n" );
+  printf( "\n" );
+  printf( "   -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -depth <number>           Specifies the minimum number of CDD files to hit each coverage point.\n" );
@@ -254,7 +256,6 @@ static void rank_usage() {
   printf( "                                  used to rank non-unique coverage points.\n" );
   printf( "      -weight-assert <number>   Specifies a relative weighting for assertion coverage used to rank\n" );
   printf( "                                  non-unique coverage points.\n" );
-  printf( "      -h                        Displays this help information.\n" );
   printf( "\n" );
 
 }
@@ -1409,7 +1410,31 @@ static void rank_output(
       if( i == comp_cdd_num ) {
         fprintf( ofile, "No reduction occurred\n" );
       } else {
-        fprintf( ofile, "Reduced %u CDD files down to %u needed to maintain coverage (%3.0f%% reduction)\n", comp_cdd_num, i, (((comp_cdd_num - i) / (float)comp_cdd_num) * 100) );
+        uint64       total_timesteps  = 0;
+        uint64       ranked_timesteps = 0;
+        unsigned int col1, col2, j;
+        char         str[30];
+        char         fmt[4096];
+
+        /* Calculated total_timesteps and ranked_timesteps */
+        for( j=0; j<comp_cdd_num; j++ ) {
+          total_timesteps += comp_cdds[j]->timesteps;
+          if( comp_cdds[j]->unique_cps > 0 ) {
+            ranked_timesteps = total_timesteps;
+          }
+        }
+
+        /* Figure out the largest number for the first column */
+        snprintf( str, 30, "%llu", total_timesteps );   col1 = strlen( str );
+        snprintf( str, 30, "%llu", ranked_timesteps );  col2 = strlen( str );
+
+        /* Create line for CDD files */
+        snprintf( fmt, 4096, "* Reduced %%%uu CDD files down to %%%uu needed to maintain coverage (%%3.0f%%%% reduction, %%5.1fx improvement)\n", col1, col2 );
+        fprintf( ofile, fmt, comp_cdd_num, i, (((comp_cdd_num - i) / (float)comp_cdd_num) * 100), (comp_cdd_num / (float)i) );
+
+        /* Create line for timesteps */
+        snprintf( fmt, 4096, "* Reduced %%%ullu timesteps down to %%%ullu needed to maintain coverage (%%3.0f%%%% reduction, %%5.1fx improvement)\n", col1, col2 );
+        fprintf( ofile, fmt, total_timesteps, ranked_timesteps, ((ranked_timesteps / (double)total_timesteps) * 100), (total_timesteps / (double)ranked_timesteps) );
       }
       fprintf( ofile, "\n" );
       gen_char_string( str, '-', (longest_name_len - 3) );
@@ -1558,6 +1583,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.10  2008/07/25 19:41:40  phase1geo
+ Adding timestep reduction information as well as multiplier improvement information
+ to rank output.  Also updating more documentation.
+
  Revision 1.1.4.9  2008/07/24 23:23:49  phase1geo
  Adding -required option to the rank command.
 

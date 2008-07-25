@@ -412,6 +412,11 @@ HREF="#SECTION.RANK.OPTIONS"
 ></DT
 ><DT
 ><A
+HREF="#SECTION.RANK.INPUTTING"
+>Methods for specifying CDDs to rank</A
+></DT
+><DT
+><A
 HREF="#SECTION.RANK.WEIGHTING"
 >Specifying metric weights</A
 ></DT
@@ -489,7 +494,7 @@ HREF="#SECTION.PROFILING"
 ></DD
 ><DT
 >IV. <A
-HREF="#AEN1609"
+HREF="#AEN1655"
 >Graphical User Interface</A
 ></DT
 ><DD
@@ -773,7 +778,7 @@ HREF="#CHAPTER.GUI.WIZARD"
 ></DD
 ><DT
 >V. <A
-HREF="#AEN2797"
+HREF="#AEN2843"
 >FAQ</A
 ></DT
 ><DD
@@ -787,7 +792,7 @@ HREF="#CHAPTER.FAQ"
 ></DD
 ><DT
 >VI. <A
-HREF="#AEN2869"
+HREF="#AEN2915"
 >Epilogue</A
 ></DT
 ><DD
@@ -860,22 +865,22 @@ HREF="#AEN1071"
 ></DT
 ><DT
 >11-1. <A
-HREF="#AEN1108"
+HREF="#AEN1116"
 >Options to report Command</A
 ></DT
 ><DT
 >12-1. <A
-HREF="#AEN1184"
+HREF="#AEN1192"
 >Options to rank Command</A
 ></DT
 ><DT
 >14-1. <A
-HREF="#AEN1475"
+HREF="#AEN1521"
 >CLI Command-line Options</A
 ></DT
 ><DT
 >25-1. <A
-HREF="#AEN2626"
+HREF="#AEN2672"
 >Location of Written .coveredrc File According to the Location of Read .coveredrc File</A
 ></DT
 ></DL
@@ -5229,6 +5234,36 @@ CLASS="CALSTABLE"
 ><TBODY
 ><TR
 ><TD
+>              -d <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>directory</I
+></SPAN
+>
+              </TD
+><TD
+>              Directory to search for CDD files to include.  This option is used in conjunction with the -ext option 
+              which specifies the file extension to use for determining which files in the directory are CDD files.
+              </TD
+></TR
+><TR
+><TD
+>              -ext <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>extension</I
+></SPAN
+>
+              </TD
+><TD
+>              Used in conjunction with the -d option.  If no -ext options are specified on the command-line, the 
+              default value of '.cdd' is used.  Note that a period (.) should be specified.
+              </TD
+></TR
+><TR
+><TD
 >              -f <SPAN
 CLASS="emphasis"
 ><I
@@ -5347,7 +5382,7 @@ NAME="SECTION.REPORT.OPTIONS"
 >      <DIV
 CLASS="TABLE"
 ><A
-NAME="AEN1108"
+NAME="AEN1116"
 ></A
 ><P
 ><B
@@ -5646,7 +5681,7 @@ NAME="SECTION.RANK.OPTIONS"
 >      <DIV
 CLASS="TABLE"
 ><A
-NAME="AEN1184"
+NAME="AEN1192"
 ></A
 ><P
 ><B
@@ -5685,6 +5720,36 @@ CLASS="EMPHASIS"
 >number</I
 ></SPAN
 > should be a value of 1 or more.  Default is 1.
+              </TD
+></TR
+><TR
+><TD
+>              -d <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>directory</I
+></SPAN
+>
+              </TD
+><TD
+>              Directory to search for CDD files to include.  This option is used in conjunction with the -ext option 
+              which specifies the file extension to use for determining which files in the directory are CDD files.
+              </TD
+></TR
+><TR
+><TD
+>              -ext <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>extension</I
+></SPAN
+>
+              </TD
+><TD
+>              Used in conjunction with the -d option.  If no -ext options are specified on the command-line, the 
+              default value of '.cdd' is used.  Note that a period (.) should be specified.
               </TD
 ></TR
 ><TR
@@ -5730,6 +5795,20 @@ CLASS="EMPHASIS"
               </TD
 ><TD
 >              Name of file to output ranking information to.  Default is stdout.
+              </TD
+></TR
+><TR
+><TD
+>              -require <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>filename</I
+></SPAN
+>
+              </TD
+><TD
+>              Name of file containing list of CDD files which are required to be in the list of ranked CDDs to be run.
               </TD
 ></TR
 ><TR
@@ -5820,6 +5899,125 @@ CLASS="EMPHASIS"
 ></TBODY
 ></TABLE
 ></DIV
+>
+    </P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H2
+CLASS="SECT1"
+><A
+NAME="SECTION.RANK.INPUTTING"
+>Methods for specifying CDDs to rank</A
+></H2
+><P
+>    The rank command provides several mechanisms for specifying CDD files to rank.  Feel free to use any combination
+    of methods for providing this information to Covered as it makes sense to do in your environment.  The following is 
+    the list of input methods:
+    </P
+><P
+>      <P
+></P
+><UL
+><LI
+><P
+>          Specify each CDD file after the rank command options have been specified.  This method is best when there are
+          a relatively small number of CDD files to rank as the length of the command-line in a shell is typically
+          limited to a certain number of characters.
+          </P
+></LI
+><LI
+><P
+>          Create a file containing the list of CDD files to rank and pass this file to the rank command's 
+          <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>-f</B
+></SPAN
+> option.  Using this method, one can selectively specify a large number 
+          of CDD files.
+          </P
+></LI
+><LI
+><P
+>          Use shell commands to create a list of CDD files and pass them to Covered's standard input via command-line 
+          piping and the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>-f -</B
+></SPAN
+> command-line option (the - means use standard input).
+          The following line is an example of this usage:
+          </P
+><P
+>            <PRE
+CLASS="PROGRAMLISTING"
+>  ls foo*.cdd | covered rank -f -          
+            </PRE
+>
+          </P
+></LI
+><LI
+><P
+>          Use the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>-d <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>directory</I
+></SPAN
+></B
+></SPAN
+> and 
+          <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>-ext <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>extension</I
+></SPAN
+></B
+></SPAN
+> options to tell
+          Covered to retrieve all files found in the directory specified by <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>directory</I
+></SPAN
+> that contain
+          the file extension of <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>extension</I
+></SPAN
+> (if the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>-ext</B
+></SPAN
+> option
+          is not specified, the default extension of ".cdd" is used).  The following is an example of this usage: 
+          </P
+><P
+>            <PRE
+CLASS="PROGRAMLISTING"
+>  covered rank -d /home/bubba/cdd_dir -ext .mycdd          
+            </PRE
+>
+          </P
+></LI
+></UL
 >
     </P
 ></DIV
@@ -5950,7 +6148,7 @@ CLASS="PROGRAMLISTING"
   }
   
   resort ranked list from most unique to least unique (if there is a tie, select the CDD that hit the most coverage
-    points in the least amount of time
+    points in the least amount of time)
       </PRE
 >
     </P
@@ -6791,7 +6989,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1453"
+NAME="AEN1499"
 >Building Covered for Verbose Debug Outputting</A
 ></H3
 ><P
@@ -6841,7 +7039,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1462"
+NAME="AEN1508"
 >Building Covered for the CLI</A
 ></H3
 ><P
@@ -6862,7 +7060,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1466"
+NAME="AEN1512"
 >Using the CLI</A
 ></H3
 ><P
@@ -6899,7 +7097,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1472"
+NAME="AEN1518"
 >CLI commands</A
 ></H3
 ><P
@@ -6908,7 +7106,7 @@ NAME="AEN1472"
 ><DIV
 CLASS="TABLE"
 ><A
-NAME="AEN1475"
+NAME="AEN1521"
 ></A
 ><P
 ><B
@@ -7245,7 +7443,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1570"
+NAME="AEN1616"
 >Building Covered for Profiling</A
 ></H3
 ><P
@@ -7280,7 +7478,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1576"
+NAME="AEN1622"
 >Using Source Code Profiling</A
 ></H3
 ><P
@@ -7315,7 +7513,7 @@ CLASS="SECT2"
 ><HR><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1582"
+NAME="AEN1628"
 >Understanding the Profiling Report</A
 ></H3
 ><P
@@ -7389,7 +7587,7 @@ TYPE="1"
 ><DIV
 CLASS="PART"
 ><A
-NAME="AEN1609"
+NAME="AEN1655"
 ></A
 ><DIV
 CLASS="TITLEPAGE"
@@ -7746,7 +7944,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1698"
+NAME="AEN1744"
 >Open/Merge CDDs...</A
 ></H4
 ><P
@@ -7792,7 +7990,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1709"
+NAME="AEN1755"
 >View Loaded CDD(s)...</A
 ></H4
 ><P
@@ -7864,7 +8062,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1724"
+NAME="AEN1770"
 >Save CDD...</A
 ></H4
 ><P
@@ -7886,7 +8084,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1728"
+NAME="AEN1774"
 >Close CDDs</A
 ></H4
 ><P
@@ -7944,7 +8142,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1741"
+NAME="AEN1787"
 >Generate</A
 ></H4
 ><P
@@ -8011,7 +8209,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1759"
+NAME="AEN1805"
 >Exit</A
 ></H4
 ><P
@@ -8110,7 +8308,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1783"
+NAME="AEN1829"
 >Module-Based</A
 ></H4
 ><P
@@ -8132,7 +8330,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1787"
+NAME="AEN1833"
 >Instance-Based</A
 ></H4
 ><P
@@ -8154,7 +8352,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1791"
+NAME="AEN1837"
 >Show Uncovered</A
 ></H4
 ><P
@@ -8175,7 +8373,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1795"
+NAME="AEN1841"
 >Show Covered</A
 ></H4
 ><P
@@ -8197,7 +8395,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1799"
+NAME="AEN1845"
 >Show Race Conditions</A
 ></H4
 ><P
@@ -8251,7 +8449,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1813"
+NAME="AEN1859"
 >Next Uncovered</A
 ></H4
 ><P
@@ -8285,7 +8483,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1820"
+NAME="AEN1866"
 >Previous Uncovered</A
 ></H4
 ><P
@@ -8318,7 +8516,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1827"
+NAME="AEN1873"
 >Show Current Selection</A
 ></H4
 ><P
@@ -8355,7 +8553,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1837"
+NAME="AEN1883"
 >Wizard...</A
 ></H4
 ><P
@@ -8371,7 +8569,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1841"
+NAME="AEN1887"
 >Preferences...</A
 ></H4
 ><P
@@ -8430,7 +8628,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1856"
+NAME="AEN1902"
 >Manual</A
 ></H4
 ><P
@@ -8442,7 +8640,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN1859"
+NAME="AEN1905"
 >About Covered</A
 ></H4
 ><P
@@ -10063,7 +10261,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2254"
+NAME="AEN2300"
 >Simple AND-type Combinational Subexpressions</A
 ></H4
 ><P
@@ -10142,7 +10340,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2279"
+NAME="AEN2325"
 >Simple OR-type Combinational Subexpressions</A
 ></H4
 ><P
@@ -10219,7 +10417,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2303"
+NAME="AEN2349"
 >Simple Other-type Combinational Subexpressions</A
 ></H4
 ><P
@@ -11514,7 +11712,7 @@ CLASS="EMPHASIS"
 >      <DIV
 CLASS="TABLE"
 ><A
-NAME="AEN2626"
+NAME="AEN2672"
 ></A
 ><P
 ><B
@@ -12170,7 +12368,7 @@ CLASS="EMPHASIS"
 ><DIV
 CLASS="PART"
 ><A
-NAME="AEN2797"
+NAME="AEN2843"
 ></A
 ><DIV
 CLASS="TITLEPAGE"
@@ -12218,7 +12416,7 @@ CLASS="QANDASET"
 ><DL
 ><DT
 >1. <A
-HREF="#AEN2806"
+HREF="#AEN2852"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12230,7 +12428,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >2. <A
-HREF="#AEN2813"
+HREF="#AEN2859"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12242,7 +12440,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >3. <A
-HREF="#AEN2843"
+HREF="#AEN2889"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12254,7 +12452,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >4. <A
-HREF="#AEN2851"
+HREF="#AEN2897"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12266,7 +12464,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >5. <A
-HREF="#AEN2857"
+HREF="#AEN2903"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12278,7 +12476,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >6. <A
-HREF="#AEN2863"
+HREF="#AEN2909"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12295,7 +12493,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2806"
+NAME="AEN2852"
 ></A
 ><B
 >1. </B
@@ -12331,7 +12529,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2813"
+NAME="AEN2859"
 ></A
 ><B
 >2. </B
@@ -12435,7 +12633,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2843"
+NAME="AEN2889"
 ></A
 ><B
 >3. </B
@@ -12476,7 +12674,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2851"
+NAME="AEN2897"
 ></A
 ><B
 >4. </B
@@ -12505,7 +12703,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2857"
+NAME="AEN2903"
 ></A
 ><B
 >5. </B
@@ -12534,7 +12732,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2863"
+NAME="AEN2909"
 ></A
 ><B
 >6. </B
@@ -12573,7 +12771,7 @@ CLASS="ANSWER"
 ><DIV
 CLASS="PART"
 ><A
-NAME="AEN2869"
+NAME="AEN2915"
 ></A
 ><DIV
 CLASS="TITLEPAGE"
@@ -12775,7 +12973,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2917"
+NAME="AEN2963"
 >Preamble</A
 ></H4
 ><P
@@ -12820,7 +13018,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2927"
+NAME="AEN2973"
 >Terms and Conditions for Copying, Distribution, and Modification</A
 ></H4
 ><P
@@ -13061,7 +13259,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2990"
+NAME="AEN3036"
 >Appendix: How to Apply These Terms to Your New Programs</A
 ></H4
 ><P
@@ -13073,7 +13271,7 @@ NAME="AEN2990"
         exclusion of warranty; and each file should have at least the ``copyright'' line and a pointer to where the full notice is found.
         </P
 ><A
-NAME="AEN2994"
+NAME="AEN3040"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
