@@ -41,12 +41,20 @@ void args_db_read( char** line );
 /*! \brief Reads user-specified message from specified line and stores information. */
 void message_db_read( char** line );
 
+/*! \brief Reads merged CDD information from specified line and stores information. */
+void merged_cdd_db_read( char** line );
+
 /*! \brief Deallocates all memory associated with the information section of a database file. */
 void info_dealloc();
 
 
 /*
  $Log$
+ Revision 1.8.4.2  2008/07/25 21:08:35  phase1geo
+ Modifying CDD file format to remove the potential for memory allocation assertion
+ errors due to a large number of merged CDD files.  Updating IV and Cver regressions per this
+ change.
+
  Revision 1.8.4.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
