@@ -43,6 +43,24 @@
           <tbody>
             <row>
               <entry>
+              -d <emphasis>directory</emphasis>
+              </entry>
+              <entry>
+              Directory to search for CDD files to include.  This option is used in conjunction with the -ext option 
+              which specifies the file extension to use for determining which files in the directory are CDD files.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -ext <emphasis>extension</emphasis>
+              </entry>
+              <entry>
+              Used in conjunction with the -d option.  If no -ext options are specified on the command-line, the 
+              default value of '.cdd' is used.  Note that a period (.) should be specified.
+              </entry>
+            </row>
+            <row>
+              <entry>
               -f <emphasis>filename</emphasis>
               </entry>
               <entry>
