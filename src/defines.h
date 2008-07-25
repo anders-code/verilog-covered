@@ -51,7 +51,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        15
+#define CDD_VERSION        16
 
 /*!
  This contains the header information specified when executing this tool.
@@ -255,6 +255,11 @@
  Specifies that the current coverage database line contains user-specified information
 */
 #define DB_TYPE_MESSAGE      11
+
+/*!
+ Specifies that the current line describes a CDD file that was merged into this CDD
+*/
+#define DB_TYPE_MERGED_CDD   12
 
 /*! @} */
 
@@ -2844,6 +2849,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.297.2.3  2008/07/25 21:08:35  phase1geo
+ Modifying CDD file format to remove the potential for memory allocation assertion
+ errors due to a large number of merged CDD files.  Updating IV and Cver regressions per this
+ change.
+
  Revision 1.297.2.2  2008/07/24 23:23:49  phase1geo
  Adding -required option to the rank command.
 

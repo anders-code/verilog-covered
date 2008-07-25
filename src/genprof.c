@@ -399,6 +399,7 @@ profiler profiles[NUM_PROFILES] = {
   {"info_db_read", NULL, 0, 0, 0, TRUE},
   {"args_db_read", NULL, 0, 0, 0, TRUE},
   {"message_db_read", NULL, 0, 0, 0, TRUE},
+  {"merged_cdd_db_read", NULL, 0, 0, 0, TRUE},
   {"info_dealloc", NULL, 0, 0, 0, TRUE},
   {"instance_display_tree_helper", NULL, 0, 0, 0, TRUE},
   {"instance_display_tree", NULL, 0, 0, 0, TRUE},

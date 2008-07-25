@@ -134,33 +134,12 @@ void info_db_write(
   /* Calculate vector element size */
   info_set_vector_elem_size();
 
-  fprintf( file, "%d %x %x %llu %s %d",
+  fprintf( file, "%d %x %x %llu %s\n",
            DB_TYPE_INFO,
            CDD_VERSION,
            info_suppl.all,
            num_timesteps,
-           leading_hierarchies[0],
-           merge_in_num );
-
-  /* Display any merge filename information */
-  if( leading_hier_num == merge_in_num ) {
-    str_link* strl = merge_in_head;
-    i = 0;
-    while( strl != NULL ) {
-      fprintf( file, " %s %s", strl->str, leading_hierarchies[i++] );
-      strl = strl->next;
-    }
-  } else {
-    str_link* strl = merge_in_head;
-    assert( (leading_hier_num - 1) == merge_in_num );
-    i = 1;
-    while( strl != NULL ) {
-      fprintf( file, " %s %s", strl->str, leading_hierarchies[i++] );
-      strl = strl->next;
-    }
-  }
-
-  fprintf( file, "\n" );
+           leading_hierarchies[0] );
 
   /* Display score arguments */
   fprintf( file, "%d %s", DB_TYPE_SCORE_ARGS, score_run_path );
@@ -176,6 +155,24 @@ void info_db_write(
     fprintf( file, "%d %s\n", DB_TYPE_MESSAGE, cdd_message );
   }
 
+  /* Display the merged CDD information, if there are any */
+  if( leading_hier_num == merge_in_num ) {
+    str_link* strl = merge_in_head;
+    i = 0;
+    while( strl != NULL ) {
+      fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+      strl = strl->next; 
+    }
+  } else { 
+    str_link* strl = merge_in_head;
+    assert( (leading_hier_num - 1) == merge_in_num );
+    i = 1; 
+    while( strl != NULL ) {
+      fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+      strl = strl->next;
+    }
+  }
+
   PROFILE_END;
 
 }
@@ -189,18 +186,15 @@ void info_db_read(
   /*@out@*/ char** line  /*!< Pointer to string containing information line to parse */
 ) { PROFILE(INFO_DB_READ);
 
-  int          chars_read;     /* Number of characters scanned in from this line */
-  uint32       scored;         /* Indicates if this file contains scored data */
-  unsigned int version;        /* Contains CDD version from file */
-  int          mnum;           /* Temporary merge num */
-  char         tmp1[4096];     /* Temporary string */
-  char         tmp2[4096];     /* Temporary string */
-  int          i;              /* Loop iterator */
+  int          chars_read;  /* Number of characters scanned in from this line */
+  uint32       scored;      /* Indicates if this file contains scored data */
+  unsigned int version;     /* Contains CDD version from file */
+  char         tmp[4096];   /* Temporary string */
 
   /* Save off original scored value */
   scored = info_suppl.part.scored;
 
-  if( sscanf( *line, "%x %x %llu %s %d%n", &version, &(info_suppl.all), &num_timesteps, tmp1, &mnum, &chars_read ) == 5 ) {
+  if( sscanf( *line, "%x%n", &version, &chars_read ) == 1 ) {
 
     *line = *line + chars_read;
 
@@ -209,46 +203,30 @@ void info_db_read(
       Throw 0;
     }
 
-    /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
-    if( (leading_hier_num > 0) && (strcmp( leading_hierarchies[0], tmp1 ) != 0) ) {
-      leading_hiers_differ = TRUE;
-    }
+    if( sscanf( *line, "%x %llu %s%n", &(info_suppl.all), &num_timesteps, tmp, &chars_read ) == 3 ) {
 
-    /* Assign this hierarchy to the leading hierarchies array */
-    leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
-    leading_hierarchies[leading_hier_num] = strdup_safe( tmp1 );
-    leading_hier_num++;
+      *line = *line + chars_read;
 
-    for( i=0; i<mnum; i++ ) {
-
-      if( sscanf( *line, "%s %s%n", tmp1, tmp2, &chars_read ) == 2 ) {
-
-        *line = *line + chars_read;
-
-        /* Add merged file */
-        str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
-        merge_in_num++;
-
-        /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
-        if( strcmp( leading_hierarchies[0], tmp2 ) != 0 ) {
-          leading_hiers_differ = TRUE;
-        }
-
-        /* Add its hierarchy */
-        leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
-        leading_hierarchies[leading_hier_num] = strdup_safe( tmp2 );
-        leading_hier_num++;
-
-      } else {
-        print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-        Throw 0;
+      /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
+      if( (leading_hier_num > 0) && (strcmp( leading_hierarchies[0], tmp ) != 0) ) {
+        leading_hiers_differ = TRUE;
       }
 
-    }
+      /* Assign this hierarchy to the leading hierarchies array */
+      leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
+      leading_hierarchies[leading_hier_num] = strdup_safe( tmp );
+      leading_hier_num++;
 
-    /* Set scored flag to correct value */
-    if( info_suppl.part.scored == 0 ) {
-      info_suppl.part.scored = scored;
+      /* Set scored flag to correct value */
+      if( info_suppl.part.scored == 0 ) {
+        info_suppl.part.scored = scored;
+      }
+
+    } else {
+
+      print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+
     }
 
   } else {
@@ -271,8 +249,8 @@ void args_db_read(
   char** line  /*!< Pointer to string containing information line to parse */
 ) { PROFILE(ARGS_DB_READ);
 
-  int  chars_read;     /* Number of characters scanned in from this line */
-  char tmp1[4096];     /* Temporary string */
+  int  chars_read;  /* Number of characters scanned in from this line */
+  char tmp1[4096];  /* Temporary string */
 
   if( sscanf( *line, "%s%n", score_run_path, &chars_read ) == 1 ) {
 
@@ -307,6 +285,46 @@ void message_db_read(
   /* All we need to do is copy the message */
   if( strlen( *line + 1 ) > 0 ) {
     cdd_message = strdup_safe( *line + 1 );
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Parses given line for merged CDD information and stores this information in the appropriate global variables.
+*/
+void merged_cdd_db_read(
+  char** line  /*!< Pointer to string containing merged CDD line to parse */
+) { PROFILE(MERGED_CDD_DB_READ);
+
+  char tmp1[4096];  /* Temporary string */
+  char tmp2[4096];  /* Temporary string */
+  int  chars_read;  /* Number of characters read */
+
+  if( sscanf( *line, "%s %s%n", tmp1, tmp2, &chars_read ) == 2 ) {
+
+    *line = *line + chars_read;
+
+    /* Add merged file */
+    str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
+    merge_in_num++;
+
+    /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
+    if( strcmp( leading_hierarchies[0], tmp2 ) != 0 ) {
+      leading_hiers_differ = TRUE;
+    }
+
+    /* Add its hierarchy */
+    leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
+    leading_hierarchies[leading_hier_num] = strdup_safe( tmp2 );
+    leading_hier_num++;
+
+  } else {
+
+    print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+
   }
 
   PROFILE_END;
@@ -355,6 +373,11 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.32.2.4  2008/07/25 21:08:35  phase1geo
+ Modifying CDD file format to remove the potential for memory allocation assertion
+ errors due to a large number of merged CDD files.  Updating IV and Cver regressions per this
+ change.
+
  Revision 1.32.2.3  2008/07/23 05:10:11  phase1geo
  Adding -d and -ext options to rank and merge commands.  Updated necessary files
  per this change and updated regressions.

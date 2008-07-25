@@ -452,6 +452,13 @@ void db_read(
  
               /* Parse rest of line for user-supplied message */
               message_db_read( &rest_line );
+
+            } else if( type == DB_TYPE_MERGED_CDD ) {
+
+              assert( !merge_mode );
+
+              /* Parse rest of line for merged CDD information */
+              merged_cdd_db_read( &rest_line );
     
             } else if( type == DB_TYPE_SIGNAL ) {
   
@@ -2908,6 +2915,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.309.2.2  2008/07/25 21:08:35  phase1geo
+ Modifying CDD file format to remove the potential for memory allocation assertion
+ errors due to a large number of merged CDD files.  Updating IV and Cver regressions per this
+ change.
+
  Revision 1.309.2.1  2008/07/10 22:43:50  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
