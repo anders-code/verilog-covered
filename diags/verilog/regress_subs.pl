@@ -216,6 +216,7 @@ sub checkTest {
 
   my( $passed ) = 0;
   my( $failed ) = 0;
+  my( $retval ) = 0;
   
   # Open report results file if it currently exists and accumulate info.
   if( open( RPT_RESULTS, "${RPT_OUTPUT}" ) > 0 ) {
@@ -342,6 +343,8 @@ sub checkTest {
       print "  Checking output results         -- FAILED\n";
       print RPT_FAILED "${test}\n";
       $failed++;
+      $retval = 1;
+
     } else {
 
       # Check to make sure that a tmp* file does not exist
@@ -370,6 +373,8 @@ sub checkTest {
     close( RPT_FAILED  );
 
   }
+
+  return $retval;
  
 }
 
