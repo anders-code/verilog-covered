@@ -11,27 +11,29 @@ require "../verilog/regress_subs.pl";
 # Run all diagnostics
 if( $USE_VPI == 0 ) {
 
-  &run( "merge5a" );
-  &run( "merge5b" );
-  &run( "merge5c" );
-  &run( "merge5d" );
-  &run( "merge5e" );
-  &run( "merge5f" );
-  &run( "merge5g" );
+  my( $retval ) = 0;
+
+  $retval = &run( "merge5a" ) || $retval;
+  $retval = &run( "merge5b" ) || $retval;
+  $retval = &run( "merge5c" ) || $retval;
+  $retval = &run( "merge5d" ) || $retval;
+  $retval = &run( "merge5e" ) || $retval;
+  $retval = &run( "merge5f" ) || $retval;
+  $retval = &run( "merge5g" ) || $retval;
 
   # Run the rank command (Note that this is NOT an error)
   &runRankCommand( "-o merge5.err merge5a.cdd merge5b.cdd merge5c.cdd merge5d.cdd merge5e.cdd merge5f.cdd merge5g.cdd" );
-  #&runRankCommand( "-o /ptmp/devel/covered/diags/verilog/merge5.err /ptmp/devel/covered/diags/verilog/merge5a.cdd /ptmp/devel/covered/diags/verilog/merge5b.cdd /ptmp/devel/covered/diags/verilog/merge5c.cdd /ptmp/devel/covered/diags/verilog/merge5d.cdd /ptmp/devel/covered/diags/verilog/merge5e.cdd /ptmp/devel/covered/diags/verilog/merge5f.cdd /ptmp/devel/covered/diags/verilog/merge5g.cdd" );
 
   # Check the difference and remove the CDD files, if necessary
   system( "touch merge5.cdd" ) && die;
-  &checkTest( "merge5", 8, 1 );
+  &checkTest( "merge5", (($retval == 0) ? 8 : 1), 1 );
 
 }
 
 sub run {
 
-  my( $bname ) = $_[0];
+  my( $bname )  = $_[0];
+  my( $retval ) = 0;
 
   # Simulate the design
   if( $SIMULATOR eq "IV" ) {
@@ -58,10 +60,12 @@ sub run {
 
   # Check that the CDD file matches
   if( $DUMPTYPE eq "VCD" ) {
-    &checkTest( $bname, 0, 0 );
+    $retval = &checkTest( $bname, 0, 0 );
   } else {
-    &checkTest( $bname, 0, 5 );
+    $retval = &checkTest( $bname, 0, 5 );
   }
+
+  return $retval;
 
 }
 
