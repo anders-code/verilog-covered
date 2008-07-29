@@ -774,17 +774,31 @@ HREF="#SECTION.GUI.PREF.REPORT"
 HREF="#CHAPTER.GUI.WIZARD"
 >Navigating the Wizard Window</A
 ></DT
+><DT
+>27. <A
+HREF="#CHAPTER.GUI.NEW"
+>Creating a New CDD</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="#SECTION.GUI.NEW.SELECT"
+>Navigating the New CDD Creation Option Selection Window</A
+></DT
+></DL
+></DD
 ></DL
 ></DD
 ><DT
 >V. <A
-HREF="#AEN2843"
+HREF="#AEN2862"
 >FAQ</A
 ></DT
 ><DD
 ><DL
 ><DT
->27. <A
+>28. <A
 HREF="#CHAPTER.FAQ"
 >FAQ</A
 ></DT
@@ -792,13 +806,13 @@ HREF="#CHAPTER.FAQ"
 ></DD
 ><DT
 >VI. <A
-HREF="#AEN2915"
+HREF="#AEN2934"
 >Epilogue</A
 ></DT
 ><DD
 ><DL
 ><DT
->28. <A
+>29. <A
 HREF="#CHAPTER.EPILOGUE"
 >Epilogue</A
 ></DT
@@ -1097,6 +1111,11 @@ HREF="#FIGURE.GUI.PREF.REPORT"
 >26-1. <A
 HREF="#FIGURE.GUI.WIZARD"
 >Covered GUI Wizard Window</A
+></DT
+><DT
+>27-1. <A
+HREF="#FIGURE.GUI.NEW.SELECT"
+>CDD Creation Option Selection Page</A
 ></DT
 ></DL
 ></DIV
@@ -7661,6 +7680,11 @@ HREF="#CHAPTER.GUI.PREFERENCES"
 HREF="#CHAPTER.GUI.WIZARD"
 >Navigating the Wizard Window</A
 ></DT
+><DT
+>27. <A
+HREF="#CHAPTER.GUI.NEW"
+>Creating a New CDD</A
+></DT
 ></DL
 ></DIV
 ></DIV
@@ -12364,11 +12388,97 @@ CLASS="EMPHASIS"
   on the wizard window is clicked or when the user closes the window with the window manager's "X" button.
   </P
 ></DIV
+><DIV
+CLASS="CHAPTER"
+><HR><H1
+><A
+NAME="CHAPTER.GUI.NEW"
+></A
+>Chapter 27. Creating a New CDD</H1
+><P
+>  Creating a new CDD file from the GUI can be accomplished by either clicking on the "Generate New CDD File" button in
+  the Wizard window (see <A
+HREF="#CHAPTER.GUI.WIZARD"
+>Navigating the Wizard Window</A
+> for more details on this window), by selecting the
+  <FONT
+COLOR="RED"
+>File -&#62; Generate -&#62; New CDD...</FONT
+> menu option, or using the shortcut "Shift-Control-N".  This file creation
+  "wizard" allows the user to create a new CDD file that can be opened/merged into the GUI for coverage analysis.  The
+  methods that the CDD creation GUI allows for creating a new CDD file are quite flexible and are completely compatible
+  with the command-line commands.
+  </P
+><P
+>  The following subsections describe the various windows used to create a GUI.  Note that the CDD creation wizard
+  uses several "pages" to describe the various options to set for creating a new CDD file, using "Back" and "Next" 
+  buttons on each page for navigation.  Clicking on the "Back" button will not cause previously filled in pages to be
+  reverted to their default values but rather will remain populated with the user's data. Similarly, if a page has been
+  filled in with data and the "Back" button is clicked and then the "Next" button is clicked, the page contents are
+  retained.  The only way to clear out fields is to click the "Cancel" button at the bottom of each page and startup
+  the CDD creation wizard again.
+  </P
+><P
+>  Clicking the "Cancel" button at any time will cause the CDD creation wizard to immediately exit.  Clicking on the
+  "Help" button at any time will bring up the user documentation for the current page (context sensitive help).
+  </P
+><DIV
+CLASS="SECT1"
+><HR><H2
+CLASS="SECT1"
+><A
+NAME="SECTION.GUI.NEW.SELECT"
+>Navigating the New CDD Creation Option Selection Window</A
+></H2
+><P
+>    Figure <A
+HREF="#FIGURE.GUI.NEW.SELECT"
+>CDD Creation Option Selection Page</A
+> shows the look of this page of the CDD creation wizard.
+    </P
+><P
+>      <DIV
+CLASS="FIGURE"
+><A
+NAME="FIGURE.GUI.NEW.SELECT"
+></A
+><P
+><B
+>Figure 27-1. CDD Creation Option Selection Page</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="img/new_cdd_selection.gif"></P
+></DIV
+></DIV
+>
+    </P
+><P
+>    The first page of the CDD creation window allows the user to select whether all options should be interactiely
+    selected within the GUI or if a file should be read in which contains command-line options to the score command
+    to use.  If the latter is chosen, the contents of that file are read in and are populated in the GUI, but the
+    CDD creation wizard will continue in the same fashion as the first option, allowing the user to change, remove or
+    add to the options found in that file.
+    </P
+><P
+>    If the "Create CDD by interactively selecting options" entry is currently selected and the user wishes to not use
+    a command-line file to populate the rest of the CDD creation pages, simply click on the "Next" button at the
+    bottom of the page to continue.  If the "Create CDD by using option file" entry is currently selected, the user
+    must either type a valid filename or select one by clicking the "Browse..." button to the right of the file entry
+    area and select a valid file.  Once a valid filename is selected, the "Next" button will be enabled and the user
+    may then click it to continue to the next page.  Note that any filename can be selected (whether it's a valid
+    command file or not).  Only valid score command options found in that file are used to populate the wizard entries.
+    No error message will be displayed if the file does not contain this information.
+    </P
+></DIV
+></DIV
 ></DIV
 ><DIV
 CLASS="PART"
 ><A
-NAME="AEN2843"
+NAME="AEN2862"
 ></A
 ><DIV
 CLASS="TITLEPAGE"
@@ -12383,7 +12493,7 @@ CLASS="TOC"
 >Table of Contents</B
 ></DT
 ><DT
->27. <A
+>28. <A
 HREF="#CHAPTER.FAQ"
 >FAQ</A
 ></DT
@@ -12396,7 +12506,7 @@ CLASS="CHAPTER"
 ><A
 NAME="CHAPTER.FAQ"
 ></A
->Chapter 27. FAQ</H1
+>Chapter 28. FAQ</H1
 ><P
 >  This page contains a list of accummulated Frequently Asked Questions. If you are having difficulties using Covered or have questions that are not answered in the 
   User's Guide, please check this list for answers. If you do not find the information that you are looking for in the User's Guide or this FAQ, please send an e-mail 
@@ -12416,7 +12526,7 @@ CLASS="QANDASET"
 ><DL
 ><DT
 >1. <A
-HREF="#AEN2852"
+HREF="#AEN2871"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12428,7 +12538,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >2. <A
-HREF="#AEN2859"
+HREF="#AEN2878"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12440,7 +12550,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >3. <A
-HREF="#AEN2889"
+HREF="#AEN2908"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12452,7 +12562,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >4. <A
-HREF="#AEN2897"
+HREF="#AEN2916"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12464,7 +12574,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >5. <A
-HREF="#AEN2903"
+HREF="#AEN2922"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12476,7 +12586,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >6. <A
-HREF="#AEN2909"
+HREF="#AEN2928"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12493,7 +12603,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2852"
+NAME="AEN2871"
 ></A
 ><B
 >1. </B
@@ -12529,7 +12639,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2859"
+NAME="AEN2878"
 ></A
 ><B
 >2. </B
@@ -12633,7 +12743,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2889"
+NAME="AEN2908"
 ></A
 ><B
 >3. </B
@@ -12674,7 +12784,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2897"
+NAME="AEN2916"
 ></A
 ><B
 >4. </B
@@ -12703,7 +12813,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2903"
+NAME="AEN2922"
 ></A
 ><B
 >5. </B
@@ -12732,7 +12842,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2909"
+NAME="AEN2928"
 ></A
 ><B
 >6. </B
@@ -12771,7 +12881,7 @@ CLASS="ANSWER"
 ><DIV
 CLASS="PART"
 ><A
-NAME="AEN2915"
+NAME="AEN2934"
 ></A
 ><DIV
 CLASS="TITLEPAGE"
@@ -12786,7 +12896,7 @@ CLASS="TOC"
 >Table of Contents</B
 ></DT
 ><DT
->28. <A
+>29. <A
 HREF="#CHAPTER.EPILOGUE"
 >Epilogue</A
 ></DT
@@ -12799,7 +12909,7 @@ CLASS="CHAPTER"
 ><A
 NAME="CHAPTER.EPILOGUE"
 ></A
->Chapter 28. Epilogue</H1
+>Chapter 29. Epilogue</H1
 ><DIV
 CLASS="SECT1"
 ><H2
@@ -12973,7 +13083,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2963"
+NAME="AEN2982"
 >Preamble</A
 ></H4
 ><P
@@ -13018,7 +13128,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2973"
+NAME="AEN2992"
 >Terms and Conditions for Copying, Distribution, and Modification</A
 ></H4
 ><P
@@ -13259,7 +13369,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN3036"
+NAME="AEN3055"
 >Appendix: How to Apply These Terms to Your New Programs</A
 ></H4
 ><P
@@ -13271,7 +13381,7 @@ NAME="AEN3036"
         exclusion of warranty; and each file should have at least the ``copyright'' line and a pointer to where the full notice is found.
         </P
 ><A
-NAME="AEN3040"
+NAME="AEN3059"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"

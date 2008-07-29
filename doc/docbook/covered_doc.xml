@@ -27,6 +27,7 @@
 <!ENTITY cguireportgen   SYSTEM "chapter_gui_report_gen.xml">
 <!ENTITY cguipreferences SYSTEM "chapter_gui_preferences.xml">
 <!ENTITY cguiwizard      SYSTEM "chapter_gui_wizard.xml">
+<!ENTITY cguinew         SYSTEM "chapter_gui_new.xml">
 <!ENTITY cfaq            SYSTEM "chapter_faq.xml">
 <!ENTITY cepilogue       SYSTEM "chapter_epilogue.xml">
 ]>
@@ -92,6 +93,7 @@
     &cguireportgen;
     &cguipreferences;
     &cguiwizard;
+    &cguinew;
   </part>
   
   <part>

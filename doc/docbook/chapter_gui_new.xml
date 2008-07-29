@@ -1,0 +1,54 @@
+<chapter id="chapter.gui.new" xreflabel="Creating a New CDD">
+  <title>Creating a New CDD</title>
+  <para>
+  Creating a new CDD file from the GUI can be accomplished by either clicking on the "Generate New CDD File" button in
+  the Wizard window (see <xref linkend="chapter.gui.wizard"> for more details on this window), by selecting the
+  <code>File -> Generate -> New CDD...</code> menu option, or using the shortcut "Shift-Control-N".  This file creation
+  "wizard" allows the user to create a new CDD file that can be opened/merged into the GUI for coverage analysis.  The
+  methods that the CDD creation GUI allows for creating a new CDD file are quite flexible and are completely compatible
+  with the command-line commands.
+  </para>
+  <para>
+  The following subsections describe the various windows used to create a GUI.  Note that the CDD creation wizard
+  uses several "pages" to describe the various options to set for creating a new CDD file, using "Back" and "Next" 
+  buttons on each page for navigation.  Clicking on the "Back" button will not cause previously filled in pages to be
+  reverted to their default values but rather will remain populated with the user's data. Similarly, if a page has been
+  filled in with data and the "Back" button is clicked and then the "Next" button is clicked, the page contents are
+  retained.  The only way to clear out fields is to click the "Cancel" button at the bottom of each page and startup
+  the CDD creation wizard again.
+  </para>
+  <para>
+  Clicking the "Cancel" button at any time will cause the CDD creation wizard to immediately exit.  Clicking on the
+  "Help" button at any time will bring up the user documentation for the current page (context sensitive help).
+  </para>
+  
+  <sect1 id="section.gui.new.select" xreflabel="Navigating the New CDD Creation Option Selection Page">
+    <title>Navigating the New CDD Creation Option Selection Window</title>
+    <para>
+    Figure <xref linkend="figure.gui.new.select"> shows the look of this page of the CDD creation wizard.
+    </para>
+    <para>
+      <figure id="figure.gui.new.select" xreflabel="CDD Creation Option Selection Page">
+        <title>CDD Creation Option Selection Page</title>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_selection.gif" format="GIF"></imageobject></mediaobject>
+      </figure>
+    </para>
+    <para>
+    The first page of the CDD creation window allows the user to select whether all options should be interactiely
+    selected within the GUI or if a file should be read in which contains command-line options to the score command
+    to use.  If the latter is chosen, the contents of that file are read in and are populated in the GUI, but the
+    CDD creation wizard will continue in the same fashion as the first option, allowing the user to change, remove or
+    add to the options found in that file.
+    </para>
+    <para>
+    If the "Create CDD by interactively selecting options" entry is currently selected and the user wishes to not use
+    a command-line file to populate the rest of the CDD creation pages, simply click on the "Next" button at the
+    bottom of the page to continue.  If the "Create CDD by using option file" entry is currently selected, the user
+    must either type a valid filename or select one by clicking the "Browse..." button to the right of the file entry
+    area and select a valid file.  Once a valid filename is selected, the "Next" button will be enabled and the user
+    may then click it to continue to the next page.  Note that any filename can be selected (whether it's a valid
+    command file or not).  Only valid score command options found in that file are used to populate the wizard entries.
+    No error message will be displayed if the file does not contain this information.
+    </para>
+  </sect1>
+</chapter>
