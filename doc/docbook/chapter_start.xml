@@ -117,7 +117,7 @@
     </sect2>
   </sect1>
   
-  <sect1>
+  <sect1 id="section.vpi" xreflabel="What is needed for VPI scoring?">
     <title>What is needed for VPI scoring?</title>
     <para>
     After Covered has been configured and built to include the creation of a VPI loadable module or shared object file (see 
