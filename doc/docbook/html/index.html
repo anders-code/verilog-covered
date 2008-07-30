@@ -272,7 +272,7 @@ HREF="#AEN642"
 ></DT
 ><DT
 ><A
-HREF="#AEN661"
+HREF="#SECTION.VPI"
 >What is needed for VPI scoring?</A
 ></DT
 ></DL
@@ -786,13 +786,28 @@ HREF="#CHAPTER.GUI.NEW"
 HREF="#SECTION.GUI.NEW.SELECT"
 >Navigating the New CDD Creation Option Selection Window</A
 ></DT
+><DT
+><A
+HREF="#SECTION.GUI.NEW.NAME"
+>Navigating the New CDD Creation CDD Name Page</A
+></DT
+><DT
+><A
+HREF="#SECTION.GUI.NEW.TYPE"
+>CDD Creation Type Page</A
+></DT
+><DT
+><A
+HREF="#SECTION.GUI.NEW.OPTIONS1"
+>CDD Creation Options1 Page</A
+></DT
 ></DL
 ></DD
 ></DL
 ></DD
 ><DT
 >V. <A
-HREF="#AEN2862"
+HREF="#AEN2982"
 >FAQ</A
 ></DT
 ><DD
@@ -806,7 +821,7 @@ HREF="#CHAPTER.FAQ"
 ></DD
 ><DT
 >VI. <A
-HREF="#AEN2934"
+HREF="#AEN3054"
 >Epilogue</A
 ></DT
 ><DD
@@ -1116,6 +1131,21 @@ HREF="#FIGURE.GUI.WIZARD"
 >27-1. <A
 HREF="#FIGURE.GUI.NEW.SELECT"
 >CDD Creation Option Selection Page</A
+></DT
+><DT
+>27-2. <A
+HREF="#FIGURE.GUI.NEW.NAME"
+>CDD Creation Output Name Page</A
+></DT
+><DT
+>27-3. <A
+HREF="#FIGURE.GUI.NEW.TYPE"
+>CDD Creation Type Page</A
+></DT
+><DT
+>27-4. <A
+HREF="#FIGURE.GUI.NEW.OPTIONS1"
+>CDD Creation Options1 Page</A
 ></DT
 ></DL
 ></DIV
@@ -3590,7 +3620,7 @@ CLASS="SECT1"
 ><HR><H2
 CLASS="SECT1"
 ><A
-NAME="AEN661"
+NAME="SECTION.VPI"
 >What is needed for VPI scoring?</A
 ></H2
 ><P
@@ -12463,22 +12493,479 @@ SRC="img/new_cdd_selection.gif"></P
     add to the options found in that file.
     </P
 ><P
->    If the "Create CDD by interactively selecting options" entry is currently selected and the user wishes to not use
-    a command-line file to populate the rest of the CDD creation pages, simply click on the "Next" button at the
-    bottom of the page to continue.  If the "Create CDD by using option file" entry is currently selected, the user
-    must either type a valid filename or select one by clicking the "Browse..." button to the right of the file entry
-    area and select a valid file.  Once a valid filename is selected, the "Next" button will be enabled and the user
-    may then click it to continue to the next page.  Note that any filename can be selected (whether it's a valid
-    command file or not).  Only valid score command options found in that file are used to populate the wizard entries.
-    No error message will be displayed if the file does not contain this information.
+>    If the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Create CDD by interactively selecting options</B
+></SPAN
+> entry is currently selected 
+    and the user wishes to not use a command-line file to populate the rest of the CDD creation pages, simply click on 
+    the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Next</B
+></SPAN
+> button at the bottom of the page to continue.  If the 
+    <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Create CDD by using option file</B
+></SPAN
+> entry is currently selected, the user must either 
+    type a valid filename or select one by clicking the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Browse...</B
+></SPAN
+> button to the right 
+    of the file entry area and select a valid file. Once a valid filename is selected, the 
+    <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Next</B
+></SPAN
+> button will be enabled and the user may then click it to continue to the next 
+    page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid score command 
+    options found in that file are used to populate the wizard entries. No error message will be displayed if the file 
+    does not contain this information.
     </P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H2
+CLASS="SECT1"
+><A
+NAME="SECTION.GUI.NEW.NAME"
+>Navigating the New CDD Creation CDD Name Page</A
+></H2
+><P
+>    This page is used to specify the name of the output CDD file.  Figure <A
+HREF="#FIGURE.GUI.NEW.NAME"
+>CDD Creation Output Name Page</A
+> shows 
+    the display of this page.
+    </P
+><P
+>      <DIV
+CLASS="FIGURE"
+><A
+NAME="FIGURE.GUI.NEW.NAME"
+></A
+><P
+><B
+>Figure 27-2. CDD Creation Output Name Page</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="img/new_cdd_name.gif"></P
+></DIV
+></DIV
+>
+    </P
+><P
+>    The output CDD name must be specified and, as such, the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Next</B
+></SPAN
+> button is disabled
+    until a name is specified in the entry field.  Any filename is allowed.  If the user wishes to make use of a
+    "Save As" style window for creating a filename, click the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Browse...</B
+></SPAN
+> button and use
+    the window for creating a filename. When the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Save</B
+></SPAN
+> button is clicked, the specified
+    filename is placed in the entry field and the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Next</B
+></SPAN
+> button is enabled.
+    </P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H2
+CLASS="SECT1"
+><A
+NAME="SECTION.GUI.NEW.TYPE"
+>CDD Creation Type Page</A
+></H2
+><P
+>    This page is used to specify what type of CDD file to create. The three types CDD files that can be created are:
+    </P
+><P
+>      <P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>          An unscored CDD file that was created by parsing the design. This CDD file can later be scored via a VCD or
+          LXT dumpfile. 
+          </P
+><P
+>          This option can be chosen by selecting the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Parse Design Only</B
+></SPAN
+> radiobutton.
+          </P
+></LI
+><LI
+><P
+>          A scored CDD file created from the design and from a previously created VCD or LXT dumpfile. 
+          </P
+><P
+>          This option can be chosen by selecting the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Dumpfile:</B
+></SPAN
+> option. If this option 
+          is chosen, a VCD or LXT dumpfile is required to be specified before the next option page can be used. Either 
+          specify this dumpfile name by typing in an existing dumpfile name in the entry field or use the 
+          <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Browse...</B
+></SPAN
+> button to select a dumpfile.
+          </P
+></LI
+><LI
+><P
+>          An unscored CDD file, a top-level Verilog file containing a PLI call to run Covered in VPI mode, and a PLI
+          tab file that can be used by some simulators for compilation purposes. See <A
+HREF="#SECTION.VPI"
+>What is needed for VPI scoring?</A
+> for
+          details on how to use these files for simulation/scoring purposes. 
+          </P
+><P
+>          This option can be chosen by selecting the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>VPI Module:</B
+></SPAN
+> radiobutton. If this 
+          option is chosen, the name specified will be the name of the module created that is used to allow Covered
+          to run in VPI mode within a simulation.
+          </P
+><P
+>          In addition to providing a module name when this option is selected, the simulator type that will be used
+          when scoring can be specified as well as the timescale information that can, optionally, be specified at the
+          top of the generated module.
+          </P
+></LI
+></OL
+>
+    </P
+><P
+>    Figure <A
+HREF="#FIGURE.GUI.NEW.TYPE"
+>CDD Creation Type Page</A
+> displays the contents of this page. When all necessary fields have been
+    specified, the <SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Next</B
+></SPAN
+> button will be enabled and clicking it will lead to the next
+    option page.
+    </P
+><P
+>      <DIV
+CLASS="FIGURE"
+><A
+NAME="FIGURE.GUI.NEW.TYPE"
+></A
+><P
+><B
+>Figure 27-3. CDD Creation Type Page</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="img/new_cdd_type.gif"></P
+></DIV
+></DIV
+>
+    </P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H2
+CLASS="SECT1"
+><A
+NAME="SECTION.GUI.NEW.OPTIONS1"
+>CDD Creation Options1 Page</A
+></H2
+><P
+>    This page is used to specify several options to Covered's score command. See figure 
+    <A
+HREF="#FIGURE.GUI.NEW.OPTIONS1"
+>CDD Creation Options1 Page</A
+> for the layout of this window.
+    </P
+><P
+>      <DIV
+CLASS="FIGURE"
+><A
+NAME="FIGURE.GUI.NEW.OPTIONS1"
+></A
+><P
+><B
+>Figure 27-4. CDD Creation Options1 Page</B
+></P
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="img/new_cdd_options.gif"></P
+></DIV
+></DIV
+>
+    </P
+><P
+>    The following is a description about each of the CDD creation options available on this page.
+    </P
+><DIV
+CLASS="SECT2"
+><HR><H3
+CLASS="SECT2"
+><A
+NAME="SECTION.GUI.NEW.OPTIONS1.GENERAL"
+>General Options</A
+></H3
+><P
+>        <P
+></P
+><UL
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Toplevel module name</B
+></SPAN
+></P
+><P
+>Required? <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Yes</I
+></SPAN
+></P
+><P
+>            TBD
+            </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Root pathname</B
+></SPAN
+></P
+><P
+>Required? <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>No</I
+></SPAN
+></P
+><P
+>            TBD
+            </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Delay Type</B
+></SPAN
+></P
+><P
+>            TBD
+            </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Race Condition Action</B
+></SPAN
+></P
+><P
+>            TBD
+            </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Use embedded race condition pragmas</B
+></SPAN
+></P
+><P
+>            TBD
+            </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Default Verilog Generation</B
+></SPAN
+></P
+><P
+>            TBD
+            </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Include OVL Assertions</B
+></SPAN
+></P
+><P
+>            TBD
+            </P
+></LI
+></UL
+>
+      </P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H3
+CLASS="SECT2"
+><A
+NAME="SECTION.GUI.NEW.OPTIONS1.EXCLUDE"
+>Exclude Options</A
+></H3
+><P
+>        <P
+></P
+><UL
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Exclude Always Blocks</B
+></SPAN
+></P
+><P
+>            TBD
+            </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Exclude Assign Blocks</B
+></SPAN
+></P
+><P
+>            TBD
+            </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Exclude Initial Blocks</B
+></SPAN
+></P
+><P
+>            TBD
+            </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Exclude Final Blocks</B
+></SPAN
+></P
+><P
+>            TBD
+            </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="bold"
+><B
+CLASS="EMPHASIS"
+>Exclude Within Pragma</B
+></SPAN
+></P
+><P
+>            TBD
+            </P
+></LI
+></UL
+>
+      </P
+></DIV
 ></DIV
 ></DIV
 ></DIV
 ><DIV
 CLASS="PART"
 ><A
-NAME="AEN2862"
+NAME="AEN2982"
 ></A
 ><DIV
 CLASS="TITLEPAGE"
@@ -12526,7 +13013,7 @@ CLASS="QANDASET"
 ><DL
 ><DT
 >1. <A
-HREF="#AEN2871"
+HREF="#AEN2991"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12538,7 +13025,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >2. <A
-HREF="#AEN2878"
+HREF="#AEN2998"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12550,7 +13037,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >3. <A
-HREF="#AEN2908"
+HREF="#AEN3028"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12562,7 +13049,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >4. <A
-HREF="#AEN2916"
+HREF="#AEN3036"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12574,7 +13061,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >5. <A
-HREF="#AEN2922"
+HREF="#AEN3042"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12586,7 +13073,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DT
 >6. <A
-HREF="#AEN2928"
+HREF="#AEN3048"
 >          <SPAN
 CLASS="bold"
 ><B
@@ -12603,7 +13090,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2871"
+NAME="AEN2991"
 ></A
 ><B
 >1. </B
@@ -12639,7 +13126,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2878"
+NAME="AEN2998"
 ></A
 ><B
 >2. </B
@@ -12743,7 +13230,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2908"
+NAME="AEN3028"
 ></A
 ><B
 >3. </B
@@ -12784,7 +13271,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2916"
+NAME="AEN3036"
 ></A
 ><B
 >4. </B
@@ -12813,7 +13300,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2922"
+NAME="AEN3042"
 ></A
 ><B
 >5. </B
@@ -12842,7 +13329,7 @@ CLASS="QANDAENTRY"
 CLASS="QUESTION"
 ><P
 ><A
-NAME="AEN2928"
+NAME="AEN3048"
 ></A
 ><B
 >6. </B
@@ -12881,7 +13368,7 @@ CLASS="ANSWER"
 ><DIV
 CLASS="PART"
 ><A
-NAME="AEN2934"
+NAME="AEN3054"
 ></A
 ><DIV
 CLASS="TITLEPAGE"
@@ -13083,7 +13570,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2982"
+NAME="AEN3102"
 >Preamble</A
 ></H4
 ><P
@@ -13128,7 +13615,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN2992"
+NAME="AEN3112"
 >Terms and Conditions for Copying, Distribution, and Modification</A
 ></H4
 ><P
@@ -13369,7 +13856,7 @@ CLASS="SECT3"
 ><HR><H4
 CLASS="SECT3"
 ><A
-NAME="AEN3055"
+NAME="AEN3175"
 >Appendix: How to Apply These Terms to Your New Programs</A
 ></H4
 ><P
@@ -13381,7 +13868,7 @@ NAME="AEN3055"
         exclusion of warranty; and each file should have at least the ``copyright'' line and a pointer to where the full notice is found.
         </P
 ><A
-NAME="AEN3059"
+NAME="AEN3179"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
