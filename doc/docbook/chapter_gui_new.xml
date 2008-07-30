@@ -41,14 +41,203 @@
     add to the options found in that file.
     </para>
     <para>
-    If the "Create CDD by interactively selecting options" entry is currently selected and the user wishes to not use
-    a command-line file to populate the rest of the CDD creation pages, simply click on the "Next" button at the
-    bottom of the page to continue.  If the "Create CDD by using option file" entry is currently selected, the user
-    must either type a valid filename or select one by clicking the "Browse..." button to the right of the file entry
-    area and select a valid file.  Once a valid filename is selected, the "Next" button will be enabled and the user
-    may then click it to continue to the next page.  Note that any filename can be selected (whether it's a valid
-    command file or not).  Only valid score command options found in that file are used to populate the wizard entries.
-    No error message will be displayed if the file does not contain this information.
+    If the <emphasis role="bold">Create CDD by interactively selecting options</emphasis> entry is currently selected 
+    and the user wishes to not use a command-line file to populate the rest of the CDD creation pages, simply click on 
+    the <emphasis role="bold">Next</emphasis> button at the bottom of the page to continue.  If the 
+    <emphasis role="bold">Create CDD by using option file</emphasis> entry is currently selected, the user must either 
+    type a valid filename or select one by clicking the <emphasis role="bold">Browse...</emphasis> button to the right 
+    of the file entry area and select a valid file. Once a valid filename is selected, the 
+    <emphasis role="bold">Next</emphasis> button will be enabled and the user may then click it to continue to the next 
+    page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid score command 
+    options found in that file are used to populate the wizard entries. No error message will be displayed if the file 
+    does not contain this information.
     </para>
+  </sect1>
+  
+  <sect1 id="section.gui.new.name" xreflabel="Navigating the New CDD Creation Output Name Page">
+    <title>Navigating the New CDD Creation CDD Name Page</title>
+    <para>
+    This page is used to specify the name of the output CDD file.  Figure <xref linkend="figure.gui.new.name"> shows 
+    the display of this page.
+    </para>
+    <para>
+      <figure id="figure.gui.new.name" xreflabel="CDD Creation Output Name Page">
+        <title>CDD Creation Output Name Page</title>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_name.gif" format="GIF"></imageobject></mediaobject>
+      </figure>
+    </para>
+    <para>
+    The output CDD name must be specified and, as such, the <emphasis role="bold">Next</emphasis> button is disabled
+    until a name is specified in the entry field.  Any filename is allowed.  If the user wishes to make use of a
+    "Save As" style window for creating a filename, click the <emphasis role="bold">Browse...</emphasis> button and use
+    the window for creating a filename. When the <emphasis role="bold">Save</emphasis> button is clicked, the specified
+    filename is placed in the entry field and the <emphasis role="bold">Next</emphasis> button is enabled.
+    </para>
+  </sect1>
+  
+  <sect1 id="section.gui.new.type" xreflabel="CDD Creation Type Page">
+    <title>CDD Creation Type Page</title>
+    <para>
+    This page is used to specify what type of CDD file to create. The three types CDD files that can be created are:
+    </para>
+    <para>
+      <orderedlist>
+        <listitem>
+          <para>
+          An unscored CDD file that was created by parsing the design. This CDD file can later be scored via a VCD or
+          LXT dumpfile. 
+          </para>
+          <para>
+          This option can be chosen by selecting the <emphasis role="bold">Parse Design Only</emphasis> radiobutton.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          A scored CDD file created from the design and from a previously created VCD or LXT dumpfile. 
+          </para>
+          <para>
+          This option can be chosen by selecting the <emphasis role="bold">Dumpfile:</emphasis> option. If this option 
+          is chosen, a VCD or LXT dumpfile is required to be specified before the next option page can be used. Either 
+          specify this dumpfile name by typing in an existing dumpfile name in the entry field or use the 
+          <emphasis role="bold">Browse...</emphasis> button to select a dumpfile.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          An unscored CDD file, a top-level Verilog file containing a PLI call to run Covered in VPI mode, and a PLI
+          tab file that can be used by some simulators for compilation purposes. See <xref linkend="section.vpi"> for
+          details on how to use these files for simulation/scoring purposes. 
+          </para>
+          <para>
+          This option can be chosen by selecting the <emphasis role="bold">VPI Module:</emphasis> radiobutton. If this 
+          option is chosen, the name specified will be the name of the module created that is used to allow Covered
+          to run in VPI mode within a simulation.
+          </para>
+          <para>
+          In addition to providing a module name when this option is selected, the simulator type that will be used
+          when scoring can be specified as well as the timescale information that can, optionally, be specified at the
+          top of the generated module.
+          </para>
+        </listitem>
+      </orderedlist>
+    </para>
+    <para>
+    Figure <xref linkend="figure.gui.new.type"> displays the contents of this page. When all necessary fields have been
+    specified, the <emphasis role="bold">Next</emphasis> button will be enabled and clicking it will lead to the next
+    option page.
+    </para>
+    <para>
+      <figure id="figure.gui.new.type" xreflabel="CDD Creation Type Page">
+        <title>CDD Creation Type Page</title>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_type.gif" format="GIF"></imageobject></mediaobject>
+      </figure>
+    </para>
+  </sect1>
+  
+  <sect1 id="section.gui.new.options1" xreflabel="CDD Creation Options1 Page">
+    <title>CDD Creation Options1 Page</title>
+    <para>
+    This page is used to specify several options to Covered's score command. See figure 
+    <xref linkend="figure.gui.new.options1"> for the layout of this window.
+    </para>
+    <para>
+      <figure id="figure.gui.new.options1" xreflabel="CDD Creation Options1 Page">
+        <title>CDD Creation Options1 Page</title>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_options.gif" format="GIF"></imageobject></mediaobject>
+      </figure>
+    </para>
+    <para>
+    The following is a description about each of the CDD creation options available on this page.
+    </para>
+    
+    <sect2 id="section.gui.new.options1.general" xreflabel="CDD Creation Option1 Page - General Options">
+      <title>General Options</title>
+      <para>
+        <itemizedlist>
+          <listitem>
+            <para><emphasis role="bold">Toplevel module name</emphasis></para>
+            <para>Required? <emphasis>Yes</emphasis></para>
+            <para>
+            TBD
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Root pathname</emphasis></para>
+            <para>Required? <emphasis>No</emphasis></para>
+            <para>
+            TBD
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Delay Type</emphasis></para>
+            <para>
+            TBD
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Race Condition Action</emphasis></para>
+            <para>
+            TBD
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Use embedded race condition pragmas</emphasis></para>
+            <para>
+            TBD
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Default Verilog Generation</emphasis></para>
+            <para>
+            TBD
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Include OVL Assertions</emphasis></para>
+            <para>
+            TBD
+            </para>
+          </listitem>
+        </itemizedlist>
+      </para>
+    </sect2>
+    
+    <sect2 id="section.gui.new.options1.exclude" xreflabel="CDD Creation Options1 Page - Exclude Options">
+      <title>Exclude Options</title>
+      <para>
+        <itemizedlist>
+          <listitem>
+            <para><emphasis role="bold">Exclude Always Blocks</emphasis></para>
+            <para>
+            TBD
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Exclude Assign Blocks</emphasis></para>
+            <para>
+            TBD
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Exclude Initial Blocks</emphasis></para>
+            <para>
+            TBD
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Exclude Final Blocks</emphasis></para>
+            <para>
+            TBD
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Exclude Within Pragma</emphasis></para>
+            <para>
+            TBD
+            </para>
+          </listitem>
+        </itemizedlist>
+      </para>
+    </sect2>
   </sect1>
 </chapter>
