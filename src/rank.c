@@ -1228,7 +1228,8 @@ static void rank_perform_greedy_sort(
         }
       }
       if( (comp_cdds[best]->unique_cps < comp_cdds[j]->unique_cps) ||
-          (comp_cdds[best]->unique_cps == comp_cdds[j]->unique_cps) && (comp_cdds[best]->timesteps < comp_cdds[j]->timesteps) ) {
+          ((comp_cdds[best]->unique_cps == comp_cdds[j]->unique_cps) && (comp_cdds[best]->timesteps < comp_cdds[j]->timesteps)) ||
+          ((comp_cdds[best]->unique_cps == 0) && (comp_cdds[best]->required == 0) && (comp_cdds[i]->required == 0)) ) {
         best = j;
       }
     }
@@ -1583,6 +1584,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.12  2008/08/04 16:26:19  phase1geo
+ Attempting to fix bug 2037707.
+
  Revision 1.1.4.11  2008/08/04 15:12:57  phase1geo
  Fixing summary output issue with ranked CDD files (bug 2037629).
 
