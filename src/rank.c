@@ -1434,7 +1434,7 @@ static void rank_output(
 
         /* Create line for timesteps */
         snprintf( fmt, 4096, "* Reduced %%%ullu timesteps down to %%%ullu needed to maintain coverage (%%3.0f%%%% reduction, %%5.1fx improvement)\n", col1, col2 );
-        fprintf( ofile, fmt, total_timesteps, ranked_timesteps, ((ranked_timesteps / (double)total_timesteps) * 100), (total_timesteps / (double)ranked_timesteps) );
+        fprintf( ofile, fmt, total_timesteps, ranked_timesteps, (((total_timesteps - ranked_timesteps) / (double)total_timesteps) * 100), (total_timesteps / (double)ranked_timesteps) );
       }
       fprintf( ofile, "\n" );
       gen_char_string( str, '-', (longest_name_len - 3) );
@@ -1583,6 +1583,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.11  2008/08/04 15:12:57  phase1geo
+ Fixing summary output issue with ranked CDD files (bug 2037629).
+
  Revision 1.1.4.10  2008/07/25 19:41:40  phase1geo
  Adding timestep reduction information as well as multiplier improvement information
  to rank output.  Also updating more documentation.
