@@ -1407,7 +1407,7 @@ static void rank_output(
 
       /* Calculate and display reduction status */
       i = 0;
-      while( (i<comp_cdd_num) && (comp_cdds[i]->unique_cps > 0) ) i++;
+      while( (i<comp_cdd_num) && ((comp_cdds[i]->unique_cps > 0) || comp_cdds[i]->required) ) i++;
       if( i == comp_cdd_num ) {
         fprintf( ofile, "No reduction occurred\n" );
       } else {
@@ -1584,6 +1584,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.14  2008/08/05 04:29:04  phase1geo
+ Fixing the last issue in regards to required file support.  Added a few diagnostics
+ to the regression list to verify this behavior.
+
  Revision 1.1.4.13  2008/08/05 00:45:34  phase1geo
  Another attempt to fix bug 2037707.
 
