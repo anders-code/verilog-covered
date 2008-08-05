@@ -1229,7 +1229,7 @@ static void rank_perform_greedy_sort(
       }
       if( (comp_cdds[best]->unique_cps < comp_cdds[j]->unique_cps) ||
           ((comp_cdds[best]->unique_cps == comp_cdds[j]->unique_cps) && (comp_cdds[best]->timesteps < comp_cdds[j]->timesteps)) ||
-          ((comp_cdds[best]->unique_cps == 0) && (comp_cdds[best]->required == 0) && (comp_cdds[i]->required == 0)) ) {
+          ((comp_cdds[best]->unique_cps == 0) && !comp_cdds[best]->required && !comp_cdds[i]->required) ) {
         best = j;
       }
     }
@@ -1420,7 +1420,7 @@ static void rank_output(
         /* Calculated total_timesteps and ranked_timesteps */
         for( j=0; j<comp_cdd_num; j++ ) {
           total_timesteps += comp_cdds[j]->timesteps;
-          if( comp_cdds[j]->unique_cps > 0 ) {
+          if( (comp_cdds[j]->unique_cps > 0) || comp_cdds[j]->required ) {
             ranked_timesteps = total_timesteps;
           }
         }
@@ -1456,7 +1456,7 @@ static void rank_output(
       for( i=0; i<comp_cdd_num; i++ ) {
         acc_timesteps  += comp_cdds[i]->timesteps; 
         acc_unique_cps += comp_cdds[i]->unique_cps;
-        if( (comp_cdds[i]->unique_cps == 0) && unique_found ) {
+        if( (comp_cdds[i]->unique_cps == 0) && unique_found && !comp_cdds[i]->required ) {
           fprintf( ofile, "\n---------------------------------------  The following CDD files add no additional coverage  ----------------------------------------------\n\n" );
           unique_found = FALSE;
         }
@@ -1584,6 +1584,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.13  2008/08/05 00:45:34  phase1geo
+ Another attempt to fix bug 2037707.
+
  Revision 1.1.4.12  2008/08/04 16:26:19  phase1geo
  Attempting to fix bug 2037707.
 
