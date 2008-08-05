@@ -39,6 +39,7 @@
 extern str_link* merge_in_head;
 extern str_link* merge_in_tail;
 extern int       merge_in_num;
+extern char*     merged_file;
 extern uint64    num_timesteps;
 extern char*     cdd_message;
 extern char      user_msg[USER_MSG_LENGTH];
@@ -162,7 +163,11 @@ void info_db_write(
     str_link* strl = merge_in_head;
     i = 0;
     while( strl != NULL ) {
-      fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+      if( strcmp( strl->str, merged_file ) != 0 ) {
+        fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+      } else {
+        i++;
+      }
       strl = strl->next; 
     }
   } else { 
@@ -311,7 +316,7 @@ void merged_cdd_db_read(
     *line = *line + chars_read;
 
     /* Add merged file */
-    if( (strl = str_link_find( tmp1, merge_in_head)) != NULL ) {
+    if( (strl = str_link_find( tmp1, merge_in_head)) == NULL ) {
 
       str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
       merge_in_num++;
@@ -326,7 +331,7 @@ void merged_cdd_db_read(
       leading_hierarchies[leading_hier_num] = strdup_safe( tmp2 );
       leading_hier_num++;
 
-    } else {
+    } else if( merge_in_num > 0 ) {
 
       snprintf( user_msg, USER_MSG_LENGTH, "File %s in CDD file has been specified on the command-line", tmp1 );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -387,6 +392,10 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.32.2.6  2008/08/05 03:56:45  phase1geo
+ Completing fix for bug 2037791.  Added diagnostic to regression suite to verify
+ the corrected behavior.
+
  Revision 1.32.2.5  2008/08/04 17:29:24  phase1geo
  Attempting to fix bug 2037791.
 

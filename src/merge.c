@@ -28,7 +28,7 @@ extern int merged_code;
 /*!
  Specifies the output filename of the CDD file that contains the merged data.
 */
-static char* merged_file = NULL;
+char* merged_file = NULL;
 
 /*!
  Specifies the names of the input CDD files.  If the user does not specify an output
@@ -195,7 +195,7 @@ static void merge_parse_args(
 
   Try {
 
-    /* Load any ranking files found in specified directories */
+    /* Load any merge files found in specified directories */
     strl = dir_head;
     while( strl != NULL ) {
       directory_load( strl->str, ext_head, &merge_in_head, &merge_in_tail );
@@ -300,6 +300,10 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.47.2.3  2008/08/05 03:56:45  phase1geo
+ Completing fix for bug 2037791.  Added diagnostic to regression suite to verify
+ the corrected behavior.
+
  Revision 1.47.2.2  2008/07/23 05:10:11  phase1geo
  Adding -d and -ext options to rank and merge commands.  Updated necessary files
  per this change and updated regressions.
