@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "file:///J:/DocBook/docbook4.2/docbookx.dtd">
 <!ENTITY cintro          SYSTEM "chapter_intro.xml">
 <!ENTITY cmetrics        SYSTEM "chapter_metrics.xml">
 <!ENTITY cboundaries     SYSTEM "chapter_boundaries.xml">
@@ -30,7 +30,6 @@
 <!ENTITY cguinew         SYSTEM "chapter_gui_new.xml">
 <!ENTITY cfaq            SYSTEM "chapter_faq.xml">
 <!ENTITY cepilogue       SYSTEM "chapter_epilogue.xml">
-]>
 
 <!-- Use the following command to generate in the html directory: 
      openjade -t sgml -d /sw/share/sgml/dsssl/docbook-dsssl-nwalsh/html/docbook.dsl ../covered_doc.xml -->

@@ -76,9 +76,7 @@ proc menu_create {} {
   # FILE - entry 0
   $tfm add command -label "Open/Merge CDDs..." -accelerator "Ctrl-o" -underline 0 -command {
     # Get a list of files to open
-    if {[catch {tk_getOpenFile -multiple 1 -filetypes $file_types} fnames]} {
-      set fnames [tk_getOpenFile -filetypes $file_types]
-    }
+    set fnames [tk_getOpenFile -multiple 1 -filetypes $file_types]
     if {$fnames ne ""} {
       open_files $fnames
     }
@@ -167,11 +165,13 @@ proc menu_create {} {
 
   $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "module" -underline 0 -command {
     populate_listbox
+    clear_all_windows
     .bot.left.tl columnconfigure 1 -hide false
     .menubar.view entryconfigure 4 -label "Hide Summary Module Column" -state disabled
   }
-  $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "instance" -underline 1 -state disabled -command {
+  $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "instance" -underline 1 -command {
     populate_listbox
+    clear_all_windows
     .menubar.view entryconfigure 4 -state normal
   }
   $report add separator

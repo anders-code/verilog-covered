@@ -195,17 +195,11 @@ proc main_view {} {
 
 proc populate_listbox {} {
 
-  global mod_inst_type last_mod_inst_type funit_names funit_types inst_list cdd_name
-  global line_summary_total line_summary_hit
-  global toggle_summary_total toggle_summary_hit
+  global mod_inst_type last_mod_inst_type cdd_name block_list
   global uncov_fgColor uncov_bgColor
   global lb_fgColor lb_bgColor
   global summary_list
  
-  # Clear funit_names and funit_types values
-  set funit_names ""
-  set funit_types ""
-
   # Get the currently loaded indices, if any
   if {$last_mod_inst_type == $mod_inst_type} {
     set curr_indices  [.bot.left.tl getcolumn 6]
@@ -224,31 +218,27 @@ proc populate_listbox {} {
     if {$mod_inst_type == "module"} {
 
       # Get the list of functional units
-      tcl_func_get_funit_list 
-
-      # Calculate the summary_list array
-      calculate_summary
-
-      for {set i 0} {$i < [llength $summary_list]} {incr i} {
-        if {[llength $curr_indices] > 0} {
-          set index [lindex $curr_indices $i]
-        } else {
-          set index $i
-        }
-        set funit [lindex $summary_list $index]
-        .bot.left.tl insert end [list "" [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] $index]
-        .bot.left.tl rowconfigure end -background [lindex $funit 6] -selectbackground [lindex $funit 5]
-      }
+      set block_list [tcl_func_get_funit_list]
 
     } else {
 
-      set inst_list ""
-      tcl_func_get_instance_list
+      # Get the list of functional unit instances
+      set block_list [tcl_func_get_instance_list]
 
-      foreach inst_name $inst_list {
-        $listbox_w insert end $inst_name
+    }
+
+    # Calculate the summary_list array
+    calculate_summary
+
+    for {set i 0} {$i < [llength $summary_list]} {incr i} {
+      if {[llength $curr_indices] > 0} {
+        set index [lindex $curr_indices $i]
+      } else {
+        set index $i
       }
-
+      set funit [lindex $summary_list $index]
+      .bot.left.tl insert end [list [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] [lindex $funit 5] $index]
+      .bot.left.tl rowconfigure end -background [lindex $funit 7] -selectbackground [lindex $funit 6]
     }
 
     # Re-activate the currently selected item
@@ -272,8 +262,9 @@ proc populate_listbox {} {
 
 proc populate_text {} {
 
-  global cov_rb mod_inst_type funit_names funit_types
-  global curr_funit_name curr_funit_type last_lb_index
+  global cov_rb block_list curr_block
+  global mod_inst_type last_mod_inst_type
+  global last_lb_index
   global start_search_index
   global curr_toggle_ptr
 
@@ -283,25 +274,24 @@ proc populate_text {} {
   # Update the text, if necessary
   if {$index != ""} {
 
-    if {$last_lb_index != $index} {
+    if {$last_lb_index != $index || $last_mod_inst_type != $mod_inst_type} {
 
-      set last_lb_index $index
-      set curr_funit_name [lindex $funit_names $index]
-      set curr_funit_type [lindex $funit_types $index]
+      set last_lb_index   $index
+      set curr_block      [lindex $block_list $index]
       set curr_toggle_ptr ""
 
       if {$cov_rb == "Line"} {
-        process_funit_line_cov
+        process_line_cov
       } elseif {$cov_rb == "Toggle"} {
-        process_funit_toggle_cov
+        process_toggle_cov
       } elseif {$cov_rb == "Memory"} {
-        process_funit_memory_cov
+        process_memory_cov
       } elseif {$cov_rb == "Logic"} {
-        process_funit_comb_cov
+        process_comb_cov
       } elseif {$cov_rb == "FSM"} {
-        process_funit_fsm_cov
+        process_fsm_cov
       } elseif {$cov_rb == "Assert"} {
-        process_funit_assert_cov
+        process_assert_cov
       } else {
         # ERROR
       }
