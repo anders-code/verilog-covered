@@ -30,7 +30,7 @@
     potential disadvantage to this method is that the FSM location and coverage information can get lost if the FSM is 
     used in a different testbench (or even a different project if the FSM code is reused in a later project). For more 
     information on specifying an FSM on the score command-line, please refer to 
-    <xref linkend="section.score.fsm">.
+    <xref linkend="section.score.fsm"/>.
     </para>
     <para>
     The second way that an FSM can be specified to Covered is through the use of the Verilog-2001 attribute. The 
@@ -172,7 +172,7 @@
               </listitem>
               <listitem>
                 <para>
-                See <xref linkend="section.score.fsm"> for more information on the specification of an input 
+                See <xref linkend="section.score.fsm"/> for more information on the specification of an input 
                 state expression.
                 </para>
               </listitem>
@@ -206,7 +206,7 @@
               </listitem>
               <listitem>
                 <para>
-                See <xref linkend="section.score.fsm"> for more information on the specification of an output 
+                See <xref linkend="section.score.fsm"/> for more information on the specification of an output 
                 state expression.
                 </para>
               </listitem>

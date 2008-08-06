@@ -86,8 +86,8 @@
       <table frame="all">
         <title>CLI Command-line Options</title>
         <tgroup cols='2' align='left' colsep='1' rowsep='1'>
-          <colspec colwidth='1*'>
-          <colspec colwidth='2*'>
+          <colspec colwidth='1*'/>
+          <colspec colwidth='2*'/>
           <thead>
             <row>
               <entry>Option</entry>
