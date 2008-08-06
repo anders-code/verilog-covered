@@ -175,7 +175,11 @@ void info_db_write(
     assert( (leading_hier_num - 1) == merge_in_num );
     i = 1; 
     while( strl != NULL ) {
-      fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+      if( strcmp( strl->str, merged_file ) != 0 ) {
+        fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+      } else {
+        i++;
+      }
       strl = strl->next;
     }
   }
@@ -392,6 +396,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.32.2.7  2008/08/06 05:32:41  phase1geo
+ Another fix for bug 2037791.  Also add new diagnostic to verify the fix for the bug.
+
  Revision 1.32.2.6  2008/08/05 03:56:45  phase1geo
  Completing fix for bug 2037791.  Added diagnostic to regression suite to verify
  the corrected behavior.
