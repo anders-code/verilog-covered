@@ -1080,64 +1080,42 @@ void race_report(
 }
 
 /*!
- \param funit_name  Name of funtional unit to search for
- \param funit_type  Type of funtional unit to search for
- \param slines      Pointer to an array of starting line numbers that contain line numbers of race condition statements
- \param elines      Pointer to an array of ending line numbers that contain line numbers of race condition statements
- \param reasons     Pointer to an array of race condition reason integers, one for each line in the lines array
- \param line_cnt    Pointer to number of elements that exist in lines array
-
- \return Returns TRUE if the specified module name was found in the design; otherwise, returns FALSE.
-
  Collects all of the line numbers in the specified module that were ignored from coverage due to
  detecting a race condition.  This function is primarily used by the GUI for outputting purposes.
 */
-bool race_collect_lines(
-            const char* funit_name,
-            int         funit_type,
-  /*@out@*/ int**       slines,
-  /*@out@*/ int**       elines,
-  /*@out@*/ int**       reasons,
-  /*@out@*/ int*       line_cnt
+void race_collect_lines(
+            func_unit* funit,    /*!< Pointer to functional unit */
+  /*@out@*/ int**      slines,   /*!< Pointer to an array of starting line numbers that contain line numbers of race condition statements */
+  /*@out@*/ int**      elines,   /*!< Pointer to an array of ending line numbers that contain line numbers of race condition statements */
+  /*@out@*/ int**      reasons,  /*!< Pointer to an array of race condition reason integers, one for each line in the lines array */
+  /*@out@*/ int*       line_cnt  /*!< Pointer to number of elements that exist in lines array */
 ) { PROFILE(RACE_COLLECT_LINES);
 
-  bool        retval    = TRUE;  /* Return value for this function */
-  funit_link* modl;              /* Pointer to found module link containing specified module */
-  race_blk*   curr_race = NULL;  /* Pointer to current race condition block */
-  int         line_size = 20;    /* Current number of lines allocated in lines array */
+  race_blk* curr_race = NULL;  /* Pointer to current race condition block */
+  int       line_size = 20;    /* Current number of lines allocated in lines array */
 
-  if( (modl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+  /* Begin by allocating some memory for the lines */
+  *slines   = (int*)malloc_safe( sizeof( int ) * line_size );
+  *elines   = (int*)malloc_safe( sizeof( int ) * line_size );
+  *reasons  = (int*)malloc_safe( sizeof( int ) * line_size );
+  *line_cnt = 0;
 
-    /* Begin by allocating some memory for the lines */
-    *slines   = (int*)malloc_safe( sizeof( int ) * line_size );
-    *elines   = (int*)malloc_safe( sizeof( int ) * line_size );
-    *reasons  = (int*)malloc_safe( sizeof( int ) * line_size );
-    *line_cnt = 0;
-
-    curr_race = modl->funit->race_head;
-    while( curr_race != NULL ) {
-      if( *line_cnt == line_size ) {
-        line_size += 20;
-        *slines  = (int*)realloc_safe( *slines,  (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
-        *elines  = (int*)realloc_safe( *elines,  (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
-        *reasons = (int*)realloc_safe( *reasons, (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
-      }
-      (*slines)[*line_cnt]  = curr_race->start_line;
-      (*elines)[*line_cnt]  = curr_race->end_line;
-      (*reasons)[*line_cnt] = curr_race->reason;
-      (*line_cnt)++;
-      curr_race = curr_race->next;
+  curr_race = funit->race_head;
+  while( curr_race != NULL ) {
+    if( *line_cnt == line_size ) {
+      line_size += 20;
+      *slines  = (int*)realloc_safe( *slines,  (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
+      *elines  = (int*)realloc_safe( *elines,  (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
+      *reasons = (int*)realloc_safe( *reasons, (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
     }
-
-  } else { 
-
-    retval = FALSE;
-
+    (*slines)[*line_cnt]  = curr_race->start_line;
+    (*elines)[*line_cnt]  = curr_race->end_line;
+    (*reasons)[*line_cnt] = curr_race->reason;
+    (*line_cnt)++;
+    curr_race = curr_race->next;
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -1166,6 +1144,10 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.81.2.2  2008/08/06 20:11:34  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.81.2.1  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

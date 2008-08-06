@@ -574,15 +574,16 @@ void inst_link_display( inst_link* head ) {
 /**************************************************************************************/
 
 /*!
- \param value  String to find in str_link list.
- \param head   Pointer to head link in str_link list to search.
  \return Returns the pointer to the found str_link or NULL if the search was unsuccessful.
 
  Iteratively searches the str_link list specifed by the head str_link element.  If
  a matching string is found, the pointer to this element is returned.  If the specified
  string could not be matched, the value of NULL is returned.
 */
-str_link* str_link_find( const char* value, str_link* head ) { PROFILE(STR_LINK_FIND);
+str_link* str_link_find(
+  const char* value,  /*!< String to find in str_link list */
+  str_link*   head    /*!< Pointer to head link in str_link list to search */
+) { PROFILE(STR_LINK_FIND);
 
   str_link* curr;    /* Pointer to current str_link link */
   
@@ -1327,6 +1328,10 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.79.4.2  2008/08/06 20:11:34  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.79.4.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

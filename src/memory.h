@@ -52,17 +52,22 @@ void memory_get_stats(
 );
 
 /*! \brief Gets memory summary information for a GUI request */
-bool memory_get_funit_summary(
-            const char* funit_name,
-            int         funit_type,
-  /*@out@*/ int*        total,
-  /*@out@*/ int*        hit
+void memory_get_funit_summary(
+            func_unit*    funit,
+  /*@out@*/ unsigned int* total,
+  /*@out@*/ unsigned int* hit
+);
+
+/*! \brief Gets memory summary information for a GUI request */
+void memory_get_inst_summary(
+            funit_inst*   funit,
+  /*@out@*/ unsigned int* total,
+  /*@out@*/ unsigned int* hit
 );
 
 /*! \brief Gets coverage information for the specified memory */
-bool memory_get_coverage(
-            const char* funit_name,
-            int         funit_type,
+void memory_get_coverage(
+            func_unit*  funit,
             const char* signame,
   /*@out@*/ char**      pdim_str,
   /*@out@*/ char**      pdim_array,
@@ -72,12 +77,11 @@ bool memory_get_coverage(
 );
 
 /*! \brief Collects all signals that are memories and match the given coverage metric for the given functional unit */
-bool memory_collect(
-            const char* funit_name,
-            int         funit_type,
-            int         cov,
-  /*@out@*/ sig_link**  head,
-  /*@out@*/ sig_link**  tail
+void memory_collect(
+            func_unit* funit,
+            int        cov,
+  /*@out@*/ sig_link** head,
+  /*@out@*/ sig_link** tail
 );
 
 /*! \brief Generates report output for line coverage. */
@@ -89,6 +93,10 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.10.6.2  2008/08/06 20:11:34  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.10.6.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
