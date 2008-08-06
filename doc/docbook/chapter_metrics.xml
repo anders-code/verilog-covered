@@ -403,7 +403,7 @@
       <para>
         <figure id="figure.metrics.fsm" xreflabel="Digraph Version of Example FSM">
           <title>Digraph Version of Example FSM</title>
-          <mediaobject><imageobject><imagedata fileref="img/fsm_example.png" format="PNG"></imageobject></mediaobject>
+          <mediaobject><imageobject><imagedata fileref="img/fsm_example.png" format="PNG"/></imageobject></mediaobject>
         </figure>
       </para>
       <para>

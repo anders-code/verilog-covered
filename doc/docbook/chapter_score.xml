@@ -333,7 +333,7 @@
     The following example describes a complete DUT and how to cause Covered to score various parts of the DUT.
     </para>
     <para>
-      <mediaobject><imageobject><imagedata fileref="img/vhier.png" format="PNG"></imageobject></mediaobject>
+      <mediaobject><imageobject><imagedata fileref="img/vhier.png" format="PNG"/></imageobject></mediaobject>
     </para>
     <para>
     Assume that the following Verilog modules are used to create this tree.

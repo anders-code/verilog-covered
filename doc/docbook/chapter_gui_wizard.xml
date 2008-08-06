@@ -3,13 +3,13 @@
   <para>
   The Wizard window starts up automatically at the start of the Covered GUI.  It allows the user to quickly perform
   some of the more regular tasks within the GUI. The window is not necessary for performing these tasks, but for the
-  new user it makes figuring out how to perform these tasks a bit easier.  <xref linkend="figure.gui.wizard"> shows the
+  new user it makes figuring out how to perform these tasks a bit easier.  <xref linkend="figure.gui.wizard"/> shows the
   layout of this window.
   </para>
   <para>
     <figure id="figure.gui.wizard" xreflabel="Covered GUI Wizard Window">
       <title>Covered GUI Wizard Window</title>
-      <mediaobject><imageobject><imagedata fileref="img/wizard.gif" format="GIF"></imageobject></mediaobject>
+      <mediaobject><imageobject><imagedata fileref="img/wizard.gif" format="GIF"/></imageobject></mediaobject>
     </figure>
   </para>
   <para>
@@ -46,7 +46,7 @@
   </para>
   <para>
   At the bottom of the wizard window, there is a checkbutton option that allows the user to not display the wizard
-  window on startup.  This option can be changed in the <xref linkend="section.gui.pref.general"> at any time.
+  window on startup.  This option can be changed in the <xref linkend="section.gui.pref.general"/> at any time.
   </para>
   <para>
   When the wizard window is closed, it can be redisplayed by clicking on the 
