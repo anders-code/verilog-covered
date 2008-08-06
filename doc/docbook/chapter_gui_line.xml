@@ -35,21 +35,21 @@
         <listitem>
           <para>
           Make sure that the <emphasis role="bold">Show Uncovered</emphasis> menu item in the 
-          <xref linkend="section.gui.main.reportmenu"> is selected.
+          <xref linkend="section.gui.main.reportmenu"/> is selected.
           </para>
         </listitem>
         <listitem>
           <para>
-          Select the line coverage metric in the <xref linkend="section.gui.main.covbar"> by left-clicking on selection 
+          Select the line coverage metric in the <xref linkend="section.gui.main.covbar"/> by left-clicking on selection 
           button to the left of "Line".
           </para>
         </listitem>
         <listitem>
           <para>
           Select one of the modules/instances that is highlighted in the uncovered color scheme (to change this color 
-          scheme, see <xref linkend="chapter.gui.preferences">) in the <xref linkend="section.gui.main.listbox">.  This 
+          scheme, see <xref linkend="chapter.gui.preferences"/>) in the <xref linkend="section.gui.main.listbox"/>.  This 
           will cause the selected module/instance source code to be displayed in the 
-          <xref linkend="section.gui.main.viewer">.
+          <xref linkend="section.gui.main.viewer"/>.
           </para>
         </listitem>
       </orderedlist>
@@ -69,22 +69,22 @@
     Any uncovered line in the design may be included/excluded from coverage consideration.  To the left of each 
     uncovered line is an underlined "I" (line is included in coverage) or "E" (line is excluded in coverage). Clicking 
     on this character will change the coverage exclusion property of the line by recalculating the summary line 
-    coverage information, redisplaying it in the <xref linkend="section.gui.main.sumcov">, changing the background 
+    coverage information, redisplaying it in the <xref linkend="section.gui.main.sumcov"/>, changing the background 
     color of the line from the uncovered background color to the covered background color, and changing the leftmost 
     character of the line to the opposite value to indicate its current status. 
-    <xref linkend="figure.gui.line.include"> shows an uncovered line that is included for coverage consideration. 
-    <xref linkend="figure.gui.line.exclude"> shows the same line which is now excluded from coverage consideration.
+    <xref linkend="figure.gui.line.include"/> shows an uncovered line that is included for coverage consideration. 
+    <xref linkend="figure.gui.line.exclude"/> shows the same line which is now excluded from coverage consideration.
     </para>
     <para>
       <figure id="figure.gui.line.include" xreflabel="Example of uncovered line included for line coverage consideration">
         <title>Example of uncovered line included for line coverage consideration</title>
-        <mediaobject><imageobject><imagedata fileref="img/line_incl.gif" format="GIF"></imageobject></mediaobject>
+        <mediaobject><imageobject><imagedata fileref="img/line_incl.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
     </para>
     <para>
       <figure id="figure.gui.line.exclude" xreflabel="Example of uncovered line excluded for line coverage consideration">
         <title>Example of uncovered line excluded for line coverage consideration</title>
-        <mediaobject><imageobject><imagedata fileref="img/line_excl.gif" format="GIF"></imageobject></mediaobject>
+        <mediaobject><imageobject><imagedata fileref="img/line_excl.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
     </para>
     <para>
@@ -94,7 +94,7 @@
     </para>
     <para>
     If the user excludes any line in the design, the <emphasis role="bold">Save CDD...</emphasis> option in the 
-    <xref linkend="section.gui.main.filemenu"> menu will be enabled.  This allows the user to save the excluded property 
+    <xref linkend="section.gui.main.filemenu"/> menu will be enabled.  This allows the user to save the excluded property 
     either back to the CDD file (or to a newly named CDD file). Doing so will allow the user to load the CDD file at a 
     different time and retain the knowledge of which lines have been excluded/included for coverage.  Additionally, if 
     a saved CDD file with coverage exclusion is merged with another CDD file, the excluded line information is 
@@ -112,18 +112,18 @@
         <listitem>
           <para>
           Make sure that the <emphasis role="bold">Show Covered</emphasis> menu item in the 
-          <xref linkend="section.gui.main.reportmenu"> menu is selected.
+          <xref linkend="section.gui.main.reportmenu"/> menu is selected.
           </para>
         </listitem>
         <listitem>
           <para>
-          Select the line coverage metric in the <xref linkend="section.gui.main.covbar"> by left-clicking on the 
+          Select the line coverage metric in the <xref linkend="section.gui.main.covbar"/> by left-clicking on the 
           selection button to the left of "Line".
           </para>
         </listitem>
         <listitem>
           <para>
-          Select one of the modules/instances in the <xref linkend="section.gui.main.listbox"> that shows that at least 
+          Select one of the modules/instances in the <xref linkend="section.gui.main.listbox"/> that shows that at least 
           one line was considered coverable by Covered.
           </para>
         </listitem>

@@ -11,7 +11,7 @@
   <para>
     <figure id="figure.gui.logic" xreflabel="Verbose Combinational Logic Window">
       <title>Example of the verbose combinational logic window</title>
-      <mediaobject><imageobject><imagedata fileref="img/comb_complex.gif" format="GIF"></imageobject></mediaobject>
+      <mediaobject><imageobject><imagedata fileref="img/comb_complex.gif" format="GIF"/></imageobject></mediaobject>
     </figure>
   </para>
   
@@ -78,7 +78,7 @@
       <para>
         <figure id="figure.gui.logic.uncov.event" xreflabel="Uncovered Event Subexpression Output">
           <title>Example Coverage Output for an Uncovered Event Subexpression</title>
-          <mediaobject><imageobject><imagedata fileref="img/comb_event.gif" format="GIF"></imageobject></mediaobject>
+          <mediaobject><imageobject><imagedata fileref="img/comb_event.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
       </para>
       <para>
@@ -188,7 +188,7 @@
       <para>
         <figure id="figure.gui.logic.uncov.unary" xreflabel="Uncovered Unary Subexpression Output">
           <title>Example Coverage Output for an Uncovered Unary Subexpression</title>
-          <mediaobject><imageobject><imagedata fileref="img/comb_unary.gif" format="GIF"></imageobject></mediaobject>
+          <mediaobject><imageobject><imagedata fileref="img/comb_unary.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
       </para>
     </sect2>
@@ -234,7 +234,7 @@
         <para>
           <figure id="figure.gui.info.simple.and" xreflabel="Uncovered Simple AND-type Combinational Subexpression Output">
             <title>Example Coverage Output for an Uncovered Simple AND-type Combinational Subexpression</title>
-            <mediaobject><imageobject><imagedata fileref="img/comb_simple_and.gif" format="GIF"></imageobject></mediaobject>
+            <mediaobject><imageobject><imagedata fileref="img/comb_simple_and.gif" format="GIF"/></imageobject></mediaobject>
           </figure>
         </para>
       </sect3>
@@ -275,7 +275,7 @@
         <para>
           <figure id="figure.gui.info.simple.or" xreflabel="Uncovered Simple OR-type Combinational Subexpression Output">
             <title>Example Coverage Output for an Uncovered Simple OR-type Combinational Subexpression</title>
-            <mediaobject><imageobject><imagedata fileref="img/comb_simple_or.gif" format="GIF"></imageobject></mediaobject>
+            <mediaobject><imageobject><imagedata fileref="img/comb_simple_or.gif" format="GIF"/></imageobject></mediaobject>
           </figure>
         </para>
       </sect3>
@@ -329,7 +329,7 @@
         <para>
           <figure id="figure.gui.info.simple.other" xreflabel="Uncovered Simple Combinational Subexpression Output">
             <title>Example Coverage Output for an Uncovered Simple Combinational Subexpression</title>
-            <mediaobject><imageobject><imagedata fileref="img/comb_simple.gif" format="GIF"></imageobject></mediaobject>
+            <mediaobject><imageobject><imagedata fileref="img/comb_simple.gif" format="GIF"/></imageobject></mediaobject>
           </figure>
         </para>
       </sect3>
@@ -361,7 +361,7 @@
       <para>
         <figure id="figure.gui.logic.complex" xreflabel="Uncovered Complex Combinational Subexpression Output">
           <title>Example Coverage Output for an Uncovered Complex Combinational Subexpression</title>
-          <mediaobject><imageobject><imagedata fileref="img/comb_complex.gif" format="GIF"></imageobject></mediaobject>
+          <mediaobject><imageobject><imagedata fileref="img/comb_complex.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
       </para>
       <para>
@@ -380,32 +380,32 @@
     the window.  If this option is checked, Covered will recalculate combinational logic summary coverage information 
     for the current module/instance by adding to the "Hit" count the number of uncovered combinational logic values for 
     the given subexpression (and all subexpressions below this expression within the expression tree).  This new 
-    summary information will be redisplayed on the <xref linkend="section.gui.main.sumcov">. The subexpression 
+    summary information will be redisplayed on the <xref linkend="section.gui.main.sumcov"/>. The subexpression 
     background color in the top frame will also change from the uncovered background color to the covered background 
     color.  However, the subexpression will still contain an underline that may be clicked on at any time to view its 
     coverage information or the coverage information for any subexpressions that are uncovered.  To include a 
     previously excluded subexpression, simply uncheck the <emphasis role="bold">Excluded</emphasis> checkbutton. This 
     will automatically cause the summary information and background color to be updated for the given subexpression. 
-    <xref linkend="figure.gui.logic.excl"> below shows an example of a subexpression that has been excluded from 
+    <xref linkend="figure.gui.logic.excl"/> below shows an example of a subexpression that has been excluded from 
     coverage consideration.
     </para>
     <para>
       <figure id="figure.gui.logic.excl" xreflabel="Exit Warning Window">
         <title>Example of an excluded subexpression</title>
-        <mediaobject><imageobject><imagedata fileref="img/exit_warn.gif" format="GIF"></imageobject></mediaobject>
+        <mediaobject><imageobject><imagedata fileref="img/exit_warn.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
     </para>
     <para>
     If an expression tree has been entirely excluded from coverage (all subexpressions have the 
     <emphasis role="bold">Excluded</emphasis> checkbutton checked), the background color in the 
-    <xref linkend="section.gui.main.viewer"> will change from an uncovered background color to the covered background 
+    <xref linkend="section.gui.main.viewer"/> will change from an uncovered background color to the covered background 
     color to indicate at the top-level that this entire statement has been excluded from coverage.  However, the 
     statement will still be underlined in the Main Coverage File Viewer to allow the user to view the statement, if 
     necessary.
     </para>
     <para>
     If the user excludes any subexpression in the design, the <emphasis role="bold">Save CDD...</emphasis> option in 
-    the <xref linkend="section.gui.main.filemenu"> menu will be enabled.  This allows the user to save the excluded 
+    the <xref linkend="section.gui.main.filemenu"/> menu will be enabled.  This allows the user to save the excluded 
     property either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the CDD 
     file at a different time and retain the knowledge of which subexpressions have been excluded/included for coverage. 
     Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file, the excluded 
@@ -417,7 +417,7 @@
     <title>Displaying a New Statement</title>
     <para>
     If the Verbose Combinational Logic Coverage window is currently displayed with a statement, the user may select a 
-    new statement in the <xref linkend="section.gui.main.viewer"> of the Mainwindow.  When a new statement is selected, 
+    new statement in the <xref linkend="section.gui.main.viewer"/> of the Mainwindow.  When a new statement is selected, 
     its value immediately replaces the currently selected statement.  This feature allows many different statements to 
     be viewed one after the other without having to create/destroy a new window for each.
     </para>

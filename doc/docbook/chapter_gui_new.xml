@@ -2,7 +2,7 @@
   <title>Creating a New CDD</title>
   <para>
   Creating a new CDD file from the GUI can be accomplished by either clicking on the "Generate New CDD File" button in
-  the Wizard window (see <xref linkend="chapter.gui.wizard"> for more details on this window), by selecting the
+  the Wizard window (see <xref linkend="chapter.gui.wizard"/> for more details on this window), by selecting the
   <code>File -> Generate -> New CDD...</code> menu option, or using the shortcut "Shift-Control-N".  This file creation
   "wizard" allows the user to create a new CDD file that can be opened/merged into the GUI for coverage analysis.  The
   methods that the CDD creation GUI allows for creating a new CDD file are quite flexible and are completely compatible
@@ -25,12 +25,12 @@
   <sect1 id="section.gui.new.select" xreflabel="Navigating the New CDD Creation Option Selection Page">
     <title>Navigating the New CDD Creation Option Selection Window</title>
     <para>
-    Figure <xref linkend="figure.gui.new.select"> shows the look of this page of the CDD creation wizard.
+    Figure <xref linkend="figure.gui.new.select"/> shows the look of this page of the CDD creation wizard.
     </para>
     <para>
       <figure id="figure.gui.new.select" xreflabel="CDD Creation Option Selection Page">
         <title>CDD Creation Option Selection Page</title>
-        <mediaobject><imageobject><imagedata fileref="img/new_cdd_selection.gif" format="GIF"></imageobject></mediaobject>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_selection.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
     </para>
     <para>
@@ -57,13 +57,13 @@
   <sect1 id="section.gui.new.name" xreflabel="Navigating the New CDD Creation Output Name Page">
     <title>Navigating the New CDD Creation CDD Name Page</title>
     <para>
-    This page is used to specify the name of the output CDD file.  Figure <xref linkend="figure.gui.new.name"> shows 
+    This page is used to specify the name of the output CDD file.  Figure <xref linkend="figure.gui.new.name"/> shows 
     the display of this page.
     </para>
     <para>
       <figure id="figure.gui.new.name" xreflabel="CDD Creation Output Name Page">
         <title>CDD Creation Output Name Page</title>
-        <mediaobject><imageobject><imagedata fileref="img/new_cdd_name.gif" format="GIF"></imageobject></mediaobject>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_name.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
     </para>
     <para>
@@ -105,7 +105,7 @@
         <listitem>
           <para>
           An unscored CDD file, a top-level Verilog file containing a PLI call to run Covered in VPI mode, and a PLI
-          tab file that can be used by some simulators for compilation purposes. See <xref linkend="section.vpi"> for
+          tab file that can be used by some simulators for compilation purposes. See <xref linkend="section.vpi"/> for
           details on how to use these files for simulation/scoring purposes. 
           </para>
           <para>
@@ -122,14 +122,14 @@
       </orderedlist>
     </para>
     <para>
-    Figure <xref linkend="figure.gui.new.type"> displays the contents of this page. When all necessary fields have been
+    Figure <xref linkend="figure.gui.new.type"/> displays the contents of this page. When all necessary fields have been
     specified, the <emphasis role="bold">Next</emphasis> button will be enabled and clicking it will lead to the next
     option page.
     </para>
     <para>
       <figure id="figure.gui.new.type" xreflabel="CDD Creation Type Page">
         <title>CDD Creation Type Page</title>
-        <mediaobject><imageobject><imagedata fileref="img/new_cdd_type.gif" format="GIF"></imageobject></mediaobject>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_type.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
     </para>
   </sect1>
@@ -138,12 +138,12 @@
     <title>CDD Creation Options1 Page</title>
     <para>
     This page is used to specify several options to Covered's score command. See figure 
-    <xref linkend="figure.gui.new.options1"> for the layout of this window.
+    <xref linkend="figure.gui.new.options1"/> for the layout of this window.
     </para>
     <para>
       <figure id="figure.gui.new.options1" xreflabel="CDD Creation Options1 Page">
         <title>CDD Creation Options1 Page</title>
-        <mediaobject><imageobject><imagedata fileref="img/new_cdd_options.gif" format="GIF"></imageobject></mediaobject>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_options.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
     </para>
     <para>
@@ -176,7 +176,7 @@
             An example of a valid root pathname would be something like:  <code>top.foo.bar.dut</code>
             </para>
             <para>
-            See <xref linkend="section.score.t"> for more information.
+            See <xref linkend="section.score.t"/> for more information.
             </para>
           </listitem>
           <listitem>
@@ -243,7 +243,7 @@
             race conditions found between the off/on pragma pair are ignored by the race condition checker.
             </para>
             <para>
-            See <xref linkend="section.race.avoiding"> for more details.
+            See <xref linkend="section.race.avoiding"/> for more details.
             </para>
           </listitem>
           <listitem>
@@ -256,7 +256,7 @@
             </para>
             <para>
             For informatin regarding the ability to specify a certain version of the parser for a specific module,
-            see <xref linkend="section.gui.new.options2.modgen">.
+            see <xref linkend="section.gui.new.options2.modgen"/>.
             </para>
           </listitem>
           <listitem>
@@ -308,7 +308,7 @@
             of the exclusion pragma is defaulted to "coverage" but can be changed within the associated entry field.
             </para>
             <para>
-            See <xref linkend="section.score.ep"> for more information.
+            See <xref linkend="section.score.ep"/> for more information.
             </para>
           </listitem>
         </itemizedlist>
@@ -325,12 +325,12 @@
     <emphasis role="bold">Edit...</emphasis> button or deleted by clicking on the 
     <emphasis role="bold">Delete</emphasis> button. Additionally, options may be reorganized within the listbox by
     simply clicking on an option and dragging it into the needed position. See figure 
-    <xref linkend="figure.gui.new.options2"> for the layout of this option page.
+    <xref linkend="figure.gui.new.options2"/> for the layout of this option page.
     </para>
     <para>
       <figure id="figure.gui.new.options2" xreflabel="CDD Creation Options2 Page">
         <title>CDD Creation Options2 Page</title>
-        <mediaobject><imageobject><imagedata fileref="img/new_cdd_options2.gif" format="GIF"></imageobject></mediaobject>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_options2.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
     </para>
     <para>
@@ -342,14 +342,14 @@
     context-sensitive help information to be displayed about the current window.
     </para>
     <para>
-    Figure <xref linkend="figure.gui.new.options2.insmenu"> shows the contents of the 
+    Figure <xref linkend="figure.gui.new.options2.insmenu"/> shows the contents of the 
     <emphasis role="bold">Insert...</emphasis> menubutton. The following sections describe each option and its
     corresponding entry window.
     </para>
     <para>
       <figure id="figure.gui.new.options2.insmenu" xreflabel="CDD Creation Insert Menubutton">
         <title>CDD Creation Insert Menubutton</title>
-        <mediaobject><imageobject><imagedata fileref="img/new_cdd_insert_menu.gif" format="GIF"></imageobject></mediaobject>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_insert_menu.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
     </para>
     
@@ -375,7 +375,7 @@
       <para>
         <figure id="figure.gui.new.options2.libext" xreflabel="CDD Creation Library Extension Window">
           <title>CDD Creation Library Extension Window</title>
-          <mediaobject><imageobject><imagedata fileref="img/new_cdd_lib_ext.gif" format="GIF"></imageobject></mediaobject>
+          <mediaobject><imageobject><imagedata fileref="img/new_cdd_lib_ext.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
       </para>
       <para>
@@ -398,7 +398,7 @@
       <para>
         <figure id="figure.gui.new.options2.define" xreflabel="CDD Creation Define Window">
           <title>CDD Creation Define Window</title>
-          <mediaobject><imageobject><imagedata fileref="img/new_cdd_define.gif" format="GIF"></imageobject></mediaobject>
+          <mediaobject><imageobject><imagedata fileref="img/new_cdd_define.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
       </para>
       <para>
@@ -414,7 +414,7 @@
       <para>
         <figure id="figure.gui.new.options2.param" xreflabel="CDD Creation Parameter Override Window">
           <title>CDD Creation Parameter Override Window</title>
-          <mediaobject><imageobject><imagedata fileref="img/new_cdd_parm_oride.gif" format="GIF"></imageobject></mediaobject>
+          <mediaobject><imageobject><imagedata fileref="img/new_cdd_parm_oride.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
       </para>
       <para>
@@ -430,7 +430,7 @@
       <para>
         <figure id="figure.gui.new.options2.fsm" xreflabel="CDD Creation FSM Specification Window">
           <title>CDD Creation FSM Specification Window</title>
-          <mediaobject><imageobject><imagedata fileref="img/new_cdd_fsm.gif" format="GIF"></imageobject></mediaobject>
+          <mediaobject><imageobject><imagedata fileref="img/new_cdd_fsm.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
       </para>
       <para>
@@ -446,7 +446,7 @@
       <para>
         <figure id="figure.gui.new.options2.modgen" xreflabel="CDD Creation Module Generation Window">
           <title>CDD Creation Module Generation Window</title>
-          <mediaobject><imageobject><imagedata fileref="img/new_cdd_mod_gen.gif" format="GIF"></imageobject></mediaobject>
+          <mediaobject><imageobject><imagedata fileref="img/new_cdd_mod_gen.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
       </para>
       <para>
@@ -462,7 +462,7 @@
       <para>
         <figure id="figure.gui.new.options2.modexcl" xreflabel="CDD Creation Module Exclusion Window">
           <title>CDD Creation Module Exclusion Window</title>
-          <mediaobject><imageobject><imagedata fileref="img/new_cdd_mod_excl.gif" format="GIF"></imageobject></mediaobject>
+          <mediaobject><imageobject><imagedata fileref="img/new_cdd_mod_excl.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
       </para>
       <para>
