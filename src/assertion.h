@@ -50,37 +50,37 @@ void assertion_get_stats(
 void assertion_report( FILE* ofile, bool verbose );
 
 /*! \brief Retrieves the total and hit counts of assertions for the specified functional unit */
-bool assertion_get_funit_summary(
-            const char*   funit_name,
-            int           funit_type,
+void assertion_get_funit_summary(
+            func_unit*    funit,
   /*@out@*/ unsigned int* total,
   /*@out@*/ unsigned int* hit
 );
 
 /*! \brief Collects uncovered and covered assertion instance names for the given module */
-bool assertion_collect(
-            const char*   funit_name,
-            int           funit_type,
-  /*@out@*/ char***       uncov_inst_names,
+void assertion_collect(
+            func_unit*    funit,
+            int           cov,
+  /*@out@*/ char***       inst_names,
   /*@out@*/ int**         excludes,
-  /*@out@*/ unsigned int* uncov_inst_size,
-  /*@out@*/ char***       cov_inst_names,
-  /*@out@*/ unsigned int* cov_inst_size
+  /*@out@*/ unsigned int* inst_size
 );
 
 /*! \brief Gets missed coverage point descriptions for the given assertion module */
-bool assertion_get_coverage(
-  const char* funit_name,
-  int         funit_type,
-  const char* inst_name,
-  char**      assert_mod,
-  str_link**  cp_head,
-  str_link**  cp_tail
+void assertion_get_coverage(
+            const func_unit* funit,
+            const char*      inst_name,
+  /*@out@*/ char**           assert_mod,
+  /*@out@*/ str_link**       cp_head,
+  /*@out@*/ str_link**       cp_tail
 );
 
 
 /*
  $Log$
+ Revision 1.13.4.2  2008/08/06 20:11:33  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.13.4.1  2008/07/10 22:43:49  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
