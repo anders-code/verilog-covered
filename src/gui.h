@@ -25,20 +25,12 @@
 
 #include "defines.h"
 
-/*! \brief Returns hit and total information for specified functional unit. */
-bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
-
-/*! \brief Collects array of functional unit names/types from the design. */
-bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size );
-
-/*! \brief Retrieves filename of given functional unit. */
-char* funit_get_filename( const char* funit_name, int funit_type );
-
-/*! \brief Retrieves starting and ending line numbers of the specified functional unit. */
-bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int* start_line, int* end_line );
-
 /*
  $Log$
+ Revision 1.10.6.2  2008/08/06 20:11:34  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.10.6.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

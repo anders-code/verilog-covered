@@ -40,92 +40,6 @@ extern isuppl       info_suppl;
 
 
 /*!
- \return Returns TRUE if function is successful; otherwise, returns FALSE.
-
- Creates an array of the functional unit names/types that exist in the design.
-*/
-bool funit_get_list(
-  /*@out@*/ char*** funit_names,  /*!< Pointer to array containing functional unit names */
-  /*@out@*/ char*** funit_types,  /*!< Pointer to array containing functional unit types */
-  /*@out@*/ int*    funit_size    /*!< Pointer to integer containing size of functional unit array */
-) { PROFILE(FUNIT_GET_LIST);
-
-  bool        retval = TRUE;  /* Return value for this function */
-  funit_link* curr;           /* Pointer to current functional unit link in list */
-  int         i;              /* Index to module list */
-  char        tmpstr[10];     /* Temporary string */
-
-  /* Initialize functional unit array size */
-  *funit_size = 0;
-
-  /* Count the number of functional units */
-  curr = db_list[curr_db]->funit_head;
-  while( curr != NULL ) {
-    if( !funit_is_unnamed( curr->funit ) &&
-        ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module( curr->funit ) )) ) {
-      (*funit_size)++;
-    }
-    curr = curr->next;
-  }
-
-  /* If we have any functional units in the currently loaded design, create the list now */
-  if( *funit_size > 0 ) {
-
-    /* Allocate array to store functional unit names */
-    *funit_names = (char**)malloc_safe( sizeof( char* ) * (*funit_size) );
-    *funit_types = (char**)malloc_safe( sizeof( char* ) * (*funit_size) );
-
-    /* Now let's populate the functional unit list */
-    i    = 0;
-    curr = db_list[curr_db]->funit_head;
-    while( curr != NULL ) {
-      if( !funit_is_unnamed( curr->funit ) &&
-          ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module( curr->funit ) )) ) {
-        unsigned int rv;
-        (*funit_names)[i] = strdup_safe( curr->funit->name );
-        rv = snprintf( tmpstr, 10, "%d", curr->funit->type );
-        assert( rv < 10 );
-        (*funit_types)[i] = strdup_safe( tmpstr );
-        i++;
-      }
-      curr = curr->next;
-    }
-
-  }
-
-  PROFILE_END;
-
-  return( retval );
-
-}
-
-/*!
- \return Returns name of filename containing specified funit_name if functional unit name was found in
-         design; otherwise, returns a value of NULL.
-
- Searches design for functional unit named funit_name.  If functional unit is found, the filename of the
- functional unit is returned to the calling function.  If the functional unit was not found, a value of NULL
- is returned to the calling function indicating an error occurred.
-*/
-char* funit_get_filename(
-  const char* funit_name,  /*!< Name of functional unit to get filename for */
-  int         funit_type   /*!< Type of functional unit to get filename for */
-) { PROFILE(FUNIT_GET_FILENAME);
-
-  funit_link* funitl;        /* Pointer to functional unit link containing matched functional unit */
-  char*       fname = NULL;  /* Name of filename containing specified functional unit */
-
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
-    fname = strdup_safe( funitl->funit->filename );
-  }
-
-  PROFILE_END;
-
-  return( fname );
-
-}
-
-/*!
  \return Returns a value of TRUE if functional unit was found; otherwise, returns a value of FALSE.
 
  Finds specified functional unit name in design and returns the starting and ending line numbers of
@@ -161,6 +75,10 @@ bool funit_get_start_and_end_lines(
 
 /*
  $Log$
+ Revision 1.14.4.2  2008/08/06 20:11:34  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.14.4.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
