@@ -2,14 +2,14 @@
   <title>Navigating the Assertion Source Code Window</title>
   <para>
   The Assertion Source Viewer window allows the user to see the source code for the current assertion in the 
-  <xref linkend="chapter.gui.assert">. To view this window, simply click the <emphasis role="bold">Show Code</emphasis> 
-  button in the Verbose Assertion Coverage window. <xref linkend="figure.gui.assert.source"> shows a zero_one_hot OVL 
+  <xref linkend="chapter.gui.assert"/>. To view this window, simply click the <emphasis role="bold">Show Code</emphasis> 
+  button in the Verbose Assertion Coverage window. <xref linkend="figure.gui.assert.source"/> shows a zero_one_hot OVL 
   assertion code with syntax highlighting applied.
   </para>
   <para>
     <figure id="figure.gui.assert.source" xreflabel="Assertion Source Viewer Window">
       <title>Assertion Source Viewer Window</title>
-      <mediaobject><imageobject><imagedata fileref="img/assert_src.gif" format="GIF"></imageobject></mediaobject>
+      <mediaobject><imageobject><imagedata fileref="img/assert_src.gif" format="GIF"/></imageobject></mediaobject>
     </figure>
   </para>
 
