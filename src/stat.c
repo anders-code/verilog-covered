@@ -25,38 +25,38 @@
 
 
 /*!
- \return  Pointer to newly created/initialized statistic structure.
-
  Allocates new memory for a coverage statistic structure and initializes
  its values.
 */
-statistic* statistic_create() { PROFILE(STATISTIC_CREATE);
+void statistic_create(
+  statistic** stat  /*!< Pointer to newly create/initialized statistic structure */
+) { PROFILE(STATISTIC_CREATE);
 
-  statistic* stat;   /* New statistic structure */
+  if( *stat == NULL ) {
+    *stat = (statistic*)malloc_safe( sizeof( statistic ) );
+  }
 
-  stat = (statistic*)malloc_safe( sizeof( statistic ) );
-
-  stat->line_total    = 0;
-  stat->line_hit      = 0;
-  stat->tog_total     = 0;
-  stat->tog01_hit     = 0;
-  stat->tog10_hit     = 0;
-  stat->tog_cov_found = FALSE;
-  stat->comb_total    = 0;
-  stat->comb_hit      = 0;
-  stat->state_total   = 0;
-  stat->state_hit     = 0;
-  stat->arc_total     = 0;
-  stat->arc_hit       = 0;
-  stat->assert_total  = 0;
-  stat->assert_hit    = 0;
-  stat->mem_ae_total  = 0;
-  stat->mem_wr_hit    = 0;
-  stat->mem_rd_hit    = 0;
-  stat->mem_tog_total = 0;
-  stat->mem_tog01_hit = 0;
-  stat->mem_tog10_hit = 0;
-  stat->show          = TRUE;
+  (*stat)->line_total    = 0;
+  (*stat)->line_hit      = 0;
+  (*stat)->tog_total     = 0;
+  (*stat)->tog01_hit     = 0;
+  (*stat)->tog10_hit     = 0;
+  (*stat)->tog_cov_found = FALSE;
+  (*stat)->comb_total    = 0;
+  (*stat)->comb_hit      = 0;
+  (*stat)->state_total   = 0;
+  (*stat)->state_hit     = 0;
+  (*stat)->arc_total     = 0;
+  (*stat)->arc_hit       = 0;
+  (*stat)->assert_total  = 0;
+  (*stat)->assert_hit    = 0;
+  (*stat)->mem_ae_total  = 0;
+  (*stat)->mem_wr_hit    = 0;
+  (*stat)->mem_rd_hit    = 0;
+  (*stat)->mem_tog_total = 0;
+  (*stat)->mem_tog01_hit = 0;
+  (*stat)->mem_tog10_hit = 0;
+  (*stat)->show          = TRUE;
 
   PROFILE_END;
 
@@ -155,6 +155,10 @@ void statistic_dealloc(
 
 /*
  $Log$
+ Revision 1.13.4.2  2008/08/06 20:11:35  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.13.4.1  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

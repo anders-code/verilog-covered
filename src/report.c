@@ -55,6 +55,7 @@
 
 extern char         user_msg[USER_MSG_LENGTH];
 extern db**         db_list;
+extern unsigned int db_size;
 extern unsigned int curr_db;
 extern str_link*    merge_in_head;
 extern str_link*    merge_in_tail;
@@ -450,10 +451,8 @@ void report_gather_instance_stats(
 
   funit_inst* curr;        /* Pointer to current instance being evaluated */
 
-  /* Create a statistics structure for this instance */
-  assert( root->stat == NULL );
-
-  root->stat = statistic_create();
+  /* Create and initialize statistic structure */
+  statistic_create( &(root->stat) );
 
   /* Get coverage results for all children first */
   curr = root->child_head;
@@ -510,7 +509,7 @@ void report_gather_instance_stats(
 
     /* Only get race condition statistics for this instance module if the module hasn't been gathered yet */
     if( report_race && (root->funit->stat == NULL) ) {
-      root->funit->stat = statistic_create();
+      statistic_create( &(root->funit->stat) );
       race_get_stats( root->funit->race_head,
                       &(root->funit->stat->race_total),
                       &(root->funit->stat->rtype_total) );
@@ -537,7 +536,7 @@ static void report_gather_funit_stats(
 
   while( head != NULL ) {
 
-    head->funit->stat = statistic_create();
+    statistic_create( &(head->funit->stat) );
 
     /* If this module is an OVL assertion module, don't get statistics for it */
     if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
@@ -797,21 +796,30 @@ void report_read_cdd_and_ready(
   } else {
 
     inst_link* instl;
+    bool       first = (db_size == 0);
 
     /* Read in database, performing instance merging */
-    db_read( ifile, read_mode );
+    curr_db = 0;
+    db_read( ifile, (first ? READ_MODE_REPORT_NO_MERGE : READ_MODE_MERGE_INST_MERGE) );
     bind_perform( TRUE, 0 );
 
     /* Gather instance statistics */
-    instl = db_list[curr_db]->inst_head;
+    instl = db_list[0]->inst_head;
     while( instl != NULL ) {
       report_gather_instance_stats( instl->inst );
       instl = instl->next;
     }
 
+    /* Read in database again, performing module merging */
+    curr_db = 1;
+    db_read( ifile, READ_MODE_REPORT_MOD_MERGE );
+    bind_perform( TRUE, 0 );
+
     /* Now merge functional units and gather module statistics */
-    db_merge_funits();
-    report_gather_funit_stats( db_list[curr_db]->funit_head );
+    report_gather_funit_stats( db_list[1]->funit_head );
+
+    /* Set the current database back to 0 */
+    curr_db = 0;
 
   }
 
@@ -1021,6 +1029,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104.2.7  2008/08/06 20:11:35  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.104.2.6  2008/07/23 05:10:11  phase1geo
  Adding -d and -ext options to rank and merge commands.  Updated necessary files
  per this change and updated regressions.
