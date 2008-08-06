@@ -26,6 +26,7 @@
 #include "exclude.h"
 #include "expr.h"
 #include "fsm.h"
+#include "func_iter.h"
 #include "instance.h"
 #include "line.h"
 #include "link.h"
@@ -236,8 +237,8 @@ static void exclude_arc_assign_and_recalc(
  corresponds to this description.  If one could not be found, a value of NULL is returned.
 */
 static funit_inst* exclude_find_instance_from_funit_info(
-    const char* funit_name,
-    int         funit_type
+  const char* funit_name,
+  int         funit_type
 ) {
 
   funit_link* funitl;         /* Found functional unit link */
@@ -253,202 +254,145 @@ static funit_inst* exclude_find_instance_from_funit_info(
 }
 
 /*!
- \param funit_name  Name of functional unit containing expression to set line exclusion for
- \param funit_type  Type of functional unit containing expression to set line exclusion for
- \param line        Line number of expression that needs to be set
- \param value       Specifies if we should exclude (1) or include (0) the specified line
-
- \return Returns TRUE if we successfully set the appropriate expression(s); otherwise, returns FALSE.
-
  Finds the expression(s) and functional unit instance for the given name, type and line number and calls
  the exclude_expr_assign_and_recalc function for each matching expression, setting the excluded bit
  of the expression and recalculating the summary coverage information.
 */
-bool exclude_set_line_exclude( const char* funit_name, int funit_type, int line, int value ) {
+void exclude_set_line_exclude(
+  func_unit* funit,  /*!< Pointer to functional unit */
+  int        line,   /*!< Line number of expression that needs to be set */
+  int        value   /*!< Specifies if we should exclude (1) or include (0) the specified line */
+) { PROFILE(EXCLUDE_SET_LINE_EXCLUDE);
 
-  bool        retval = FALSE;  /* Return value for this function */
-  funit_link* funitl;          /* Pointer to found functional unit link */
-  exp_link*   expl;            /* Pointer to current expression link */
+  exp_link* expl;  /* Pointer to current expression link */
 
-  /* Find the functional unit that matches the description */
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+  /* Find the expression(s) that match the given line number */
+  expl = funit->exp_head;
+  do {
+    while( (expl != NULL) && ((expl->exp->line != line) || (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0)) ) {
+      expl = expl->next;
+    }
+    if( expl != NULL ) {
+      exclude_expr_assign_and_recalc( expl->exp, funit, (value == 1), TRUE );
+      expl = expl->next;
+    }
+  } while( expl != NULL );
 
-    /* Find the expression(s) that match the given line number */
-    expl = funitl->funit->exp_head;
-    do {
-      while( (expl != NULL) && ((expl->exp->line != line) || (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0)) ) {
-        expl = expl->next;
-      }
-      if( expl != NULL ) {
-        exclude_expr_assign_and_recalc( expl->exp, funitl->funit, (value == 1), TRUE );
-        expl   = expl->next;
-        retval = TRUE;
-      }
-    } while( expl != NULL );
-
-  }
-
-  return( retval );
+  PROFILE_END;
 
 }
 
 /*!
- \param funit_name  Name of functional unit containing expression to set line exclusion for
- \param funit_type  Type of functional unit containing expression to set line exclusion for
- \param sig_name    Name of signal to set the toggle exclusion for
- \param value       Specifies if we should exclude (1) or include (0) the specified line
-
- \return Returns TRUE if we successfully set the appropriate expression(s); otherwise, returns FALSE.
-
  Finds the signal and functional unit instance for the given name, type and sig_name and calls
  the exclude_sig_assign_and_recalc function for the matching signal, setting the excluded bit
  of the signal and recalculating the summary coverage information.
 */
-bool exclude_set_toggle_exclude( const char* funit_name, int funit_type, const char* sig_name, int value ) {
+void exclude_set_toggle_exclude(
+  func_unit*  funit,     /*!< Pointer to functional unit */
+  const char* sig_name,  /*!< Name of signal to set the toggle exclusion for */
+  int         value      /*!< Specifies if we should exclude (1) or include (0) the specified line */
+) { PROFILE(EXCLUDE_SET_TOGGLE_EXCLUDE);
 
-  bool        retval = FALSE;  /* Return value for this function */
-  funit_link* funitl;          /* Pointer to found functional unit link */
-  sig_link*   sigl;            /* Pointer to current signal link */
+  sig_link* sigl;  /* Pointer to current signal link */
 
-  /* Find the functional unit that matches the description */
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
-
-    /* Find the signal that matches the given signal name and sets its excluded bit */
-    if( (sigl = sig_link_find( sig_name, funitl->funit->sig_head )) != NULL ) {
-      exclude_sig_assign_and_recalc( sigl->sig, funitl->funit, (value == 1) );
-      retval = TRUE;
-    }
+  /* Find the signal that matches the given signal name and sets its excluded bit */
+  if( (sigl = sig_link_find( sig_name, funit->sig_head )) != NULL ) {
+    exclude_sig_assign_and_recalc( sigl->sig, funit, (value == 1) );
+  }
       
-  }
-
-  return( retval );
+  PROFILE_END;
 
 }
 
 /*!
- \param funit_name  Name of functional unit containing expression to set combination/assertion exclusioo for
- \param funit_type  Type of functional unit containing expression to set combination/assertion exclusion for
- \param expr_id     Expression ID of root expression to set exclude value for
- \param uline_id    Underline ID of expression to set exclude value for
- \param value       Specifies if we should exclude (1) or include (0) the specified line
-
- \return Returns TRUE if we successfully set the appropriate expression(s); otherwise, returns FALSE.
-
  Finds the expression and functional unit instance for the given name, type and sig_name and calls
  the exclude_expr_assign_and_recalc function for the matching expression, setting the excluded bit
  of the expression and recalculating the summary coverage information.
 */
-bool exclude_set_comb_exclude( const char* funit_name, int funit_type, int expr_id, int uline_id, int value ) {
+void exclude_set_comb_exclude(
+  func_unit* funit,     /*!< Pointer to functional unit */
+  int        expr_id,   /*!< Expression ID of root expression to set exclude value for */
+  int        uline_id,  /*!< Underline ID of expression to set exclude value for */
+  int        value      /*!< Specifies if we should exclude (1) or include (0) the specified line */
+) { PROFILE(EXCLUDE_SET_COMB_EXCLUDE);
 
-  bool        retval = FALSE;  /* Return value for this function */
-  funit_link* funitl;          /* Pointer to found functional unit link */
-  exp_link*   expl;            /* Pointer to current expression link */
-  expression* subexp;          /* Pointer to found subexpression */
+  exp_link*   expl;    /* Pointer to current expression link */
+  expression* subexp;  /* Pointer to found subexpression */
 
-  /* Find the functional unit that matches the description */
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
-
-    /* Find the signal that matches the given signal name and sets its excluded bit */
-    if( (expl = exp_link_find( expr_id, funitl->funit->exp_head )) != NULL ) {
-      if( (subexp = expression_find_uline_id( expl->exp, uline_id )) != NULL ) {
-        exclude_expr_assign_and_recalc( subexp, funitl->funit, (value == 1), FALSE );
-        retval = TRUE;
-      }
+  /* Find the signal that matches the given signal name and sets its excluded bit */
+  if( (expl = exp_link_find( expr_id, funit->exp_head )) != NULL ) {
+    if( (subexp = expression_find_uline_id( expl->exp, uline_id )) != NULL ) {
+      exclude_expr_assign_and_recalc( subexp, funit, (value == 1), FALSE );
     }
-
   }
 
-  return( retval );
+  PROFILE_END;
 
 }
 
 /*!
- \param funit_name  Name of functional unit containing expression to set combination/assertion exclusion for
- \param funit_type  Type of functional unit containing expression to set combination/assertion exclusion for
- \param expr_id     Expression ID of output state variable
- \param from_state  String containing input state value
- \param to_state    String containing output state value
- \param value       Specifies if we should exclude (1) or include (0) the specified line
-
- \return Returns TRUE if we successfully set the appropriate expression(s); otherwise, returns FALSE.
-
+ TBD
 */
-bool exclude_set_fsm_exclude(
-  const char* funit_name,
-  int         funit_type,
-  int         expr_id,
-  char*       from_state,
-  char*       to_state,
-  int         value
-) {
+void exclude_set_fsm_exclude(
+  func_unit* funit,       /*!< Pointer to functional unit */
+  int        expr_id,     /*!< Expression ID of output state variable */
+  char*      from_state,  /*!< String containing input state value */
+  char*      to_state,    /*!< String containing output state value */
+  int        value        /*!< Specifies if we should exclude (1) or include (0) the specified line */
+) { PROFILE(EXCLUDE_SET_FSM_EXCLUDE);
 
-  bool        retval = FALSE;  /* Return value for this function */
-  funit_link* funitl;          /* Pointer to found functional unit link */
+  fsm_link* curr_fsm;
 
-  /* Find the functional unit instance that matches the functional unit description */
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+  /* Find the corresponding table */
+  curr_fsm = funit->fsm_head;
+  while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
+    curr_fsm = curr_fsm->next;
+  }
 
-    fsm_link* curr_fsm;
+  if( curr_fsm != NULL ) {
 
-    /* Find the corresponding table */
-    curr_fsm = funitl->funit->fsm_head;
-    while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
-      curr_fsm = curr_fsm->next;
-    }
+    vector* from_vec;
+    vector* to_vec;
+    int     found_index;
+    int     from_base, to_base;
 
-    if( curr_fsm != NULL ) {
+    /* Convert from/to state strings into vector values */
+    vector_from_string( &from_state, FALSE, &from_vec, &from_base );
+    vector_from_string( &to_state, FALSE, &to_vec, &to_base );
 
-      vector* from_vec;
-      vector* to_vec;
-      int     found_index;
-      int     from_base, to_base;
-
-      /* Convert from/to state strings into vector values */
-      vector_from_string( &from_state, FALSE, &from_vec, &from_base );
-      vector_from_string( &to_state, FALSE, &to_vec, &to_base );
-
-      /* Find the arc entry and perform the exclusion assignment and coverage recalculation */
-      if( (found_index = arc_find_arc( curr_fsm->table->table, arc_find_from_state( curr_fsm->table->table, from_vec ), arc_find_to_state( curr_fsm->table->table, to_vec ) )) != -1 ) {
-        exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, funitl->funit, (value == 1) );
-        retval = TRUE;
-      }
-
+    /* Find the arc entry and perform the exclusion assignment and coverage recalculation */
+    if( (found_index = arc_find_arc( curr_fsm->table->table, arc_find_from_state( curr_fsm->table->table, from_vec ), arc_find_to_state( curr_fsm->table->table, to_vec ) )) != -1 ) {
+      exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, funit, (value == 1) );
     }
 
   }
 
-  return( retval );
+  PROFILE_END;
 
 }
 
 /*!
- \param funit_name  Name of functional unit containing expression to set combination/assertion exclusioo for
- \param funit_type  Type of functional unit containing expression to set combination/assertion exclusion for
- \param inst_name   Name of child instance to find in given functional unit
- \param expr_id     Expression ID of expression to set exclude value for
- \param value       Specifies if we should exclude (1) or include (0) the specified line
-
- \return Returns TRUE if we successfully set the appropriate expression(s); otherwise, returns FALSE.
-
  Finds the expression and functional unit instance for the given name, type and sig_name and calls
  the exclude_expr_assign_and_recalc function for the matching expression, setting the excluded bit
  of the expression and recalculating the summary coverage information.
 */
-bool exclude_set_assert_exclude(
-  const char* funit_name,
-  int         funit_type,
-  char*       inst_name,
-  int         expr_id,
-  int         value
-) {
+void exclude_set_assert_exclude(
+  func_unit* funit,      /*!< Pointer to functional unit */
+  char*      inst_name,  /*!< Name of child instance to find in given functional unit */
+  int        expr_id,    /*!< Expression ID of expression to set exclude value for */
+  int        value       /*!< Specifies if we should exclude (1) or include (0) the specified line */
+) { PROFILE(EXCLUDE_SET_ASSERT_EXCLUDE);
 
-  bool        retval = FALSE;  /* Return value for this function */
-  funit_inst* inst;          /* Pointer to found functional unit instance */
-  funit_inst* curr_child;      /* Pointer to current child functional instance */
-  exp_link*   expl;            /* Pointer to current expression link */
+  funit_inst* inst;        /* Pointer to found functional unit instance */
+  funit_inst* curr_child;  /* Pointer to current child functional instance */
+  exp_link*   expl;        /* Pointer to current expression link */
+  int         ignore = 0;  /* Number of instances to ignore */
 
   /* Find the functional unit instance that matches the description */
-  if( (inst = exclude_find_instance_from_funit_info( funit_name, funit_type )) != NULL ) {
+  if( (inst = inst_link_find_by_funit( funit, db_list[curr_db]->inst_head, &ignore )) != NULL ) {
+   
+    func_iter  fi;
+    statement* stmt;
 
     /* Find child instance */
     curr_child = inst->child_head;
@@ -457,21 +401,32 @@ bool exclude_set_assert_exclude(
     }
     assert( curr_child != NULL );
 
+    /* Initialize the functional unit iterator */
+    func_iter_init( &fi, curr_child->funit );
+
+    while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->id != expr_id) );
+
     /* Find the signal that matches the given signal name and sets its excluded bit */
-    if( (expl = exp_link_find( expr_id, curr_child->funit->exp_head )) != NULL ) {
-      exclude_expr_assign_and_recalc( expl->exp, curr_child->funit, (value == 1), FALSE );
-      retval = TRUE;
+    if( stmt->exp->id == expr_id ) {
+      exclude_expr_assign_and_recalc( stmt->exp, curr_child->funit, (value == 1), FALSE );
     }
+
+    /* Deallocate functional unit statement iterator */
+    func_iter_dealloc( &fi );
 
   }
 
-  return( retval );
+  PROFILE_END;
 
 }
 
 
 /*
  $Log$
+ Revision 1.24.2.2  2008/08/06 20:11:33  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.24.2.1  2008/07/10 22:43:50  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
