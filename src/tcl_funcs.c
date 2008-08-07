@@ -1793,8 +1793,9 @@ int tcl_func_merge_cdd(
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
- Populates the "line_summary_total" and "line_summary_hit" global variables with the total number of lines
- and total number of lines hit during simulation information for the specified functional unit.
+ Populates the "line_summary_hit", "line_summary_excluded" and "line_summary_total" global variables with the total
+ number of lines hit during simulation, the total number of excluded lines and the total number of lines
+ for the specified functional unit.
 */
 int tcl_func_get_line_summary(
   ClientData  d,      /*!< Not used */
@@ -1804,31 +1805,34 @@ int tcl_func_get_line_summary(
 ) { PROFILE(TCL_FUNC_GET_LINE_SUMMARY);
 
   int          retval = TCL_OK;  /* Return value for this function */
-  unsigned int total;            /* Contains total number of lines evaluated */
   unsigned int hit;              /* Contains total number of lines hit */
+  unsigned int excluded;         /* Contains total number of lines excluded */
+  unsigned int total;            /* Contains total number of lines evaluated */
   char         value[20];        /* String version of a value */
   func_unit*   funit  = NULL;    /* Pointer to found functional unit */
   funit_inst*  inst   = NULL;    /* Pointer to found functional unit instance */
 
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
     if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
-      line_get_funit_summary( funit, &total, &hit );
+      line_get_funit_summary( funit, &hit, &excluded, &total );
     } else {
       snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find specified functional unit" );
     }
   } else {
     if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
-      line_get_inst_summary( inst, &total, &hit );
+      line_get_inst_summary( inst, &hit, &excluded, &total );
     } else {
       snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find specified functional unit instance" );
     }
   }
 
   if( (funit != NULL) || (inst != NULL) ) {
-    snprintf( value, 20, "%d", total );
-    Tcl_SetVar( tcl, "line_summary_total", value, TCL_GLOBAL_ONLY );
-    snprintf( value, 20, "%d", hit );
+    snprintf( value, 20, "%u", hit );
     Tcl_SetVar( tcl, "line_summary_hit", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%u", excluded );
+    Tcl_SetVar( tcl, "line_summary_excluded", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%u", total );
+    Tcl_SetVar( tcl, "line_summary_total", value, TCL_GLOBAL_ONLY );
   } else {
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1854,32 +1858,35 @@ int tcl_func_get_toggle_summary(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_GET_TOGGLE_SUMMARY);
 
-  int         retval = TCL_OK;  /* Return value for this function */
-  int         total;            /* Contains total number of signals evaluated */
-  int         hit;              /* Contains total number of signals hit */
-  char        value[20];        /* String version of a value */
-  func_unit*  funit  = NULL;    /* Pointer to found functional unit */
-  funit_inst* inst   = NULL;    /* Pointer to found functional unit instance */
+  int          retval = TCL_OK;  /* Return value for this function */
+  unsigned int hit;              /* Contains total number of signals hit */
+  unsigned int excluded;         /* Contains number of excluded toggles */
+  unsigned int total;            /* Contains total number of signals evaluated */
+  char         value[20];        /* String version of a value */
+  func_unit*   funit  = NULL;    /* Pointer to found functional unit */
+  funit_inst*  inst   = NULL;    /* Pointer to found functional unit instance */
 
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
     if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
-      toggle_get_funit_summary( funit, &total, &hit );
+      toggle_get_funit_summary( funit, &hit, &excluded, &total );
     } else {
       snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find specified functional unit" );
     }
   } else {
     if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
-      toggle_get_inst_summary( inst, &total, &hit );
+      toggle_get_inst_summary( inst, &hit, &excluded, &total );
     } else {
       snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find specified functional unit instance" );
     }
   }
 
   if( (funit != NULL) || (inst != NULL) ) {
-    snprintf( value, 20, "%d", total );
-    Tcl_SetVar( tcl, "toggle_summary_total", value, TCL_GLOBAL_ONLY );
-    snprintf( value, 20, "%d", hit );
+    snprintf( value, 20, "%u", hit );
     Tcl_SetVar( tcl, "toggle_summary_hit", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%u", excluded );
+    Tcl_SetVar( tcl, "toggle_summary_excluded", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%u", total );
+    Tcl_SetVar( tcl, "toggle_summary_total", value, TCL_GLOBAL_ONLY );
   } else {
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1905,32 +1912,35 @@ int tcl_func_get_memory_summary(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_GET_MEMORY_SUMMARY);
 
-  int         retval = TCL_OK;  /* Return value for this function */
-  int         total;            /* Contains total number of signals evaluated */
-  int         hit;              /* Contains total number of signals hit */
-  char        value[20];        /* String version of a value */
-  func_unit*  funit  = NULL;    /* Pointer to found functional unit */
-  funit_inst* inst   = NULL;    /* Pointer to found functional unit instance */
+  int          retval = TCL_OK;  /* Return value for this function */
+  unsigned int hit;              /* Contains total number of signals hit */
+  unsigned int excluded;         /* Number of excluded memory coverage points */
+  unsigned int total;            /* Contains total number of signals evaluated */
+  char         value[20];        /* String version of a value */
+  func_unit*   funit  = NULL;    /* Pointer to found functional unit */
+  funit_inst*  inst   = NULL;    /* Pointer to found functional unit instance */
 
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
     if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
-      memory_get_funit_summary( funit, &total, &hit );
+      memory_get_funit_summary( funit, &hit, &excluded, &total );
     } else {
-      snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find specified functional unit" );
+      strcpy( user_msg, "Internal Error:  Unable to find specified functional unit" );
     }
   } else {
     if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
-      memory_get_inst_summary( inst, &total, &hit );
+      memory_get_inst_summary( inst, &hit, &excluded, &total );
     } else {
-      snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find specified functional unit instance" );
+      strcpy( user_msg, "Internal Error:  Unable to find specified functional unit instance" );
     }
   }
 
   if( (funit != NULL) || (inst != NULL) ) {
-    snprintf( value, 20, "%d", total );
-    Tcl_SetVar( tcl, "memory_summary_total", value, TCL_GLOBAL_ONLY );
-    snprintf( value, 20, "%d", hit );
+    snprintf( value, 20, "%u", hit );
     Tcl_SetVar( tcl, "memory_summary_hit", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%u", excluded );
+    Tcl_SetVar( tcl, "memory_summary_excluded", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%u", total );
+    Tcl_SetVar( tcl, "memory_summary_total", value, TCL_GLOBAL_ONLY );
   } else {
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1956,32 +1966,35 @@ int tcl_func_get_comb_summary(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_GET_COMB_SUMMARY);
 
-  int         retval = TCL_OK;  /* Return value for this function */
-  int         total;            /* Contains total number of expressions evaluated */
-  int         hit;              /* Contains total number of expressions hit */
-  char        value[20];        /* String version of a value */
-  func_unit*  funit  = NULL;    /* Pointer to found functional unit */
-  funit_inst* inst   = NULL;    /* Pointer to found functional unit instance */
+  int          retval = TCL_OK;  /* Return value for this function */
+  unsigned int hit;              /* Contains total number of expressions hit */
+  unsigned int excluded;         /* Number of excluded logical combinations */
+  unsigned int total;            /* Contains total number of expressions evaluated */
+  char         value[20];        /* String version of a value */
+  func_unit*   funit  = NULL;    /* Pointer to found functional unit */
+  funit_inst*  inst   = NULL;    /* Pointer to found functional unit instance */
 
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
     if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
-      combination_get_funit_summary( funit, &total, &hit );
+      combination_get_funit_summary( funit, &hit, &excluded, &total );
     } else {
-      snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find specified functional unit" );
+      strcpy( user_msg, "Internal Error:  Unable to find specified functional unit" );
     }
   } else {
     if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
-      combination_get_inst_summary( inst, &total, &hit );
+      combination_get_inst_summary( inst, &hit, &excluded, &total );
     } else {
-      snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find specified functional unit instance" );
+      strcpy( user_msg, "Internal Error:  Unable to find specified functional unit instance" );
     }
   }
 
   if( (funit != NULL) || (inst != NULL) ) {
-    snprintf( value, 20, "%d", total );
-    Tcl_SetVar( tcl, "comb_summary_total", value, TCL_GLOBAL_ONLY );
-    snprintf( value, 20, "%d", hit );
+    snprintf( value, 20, "%u", hit );
     Tcl_SetVar( tcl, "comb_summary_hit", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%u", excluded );
+    Tcl_SetVar( tcl, "comb_summary_excluded", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%u", total );
+    Tcl_SetVar( tcl, "comb_summary_total", value, TCL_GLOBAL_ONLY );
   } else {
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -2007,32 +2020,35 @@ int tcl_func_get_fsm_summary(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_GET_FSM_SUMMARY);
 
-  int         retval = TCL_OK;  /* Return value for this function */
-  int         total;            /* Contains total number of expressions evaluated */
-  int         hit;              /* Contains total number of expressions hit */
-  char        value[20];        /* String version of a value */
-  func_unit*  funit  = NULL;    /* Pointer to found functional unit */
-  funit_inst* inst   = NULL;    /* Pointer to found functional unit instance */
+  int          retval = TCL_OK;  /* Return value for this function */
+  int          hit;              /* Contains total number of expressions hit */
+  int          excluded;         /* Number of excluded arcs */
+  int          total;            /* Contains total number of expressions evaluated */
+  char         value[20];        /* String version of a value */
+  func_unit*   funit  = NULL;    /* Pointer to found functional unit */
+  funit_inst*  inst   = NULL;    /* Pointer to found functional unit instance */
 
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
     if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
-      fsm_get_funit_summary( funit, &total, &hit );
+      fsm_get_funit_summary( funit, &hit, &excluded, &total );
     } else {
-      snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find specified functional unit" );
+      strcpy( user_msg, "Internal Error:  Unable to find specified functional unit" );
     }
   } else {
     if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
-      fsm_get_inst_summary( inst, &total, &hit );
+      fsm_get_inst_summary( inst, &hit, &excluded, &total );
     } else {
-      snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find specified functional unit instance" );
+      strcpy( user_msg, "Internal Error:  Unable to find specified functional unit instance" );
     }
   }
 
   if( (funit != NULL) || (inst != NULL) ) {
-    snprintf( value, 20, "%d", total );
-    Tcl_SetVar( tcl, "fsm_summary_total", value, TCL_GLOBAL_ONLY );
     snprintf( value, 20, "%d", hit );
     Tcl_SetVar( tcl, "fsm_summary_hit", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%d", excluded );
+    Tcl_SetVar( tcl, "fsm_summary_excluded", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%d", total );
+    Tcl_SetVar( tcl, "fsm_summary_total", value, TCL_GLOBAL_ONLY );
   } else {
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -2058,21 +2074,24 @@ int tcl_func_get_assert_summary(
 ) { PROFILE(TCL_FUNC_GET_ASSERT_SUMMARY);
 
   int          retval = TCL_OK;  /* Return value for this function */
-  unsigned int total;            /* Contains total number of expressions evaluated */
   unsigned int hit;              /* Contains total number of expressions hit */
+  unsigned int excluded;         /* Number of excluded assertions */
+  unsigned int total;            /* Contains total number of expressions evaluated */
   char         value[20];        /* String version of a value */
   func_unit*   funit;            /* Pointer to found functional unit */
 
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
     curr_db = tcl_func_is_funit( tcl, argv[1] ) ? 1 : 0;
-    assertion_get_funit_summary( funit, &total, &hit );
+    assertion_get_funit_summary( funit, &hit, &excluded, &total );
     curr_db = 0;
 
-    snprintf( value, 20, "%d", total );
-    Tcl_SetVar( tcl, "assert_summary_total", value, TCL_GLOBAL_ONLY );
-    snprintf( value, 20, "%d", hit );
+    snprintf( value, 20, "%u", hit );
     Tcl_SetVar( tcl, "assert_summary_hit", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%u", excluded );
+    Tcl_SetVar( tcl, "assert_summary_excluded", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%u", total );
+    Tcl_SetVar( tcl, "assert_summary_total", value, TCL_GLOBAL_ONLY );
 
   } else {
 
@@ -2695,6 +2714,9 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.77.4.5  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.77.4.4  2008/08/06 20:11:35  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.
