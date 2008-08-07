@@ -42,8 +42,9 @@ void assertion_parse_attr(
 /*! \brief Gather statistics for assertion coverage */
 void assertion_get_stats(
             const func_unit* funit,
-  /*@out@*/ unsigned int*    total,
-  /*@out@*/ unsigned int*    hit
+  /*@out@*/ unsigned int*    hit,
+  /*@out@*/ unsigned int*    excluded,
+  /*@out@*/ unsigned int*    total
 );
 
 /*! \brief Generates report output for assertion coverage */
@@ -52,8 +53,9 @@ void assertion_report( FILE* ofile, bool verbose );
 /*! \brief Retrieves the total and hit counts of assertions for the specified functional unit */
 void assertion_get_funit_summary(
             func_unit*    funit,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
 );
 
 /*! \brief Collects uncovered and covered assertion instance names for the given module */
@@ -77,6 +79,9 @@ void assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.13.4.3  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.13.4.2  2008/08/06 20:11:33  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

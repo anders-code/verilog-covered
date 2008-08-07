@@ -71,20 +71,22 @@ void assertion_parse_attr(
  Gets total and hit assertion coverage statistics for the given functional unit.
 */
 void assertion_get_stats(
-            const func_unit* funit,  /*!< Pointer to current functional unit */
-  /*@out@*/ unsigned int*    total,  /*!< Pointer to the total number of assertions found in this functional unit */
-  /*@out@*/ unsigned int*    hit     /*!< Pointer to the total number of hit assertions in this functional unit */
+            const func_unit* funit,     /*!< Pointer to current functional unit */
+  /*@out@*/ unsigned int*    hit,       /*!< Pointer to the total number of hit assertions in this functional unit */
+  /*@out@*/ unsigned int*    excluded,  /*!< Pointer to the number of excluded assertions */
+  /*@out@*/ unsigned int*    total      /*!< Pointer to the total number of assertions found in this functional unit */
 ) { PROFILE(ASSERTION_GET_STATS);
 
   assert( funit != NULL );
 
   /* Initialize total and hit values */
-  *total = 0;
-  *hit   = 0;
+  *hit      = 0;
+  *excluded = 0;
+  *total    = 0;
 
   /* If OVL assertion coverage is needed, check this functional unit */
   if( info_suppl.part.assert_ovl == 1 ) {
-    ovl_get_funit_stats( funit, total, hit );
+    ovl_get_funit_stats( funit, hit, excluded, total );
   }
 
   PROFILE_END;
@@ -468,17 +470,19 @@ void assertion_report(
  Counts the total number and number of hit assertions for the specified functional unit.
 */
 void assertion_get_funit_summary(
-            func_unit*    funit,  /*!< Pointer to functional unit */
-  /*@out@*/ unsigned int* total,  /*!< Pointer to the total number of assertions in the specified functional unit */
-  /*@out@*/ unsigned int* hit     /*!< Pointer to the number of hit assertions in the specified functional unit */
+            func_unit*    funit,     /*!< Pointer to functional unit */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to the number of hit assertions in the specified functional unit */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to the number of excluded assertions */
+  /*@out@*/ unsigned int* total      /*!< Pointer to the total number of assertions in the specified functional unit */
 ) { PROFILE(ASSERTION_GET_FUNIT_SUMMARY);
 	
   /* Initialize total and hit counts */
-  *total = 0;
-  *hit   = 0;
+  *hit      = 0;
+  *excluded = 0;
+  *total    = 0;
   
   if( info_suppl.part.assert_ovl == 1 ) {
-    ovl_get_funit_stats( funit, total, hit );
+    ovl_get_funit_stats( funit, hit, excluded, total );
   }
     
   PROFILE_END;
@@ -536,6 +540,9 @@ void assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.32.4.3  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.32.4.2  2008/08/06 20:11:33  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.
