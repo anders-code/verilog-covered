@@ -29,9 +29,6 @@
 /*! \brief Creates and initializes a new statistic structure. */
 void statistic_create( statistic** stat );
 
-/*! \brief Merges the results of the stat_from to the stat_to */
-void statistic_merge( statistic* stat_to, statistic* stat_from );
-
 /*! \brief Returns TRUE if the given statistic structure contains no coverage information */
 bool statistic_is_empty( statistic* stat );
 
@@ -41,6 +38,9 @@ void statistic_dealloc( statistic* stat );
 
 /*
  $Log$
+ Revision 1.8.6.2  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.8.6.1  2008/08/06 20:11:35  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.
