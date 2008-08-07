@@ -251,8 +251,7 @@ proc create_memory_window {signal} {
 
 proc populate_memory_entry_frame { sel_mem_index } {
 
-  global memory_array memory_pdim memory_udim mem_name
-  global memory_pdim_str
+  global memory_array memory_pdim memory_udim memory_pdim mem_name
   global memory_msb memory_lsb mem_curr_entry
   global uncov_bgColor uncov_fgColor
   global cov_bgColor cov_fgColor
@@ -310,7 +309,7 @@ proc populate_memory_entry_frame { sel_mem_index } {
 
   # Create leave bindings for textboxes
   bind .memwin.f.ft.t <Leave> {
-    .memwin.f.ft.info configure -text "$mem_name$mem_curr_entry$memory_pdim_str"
+    .memwin.f.ft.info configure -text "$mem_name$mem_curr_entry$memory_pdim"
   }
 
   # Add memory tags and bindings
@@ -329,7 +328,7 @@ proc populate_memory_entry_frame { sel_mem_index } {
     .memwin.f.ft.t xview moveto 1.0
   }
 
-  .memwin.f.ft.info configure -text "$mem_name$mem_curr_entry$memory_pdim_str"
+  .memwin.f.ft.info configure -text "$mem_name$mem_curr_entry$memory_pdim"
 
 }
 

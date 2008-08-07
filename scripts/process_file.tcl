@@ -532,13 +532,13 @@ proc display_memory_cov {} {
         set cmd_ucov_uline ".bot.right.txt tag add uncov_uline"
         set cmd_excl_uline ".bot.right.txt tag add excl_uline"
         foreach entry $uncovered_memories {
-          set cmd_enter  [concat $cmd_enter  [lindex $entry 0]]
-          set cmd_button [concat $cmd_button [lindex $entry 0]]
-          set cmd_leave  [concat $cmd_leave  [lindex $entry 0]]
-          if {[lindex $entry 1] == 0} {
-            set cmd_ucov_uline [concat $cmd_ucov_uline $entry]
+          set cmd_enter  [concat $cmd_enter  [lindex $entry 0] [lindex $entry 1]]
+          set cmd_button [concat $cmd_button [lindex $entry 0] [lindex $entry 1]]
+          set cmd_leave  [concat $cmd_leave  [lindex $entry 0] [lindex $entry 1]]
+          if {[lindex $entry 2] == 0} {
+            set cmd_ucov_uline [concat $cmd_ucov_uline [lindex $entry 0] [lindex $entry 1]]
           } else {
-            set cmd_excl_uline [concat $cmd_excl_uline $entry]
+            set cmd_excl_uline [concat $cmd_excl_uline [lindex $entry 0] [lindex $entry 1]]
           } 
         }
         eval $cmd_enter
@@ -570,7 +570,7 @@ proc display_memory_cov {} {
       if {[expr $cov_type == 1] && [expr [llength $covered_memories] > 0]} {
         set cmd_cov ".bot.right.txt tag add cov_highlight"
         foreach entry $covered_memories {
-          set cmd_cov [concat $cmd_cov [lindex $entry 0]]
+          set cmd_cov [concat $cmd_cov [lindex $entry 0] [lindex $entry 1]]
         }
         eval $cmd_cov
         .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
