@@ -466,45 +466,53 @@ void report_gather_instance_stats(
 
     /* Get coverage results for this instance */
     if( report_line ) {
-      line_get_stats( root->funit, &(root->stat->line_total), &(root->stat->line_hit) );
+      line_get_stats( root->funit,
+                      &(root->stat->line_hit),
+                      &(root->stat->line_excluded),
+                      &(root->stat->line_total) );
     }
 
     if( report_toggle ) {
       toggle_get_stats( root->funit->sig_head, 
-                        &(root->stat->tog_total), 
                         &(root->stat->tog01_hit), 
                         &(root->stat->tog10_hit),
+                        &(root->stat->tog_excluded),
+                        &(root->stat->tog_total), 
                         &(root->stat->tog_cov_found) );
     }
 
     if( report_combination ) {
       combination_get_stats( root->funit,
-                             &(root->stat->comb_total),
-                             &(root->stat->comb_hit) );
+                             &(root->stat->comb_hit),
+                             &(root->stat->comb_excluded),
+                             &(root->stat->comb_total) );
     }
 
     if( report_fsm ) {
       fsm_get_stats( root->funit->fsm_head,
-                     &(root->stat->state_total),
                      &(root->stat->state_hit),
+                     &(root->stat->state_total),
+                     &(root->stat->arc_hit),
                      &(root->stat->arc_total),
-                     &(root->stat->arc_hit) );
+                     &(root->stat->arc_excluded) );
     }
 
     if( report_assertion ) {
       assertion_get_stats( root->funit,
-                           &(root->stat->assert_total),
-                           &(root->stat->assert_hit) );
+                           &(root->stat->assert_hit),
+                           &(root->stat->assert_excluded),
+                           &(root->stat->assert_total) );
     }
 
     if( report_memory ) {
       memory_get_stats( root->funit->sig_head,
-                        &(root->stat->mem_ae_total),
                         &(root->stat->mem_wr_hit),
                         &(root->stat->mem_rd_hit),
-                        &(root->stat->mem_tog_total),
+                        &(root->stat->mem_ae_total),
                         &(root->stat->mem_tog01_hit),
-                        &(root->stat->mem_tog10_hit) );
+                        &(root->stat->mem_tog10_hit),
+                        &(root->stat->mem_tog_total),
+                        &(root->stat->mem_excluded) );
     }
 
     /* Only get race condition statistics for this instance module if the module hasn't been gathered yet */
@@ -543,45 +551,53 @@ static void report_gather_funit_stats(
 
       /* Get coverage results for this instance */
       if( report_line ) {
-        line_get_stats( head->funit, &(head->funit->stat->line_total), &(head->funit->stat->line_hit) );
+        line_get_stats( head->funit,
+                        &(head->funit->stat->line_hit),
+                        &(head->funit->stat->line_excluded),
+                        &(head->funit->stat->line_total) );
       }
 
       if( report_toggle ) {
         toggle_get_stats( head->funit->sig_head, 
-                          &(head->funit->stat->tog_total), 
                           &(head->funit->stat->tog01_hit), 
                           &(head->funit->stat->tog10_hit),
+                          &(head->funit->stat->tog_excluded),
+                          &(head->funit->stat->tog_total), 
                           &(head->funit->stat->tog_cov_found) );
       }
 
       if( report_combination ) {
         combination_get_stats( head->funit,
-                               &(head->funit->stat->comb_total),
-                               &(head->funit->stat->comb_hit) );
+                               &(head->funit->stat->comb_hit),
+                               &(head->funit->stat->comb_excluded),
+                               &(head->funit->stat->comb_total) );
       }
 
       if( report_fsm ) {
         fsm_get_stats( head->funit->fsm_head,
-                       &(head->funit->stat->state_total),
                        &(head->funit->stat->state_hit),
+                       &(head->funit->stat->state_total),
+                       &(head->funit->stat->arc_hit) ,
                        &(head->funit->stat->arc_total),
-                       &(head->funit->stat->arc_hit) );
+                       &(head->funit->stat->arc_excluded) );
       }
 
       if( report_assertion ) {
         assertion_get_stats( head->funit,
-                             &(head->funit->stat->assert_total),
-                             &(head->funit->stat->assert_hit) );
+                             &(head->funit->stat->assert_hit),
+                             &(head->funit->stat->assert_excluded),
+                             &(head->funit->stat->assert_total) );
       }
 
       if( report_memory ) {
         memory_get_stats( head->funit->sig_head,
-                          &(head->funit->stat->mem_ae_total),
                           &(head->funit->stat->mem_wr_hit),
                           &(head->funit->stat->mem_rd_hit),
-                          &(head->funit->stat->mem_tog_total),
+                          &(head->funit->stat->mem_ae_total),
                           &(head->funit->stat->mem_tog01_hit),
-                          &(head->funit->stat->mem_tog10_hit) );
+                          &(head->funit->stat->mem_tog10_hit),
+                          &(head->funit->stat->mem_tog_total),
+                          &(head->funit->stat->mem_excluded) );
       }
 
       if( report_race ) {
@@ -1029,6 +1045,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104.2.8  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.104.2.7  2008/08/06 20:11:35  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.
