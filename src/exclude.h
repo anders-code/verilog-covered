@@ -26,6 +26,12 @@
 #include "defines.h"
 
 
+/*! \brief Returns TRUE if the specified line is excluded in the given functional unit. */
+bool exclude_is_line_excluded(
+  func_unit* funit,
+  int        line
+);
+
 /*! \brief Sets the excluded bit for all expressions in the given functional unit with the
            specified line number and recalculates the summary coverage information. */
 void exclude_set_line_exclude(
@@ -35,6 +41,12 @@ void exclude_set_line_exclude(
   /*@out@*/ statistic* stat
 );
 
+/*! \brief Returns TRUE if the specified signal is excluded in the given functional unit. */
+bool exclude_is_toggle_excluded(
+  func_unit* funit,
+  char*      sig_name
+);
+
 /*! \brief Sets the excluded bit for the specified signal in the given functional unit and
            recalculates the summary coverage information. */
 void exclude_set_toggle_exclude(
@@ -42,6 +54,13 @@ void exclude_set_toggle_exclude(
             const char* sig_name,
             int         value,
   /*@out@*/ statistic*  stat
+);
+
+/*! \return Returns TRUE if the specified expression is excluded in the given functional unit. */
+bool exclude_is_comb_excluded(
+  func_unit* funit,
+  int        expr_id,
+  int        uline_id
 );
 
 /*! \brief Sets the excluded bit for the specified expression in the given functional unit
@@ -54,6 +73,14 @@ void exclude_set_comb_exclude(
   /*@out@*/ statistic* stat
 );
 
+/*! \brief Returns TRUE if the specified FSM is excluded in the given functional unit. */
+bool exclude_is_fsm_excluded(
+  func_unit* funit,
+  int        expr_id,
+  char*      from_state,
+  char*      to_state
+);
+
 /*! \brief Sets the excluded bit for the specified state transition in the given functional unit
            and recalculates the summary coverage information. */
 void exclude_set_fsm_exclude(
@@ -63,6 +90,13 @@ void exclude_set_fsm_exclude(
             char*      to_state,
             int        value,
   /*@out@*/ statistic* stat
+);
+
+/*! \brief Returns TRUE if given assertion is excluded from coverage. */
+bool exclude_is_assert_excluded(
+  func_unit* funit,
+  char*      inst_name,
+  int        expr_id
 );
 
 /*! \brief Sets the excluded bit for the specified expression in the given functional unit
@@ -78,6 +112,9 @@ void exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.8.6.3  2008/08/07 23:22:49  phase1geo
+ Added initial code to synchronize module and instance exclusion information.  Checkpointing.
+
  Revision 1.8.6.2  2008/08/07 18:03:51  phase1geo
  Fixing instance exclusion segfault issue with GUI.  Also cleaned up function
  documentation in link.c.

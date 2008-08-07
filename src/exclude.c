@@ -257,6 +257,27 @@ static funit_inst* exclude_find_instance_from_funit_info(
 }
 
 /*!
+ \return Returns TRUE if the specified line is excluded in the given functional unit; otherwise, returns FALSE.
+*/
+bool exclude_is_line_excluded(
+  func_unit* funit,  /*!< Pointer to functional unit to check */
+  int        line    /*!< Line number of line to check */
+) { PROFILE(EXCLUDE_IS_LINE_EXCLUDED);
+
+  stmt_iter si;  /* Statement iterator */
+
+  stmt_iter_reset( &si, funit->stmt_head );
+  while( (si.curr != NULL) && (si.curr->stmt->exp->line != line) ) {
+    stmt_iter_next( &si );
+  }
+
+  PROFILE_END;
+
+  return( (si.curr == NULL) || (si.curr->stmt->suppl.part.excluded == 1) );
+
+}
+
+/*!
  Finds the expression(s) and functional unit instance for the given name, type and line number and calls
  the exclude_expr_assign_and_recalc function for each matching expression, setting the excluded bit
  of the expression and recalculating the summary coverage information.
@@ -287,6 +308,24 @@ void exclude_set_line_exclude(
 }
 
 /*!
+ \return Returns TRUE if the specified signal is excluded from coverage consideration; otherwise, returns FALSE.
+*/
+bool exclude_is_toggle_excluded(
+  func_unit* funit,    /*!< Pointer to functional unit to check */
+  char*      sig_name  /*!< Name of signal to search for */
+) { PROFILE(EXCLUDE_IS_TOGGLE_EXCLUDED);
+
+  sig_link* sigl;  /* Pointer to found signal link */
+
+  sigl = sig_link_find( sig_name, funit->sig_head );
+
+  PROFILE_END;
+
+  return( (sigl == NULL) || (sigl->sig->suppl.part.excluded == 1) );
+
+}
+
+/*!
  Finds the signal and functional unit instance for the given name, type and sig_name and calls
  the exclude_sig_assign_and_recalc function for the matching signal, setting the excluded bit
  of the signal and recalculating the summary coverage information.
@@ -306,6 +345,28 @@ void exclude_set_toggle_exclude(
   }
       
   PROFILE_END;
+
+}
+
+/*!
+ \return Returns TRUE if specified underlined expression is excluded from coverage; otherwise, returns FALSE.
+*/
+bool exclude_is_comb_excluded(
+  func_unit* funit,
+  int        expr_id,
+  int        uline_id
+) { PROFILE(EXCLUDE_IS_COMB_EXCLUDED);
+
+  exp_link*   expl;    /* Pointer to current expression link */
+  expression* subexp;  /* Pointer to found expression */
+
+  if( (expl = exp_link_find( expr_id, funit->exp_head )) != NULL ) {
+    subexp = expression_find_uline_id( expl->exp, uline_id );
+  }
+
+  PROFILE_END;
+
+  return( (expl == NULL) || (subexp == NULL) || (subexp->suppl.part.excluded == 1) );
 
 }
 
@@ -333,6 +394,50 @@ void exclude_set_comb_exclude(
   }
 
   PROFILE_END;
+
+}
+
+/*!
+ \return Returns TRUE if the given FSM state transition was excluded from coverage; otherwise, returns FALSE.
+*/
+bool exclude_is_fsm_excluded(
+  func_unit* funit,
+  int        expr_id,
+  char*      from_state,
+  char*      to_state
+) { PROFILE(EXCLUDE_IS_FSM_EXCLUDED);
+
+  fsm_link* curr_fsm;     /* Pointer to current FSM structure */
+  int       found_index;  /* Index of found state transition */
+
+  /* Find the corresponding table */
+  curr_fsm = funit->fsm_head;
+  while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
+    curr_fsm = curr_fsm->next;
+  }
+
+  if( curr_fsm != NULL ) {
+
+    vector* from_vec;
+    vector* to_vec;
+    int     from_base, to_base;
+
+    /* Convert from/to state strings into vector values */
+    vector_from_string( &from_state, FALSE, &from_vec, &from_base );
+    vector_from_string( &to_state, FALSE, &to_vec, &to_base );
+
+    /* Find the arc entry and perform the exclusion assignment and coverage recalculation */
+    found_index = arc_find_arc( curr_fsm->table->table, arc_find_from_state( curr_fsm->table->table, from_vec ), arc_find_to_state( curr_fsm->table->table, to_vec ) );
+
+    /* Deallocate vectors */
+    vector_dealloc( from_vec );
+    vector_dealloc( to_vec );
+
+  }
+
+  PROFILE_END;
+
+  return( (curr_fsm == NULL) || (found_index == -1) || (curr_fsm->table->table->arcs[found_index]->suppl.part.excluded == 1) );
 
 }
 
@@ -380,6 +485,49 @@ void exclude_set_fsm_exclude(
   }
 
   PROFILE_END;
+
+}
+
+/*!
+ \return Returns TRUE if the given assertion is excluded from coverage consideration; otherwise, returns FALSE.
+*/
+bool exclude_is_assert_excluded(
+  func_unit* funit,
+  char*      inst_name, 
+  int        expr_id
+) { PROFILE(EXCLUDE_IS_ASSERT_EXCLUDED);
+
+  funit_inst* inst;        /* Pointer to found functional unit instance */
+  funit_inst* curr_child;  /* Pointer to current child functional instance */
+  exp_link*   expl;        /* Pointer to current expression link */
+  int         ignore = 0;  /* Number of instances to ignore */
+  statement*  stmt;        /* Pointer to current statement */
+
+  /* Find the functional unit instance that matches the description */
+  if( (inst = inst_link_find_by_funit( funit, db_list[curr_db]->inst_head, &ignore )) != NULL ) {
+
+    func_iter fi;
+
+    /* Find child instance */
+    curr_child = inst->child_head;
+    while( (curr_child != NULL) && (strcmp( curr_child->name, inst_name ) != 0) ) {
+      curr_child = curr_child->next;
+    }
+    assert( curr_child != NULL );
+
+    /* Initialize the functional unit iterator */
+    func_iter_init( &fi, curr_child->funit );
+
+    while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->id != expr_id) );
+
+    /* Deallocate functional unit statement iterator */
+    func_iter_dealloc( &fi );
+
+  }
+
+  PROFILE_END;
+
+  return( (inst == NULL) || (stmt == NULL) || (stmt->exp->id != expr_id) || (stmt->exp->suppl.part.excluded == 1) );
 
 }
 
@@ -436,6 +584,9 @@ void exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.24.2.6  2008/08/07 23:22:49  phase1geo
+ Added initial code to synchronize module and instance exclusion information.  Checkpointing.
+
  Revision 1.24.2.5  2008/08/07 20:51:04  phase1geo
  Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
  table output and exclusion.  Checkpointing.
