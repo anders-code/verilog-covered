@@ -139,27 +139,9 @@ int tcl_func_get_funit_list(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_GET_FUNIT_LIST);
 
-  funit_link*  curr;             /* Pointer to current functional unit link */
-  int          retval = TCL_OK;  /* Return value of this function  */
-  char         str[30];          /* Temporary string */
-  int          i;                /* Loop iterator */
-
-  /* Only collect the functional units if we haven't haven't done so already */
-  if( gui_funit_index == 0 ) {
-
-    /* Count the number of functional units */
-    curr = db_list[1]->funit_head;
-    while( curr != NULL ) {
-      if( !funit_is_unnamed( curr->funit ) &&
-          ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module_safe( curr->funit ) )) ) {
-        gui_funit_list = (func_unit**)realloc_safe( gui_funit_list, (sizeof( func_unit* ) * gui_funit_index), (sizeof( func_unit* ) * (gui_funit_index + 1)) );
-        gui_funit_list[gui_funit_index] = curr->funit;
-        gui_funit_index++;
-      }
-      curr = curr->next;
-    }
-
-  }
+  int  retval = TCL_OK;  /* Return value of this function  */
+  char str[30];          /* Temporary string */
+  int  i;                /* Loop iterator */
 
   /* Create the functional unit list */
   for( i=0; i<gui_funit_index; i++ ) {
@@ -219,24 +201,6 @@ int tcl_func_get_instance_list(
   inst_link* instl;            /* Pointer to current instance link */
   int        i;                /* Loop iterator */
   char       str[30];          /* Temporary string */
-
-  /* Only add instances if we haven't done so already */
-  if( gui_inst_index == 0 ) {
-
-    if( db_list[0]->inst_head != NULL ) {
-      instl = db_list[0]->inst_head;
-      while( instl != NULL ) {
-        tcl_func_get_instances( tcl, instl->inst );
-        instl = instl->next;
-      }
-    } else {
-      strcpy( user_msg, "Unable to get instance list from this design" );
-      Tcl_AddErrorInfo( tcl, user_msg );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      retval = TCL_ERROR;
-    }
-
-  }
 
   /* Create the functional unit list */
   for( i=0; i<gui_inst_index; i++ ) {
@@ -624,13 +588,13 @@ int tcl_func_collect_race_lines(
       Tcl_AppendElement( tcl, line );
     }
 
-    free_safe( slines, (sizeof( int ) * line_cnt) );
-    free_safe( elines, (sizeof( int ) * line_cnt) );
+    free_safe( slines,  (sizeof( int ) * line_cnt) );
+    free_safe( elines,  (sizeof( int ) * line_cnt) );
     free_safe( reasons, (sizeof( int ) * line_cnt) );
 
   } else {
 
-    strcpy( user_msg, "Internal Error:  Unable to find module in design" );
+    strcpy( user_msg, "Internal Error:  Unable to find functional unit in design" );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
@@ -783,7 +747,7 @@ int tcl_func_collect_uncovered_memories(
     /* Populate uncovered_memories array */
     sigl = sig_head;
     while( sigl != NULL ) {
-      snprintf( tmp, 120, "{%d.%d %d.%d} %d",
+      snprintf( tmp, 120, "%d.%d %d.%d %d",
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15),
                 sigl->sig->suppl.part.excluded );
@@ -839,7 +803,7 @@ int tcl_func_collect_covered_memories(
     /* Populate covered_memories array */
     sigl = sig_head;
     while( sigl != NULL ) {
-      snprintf( tmp, 120, "{%d.%d %d.%d} %d",
+      snprintf( tmp, 120, "%d.%d %d.%d %d",
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15), 
                 sigl->sig->suppl.part.excluded );
@@ -1665,6 +1629,9 @@ int tcl_func_open_cdd(
   /* If no filename was specified, the user hit cancel so just exit gracefully */
   if( argv[1][0] != '\0' ) {
 
+    funit_link* funitl;
+    inst_link*  instl;
+
     ifile = strdup_safe( argv[1] );
 
     Try {
@@ -1674,6 +1641,25 @@ int tcl_func_open_cdd(
     }
 
     free_safe( ifile, (strlen( ifile ) + 1) );
+
+    /* Gather the functional unit instances */
+    instl = db_list[0]->inst_head;
+    while( instl != NULL ) {
+      tcl_func_get_instances( tcl, instl->inst );
+      instl = instl->next;
+    }
+
+    /* Gather the functional units */
+    funitl = db_list[1]->funit_head;
+    while( funitl != NULL ) {
+      if( !funit_is_unnamed( funitl->funit ) &&
+          ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module_safe( funitl->funit ) )) ) {
+        gui_funit_list = (func_unit**)realloc_safe( gui_funit_list, (sizeof( func_unit* ) * gui_funit_index), (sizeof( func_unit* ) * (gui_funit_index + 1)) );
+        gui_funit_list[gui_funit_index] = funitl->funit;
+        gui_funit_index++;
+      }
+      funitl = funitl->next;
+    }
 
   }
 
@@ -2318,19 +2304,62 @@ int tcl_func_set_line_exclude(
   line  = atoi( argv[2] );
   value = atoi( argv[3] );
 
+  /* If the current block is a functional unit, deal with the functional unit database */
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
+
     if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+
+      unsigned int i;
+
+      /* Set the line exclusion value for the functional unit database */
       exclude_set_line_exclude( funit, line, value, funit->stat );
-      
+
+      /* Now set the line exclusion in all matching instances in the instance database */
+      for( i=0; i<gui_inst_index; i++ ) {
+        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
+          exclude_set_line_exclude( gui_inst_list[i]->funit, line, value, gui_inst_list[i]->stat );
+        }
+      }
+
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
     }
+
+  /* Otherwise, deal with the functional unit instance database */
   } else {
+
     if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
+
+      unsigned int i = gui_inst_index;
+
+      /* Set the line exclusion value for the instance database */
       exclude_set_line_exclude( inst->funit, line, value, inst->stat );
+
+      /* If we are attempting to exclude the line, check all other instances -- if they all exclude this line, exclude the line from the functional unit */
+      if( value == 1 ) {
+
+        /* Check the line exclusion for all instances that match our functional unit */
+        i = 0;
+        while( (i<gui_inst_index) &&
+               ((strcmp( gui_inst_list[i]->funit->name, inst->funit->name ) != 0) ||
+                (gui_inst_list[i]->funit->type != inst->funit->type)       ||
+                exclude_is_line_excluded( gui_inst_list[i]->funit, line )) ) i++;
+
+      }
+
+      /* If the line has been excluded from all instances, exclude it from the functional unit database */
+      if( i == gui_inst_index ) {
+        i = 0;
+        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
+        if( i < gui_funit_index ) {
+          exclude_set_line_exclude( gui_funit_list[i], line, value, gui_funit_list[i]->stat );
+        }
+      }
+
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
     }
+
   }
 
   if( (funit == NULL) && (inst == NULL) ) {
@@ -2369,18 +2398,62 @@ int tcl_func_set_toggle_exclude(
   sig_name = strdup_safe( argv[2] );
   value    = atoi( argv[3] );
 
+  /* If the current block is a functional unit, deal with the functional unit database */
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
+
     if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+
+      unsigned int i;
+
+      /* Set the toggle exclusion value for the functional unit database */
       exclude_set_toggle_exclude( funit, sig_name, value, funit->stat );
+
+      /* Now set the toggle exclusion in all matching instances in the instance database */
+      for( i=0; i<gui_inst_index; i++ ) {
+        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
+          exclude_set_toggle_exclude( gui_inst_list[i]->funit, sig_name, value, gui_inst_list[i]->stat );
+        }
+      }
+
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
     }
+
+  /* Otherwise, deal with the functional unit instance database */
   } else {
+
     if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
+
+      unsigned int i = gui_inst_index;
+
+      /* Set the toggle exclusion value for the instance database */
       exclude_set_toggle_exclude( inst->funit, sig_name, value, inst->stat );
+
+      /* If we are attempting to exclude the signal, check all other instances -- if they all exclude this signal, exclude the signal from the functional unit */
+      if( value == 1 ) {
+
+        /* Check the toggle exclusion for all instances that match our functional unit */
+        i = 0;
+        while( (i<gui_inst_index) &&
+               ((strcmp( gui_inst_list[i]->funit->name, inst->funit->name ) != 0) ||
+                (gui_inst_list[i]->funit->type != inst->funit->type)       ||
+                exclude_is_toggle_excluded( gui_inst_list[i]->funit, sig_name )) ) i++;
+
+      }
+
+      /* If the signal has been excluded from all instances, exclude it from the functional unit database */
+      if( i == gui_inst_index ) {
+        i = 0;
+        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
+        if( i < gui_funit_index ) {
+          exclude_set_toggle_exclude( gui_funit_list[i], sig_name, value, gui_funit_list[i]->stat );
+        }
+      }
+
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
     }
+
   }
 
   if( (funit == NULL) && (inst == NULL) ) {
@@ -2421,18 +2494,62 @@ int tcl_func_set_memory_exclude(
   sig_name = strdup_safe( argv[2] );
   value    = atoi( argv[3] );
 
+  /* If the current block is a functional unit, deal with the functional unit database */
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
+
     if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+
+      unsigned int i;
+
+      /* Set the memory exclusion value for the functional unit database */
       exclude_set_toggle_exclude( funit, sig_name, value, funit->stat );
+
+      /* Now set the memory exclusion in all matching instances in the instance database */
+      for( i=0; i<gui_inst_index; i++ ) {
+        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
+          exclude_set_toggle_exclude( gui_inst_list[i]->funit, sig_name, value, gui_inst_list[i]->stat );
+        }
+      }
+
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
     }
+
+  /* Otherwise, deal with the functional unit instance database */
   } else {
+
     if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
+
+      unsigned int i = gui_inst_index;
+
+      /* Set the memory exclusion value for the instance database */
       exclude_set_toggle_exclude( inst->funit, sig_name, value, inst->stat );
+
+      /* If we are attempting to exclude the signal, check all other instances -- if they all exclude this signal, exclude the signal from the functional unit */
+      if( value == 1 ) {
+
+        /* Check the toggle exclusion for all instances that match our functional unit */
+        i = 0;
+        while( (i<gui_inst_index) &&
+               ((strcmp( gui_inst_list[i]->funit->name, inst->funit->name ) != 0) ||
+                (gui_inst_list[i]->funit->type != inst->funit->type)       ||
+                exclude_is_toggle_excluded( gui_inst_list[i]->funit, sig_name )) ) i++;
+
+      }
+
+      /* If the signal has been excluded from all instances, exclude it from the functional unit database */
+      if( i == gui_inst_index ) {
+        i = 0;
+        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
+        if( i < gui_funit_index ) {
+          exclude_set_toggle_exclude( gui_funit_list[i], sig_name, value, gui_funit_list[i]->stat );
+        }
+      }
+
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
     }
+
   }
 
   if( (funit == NULL) && (inst == NULL) ) {
@@ -2475,18 +2592,62 @@ int tcl_func_set_comb_exclude(
   uline_id = atoi( argv[3] );
   value    = atoi( argv[4] );
 
+  /* If the current block is a functional unit, deal with the functional unit database */
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
+
     if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+
+      unsigned int i;
+
+      /* Set the combinational logic exclusion value for the functional unit database */
       exclude_set_comb_exclude( funit, expr_id, uline_id, value, funit->stat );
+
+      /* Now set the combinational logic exclusion in all matching instances in the instance database */
+      for( i=0; i<gui_inst_index; i++ ) {
+        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
+          exclude_set_comb_exclude( gui_inst_list[i]->funit, expr_id, uline_id, value, gui_inst_list[i]->stat ); 
+        }
+      }
+
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
     }
+
+  /* Otherwise, deal with the functional unit instance database */
   } else {
+
     if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
+
+      unsigned int i = gui_inst_index;
+
+      /* Set the combinational logic exclusion value for the instance database */
       exclude_set_comb_exclude( inst->funit, expr_id, uline_id, value, inst->stat );
+
+      /* If we are attempting to exclude the expression, check all other instances -- if they all exclude this expression, exclude the expression from the functional unit */
+      if( value == 1 ) {
+
+        /* Check the combinational logic exclusion for all instances that match our functional unit */
+        i = 0;
+        while( (i<gui_inst_index) &&
+               ((strcmp( gui_inst_list[i]->funit->name, inst->funit->name ) != 0) ||
+                (gui_inst_list[i]->funit->type != inst->funit->type)       ||
+                exclude_is_comb_excluded( gui_inst_list[i]->funit, expr_id, uline_id )) ) i++;
+
+      }
+
+      /* If the expression has been excluded from all instances, exclude it from the functional unit database */
+      if( i == gui_inst_index ) {
+        i = 0;
+        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
+        if( i < gui_funit_index ) {
+          exclude_set_comb_exclude( gui_funit_list[i], expr_id, uline_id, value, gui_funit_list[i]->stat );
+        }
+      }
+
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
     }
+
   }
 
   if( (funit == NULL) && (inst == NULL) ) {
@@ -2529,20 +2690,62 @@ int tcl_func_set_fsm_exclude(
   to_state   = strdup_safe( argv[4] );
   value      = atoi( argv[5] );
 
+  /* If the current block is a functional unit, deal with the functional unit database */
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
+
     if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
-      printf( "Excluding FSM for module %s, expr_id: %d, from_state: %s, to_state: %s, value: %d\n", funit->name, expr_id, from_state, to_state, value );
+
+      unsigned int i;
+
+      /* Set the combinational logic exclusion value for the functional unit database */
       exclude_set_fsm_exclude( funit, expr_id, from_state, to_state, value, funit->stat );
+
+      /* Now set the combinational logic exclusion in all matching instances in the instance database */
+      for( i=0; i<gui_inst_index; i++ ) {
+        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
+          exclude_set_fsm_exclude( gui_inst_list[i]->funit, expr_id, from_state, to_state, value, gui_inst_list[i]->stat );
+        }
+      }
+
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
     }
+
+  /* Otherwise, deal with the functional unit instance database */
   } else {
+
     if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
-      printf( "Excluding FSM for instance %s\n", inst->name );
+
+      unsigned int i = gui_inst_index;
+  
+      /* Set the combinational logic exclusion value for the instance database */
       exclude_set_fsm_exclude( inst->funit, expr_id, from_state, to_state, value, inst->stat );
+  
+      /* If we are attempting to exclude the expression, check all other instances -- if they all exclude this expression, exclude the expression from the functional unit */
+      if( value == 1 ) {
+  
+        /* Check the combinational logic exclusion for all instances that match our functional unit */
+        i = 0;
+        while( (i<gui_inst_index) &&
+               ((strcmp( gui_inst_list[i]->funit->name, inst->funit->name ) != 0) ||
+                (gui_inst_list[i]->funit->type != inst->funit->type)       ||
+                exclude_is_fsm_excluded( gui_inst_list[i]->funit, expr_id, from_state, to_state )) ) i++;
+
+      }
+
+      /* If the expression has been excluded from all instances, exclude it from the functional unit database */
+      if( i == gui_inst_index ) {
+        i = 0;
+        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
+        if( i < gui_funit_index ) {
+          exclude_set_fsm_exclude( gui_funit_list[i], expr_id, from_state, to_state, value, gui_funit_list[i]->stat );
+        }
+      }
+
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
     }
+
   }
 
   if( (funit == NULL) && (inst == NULL) ) {
@@ -2586,20 +2789,68 @@ int tcl_func_set_assert_exclude(
   expr_id   = atoi( argv[3] );
   value     = atoi( argv[4] );
 
+  /* If the current block is a functional unit, deal with the functional unit database */
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
+
     if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+
+      unsigned int i;
+
+      /* Set the combinational logic exclusion value for the functional unit database */
       curr_db = 1;
       exclude_set_assert_exclude( funit, inst_name, expr_id, value, funit->stat );
+
+      /* Now set the combinational logic exclusion in all matching instances in the instance database */
+      for( i=0; i<gui_inst_index; i++ ) {
+        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
+          curr_db = 0;
+          exclude_set_assert_exclude( gui_inst_list[i]->funit, inst_name, expr_id, value, gui_inst_list[i]->stat );
+        }
+      }
+
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
     }
+
+  /* Otherwise, deal with the functional unit instance database */
   } else {
+
     if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
       curr_db = 0;
       exclude_set_assert_exclude( inst->funit, inst_name, expr_id, value, inst->stat );
+
+      unsigned int i = gui_inst_index;
+  
+      /* Set the combinational logic exclusion value for the instance database */
+      curr_db = 0;
+      exclude_set_assert_exclude( inst->funit, inst_name, expr_id, value, inst->stat );
+  
+      /* If we are attempting to exclude the expression, check all other instances -- if they all exclude this expression, exclude the expression from the functional unit */
+      if( value == 1 ) {
+  
+        /* Check the combinational logic exclusion for all instances that match our functional unit */
+        i       = 0;
+        while( (i<gui_inst_index) &&
+               ((strcmp( gui_inst_list[i]->funit->name, inst->funit->name ) != 0) ||
+                (gui_inst_list[i]->funit->type != inst->funit->type)       ||
+                exclude_is_assert_excluded( gui_inst_list[i]->funit, inst_name, expr_id )) ) i++;
+
+      }
+
+      /* If the expression has been excluded from all instances, exclude it from the functional unit database */
+      if( i == gui_inst_index ) {
+        i = 0;
+        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
+        if( i < gui_funit_index ) {
+          curr_db = 1;
+          exclude_set_assert_exclude( gui_funit_list[i], inst_name, expr_id, value, gui_funit_list[i]->stat );
+        }
+      }
+
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
     }
+
   }
   curr_db = 0;
 
@@ -2787,6 +3038,9 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.77.4.8  2008/08/07 23:22:49  phase1geo
+ Added initial code to synchronize module and instance exclusion information.  Checkpointing.
+
  Revision 1.77.4.7  2008/08/07 20:51:04  phase1geo
  Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
  table output and exclusion.  Checkpointing.
