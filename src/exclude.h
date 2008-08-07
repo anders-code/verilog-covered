@@ -29,50 +29,59 @@
 /*! \brief Sets the excluded bit for all expressions in the given functional unit with the
            specified line number and recalculates the summary coverage information. */
 void exclude_set_line_exclude(
-  func_unit* funit,
-  int        line,
-  int        value
+            func_unit* funit,
+            int        line,
+            int        value,
+  /*@out@*/ statistic* stat
 );
 
 /*! \brief Sets the excluded bit for the specified signal in the given functional unit and
            recalculates the summary coverage information. */
 void exclude_set_toggle_exclude(
-  func_unit*  funit,
-  const char* sig_name,
-  int         value
+            func_unit*  funit,
+            const char* sig_name,
+            int         value,
+  /*@out@*/ statistic*  stat
 );
 
 /*! \brief Sets the excluded bit for the specified expression in the given functional unit
            and recalculates the summary coverage information. */
 void exclude_set_comb_exclude(
-  func_unit* funit,
-  int        expr_id,
-  int        uline_id,
-  int        value
+            func_unit* funit,
+            int        expr_id,
+            int        uline_id,
+            int        value,
+  /*@out@*/ statistic* stat
 );
 
 /*! \brief Sets the excluded bit for the specified state transition in the given functional unit
            and recalculates the summary coverage information. */
 void exclude_set_fsm_exclude(
-  func_unit* funit,
-  int        expr_id,
-  char*      from_state,
-  char*      to_state,
-  int        value
+            func_unit* funit,
+            int        expr_id,
+            char*      from_state,
+            char*      to_state,
+            int        value,
+  /*@out@*/ statistic* stat
 );
 
 /*! \brief Sets the excluded bit for the specified expression in the given functional unit
            and recalculates the summary coverage information. */
 void exclude_set_assert_exclude(
-  func_unit* funit,
-  char*      inst_name,
-  int        expr_id,
-  int        value
+            func_unit* funit,
+            char*      inst_name,
+            int        expr_id,
+            int        value,
+  /*@out@*/ statistic* stat
 );
 
 
 /*
  $Log$
+ Revision 1.8.6.2  2008/08/07 18:03:51  phase1geo
+ Fixing instance exclusion segfault issue with GUI.  Also cleaned up function
+ documentation in link.c.
+
  Revision 1.8.6.1  2008/08/06 20:11:33  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

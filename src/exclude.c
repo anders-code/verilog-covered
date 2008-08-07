@@ -43,13 +43,11 @@ extern isuppl       info_suppl;
 
 
 /*!
- \param expr  Pointer to current expression to evaluate.
-
  \return Returns TRUE if a parent expression of this expression was found to be excluded from
          coverage; otherwise, returns FALSE.
 */
 static bool exclude_is_parent_excluded(
-    expression* expr
+    expression* expr  /*!< Pointer to current expression to evaluate */
 ) {
 
   return( (expr != NULL) &&
@@ -59,19 +57,15 @@ static bool exclude_is_parent_excluded(
 }
 
 /*!
- \param expr      Pointer to expression that is being excluded/included
- \param funit     Pointer to functional unit containing this expression
- \param excluded  Specifies if expression is being excluded or included
- \param set_line  Set to TRUE when this function is being called for line exclusion
-
  Sets the specified expression's exclude bit to the given value and recalculates all
  affected coverage information for this instance.
 */
 static void exclude_expr_assign_and_recalc(
-  expression* expr,
-  func_unit*  funit,
-  bool        excluded,
-  bool        set_line
+            expression* expr,      /*!< Pointer to expression that is being excluded/included */
+            func_unit*  funit,     /*!< Pointer to functional unit containing this expression */
+            bool        excluded,  /*!< Specifies if expression is being excluded or included */
+            bool        set_line,  /*!< Set to TRUE when this function is being called for line exclusion */
+  /*@out@*/ statistic*  stat       /*!< Pointer to statistics structure to update */
 ) { PROFILE(EXCLUDE_EXPR_ASSIGN_AND_RECALC);
 
   unsigned int comb_hit      = 0;  /* Total number of hit combinations within this tree */
@@ -96,11 +90,11 @@ static void exclude_expr_assign_and_recalc(
           (expr->line != 0) &&
           (expr->exec_num == 0) ) {
         if( excluded ) {
-          funit->stat->line_hit++;
-          funit->stat->line_excluded++;
+          stat->line_hit++;
+          stat->line_excluded++;
         } else {
-          funit->stat->line_hit--;
-          funit->stat->line_excluded--;
+          stat->line_hit--;
+          stat->line_excluded--;
         }
       }
     }
@@ -109,13 +103,13 @@ static void exclude_expr_assign_and_recalc(
     combination_reset_counted_expr_tree( expr );
     if( excluded ) {
       combination_get_tree_stats( expr, &ulid, 0, exclude_is_parent_excluded( expr ), &comb_hit, &comb_excluded, &comb_total );
-      funit->stat->comb_hit      += (comb_total - comb_hit);
-      funit->stat->comb_excluded += (comb_total - comb_excluded);
+      stat->comb_hit      += (comb_total - comb_hit);
+      stat->comb_excluded += (comb_total - comb_excluded);
     } else {
       expr->suppl.part.excluded = 0;
       combination_get_tree_stats( expr, &ulid, 0, exclude_is_parent_excluded( expr ), &comb_hit, &comb_excluded, &comb_total );
-      funit->stat->comb_hit      -= (comb_total - comb_hit);
-      funit->stat->comb_excluded -= (comb_total - comb_excluded);
+      stat->comb_hit      -= (comb_total - comb_hit);
+      stat->comb_excluded -= (comb_total - comb_excluded);
     }
 
   } else {
@@ -124,11 +118,11 @@ static void exclude_expr_assign_and_recalc(
     if( ovl_is_assertion_module( funit ) && ovl_is_coverage_point( expr ) ) {
       if( expr->exec_num == 0 ) {
         if( excluded ) {
-          funit->stat->assert_hit++;
-          funit->stat->assert_excluded++;
+          stat->assert_hit++;
+          stat->assert_excluded++;
         } else {
-          funit->stat->assert_hit--;
-          funit->stat->assert_excluded--;
+          stat->assert_hit--;
+          stat->assert_excluded--;
         }
       }
     }
@@ -136,7 +130,7 @@ static void exclude_expr_assign_and_recalc(
   }
 
   /* Set the exclude bits in the expression supplemental field */
-  expr->suppl.part.excluded      = excluded ? 1 : 0;
+  expr->suppl.part.excluded = excluded ? 1 : 0;
   if( (ESUPPL_IS_ROOT( expr->suppl ) == 1) && (expr->parent->stmt != NULL) ) {
     expr->parent->stmt->suppl.part.excluded = (excluded && set_line) ? 1 : 0;
   }
@@ -146,17 +140,13 @@ static void exclude_expr_assign_and_recalc(
 }
 
 /*!
- \param sig       Pointer to signal that is being excluded/included.
- \param funit     Pointer to functional unit that contains this signal.
- \param excluded  Specifies if signal is being excluded or included.
-
  Sets the specified signal's exclude bit to the given value and recalculates all
  affected coverage information for this instance.
 */
 static void exclude_sig_assign_and_recalc(
-  vsignal*   sig,
-  func_unit* funit,
-  bool       excluded
+            vsignal*   sig,       /*!< Pointer to signal that is being excluded/included */
+            bool       excluded,  /*!< Specifies if signal is being excluded or included */
+  /*@out@*/ statistic* stat       /*!< Pointer to statistic structure to update */
 ) { PROFILE(EXCLUDE_SIG_ASSIGN_AND_RECALC);
 
   /* First, set the exclude bit in the signal supplemental field */
@@ -178,17 +168,17 @@ static void exclude_sig_assign_and_recalc(
 
     /* Recalculate the total and hit values for memory coverage */
     if( excluded ) {
-      funit->stat->mem_wr_hit    += (ae_total  - wr_hit);
-      funit->stat->mem_rd_hit    += (ae_total  - rd_hit);
-      funit->stat->mem_tog01_hit += (tog_total - tog01_hit);
-      funit->stat->mem_tog10_hit += (tog_total - tog10_hit);
-      funit->stat->mem_excluded  += ((ae_total * 2) + (tog_total * 2));
+      stat->mem_wr_hit    += (ae_total  - wr_hit);
+      stat->mem_rd_hit    += (ae_total  - rd_hit);
+      stat->mem_tog01_hit += (tog_total - tog01_hit);
+      stat->mem_tog10_hit += (tog_total - tog10_hit);
+      stat->mem_excluded  += ((ae_total * 2) + (tog_total * 2));
     } else {
-      funit->stat->mem_wr_hit    -= (ae_total  - wr_hit);
-      funit->stat->mem_rd_hit    -= (ae_total  - rd_hit);
-      funit->stat->mem_tog01_hit -= (tog_total - tog01_hit);
-      funit->stat->mem_tog10_hit -= (tog_total - tog10_hit);
-      funit->stat->mem_excluded  -= ((ae_total * 2) + (tog_total * 2));
+      stat->mem_wr_hit    -= (ae_total  - wr_hit);
+      stat->mem_rd_hit    -= (ae_total  - rd_hit);
+      stat->mem_tog01_hit -= (tog_total - tog01_hit);
+      stat->mem_tog10_hit -= (tog_total - tog10_hit);
+      stat->mem_excluded  -= ((ae_total * 2) + (tog_total * 2));
     }
 
   /* Otherwise, the toggle coverage numbers should be adjusted */
@@ -202,13 +192,13 @@ static void exclude_sig_assign_and_recalc(
 
     /* Recalculate the total and hit values for toggle coverage */
     if( excluded ) {
-      funit->stat->tog01_hit    += (sig->value->width - hit01);
-      funit->stat->tog10_hit    += (sig->value->width - hit10);
-      funit->stat->tog_excluded += (sig->value->width * 2);
+      stat->tog01_hit    += (sig->value->width - hit01);
+      stat->tog10_hit    += (sig->value->width - hit10);
+      stat->tog_excluded += (sig->value->width * 2);
     } else {
-      funit->stat->tog01_hit    -= (sig->value->width - hit01);
-      funit->stat->tog10_hit    -= (sig->value->width - hit10);
-      funit->stat->tog_excluded -= (sig->value->width * 2);
+      stat->tog01_hit    -= (sig->value->width - hit01);
+      stat->tog10_hit    -= (sig->value->width - hit10);
+      stat->tog_excluded -= (sig->value->width * 2);
     }
 
   }
@@ -222,17 +212,17 @@ static void exclude_sig_assign_and_recalc(
  affected coverage information for this instance.
 */
 static void exclude_arc_assign_and_recalc(
-  fsm_table* table,      /*!< Pointer FSM table */
-  int        arc_index,  /*!< Specifies the index of the entry containing the transition */
-  func_unit* funit,      /*!< Pointer to functional unit containing the FSM */
-  bool       exclude     /*!< Specifies if we are excluding or including coverage */
+            fsm_table* table,      /*!< Pointer FSM table */
+            int        arc_index,  /*!< Specifies the index of the entry containing the transition */
+            bool       exclude,    /*!< Specifies if we are excluding or including coverage */
+  /*@out@*/ statistic* stat        /*!< Pointer to statistic structure to update */
 ) { PROFILE(EXCLUDE_ARC_ASSIGN_AND_RECALC);
 
   /* Set the excluded bit in the specified entry and adjust coverage numbers, if necessary */
   table->arcs[arc_index]->suppl.part.excluded = (exclude ? 1 : 0);
   if( table->arcs[arc_index]->suppl.part.hit == 0 ) {
-    funit->stat->arc_hit      += exclude ? 1 : -1;
-    funit->stat->arc_excluded += exclude ? 1 : -1;
+    stat->arc_hit      += exclude ? 1 : -1;
+    stat->arc_excluded += exclude ? 1 : -1;
   }
 
   PROFILE_END;
@@ -272,9 +262,10 @@ static funit_inst* exclude_find_instance_from_funit_info(
  of the expression and recalculating the summary coverage information.
 */
 void exclude_set_line_exclude(
-  func_unit* funit,  /*!< Pointer to functional unit */
-  int        line,   /*!< Line number of expression that needs to be set */
-  int        value   /*!< Specifies if we should exclude (1) or include (0) the specified line */
+            func_unit* funit,  /*!< Pointer to functional unit */
+            int        line,   /*!< Line number of expression that needs to be set */
+            int        value,  /*!< Specifies if we should exclude (1) or include (0) the specified line */
+  /*@out@*/ statistic* stat    /*!< Pointer to statistics structure to update */
 ) { PROFILE(EXCLUDE_SET_LINE_EXCLUDE);
 
   exp_link* expl;  /* Pointer to current expression link */
@@ -286,7 +277,7 @@ void exclude_set_line_exclude(
       expl = expl->next;
     }
     if( expl != NULL ) {
-      exclude_expr_assign_and_recalc( expl->exp, funit, (value == 1), TRUE );
+      exclude_expr_assign_and_recalc( expl->exp, funit, (value == 1), TRUE, stat );
       expl = expl->next;
     }
   } while( expl != NULL );
@@ -301,16 +292,17 @@ void exclude_set_line_exclude(
  of the signal and recalculating the summary coverage information.
 */
 void exclude_set_toggle_exclude(
-  func_unit*  funit,     /*!< Pointer to functional unit */
-  const char* sig_name,  /*!< Name of signal to set the toggle exclusion for */
-  int         value      /*!< Specifies if we should exclude (1) or include (0) the specified line */
+            func_unit*  funit,     /*!< Pointer to functional unit */
+            const char* sig_name,  /*!< Name of signal to set the toggle exclusion for */
+            int         value,     /*!< Specifies if we should exclude (1) or include (0) the specified line */
+  /*@out@*/ statistic*  stat       /*!< Pointer to statistics structure to update */
 ) { PROFILE(EXCLUDE_SET_TOGGLE_EXCLUDE);
 
   sig_link* sigl;  /* Pointer to current signal link */
 
   /* Find the signal that matches the given signal name and sets its excluded bit */
   if( (sigl = sig_link_find( sig_name, funit->sig_head )) != NULL ) {
-    exclude_sig_assign_and_recalc( sigl->sig, funit, (value == 1) );
+    exclude_sig_assign_and_recalc( sigl->sig, (value == 1), stat );
   }
       
   PROFILE_END;
@@ -323,10 +315,11 @@ void exclude_set_toggle_exclude(
  of the expression and recalculating the summary coverage information.
 */
 void exclude_set_comb_exclude(
-  func_unit* funit,     /*!< Pointer to functional unit */
-  int        expr_id,   /*!< Expression ID of root expression to set exclude value for */
-  int        uline_id,  /*!< Underline ID of expression to set exclude value for */
-  int        value      /*!< Specifies if we should exclude (1) or include (0) the specified line */
+            func_unit* funit,     /*!< Pointer to functional unit */
+            int        expr_id,   /*!< Expression ID of root expression to set exclude value for */
+            int        uline_id,  /*!< Underline ID of expression to set exclude value for */
+            int        value,     /*!< Specifies if we should exclude (1) or include (0) the specified line */
+  /*@out@*/ statistic* stat       /*!< Pointer to statistic structure to update */
 ) { PROFILE(EXCLUDE_SET_COMB_EXCLUDE);
 
   exp_link*   expl;    /* Pointer to current expression link */
@@ -335,7 +328,7 @@ void exclude_set_comb_exclude(
   /* Find the signal that matches the given signal name and sets its excluded bit */
   if( (expl = exp_link_find( expr_id, funit->exp_head )) != NULL ) {
     if( (subexp = expression_find_uline_id( expl->exp, uline_id )) != NULL ) {
-      exclude_expr_assign_and_recalc( subexp, funit, (value == 1), FALSE );
+      exclude_expr_assign_and_recalc( subexp, funit, (value == 1), FALSE, stat );
     }
   }
 
@@ -344,14 +337,16 @@ void exclude_set_comb_exclude(
 }
 
 /*!
- TBD
+ Finds the FSM table associated with the specified expr_id and sets the include/exclude status of the given
+ from_state/to_state transition appropriately.
 */
 void exclude_set_fsm_exclude(
-  func_unit* funit,       /*!< Pointer to functional unit */
-  int        expr_id,     /*!< Expression ID of output state variable */
-  char*      from_state,  /*!< String containing input state value */
-  char*      to_state,    /*!< String containing output state value */
-  int        value        /*!< Specifies if we should exclude (1) or include (0) the specified line */
+            func_unit* funit,       /*!< Pointer to functional unit */
+            int        expr_id,     /*!< Expression ID of output state variable */
+            char*      from_state,  /*!< String containing input state value */
+            char*      to_state,    /*!< String containing output state value */
+            int        value,       /*!< Specifies if we should exclude (1) or include (0) the specified line */
+  /*@out@*/ statistic* stat         /*!< Pointer to statistics structure to update */
 ) { PROFILE(EXCLUDE_SET_FSM_EXCLUDE);
 
   fsm_link* curr_fsm;
@@ -375,7 +370,7 @@ void exclude_set_fsm_exclude(
 
     /* Find the arc entry and perform the exclusion assignment and coverage recalculation */
     if( (found_index = arc_find_arc( curr_fsm->table->table, arc_find_from_state( curr_fsm->table->table, from_vec ), arc_find_to_state( curr_fsm->table->table, to_vec ) )) != -1 ) {
-      exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, funit, (value == 1) );
+      exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, (value == 1), stat );
     }
 
   }
@@ -390,10 +385,11 @@ void exclude_set_fsm_exclude(
  of the expression and recalculating the summary coverage information.
 */
 void exclude_set_assert_exclude(
-  func_unit* funit,      /*!< Pointer to functional unit */
-  char*      inst_name,  /*!< Name of child instance to find in given functional unit */
-  int        expr_id,    /*!< Expression ID of expression to set exclude value for */
-  int        value       /*!< Specifies if we should exclude (1) or include (0) the specified line */
+            func_unit* funit,      /*!< Pointer to functional unit */
+            char*      inst_name,  /*!< Name of child instance to find in given functional unit */
+            int        expr_id,    /*!< Expression ID of expression to set exclude value for */
+            int        value,      /*!< Specifies if we should exclude (1) or include (0) the specified line */
+  /*@out@*/ statistic* stat        /*!< Pointer to statistic structure to update */
 ) { PROFILE(EXCLUDE_SET_ASSERT_EXCLUDE);
 
   funit_inst* inst;        /* Pointer to found functional unit instance */
@@ -421,7 +417,7 @@ void exclude_set_assert_exclude(
 
     /* Find the signal that matches the given signal name and sets its excluded bit */
     if( stmt->exp->id == expr_id ) {
-      exclude_expr_assign_and_recalc( stmt->exp, curr_child->funit, (value == 1), FALSE );
+      exclude_expr_assign_and_recalc( stmt->exp, curr_child->funit, (value == 1), FALSE, stat );
     }
 
     /* Deallocate functional unit statement iterator */
@@ -436,6 +432,10 @@ void exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.24.2.4  2008/08/07 18:03:51  phase1geo
+ Fixing instance exclusion segfault issue with GUI.  Also cleaned up function
+ documentation in link.c.
+
  Revision 1.24.2.3  2008/08/07 06:39:10  phase1geo
  Adding "Excluded" column to the summary listbox.
 
