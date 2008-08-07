@@ -59,9 +59,10 @@ extern isuppl       info_suppl;
 */
 void toggle_get_stats(
             sig_link*     sigl,      /*!< Pointer to signal list to search */
-  /*@out@*/ unsigned int* total,     /*!< Total number of bits in the design/functional unit */
   /*@out@*/ unsigned int* hit01,     /*!< Number of bits toggling from 0 to 1 during simulation */
   /*@out@*/ unsigned int* hit10,     /*!< Number of bits toggling from 1 to 0 during simulation */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded bits */
+  /*@out@*/ unsigned int* total,     /*!< Total number of bits in the design/functional unit */
   /*@out@*/ bool*         cov_found  /*!< Set to TRUE if at least one signal was completely covered */
 ) { PROFILE(TOGGLE_GET_STATS);
 
@@ -75,8 +76,9 @@ void toggle_get_stats(
         (curr_sig->sig->suppl.part.mba == 0) ) {
       *total += curr_sig->sig->value->width;
       if( curr_sig->sig->suppl.part.excluded == 1 ) {
-        *hit01 += curr_sig->sig->value->width;
-        *hit10 += curr_sig->sig->value->width;
+        *hit01    += curr_sig->sig->value->width;
+        *hit10    += curr_sig->sig->value->width;
+        *excluded += (curr_sig->sig->value->width * 2);
       } else {
         unsigned int tmp_hit01 = 0;
         unsigned int tmp_hit10 = 0;
@@ -175,21 +177,15 @@ void toggle_get_coverage(
  Looks up summary information for specified functional unit.
 */
 void toggle_get_funit_summary(
-            func_unit*    funit,  /*!< Pointer to found functional unit */
-  /*@out@*/ unsigned int* total,  /*!< Pointer to total number of toggles in this functional unit */
-  /*@out@*/ unsigned int* hit     /*!< Pointer to total number of toggles hit in this functional unit */
+            func_unit*    funit,     /*!< Pointer to found functional unit */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to total number of toggles hit in this functional unit */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded bits */
+  /*@out@*/ unsigned int* total      /*!< Pointer to total number of toggles in this functional unit */
 ) { PROFILE(TOGGLE_GET_FUNIT_SUMMARY);
 
-  char         tmp[21];  /* Temporary string for total */
-  unsigned int rv;
-
-  rv = snprintf( tmp, 21, "%20u", (funit->stat->tog_total * 2) );
-  assert( rv < 21 );
-
-  rv = sscanf( tmp, "%u", total );
-  assert( rv == 1 );
-      
-  *hit = (funit->stat->tog01_hit + funit->stat->tog10_hit);
+  *hit      = (funit->stat->tog01_hit + funit->stat->tog10_hit);
+  *excluded = funit->stat->tog_excluded;
+  *total    = (funit->stat->tog_total * 2);
         
   PROFILE_END;
 
@@ -199,21 +195,15 @@ void toggle_get_funit_summary(
  Looks up summary information for specified functional unit instance.
 */
 void toggle_get_inst_summary(
-            funit_inst*   inst,   /*!< Pointer to found functional unit instance */
-  /*@out@*/ unsigned int* total,  /*!< Pointer to total number of toggles in this functional unit instance */
-  /*@out@*/ unsigned int* hit     /*!< Pointer to total number of toggles hit in this functional unit instance */
+            funit_inst*   inst,      /*!< Pointer to found functional unit instance */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to total number of toggles hit in this functional unit instance */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded bits */
+  /*@out@*/ unsigned int* total      /*!< Pointer to total number of toggles in this functional unit instance */
 ) { PROFILE(TOGGLE_GET_INST_SUMMARY);
 
-  char         tmp[21];  /* Temporary string for total */
-  unsigned int rv;
-
-  rv = snprintf( tmp, 21, "%20u", (inst->stat->tog_total * 2) );
-  assert( rv < 21 );
-  
-  rv = sscanf( tmp, "%u", total );          
-  assert( rv == 1 );
-      
-  *hit = (inst->stat->tog01_hit + inst->stat->tog10_hit);
+  *hit      = (inst->stat->tog01_hit + inst->stat->tog10_hit);
+  *excluded = inst->stat->tog_excluded;
+  *total    = (inst->stat->tog_total * 2);
         
   PROFILE_END;
 
@@ -661,6 +651,9 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.73.2.5  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.73.2.4  2008/08/06 20:11:35  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

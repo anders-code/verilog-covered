@@ -31,9 +31,10 @@
 /*! \brief Calculates the toggle coverage for the specifed expression and signal lists. */
 void toggle_get_stats(
             sig_link*     sigl,
-  /*@out@*/ unsigned int* total,
   /*@out@*/ unsigned int* hit01,
   /*@out@*/ unsigned int* hit10,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total,
   /*@out@*/ bool*         cov_found
 );
 
@@ -59,15 +60,17 @@ void toggle_get_coverage(
 /*! \brief Gets total and hit toggle signal status for the specified functional unit */
 void toggle_get_funit_summary(
             func_unit*    funit,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
 );
 
 /*! \brief Gets total and hit toggle signal status for the specified functional unit instance */
 void toggle_get_inst_summary(
             funit_inst*   inst,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
 );
 
 /*! \brief Generates report output for toggle coverage. */
@@ -79,6 +82,9 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.17.6.3  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.17.6.2  2008/08/06 20:11:35  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.
