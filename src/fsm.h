@@ -108,7 +108,6 @@ void fsm_collect(
 void fsm_get_coverage(
             func_unit*    funit,
             int           expr_id,
-  /*@out@*/ int*          width,
   /*@out@*/ char***       total_states,
   /*@out@*/ unsigned int* total_state_num,
   /*@out@*/ char***       hit_states,
@@ -123,7 +122,8 @@ void fsm_get_coverage(
   /*@out@*/ char***       input_state,
   /*@out@*/ unsigned int* input_size,
   /*@out@*/ char***       output_state,
-  /*@out@*/ unsigned int* output_size );
+  /*@out@*/ unsigned int* output_size
+);
 
 /*! \brief Generates report output for FSM coverage. */
 void fsm_report( FILE* ofile, bool verbose );
@@ -133,6 +133,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.29.2.4  2008/08/07 20:51:04  phase1geo
+ Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
+ table output and exclusion.  Checkpointing.
+
  Revision 1.29.2.3  2008/08/07 06:39:10  phase1geo
  Adding "Excluded" column to the summary listbox.
 

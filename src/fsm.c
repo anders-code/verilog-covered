@@ -565,7 +565,6 @@ void fsm_collect(
 void fsm_get_coverage(
             func_unit*    funit,               /*!< Pointer to functional unit */
             int           expr_id,             /*!< Expression ID of output state expression to find */
-  /*@out@*/ int*          width,               /*!< Pointer to width of FSM output state variable */
   /*@out@*/ char***       total_fr_states,     /*!< Pointer to a string array containing all possible states in this FSM */
   /*@out@*/ unsigned int* total_fr_state_num,  /*!< Pointer to the number of elements in the total_states array */
   /*@out@*/ char***       hit_fr_states,       /*!< Pointer to a string array containing the hit states in this FSM */
@@ -596,9 +595,6 @@ void fsm_get_coverage(
   }
 
   assert( curr_fsm != NULL );
-
-  /* Get width */
-  *width = curr_fsm->table->to_state->value->width;
 
   /* Get state information */
   arc_get_states( total_fr_states, total_fr_state_num, &total_to_states, &total_to_state_num, curr_fsm->table->table, TRUE, TRUE ); 
@@ -1271,6 +1267,10 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.97.2.5  2008/08/07 20:51:04  phase1geo
+ Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
+ table output and exclusion.  Checkpointing.
+
  Revision 1.97.2.4  2008/08/07 06:39:10  phase1geo
  Adding "Excluded" column to the summary listbox.
 
