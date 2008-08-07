@@ -120,14 +120,15 @@ proc main_view {} {
 
   # Create Tablelist and associated scrollbars
   tablelist::tablelist .bot.left.tl \
-    -columns {0 "Instance Name" 0 "Module Name" 0 "Hit" right 0 "Miss" right 0 "Total" right 0 "Hit %" right 0 "Index"} \
+    -columns {0 "Instance Name" 0 "Module Name" 0 "Hit" right 0 "Miss" right 0 "Excluded" right 0 "Total" right 0 "Hit %" right 0 "Index"} \
     -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.sbf.vb set} -stretch all
   .bot.left.tl columnconfigure 0 -hide true
   .bot.left.tl columnconfigure 2 -sortmode integer -stretchable false
   .bot.left.tl columnconfigure 3 -sortmode integer -stretchable false
   .bot.left.tl columnconfigure 4 -sortmode integer -stretchable false
   .bot.left.tl columnconfigure 5 -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 6 -hide true
+  .bot.left.tl columnconfigure 6 -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 7 -hide true
 
   # Create vertical scrollbar frame and pack it
   frame      .bot.left.sbf
@@ -202,7 +203,7 @@ proc populate_listbox {} {
  
   # Get the currently loaded indices, if any
   if {$last_mod_inst_type == $mod_inst_type} {
-    set curr_indices  [.bot.left.tl getcolumn 6]
+    set curr_indices  [.bot.left.tl getcolumn 7]
     set curr_selected [.bot.left.tl curselection]
   } else {
     set curr_indices  {}
@@ -237,8 +238,8 @@ proc populate_listbox {} {
         set index $i
       }
       set funit [lindex $summary_list $index]
-      .bot.left.tl insert end [list [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] [lindex $funit 5] $index]
-      .bot.left.tl rowconfigure end -background [lindex $funit 7] -selectbackground [lindex $funit 6]
+      .bot.left.tl insert end [list [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] [lindex $funit 5] [lindex $funit 6] $index]
+      .bot.left.tl rowconfigure end -background [lindex $funit 8] -selectbackground [lindex $funit 7]
     }
 
     # Re-activate the currently selected item
@@ -269,7 +270,7 @@ proc populate_text {} {
   global curr_toggle_ptr
 
   # Get the index of the current selection
-  set index [lindex [.bot.left.tl get [.bot.left.tl curselection]] 6]
+  set index [lindex [.bot.left.tl get [.bot.left.tl curselection]] 7]
 
   # Update the text, if necessary
   if {$index != ""} {

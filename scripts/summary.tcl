@@ -145,12 +145,12 @@ proc clear_summary {} {
 proc calculate_summary {} {
 
   global mod_inst_type block_list cov_rb
-  global line_summary_hit line_summary_total line_low_limit
-  global toggle_summary_hit toggle_summary_total toggle_low_limit
-  global memory_summary_hit memory_summary_total memory_low_limit
-  global comb_summary_hit comb_summary_total comb_low_limit
-  global fsm_summary_hit fsm_summary_total fsm_low_limit
-  global assert_summary_hit assert_summary_total assert_low_limit
+  global line_summary_hit line_summary_excluded line_summary_total line_low_limit
+  global toggle_summary_hit toggle_summary_excluded toggle_summary_total toggle_low_limit
+  global memory_summary_hit memory_summary_excluded memory_summary_total memory_low_limit
+  global comb_summary_hit comb_summary_excluded comb_summary_total comb_low_limit
+  global fsm_summary_hit fsm_summary_excluded fsm_summary_total fsm_low_limit
+  global assert_summary_hit assert_summary_excluded assert_summary_total assert_low_limit
   global summary_list summary_sort
 
   ;# Clear the list
@@ -162,31 +162,37 @@ proc calculate_summary {} {
     if {$cov_rb == "Line"} {
       tcl_func_get_line_summary $block
       set hit       $line_summary_hit
+      set excluded  $line_summary_excluded
       set total     $line_summary_total
       set low_limit $line_low_limit
     } elseif {$cov_rb == "Toggle"} {
       tcl_func_get_toggle_summary $block
       set hit       $toggle_summary_hit
+      set excluded  $toggle_summary_excluded
       set total     $toggle_summary_total
       set low_limit $toggle_low_limit
     } elseif {$cov_rb == "Memory"} {
       tcl_func_get_memory_summary $block
       set hit       $memory_summary_hit
+      set excluded  $memory_summary_excluded
       set total     $memory_summary_total
       set low_limit $memory_low_limit
     } elseif {$cov_rb == "Logic"} {
       tcl_func_get_comb_summary $block
       set hit       $comb_summary_hit
+      set excluded  $comb_summary_excluded
       set total     $comb_summary_total
       set low_limit $comb_low_limit
     } elseif {$cov_rb == "FSM"} {
       tcl_func_get_fsm_summary $block
       set hit       $fsm_summary_hit
+      set excluded  $fsm_summary_excluded
       set total     $fsm_summary_total
       set low_limit $fsm_low_limit
     } elseif {$cov_rb == "Assert"} {
       tcl_func_get_assert_summary $block
       set hit       $assert_summary_hit
+      set excluded  $assert_summary_excluded
       set total     $assert_summary_total
       set low_limit $assert_low_limit
     } else {
@@ -224,9 +230,9 @@ proc calculate_summary {} {
 
     ;# Add this functional unit to the list to sort
     if {$mod_inst_type == "module"} {
-      lappend summary_list [list "" [tcl_func_get_funit_name $block] $hit $miss $total $percent $bcolor $lcolor]
+      lappend summary_list [list "" [tcl_func_get_funit_name $block] $hit $miss $excluded $total $percent $bcolor $lcolor]
     } else {
-      lappend summary_list [list [tcl_func_get_inst_scope $block] [tcl_func_get_funit_name $block] $hit $miss $total $percent $bcolor $lcolor]
+      lappend summary_list [list [tcl_func_get_inst_scope $block] [tcl_func_get_funit_name $block] $hit $miss $excluded $total $percent $bcolor $lcolor]
     }
 
   }

@@ -6,22 +6,28 @@
 # corresponding tree-node is selected. The file contents are kept as 
 # part of the global filecontent hashtable.
 
-set fileContent(0)        0
-set start_line            0
-set end_line              0
-set line_summary_total    0
-set line_summary_hit      0
-set toggle_summary_total  0
-set toggle_summary_hit    0
-set memory_summary_total  0
-set memory_summary_hit    0
-set comb_summary_total    0
-set comb_summary_hit      0
-set fsm_summary_total     0
-set fsm_summary_hit       0
-set assert_summary_total  0
-set assert_summary_hit    0
-set curr_block            0 
+set fileContent(0)          0
+set start_line              0
+set end_line                0
+set line_summary_hit        0
+set line_summary_excluded   0
+set line_summary_total      0
+set toggle_summary_hit      0
+set toggle_summary_excluded 0 
+set toggle_summary_total    0
+set memory_summary_hit      0
+set memory_summary_excluded 0
+set memory_summary_total    0
+set comb_summary_hit        0
+set comb_summary_excluded   0
+set comb_summary_total      0
+set fsm_summary_hit         0
+set fsm_summary_excluded    0
+set fsm_summary_total       0
+set assert_summary_hit      0
+set assert_summary_excluded 0
+set assert_summary_total    0
+set curr_block              0 
 
 # TODO : 
 # Suppose that a really large verilog file has a lot of lines uncovered.
