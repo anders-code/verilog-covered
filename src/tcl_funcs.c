@@ -1283,6 +1283,7 @@ int tcl_func_collect_uncovered_fsms(
     /* If the expr_ids array has one or more elements, deallocate the array */
     if( i > 0 ) {
       free_safe( expr_ids, (sizeof( int ) * i) );
+      free_safe( excludes, (sizeof( int ) * i) );
     }
 
   } else {
@@ -1380,7 +1381,6 @@ int tcl_func_get_fsm_coverage(
 
   int          retval = TCL_OK;  /* Return value for this function */
   int          expr_id;          /* Expression ID of output state expression */
-  int          width;            /* Width of output state expression */
   char**       total_states;     /* String array containing all possible states for this FSM */
   unsigned int total_state_num;  /* Number of elements in the total_states array */
   char**       hit_states;       /* String array containing hit states for this FSM */
@@ -1404,14 +1404,13 @@ int tcl_func_get_fsm_coverage(
 
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
-    fsm_get_coverage( funit, expr_id, &width, &total_states, &total_state_num, &hit_states, &hit_state_num,
+    fsm_get_coverage( funit, expr_id, &total_states, &total_state_num, &hit_states, &hit_state_num,
                       &total_from_arcs, &total_to_arcs, &excludes, &total_arc_num, &hit_from_arcs, &hit_to_arcs, &hit_arc_num,
                       &input_state, &input_size, &output_state, &output_size );
 
     /* Load FSM total states into Tcl */
     for( i=0; i<total_state_num; i++ ) {
-      snprintf( str, 4096, "%d'h%s", width, total_states[i] );
-      Tcl_SetVar( tcl, "fsm_states", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      Tcl_SetVar( tcl, "fsm_states", total_states[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       free_safe( total_states[i], (strlen( total_states[i] ) + 1) );
     }
 
@@ -1421,8 +1420,7 @@ int tcl_func_get_fsm_coverage(
 
     /* Load FSM hit states into Tcl */
     for( i=0; i<hit_state_num; i++ ) {
-      snprintf( str, 4096, "%d'h%s", width, hit_states[i] );
-      Tcl_SetVar( tcl, "fsm_hit_states", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      Tcl_SetVar( tcl, "fsm_hit_states", hit_states[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       free_safe( hit_states[i], (strlen( hit_states[i] ) + 1) );
     }
 
@@ -1432,7 +1430,7 @@ int tcl_func_get_fsm_coverage(
 
     /* Load FSM total arcs into Tcl */
     for( i=0; i<total_arc_num; i++ ) {
-      snprintf( str, 4096, "%d'h%s %d'h%s %d", width, total_from_arcs[i], width, total_to_arcs[i], excludes[i] );
+      snprintf( str, 4096, "%s %s %d", total_from_arcs[i], total_to_arcs[i], excludes[i] );
       Tcl_SetVar( tcl, "fsm_arcs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       free_safe( total_from_arcs[i], (strlen( total_from_arcs[i] ) + 1) );
       free_safe( total_to_arcs[i], (strlen( total_to_arcs[i] ) + 1) );
@@ -1446,7 +1444,7 @@ int tcl_func_get_fsm_coverage(
 
     /* Load FSM hit arcs into Tcl */
     for( i=0; i<hit_arc_num; i++ ) {
-      snprintf( str, 4096, "%d'h%s %d'h%s", width, hit_from_arcs[i], width, hit_to_arcs[i] );
+      snprintf( str, 4096, "%s %s", hit_from_arcs[i], hit_to_arcs[i] );
       Tcl_SetVar( tcl, "fsm_hit_arcs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       free_safe( hit_from_arcs[i], (strlen( hit_from_arcs[i] ) + 1) );
       free_safe( hit_to_arcs[i], (strlen( hit_to_arcs[i] ) + 1) );
@@ -2533,12 +2531,14 @@ int tcl_func_set_fsm_exclude(
 
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
     if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+      printf( "Excluding FSM for module %s, expr_id: %d, from_state: %s, to_state: %s, value: %d\n", funit->name, expr_id, from_state, to_state, value );
       exclude_set_fsm_exclude( funit, expr_id, from_state, to_state, value, funit->stat );
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
     }
   } else {
     if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
+      printf( "Excluding FSM for instance %s\n", inst->name );
       exclude_set_fsm_exclude( inst->funit, expr_id, from_state, to_state, value, inst->stat );
     } else {
       strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
@@ -2787,6 +2787,10 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.77.4.7  2008/08/07 20:51:04  phase1geo
+ Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
+ table output and exclusion.  Checkpointing.
+
  Revision 1.77.4.6  2008/08/07 18:03:51  phase1geo
  Fixing instance exclusion segfault issue with GUI.  Also cleaned up function
  documentation in link.c.

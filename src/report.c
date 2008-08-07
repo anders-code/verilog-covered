@@ -954,9 +954,10 @@ void command_report(
 #ifdef HAVE_TCLTK
     } else {
 
+      unsigned int slen;
+
       Try {
 
-        unsigned int slen;
         unsigned int rv;
 
         if( input_db != NULL ) {
@@ -1018,14 +1019,18 @@ void command_report(
         Tk_MainLoop ();
 
       } Catch_anonymous {
-        free_safe( covered_home, (strlen( covered_home ) + 1) );
-        free_safe( main_file, (strlen( main_file ) + 1) );
+        free_safe( covered_home,    (strlen( covered_home ) + 1) );
+        free_safe( main_file,       slen );
+        free_safe( covered_browser, (strlen( covered_browser ) + 1) );
+        free_safe( covered_version, (strlen( covered_version ) + 1) );
         Throw 0;
       }
 
       /* Clean Up */
-      free( covered_home );
-      free( main_file );
+      free_safe( covered_home,    (strlen( covered_home ) + 1) );
+      free_safe( main_file,       slen );
+      free_safe( covered_browser, (strlen( covered_browser ) + 1) );
+      free_safe( covered_version, (strlen( covered_version ) + 1) );
 #endif
 
     }
@@ -1045,6 +1050,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104.2.9  2008/08/07 20:51:04  phase1geo
+ Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
+ table output and exclusion.  Checkpointing.
+
  Revision 1.104.2.8  2008/08/07 06:39:11  phase1geo
  Adding "Excluded" column to the summary listbox.
 
