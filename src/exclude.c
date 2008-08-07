@@ -74,9 +74,10 @@ static void exclude_expr_assign_and_recalc(
   bool        set_line
 ) { PROFILE(EXCLUDE_EXPR_ASSIGN_AND_RECALC);
 
-  unsigned int comb_total = 0;  /* Total number of combinational logic coverage points within this tree */
-  unsigned int comb_hit   = 0;  /* Total number of hit combinations within this tree */
-  int          ulid       = 0;  /* Temporary value */
+  unsigned int comb_hit      = 0;  /* Total number of hit combinations within this tree */
+  unsigned int comb_excluded = 0;  /* Total number of excluded combinations */
+  unsigned int comb_total    = 0;  /* Total number of combinational logic coverage points within this tree */
+  int          ulid          = 0;  /* Temporary value */
 
   /* Now recalculate the coverage information for all metrics if this module is not an OVL module */
   if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit ) ) {
@@ -96,8 +97,10 @@ static void exclude_expr_assign_and_recalc(
           (expr->exec_num == 0) ) {
         if( excluded ) {
           funit->stat->line_hit++;
+          funit->stat->line_excluded++;
         } else {
           funit->stat->line_hit--;
+          funit->stat->line_excluded--;
         }
       }
     }
@@ -105,12 +108,14 @@ static void exclude_expr_assign_and_recalc(
     /* Always recalculate combinational coverage */
     combination_reset_counted_expr_tree( expr );
     if( excluded ) {
-      combination_get_tree_stats( expr, &ulid, 0, exclude_is_parent_excluded( expr ), &comb_total, &comb_hit );
-      funit->stat->comb_hit += (comb_total - comb_hit);
+      combination_get_tree_stats( expr, &ulid, 0, exclude_is_parent_excluded( expr ), &comb_hit, &comb_excluded, &comb_total );
+      funit->stat->comb_hit      += (comb_total - comb_hit);
+      funit->stat->comb_excluded += (comb_total - comb_excluded);
     } else {
       expr->suppl.part.excluded = 0;
-      combination_get_tree_stats( expr, &ulid, 0, exclude_is_parent_excluded( expr ), &comb_total, &comb_hit );
-      funit->stat->comb_hit -= (comb_total - comb_hit);
+      combination_get_tree_stats( expr, &ulid, 0, exclude_is_parent_excluded( expr ), &comb_hit, &comb_excluded, &comb_total );
+      funit->stat->comb_hit      -= (comb_total - comb_hit);
+      funit->stat->comb_excluded -= (comb_total - comb_excluded);
     }
 
   } else {
@@ -120,8 +125,10 @@ static void exclude_expr_assign_and_recalc(
       if( expr->exec_num == 0 ) {
         if( excluded ) {
           funit->stat->assert_hit++;
+          funit->stat->assert_excluded++;
         } else {
           funit->stat->assert_hit--;
+          funit->stat->assert_excluded--;
         }
       }
     }
@@ -158,15 +165,16 @@ static void exclude_sig_assign_and_recalc(
   /* If the signal is a memory, we need to update the memory coverage numbers */
   if( sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
 
-    unsigned int ae_total  = 0;  /* Number of addressable elements in this memory */
-    unsigned int wr_hit    = 0;  /* Number of addressable elements written */
-    unsigned int rd_hit    = 0;  /* Number of addressable elements read */
-    unsigned int tog_total = 0;  /* Total number of toggle bits */
-    unsigned int tog01_hit = 0;  /* Number of bits toggling from 0->1 */
-    unsigned int tog10_hit = 0;  /* Number of bits toggling from 1->0 */
+    unsigned int wr_hit       = 0;  /* Number of addressable elements written */
+    unsigned int rd_hit       = 0;  /* Number of addressable elements read */
+    unsigned int ae_total     = 0;  /* Number of addressable elements in this memory */
+    unsigned int tog01_hit    = 0;  /* Number of bits toggling from 0->1 */
+    unsigned int tog10_hit    = 0;  /* Number of bits toggling from 1->0 */
+    unsigned int tog_total    = 0;  /* Total number of toggle bits */
+    unsigned int mem_excluded = 0;  /* Number of excluded memory coverage points */
 
     /* Get the stats for the current memory */
-    memory_get_stat( sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &tog01_hit, &tog10_hit, TRUE );
+    memory_get_stat( sig, &wr_hit, &rd_hit, &ae_total, &tog01_hit, &tog10_hit, &tog_total, &mem_excluded, TRUE );
 
     /* Recalculate the total and hit values for memory coverage */
     if( excluded ) {
@@ -174,29 +182,33 @@ static void exclude_sig_assign_and_recalc(
       funit->stat->mem_rd_hit    += (ae_total  - rd_hit);
       funit->stat->mem_tog01_hit += (tog_total - tog01_hit);
       funit->stat->mem_tog10_hit += (tog_total - tog10_hit);
+      funit->stat->mem_excluded  += ((ae_total * 2) + (tog_total * 2));
     } else {
       funit->stat->mem_wr_hit    -= (ae_total  - wr_hit);
       funit->stat->mem_rd_hit    -= (ae_total  - rd_hit);
       funit->stat->mem_tog01_hit -= (tog_total - tog01_hit);
       funit->stat->mem_tog10_hit -= (tog_total - tog10_hit);
+      funit->stat->mem_excluded  -= ((ae_total * 2) + (tog_total * 2));
     }
 
   /* Otherwise, the toggle coverage numbers should be adjusted */
   } else {
 
-    unsigned int hit01;  /* Number of bits transitioning from 0 -> 1 */
-    unsigned int hit10;  /* Number of bits transitioning from 1 -> 0 */
+    unsigned int hit01 = 0;  /* Number of bits transitioning from 0 -> 1 */
+    unsigned int hit10 = 0;  /* Number of bits transitioning from 1 -> 0 */
 
     /* Get the total hit01 and hit10 information */
     vector_toggle_count( sig->value, &hit01, &hit10 );
 
     /* Recalculate the total and hit values for toggle coverage */
     if( excluded ) {
-      funit->stat->tog01_hit += (sig->value->width - hit01);
-      funit->stat->tog10_hit += (sig->value->width - hit10);
+      funit->stat->tog01_hit    += (sig->value->width - hit01);
+      funit->stat->tog10_hit    += (sig->value->width - hit10);
+      funit->stat->tog_excluded += (sig->value->width * 2);
     } else {
-      funit->stat->tog01_hit -= (sig->value->width - hit01);
-      funit->stat->tog10_hit -= (sig->value->width - hit10);
+      funit->stat->tog01_hit    -= (sig->value->width - hit01);
+      funit->stat->tog10_hit    -= (sig->value->width - hit10);
+      funit->stat->tog_excluded -= (sig->value->width * 2);
     }
 
   }
@@ -219,7 +231,8 @@ static void exclude_arc_assign_and_recalc(
   /* Set the excluded bit in the specified entry and adjust coverage numbers, if necessary */
   table->arcs[arc_index]->suppl.part.excluded = (exclude ? 1 : 0);
   if( table->arcs[arc_index]->suppl.part.hit == 0 ) {
-    funit->stat->arc_hit += exclude ? 1 : -1;
+    funit->stat->arc_hit      += exclude ? 1 : -1;
+    funit->stat->arc_excluded += exclude ? 1 : -1;
   }
 
   PROFILE_END;
@@ -423,6 +436,9 @@ void exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.24.2.3  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.24.2.2  2008/08/06 20:11:33  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

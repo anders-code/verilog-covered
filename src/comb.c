@@ -195,6 +195,7 @@ static void combination_multi_expr_calc(
             bool          ul,        /*!< If TRUE, parent expressions were found to be missing so force the underline */
             bool          excluded,  /*!< If TRUE, parent expressions were found to be excluded */
   /*@out@*/ unsigned int* hit,       /*!< Pointer to value containing number of hit expression values in this expression */
+  /*@out@*/ unsigned int* excludes,  /*!< Pointer to value containing number of excluded combinational expressions */
   /*@out@*/ unsigned int* total      /*!< Pointer to value containing total number of expression values in this expression */
 ) { PROFILE(COMBINATION_MULTI_EXPR_CALC);
 
@@ -216,6 +217,7 @@ static void combination_multi_expr_calc(
     if( (exp->left != NULL) && (exp->op != exp->left->op) ) {
       if( excluded ) {
         (*hit)++;
+        (*excludes)++;
       } else {
         if( and_op ) {
           *hit += ESUPPL_WAS_FALSE( exp->left->suppl );
@@ -229,12 +231,13 @@ static void combination_multi_expr_calc(
       }
       (*total)++;
     } else {
-      combination_multi_expr_calc( exp->left, ulid, ul, excluded, hit, total );
+      combination_multi_expr_calc( exp->left, ulid, ul, excluded, hit, excludes, total );
     }
 
     if( (exp->right != NULL) && (exp->op != exp->right->op) ) {
       if( excluded ) {
         (*hit)++;
+        (*excludes)++;
       } else {
         if( and_op ) {
           *hit += ESUPPL_WAS_FALSE( exp->right->suppl );
@@ -248,12 +251,13 @@ static void combination_multi_expr_calc(
       }
       (*total)++;
     } else {
-      combination_multi_expr_calc( exp->right, ulid, ul, excluded, hit, total );
+      combination_multi_expr_calc( exp->right, ulid, ul, excluded, hit, excludes, total );
     }
 
     if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) || (exp->op != exp->parent->expr->op) ) {
       if( excluded ) {
         (*hit)++;
+        (*excludes)++;
       } else {
         if( and_op ) {
           *hit += exp->suppl.part.eval_11;
@@ -323,8 +327,9 @@ void combination_get_tree_stats(
             unsigned int  curr_depth,  /*!< Current search depth in given expression tree */
             bool          excluded,    /*!< Specifies that this expression should be excluded for hit information because one
                                             or more of its parent expressions have been excluded */
-  /*@out@*/ unsigned int* total,       /*!< Pointer to total number of logical combinations */
-  /*@out@*/ unsigned int* hit          /*!< Pointer to number of logical combinations hit during simulation */
+  /*@out@*/ unsigned int* hit,         /*!< Pointer to number of logical combinations hit during simulation */
+  /*@out@*/ unsigned int* excludes,    /*!< Pointer to number of excluded logical combinations */
+  /*@out@*/ unsigned int* total        /*!< Pointer to total number of logical combinations */
 ) { PROFILE(COMBINATION_GET_TREE_STATS);
 
   int num_hit = 0;  /* Number of expression value hits for the current expression */
@@ -336,8 +341,8 @@ void combination_get_tree_stats(
     excluded |= ESUPPL_EXCLUDED( exp->suppl );
 
     /* Calculate children */
-    combination_get_tree_stats( exp->left,  ulid, combination_calc_depth( exp, curr_depth, TRUE ),  excluded, total, hit );
-    combination_get_tree_stats( exp->right, ulid, combination_calc_depth( exp, curr_depth, FALSE ), excluded, total, hit );
+    combination_get_tree_stats( exp->left,  ulid, combination_calc_depth( exp, curr_depth, TRUE ),  excluded, hit, excludes, total );
+    combination_get_tree_stats( exp->right, ulid, combination_calc_depth( exp, curr_depth, FALSE ), excluded, hit, excludes, total );
 
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ||
@@ -360,7 +365,7 @@ void combination_get_tree_stats(
                (exp->op == EXP_OP_OR)   ||
                (exp->op == EXP_OP_LAND) ||
                (exp->op == EXP_OP_LOR)) && allow_multi_expr ) {
-            combination_multi_expr_calc( exp, ulid, FALSE, excluded, hit, total );
+            combination_multi_expr_calc( exp, ulid, FALSE, excluded, hit, excludes, total );
           } else {
             if( !expression_is_static_only( exp ) ) {
               if( EXPR_IS_COMB( exp ) == 1 ) {
@@ -398,7 +403,8 @@ void combination_get_tree_stats(
                 }
                 *total += tot_num;
                 if( excluded ) {
-                  *hit += tot_num;
+                  *hit      += tot_num;
+                  *excludes += tot_num;
                 } else {
                   *hit += num_hit;
                 }
@@ -411,6 +417,7 @@ void combination_get_tree_stats(
                 num_hit = ESUPPL_WAS_TRUE( exp->suppl );
                 if( excluded ) {
                   (*hit)++;
+                  (*excludes)++;
                 } else {
                   *hit += num_hit;
                 }
@@ -427,7 +434,8 @@ void combination_get_tree_stats(
                   num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
                 }
                 if( excluded ) {
-                  *hit += 2;
+                  *hit      += 2;
+                  *excludes += 2;
                 } else {
                   *hit += num_hit;
                 }
@@ -516,9 +524,10 @@ void combination_reset_counted_expr_tree(
  the coverage numbers for the specified expression tree.  Called by report function.
 */
 void combination_get_stats(
-            func_unit*    funit,  /*!< Pointer to functional unit to search */
-  /*@out@*/ unsigned int* total,  /*!< Pointer to total number of logical combinations */
-  /*@out@*/ unsigned int* hit     /*!< Pointer to number of logical combinations hit during simulation */
+            func_unit*    funit,     /*!< Pointer to functional unit to search */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to number of logical combinations hit during simulation */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded logical combinations */
+  /*@out@*/ unsigned int* total      /*!< Pointer to total number of logical combinations */
 ) { PROFILE(COMBINATION_GET_STATS);
 
   func_iter  fi;    /* Functional unit iterator */
@@ -535,7 +544,7 @@ void combination_get_stats(
     stmt = func_iter_get_next_statement( &fi );
     while( stmt != NULL ) {
       ulid = 1;
-      combination_get_tree_stats( stmt->exp, &ulid, 0, stmt->suppl.part.excluded, total, hit );
+      combination_get_tree_stats( stmt->exp, &ulid, 0, stmt->suppl.part.excluded, hit, excluded, total );
       stmt = func_iter_get_next_statement( &fi );
     }
 
@@ -552,21 +561,15 @@ void combination_get_stats(
  Retrieves the combinational logic summary information for the specified functional unit
 */
 void combination_get_funit_summary(
-            func_unit*    funit,  /*!< Pointer to functional unit */
-  /*@out@*/ unsigned int* total,  /*!< Pointer to location to store the total number of combinations for the specified functional unit */
-  /*@out@*/ unsigned int* hit     /*!< Pointer to location to store the number of hit combinations for the specified functional unit */
+            func_unit*    funit,     /*!< Pointer to functional unit */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to location to store the number of hit combinations for the specified functional unit */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded logical combinations */
+  /*@out@*/ unsigned int* total      /*!< Pointer to location to store the total number of combinations for the specified functional unit */
 ) { PROFILE(COMBINATION_GET_FUNIT_SUMMARY);
 
-  char         tmp[21];  /* Temporary string for total */
-  unsigned int rv;
-
-  rv = snprintf( tmp, 21, "%20u", funit->stat->comb_total );
-  assert( rv < 21 );
-
-  rv = sscanf( tmp, "%u", total );
-  assert( rv == 1 );
-
-  *hit = funit->stat->comb_hit;
+  *hit      = funit->stat->comb_hit;
+  *excluded = funit->stat->comb_excluded;
+  *total    = funit->stat->comb_total;
 
   PROFILE_END;
 
@@ -576,21 +579,15 @@ void combination_get_funit_summary(
  Retrieves the combinational logic summary information for the specified functional unit instance
 */
 void combination_get_inst_summary(
-            funit_inst*   inst,   /*!< Pointer to functional unit instance */
-  /*@out@*/ unsigned int* total,  /*!< Pointer to location to store the total number of combinations for the specified functional unit instance */
-  /*@out@*/ unsigned int* hit     /*!< Pointer to location to store the number of hit combinations for the specified functional unit instance */
+            funit_inst*   inst,      /*!< Pointer to functional unit instance */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to location to store the number of hit combinations for the specified functional unit instance */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded logical combinations */
+  /*@out@*/ unsigned int* total      /*!< Pointer to location to store the total number of combinations for the specified functional unit instance */
 ) { PROFILE(COMBINATION_GET_INST_SUMMARY);
   
-  char         tmp[21];  /* Temporary string for total */
-  unsigned int rv;
-  
-  rv = snprintf( tmp, 21, "%20u", inst->stat->comb_total );
-  assert( rv < 21 );
-            
-  rv = sscanf( tmp, "%u", total );
-  assert( rv == 1 );
-            
-  *hit = inst->stat->comb_hit;
+  *hit      = inst->stat->comb_hit;
+  *excluded = inst->stat->comb_excluded;
+  *total    = inst->stat->comb_total;
             
   PROFILE_END;
   
@@ -2178,8 +2175,9 @@ static void combination_multi_vars(
 ) { PROFILE(COMBINATION_MULTI_VARS);
 
   int          ulid      = 1;
-  unsigned int total     = 0;
   unsigned int hit       = 0;
+  unsigned int excluded  = 0;
+  unsigned int total     = 0;
   char*        line1     = NULL;
   char*        line2     = NULL;
   char*        line3     = NULL;
@@ -2190,7 +2188,7 @@ static void combination_multi_vars(
   if( exp->ulid != -1 ) {
 
     /* Calculate hit and total values for this sub-expression */
-    combination_multi_expr_calc( exp, &ulid, FALSE, FALSE, &hit, &total );
+    combination_multi_expr_calc( exp, &ulid, FALSE, FALSE, &hit, &excluded, &total );
 
     if( hit != total ) {
 
@@ -2898,6 +2896,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.194.2.5  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.194.2.4  2008/08/06 20:11:33  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

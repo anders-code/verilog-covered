@@ -71,24 +71,27 @@ void fsm_table_set(
 /*! \brief Gathers statistics about the current FSM */
 void fsm_get_stats(
             fsm_link* table,
-  /*@out@*/ int*      state_total,
   /*@out@*/ int*      state_hit,
+  /*@out@*/ int*      state_total,
+  /*@out@*/ int*      arc_hit,
   /*@out@*/ int*      arc_total,
-  /*@out@*/ int*      arc_hit
+  /*@out@*/ int*      arc_excluded
 );
 
 /*! \brief Retrieves the FSM summary information for the specified functional unit. */
 void fsm_get_funit_summary(
-            func_unit*    funit,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit
+            func_unit* funit,
+  /*@out@*/ int*       hit,
+  /*@out@*/ int*       excluded,
+  /*@out@*/ int*       total
 );
 
 /*! \brief Retrieves the FSM summary information for the specified functional unit. */
 void fsm_get_inst_summary(
-            funit_inst*   inst,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit
+            funit_inst* inst,
+  /*@out@*/ int*        hit,
+  /*@out@*/ int*        excluded,
+  /*@out@*/ int*        total
 );
 
 /*! \brief Retrieves covered or uncovered FSMs from the specified functional unit. */
@@ -130,6 +133,9 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.29.2.3  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.29.2.2  2008/08/06 20:11:33  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

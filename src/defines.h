@@ -2301,28 +2301,34 @@ struct stmt_loop_link_s {
  Contains statistics for coverage results which is stored in a functional unit instance.
 */
 struct statistic_s {
-  unsigned int line_total;                  /*!< Total number of lines parsed */
   unsigned int line_hit;                    /*!< Number of lines executed during simulation */
-  unsigned int tog_total;                   /*!< Total number of bits to toggle */
+  unsigned int line_excluded;               /*!< Number of excluded lines */
+  unsigned int line_total;                  /*!< Total number of lines parsed */
   unsigned int tog01_hit;                   /*!< Number of bits toggling from 0 to 1 */
   unsigned int tog10_hit;                   /*!< Number of bits toggling from 1 to 0 */
+  unsigned int tog_excluded;                /*!< Number of excluded toggles */
+  unsigned int tog_total;                   /*!< Total number of bits to toggle */
   bool         tog_cov_found;               /*!< Specifies if a fully covered signal was found */
-  unsigned int comb_total;                  /*!< Total number of expression combinations */
   unsigned int comb_hit;                    /*!< Number of logic combinations hit */
+  unsigned int comb_excluded;               /*!< Number of excluded logic combinations */
+  unsigned int comb_total;                  /*!< Total number of expression combinations */
   int          state_total;                 /*!< Total number of FSM states */
   int          state_hit;                   /*!< Number of FSM states reached */
   int          arc_total;                   /*!< Total number of FSM arcs */
   int          arc_hit;                     /*!< Number of FSM arcs traversed */
+  int          arc_excluded;                /*!< Number of excluded arcs */
   unsigned int race_total;                  /*!< Total number of race conditions found */
   unsigned int rtype_total[RACE_TYPE_NUM];  /*!< Total number of each race condition type found */
-  unsigned int assert_total;                /*!< Total number of assertions */
   unsigned int assert_hit;                  /*!< Number of assertions covered during simulation */
-  unsigned int mem_ae_total;                /*!< Total number of addressable memory elements */
+  unsigned int assert_excluded;             /*!< Number of excluded assertions */
+  unsigned int assert_total;                /*!< Total number of assertions */
   unsigned int mem_wr_hit;                  /*!< Total number of addressable memory elements written */
   unsigned int mem_rd_hit;                  /*!< Total number of addressable memory elements read */
-  unsigned int mem_tog_total;               /*!< Total number of bits in memories */
+  unsigned int mem_ae_total;                /*!< Total number of addressable memory elements */
   unsigned int mem_tog01_hit;               /*!< Total number of bits toggling from 0 to 1 in memories */
   unsigned int mem_tog10_hit;               /*!< Total number of bits toggling from 1 to 0 in memories */
+  unsigned int mem_tog_total;               /*!< Total number of bits in memories */
+  unsigned int mem_excluded;                /*!< Total number of excluded memory coverage points */
   bool         show;                        /*!< Set to TRUE if this module should be output to the report */
 };
 
@@ -2849,6 +2855,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.297.2.4  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.297.2.3  2008/07/25 21:08:35  phase1geo
  Modifying CDD file format to remove the potential for memory allocation assertion
  errors due to a large number of merged CDD files.  Updating IV and Cver regressions per this

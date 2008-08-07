@@ -37,14 +37,17 @@ void combination_get_tree_stats(
             int*          ulid,
             unsigned int  curr_depth,
             bool          excluded,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit );
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excludes,
+  /*@out@*/ unsigned int* total );
 
 /*! \brief Calculates combination logic statistics for summary output */
 void combination_get_stats(
             func_unit*    funit,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit );
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
+);
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
 void combination_collect(
@@ -58,15 +61,17 @@ void combination_collect(
 /*! \brief Gets combinational logic summary statistics for specified functional unit */
 void combination_get_funit_summary(
             func_unit*    funit,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
 );
 
 /*! \brief Gets combinational logic summary statistics for specified functional unit instance */
 void combination_get_inst_summary(
             funit_inst*   inst,  
-  /*@out@*/ unsigned int* total,  
-  /*@out@*/ unsigned int* hit     
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total  
 );
 
 /*! \brief Gets output for specified expression including underlines and code */
@@ -100,6 +105,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.25.6.3  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.25.6.2  2008/08/06 20:11:33  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

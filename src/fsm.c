@@ -407,17 +407,18 @@ void fsm_table_set(
 */
 void fsm_get_stats(
             fsm_link* table,        /*!< Pointer to FSM to get statistics from */
-  /*@out@*/ int*      state_total,  /*!< Total number of states within this FSM */
   /*@out@*/ int*      state_hit,    /*!< Number of states reached in this FSM */
+  /*@out@*/ int*      state_total,  /*!< Total number of states within this FSM */
+  /*@out@*/ int*      arc_hit,      /*!< Number of arcs reached in this FSM */
   /*@out@*/ int*      arc_total,    /*!< Total number of arcs within this FSM */
-  /*@out@*/ int*      arc_hit       /*!< Number of arcs reached in this FSM */
+  /*@out@*/ int*      arc_excluded  /*!< Total number of excluded arcs */
 ) { PROFILE(FSM_GET_STATS);
 
   fsm_link* curr;   /* Pointer to current FSM in table list */
 
   curr = table;
   while( curr != NULL ) {
-    arc_get_stats( curr->table->table, state_total, state_hit, arc_total, arc_hit );
+    arc_get_stats( curr->table->table, state_hit, state_total, arc_hit, arc_total, arc_excluded );
     curr = curr->next;
   }
 
@@ -429,21 +430,15 @@ void fsm_get_stats(
  Retrieves the FSM summary information for the specified functional unit.
 */
 void fsm_get_funit_summary(
-            func_unit*    funit,  /*!< Pointer to functional unit */
-  /*@out@*/ unsigned int* total,  /*!< Pointer to location to store the total number of state transitions for the specified functional unit */
-  /*@out@*/ unsigned int* hit     /*!< Pointer to location to store the number of hit state transitions for the specified functional unit */
+            func_unit* funit,     /*!< Pointer to functional unit */
+  /*@out@*/ int*       hit,       /*!< Pointer to location to store the number of hit state transitions for the specified functional unit */
+  /*@out@*/ int*       excluded,  /*!< Pointer to number of excluded arcs */
+  /*@out@*/ int*       total      /*!< Pointer to location to store the total number of state transitions for the specified functional unit */
 ) { PROFILE(FSM_GET_FUNIT_SUMMARY);
 
-  char         tmp[21];  /* Temporary string for total */
-  unsigned int rv;
-
-  rv = snprintf( tmp, 21, "%20u", funit->stat->arc_total );
-  assert( rv < 21 );
-
-  rv = sscanf( tmp, "%u", total );
-  assert( rv == 1 );
-
-  *hit = funit->stat->arc_hit;
+  *hit      = funit->stat->arc_hit;
+  *excluded = funit->stat->arc_excluded;
+  *total    = funit->stat->arc_total;
 
   PROFILE_END;
 
@@ -453,21 +448,15 @@ void fsm_get_funit_summary(
  Retrieves the FSM summary information for the specified functional unit instance.
 */
 void fsm_get_inst_summary(
-            funit_inst*   inst,   /*!< Pointer to functional unit instance */
-  /*@out@*/ unsigned int* total,  /*!< Pointer to location to store the total number of state transitions for the specified functional unit */
-  /*@out@*/ unsigned int* hit     /*!< Pointer to location to store the number of hit state transitions for the specified functional unit */
+            funit_inst* inst,      /*!< Pointer to functional unit instance */
+  /*@out@*/ int*        hit,       /*!< Pointer to location to store the number of hit state transitions for the specified functional unit */
+  /*@out@*/ int*        excluded,  /*!< Pointer to number of excluded arcs */
+  /*@out@*/ int*        total      /*!< Pointer to location to store the total number of state transitions for the specified functional unit */
 ) { PROFILE(FSM_GET_INST_SUMMARY);
 
-  char         tmp[21];  /* Temporary string for total */
-  unsigned int rv; 
-
-  rv = snprintf( tmp, 21, "%20u", inst->stat->arc_total );
-  assert( rv < 21 );
-
-  rv = sscanf( tmp, "%u", total );
-  assert( rv == 1 );
-
-  *hit = inst->stat->arc_hit;
+  *hit      = inst->stat->arc_hit;
+  *excluded = inst->stat->arc_excluded;
+  *total    = inst->stat->arc_total;
 
   PROFILE_END;
 
@@ -527,12 +516,8 @@ void fsm_collect(
   /*@out@*/ int**      excludes   /*!< Pointer to array of exclude values for each uncovered signal */
 ) { PROFILE(FSM_COLLECT);
 
-  fsm_link* curr_fsm;     /* Pointer to current FSM link being evaluated */
-  int       state_total;  /* Total number of states in current FSM */
-  int       state_hit;    /* Number of states in current FSM hit */
-  int       arc_total;    /* Total number of arcs in current FSM */
-  int       arc_hit;      /* Number of arcs in current FSM hit */
-  int       size = 0;     /* Number of expressions IDs stored in expr_ids array */
+  fsm_link* curr_fsm;  /* Pointer to current FSM link being evaluated */
+  int       size = 0;  /* Number of expressions IDs stored in expr_ids array */
 
   /* Initialize list pointers */
   *sig_tail = *sig_head = NULL;
@@ -542,11 +527,12 @@ void fsm_collect(
   while( curr_fsm != NULL ) {
 
     /* Get the state and arc statistics */
-    state_total = 0;
-    state_hit   = 0;
-    arc_total   = 0;
-    arc_hit     = 0;
-    arc_get_stats( curr_fsm->table->table, &state_total, &state_hit, &arc_total, &arc_hit );
+    int state_hit    = 0;
+    int state_total  = 0;
+    int arc_hit      = 0;
+    int arc_total    = 0;
+    int arc_excluded = 0;
+    arc_get_stats( curr_fsm->table->table, &state_hit, &state_total, &arc_hit, &arc_total, &arc_excluded );
 
     /* Allocate some more memory for the excluded array */
     *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * size), (sizeof( int ) * (size + 1)) );
@@ -1285,6 +1271,9 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.97.2.4  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.97.2.3  2008/08/06 20:11:33  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.
