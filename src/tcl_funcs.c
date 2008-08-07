@@ -2311,20 +2311,31 @@ int tcl_func_set_line_exclude(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_SET_LINE_EXCLUDE);
 
-  int        retval = TCL_OK;  /* Return value for this function */
-  func_unit* funit;            /* Pointer to found functional unit */
+  int         retval = TCL_OK;  /* Return value for this function */
+  func_unit*  funit  = NULL;    /* Pointer to found functional unit */
+  funit_inst* inst   = NULL;    /* Pointer to found functional unit instance */
+  int         line;
+  int         value;
 
-  if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+  line  = atoi( argv[2] );
+  value = atoi( argv[3] );
 
-    /* Get argument values */
-    int line  = atoi( argv[2] );
-    int value = atoi( argv[3] );
-
-    /* Set exclusion bit for the given line */
-    exclude_set_line_exclude( funit, line, value );
-
+  if( tcl_func_is_funit( tcl, argv[1] ) ) {
+    if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+      exclude_set_line_exclude( funit, line, value, funit->stat );
+      
+    } else {
+      strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
+    }
   } else {
-    strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
+    if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
+      exclude_set_line_exclude( inst->funit, line, value, inst->stat );
+    } else {
+      strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
+    }
+  }
+
+  if( (funit == NULL) && (inst == NULL) ) {
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
@@ -2351,25 +2362,36 @@ int tcl_func_set_toggle_exclude(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_SET_TOGGLE_EXCLUDE);
 
-  int        retval = TCL_OK;  /* Return value for this function */
-  func_unit* funit;            /* Pointer to found functional unit */
+  int         retval = TCL_OK;  /* Return value for this function */
+  func_unit*  funit  = NULL;    /* Pointer to found functional unit */
+  funit_inst* inst   = NULL;    /* Pointer to found functional unit instance */
+  char*       sig_name;
+  int         value;
 
-  if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+  sig_name = strdup_safe( argv[2] );
+  value    = atoi( argv[3] );
 
-    char* sig_name = strdup_safe( argv[2] );
-    int   value    = atoi( argv[3] );
-
-    /* Set exclusion bit for the given toggle */
-    exclude_set_toggle_exclude( funit, sig_name, value );
-
-    free_safe( sig_name, (strlen( sig_name ) + 1) );
- 
+  if( tcl_func_is_funit( tcl, argv[1] ) ) {
+    if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+      exclude_set_toggle_exclude( funit, sig_name, value, funit->stat );
+    } else {
+      strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
+    }
   } else {
-    strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
+    if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
+      exclude_set_toggle_exclude( inst->funit, sig_name, value, inst->stat );
+    } else {
+      strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
+    }
+  }
+
+  if( (funit == NULL) && (inst == NULL) ) {
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
+
+  free_safe( sig_name, (strlen( sig_name ) + 1) );
 
   PROFILE_END;
 
@@ -2392,25 +2414,38 @@ int tcl_func_set_memory_exclude(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_SET_MEMORY_EXCLUDE);
 
-  int        retval = TCL_OK;  /* Return value for this function */
-  func_unit* funit;            /* Pointer to found functional unit */
+  int         retval = TCL_OK;  /* Return value for this function */
+  func_unit*  funit  = NULL;    /* Pointer to found functional unit */
+  funit_inst* inst   = NULL;    /* Pointer to found functional unit instance */
+  char*       sig_name;
+  int         value;
 
-  if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+  sig_name = strdup_safe( argv[2] );
+  value    = atoi( argv[3] );
 
-    char* sig_name = strdup_safe( argv[2] );
-    int   value    = atoi( argv[3] );
-
-    /* Set exclusion bit for the given toggle */
-    exclude_set_toggle_exclude( funit, sig_name, value );
-
-    free_safe( sig_name, (strlen( sig_name ) + 1) );
-
+  if( tcl_func_is_funit( tcl, argv[1] ) ) {
+    if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+      exclude_set_toggle_exclude( funit, sig_name, value, funit->stat );
+    } else {
+      strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
+    }
   } else {
-    strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
+    if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
+      exclude_set_toggle_exclude( inst->funit, sig_name, value, inst->stat );
+    } else {
+      strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
+    }
+  }
+
+  if( (funit == NULL) && (inst == NULL) ) {
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
+
+  free_safe( sig_name, (strlen( sig_name ) + 1) );
+
+  PROFILE_END;
 
   return( retval );
 
@@ -2431,20 +2466,32 @@ int tcl_func_set_comb_exclude(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_SET_COMB_EXCLUDE);
 
-  int        retval = TCL_OK;  /* Return value for this function */
-  func_unit* funit;            /* Pointer to found functional unit */
+  int         retval = TCL_OK;  /* Return value for this function */
+  func_unit*  funit  = NULL;    /* Pointer to found functional unit */
+  funit_inst* inst   = NULL;    /* Pointer to found functional unit instance */
+  int         expr_id;
+  int         uline_id;
+  int         value;
 
-  if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+  expr_id  = atoi( argv[2] );
+  uline_id = atoi( argv[3] );
+  value    = atoi( argv[4] );
 
-    int expr_id  = atoi( argv[2] );
-    int uline_id = atoi( argv[3] );
-    int value    = atoi( argv[4] );
-
-    /* Set exclusion bit for the given expression */
-    exclude_set_comb_exclude( funit, expr_id, uline_id, value );
-
+  if( tcl_func_is_funit( tcl, argv[1] ) ) {
+    if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+      exclude_set_comb_exclude( funit, expr_id, uline_id, value, funit->stat );
+    } else {
+      strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
+    }
   } else {
-    strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
+    if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
+      exclude_set_comb_exclude( inst->funit, expr_id, uline_id, value, inst->stat );
+    } else {
+      strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
+    }
+  }
+
+  if( (funit == NULL) && (inst == NULL) ) {
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
@@ -2471,28 +2518,41 @@ int tcl_func_set_fsm_exclude(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_FSM_EXCLUDE);
 
-  int        retval = TCL_OK;  /* Return value for this function */
-  func_unit* funit;            /* Pointer to found functional unit */
+  int         retval = TCL_OK;  /* Return value for this function */
+  func_unit*  funit  = NULL;    /* Pointer to found functional unit */
+  funit_inst* inst   = NULL;    /* Pointer to found functional unit instance */
+  int         expr_id;
+  char*       from_state;
+  char*       to_state;
+  int         value;
 
-  if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+  expr_id    = atoi( argv[2] );
+  from_state = strdup_safe( argv[3] );
+  to_state   = strdup_safe( argv[4] );
+  value      = atoi( argv[5] );
 
-    int   expr_id    = atoi( argv[2] );
-    char* from_state = strdup_safe( argv[3] );
-    char* to_state   = strdup_safe( argv[4] );
-    int   value      = atoi( argv[5] );
-
-    /* Set exclusion bit for the given line */
-    exclude_set_fsm_exclude( funit, expr_id, from_state, to_state, value );
-
-    free_safe( from_state, (strlen( from_state ) + 1) );
-    free_safe( to_state,   (strlen( to_state )   + 1) );
-
+  if( tcl_func_is_funit( tcl, argv[1] ) ) {
+    if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+      exclude_set_fsm_exclude( funit, expr_id, from_state, to_state, value, funit->stat );
+    } else {
+      strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
+    }
   } else {
-    strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
+    if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
+      exclude_set_fsm_exclude( inst->funit, expr_id, from_state, to_state, value, inst->stat );
+    } else {
+      strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
+    }
+  }
+
+  if( (funit == NULL) && (inst == NULL) ) {
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
+
+  free_safe( from_state, (strlen( from_state ) + 1) );
+  free_safe( to_state,   (strlen( to_state )   + 1) );
 
   PROFILE_END;
 
@@ -2515,28 +2575,41 @@ int tcl_func_set_assert_exclude(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_SET_ASSERT_EXCLUDE);
 
-  int        retval = TCL_OK;  /* Return value for this function */
-  func_unit* funit;            /* Pointer to found functional unit */
+  int         retval = TCL_OK;  /* Return value for this function */
+  func_unit*  funit  = NULL;    /* Pointer to found functional unit */
+  funit_inst* inst   = NULL;    /* Pointer to found functional unit instance */
+  char*       inst_name;
+  int         expr_id;
+  int         value;
 
-  if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
- 
-    char* inst_name = strdup_safe( argv[2] );
-    int   expr_id   = atoi( argv[3] );
-    int   value     = atoi( argv[4] );
+  inst_name = strdup_safe( argv[2] );
+  expr_id   = atoi( argv[3] );
+  value     = atoi( argv[4] );
 
-    /* Set exclusion bit for the given assertion */
-    curr_db = tcl_func_is_funit( tcl, argv[1] ) ? 1 : 0;
-    exclude_set_assert_exclude( funit, inst_name, expr_id, value );
-    curr_db = 0;
-
-    free_safe( inst_name, (strlen( inst_name ) + 1) );
-
+  if( tcl_func_is_funit( tcl, argv[1] ) ) {
+    if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+      curr_db = 1;
+      exclude_set_assert_exclude( funit, inst_name, expr_id, value, funit->stat );
+    } else {
+      strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
+    }
   } else {
-    strcpy( user_msg, "Internal Error:  Unable to find functional unit" );
+    if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
+      curr_db = 0;
+      exclude_set_assert_exclude( inst->funit, inst_name, expr_id, value, inst->stat );
+    } else {
+      strcpy( user_msg, "Internal Error:  Unable to find functional unit instance" );
+    }
+  }
+  curr_db = 0;
+
+  if( (funit == NULL) && (inst == NULL) ) {
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
+
+  free_safe( inst_name, (strlen( inst_name ) + 1) );
 
   PROFILE_END;
 
@@ -2714,6 +2787,10 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.77.4.6  2008/08/07 18:03:51  phase1geo
+ Fixing instance exclusion segfault issue with GUI.  Also cleaned up function
+ documentation in link.c.
+
  Revision 1.77.4.5  2008/08/07 06:39:11  phase1geo
  Adding "Excluded" column to the summary listbox.
 
