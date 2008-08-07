@@ -64,9 +64,10 @@ extern bool         flag_suppress_empty_funits;
  summary information about line coverage.
 */
 void line_get_stats(
-            func_unit*    funit,  /*!< Pointer to current functional unit to explore */
-  /*@out@*/ unsigned int* total,  /*!< Holds total number of lines parsed */
-  /*@out@*/ unsigned int* hit     /*!< Holds total number of lines hit */
+            func_unit*    funit,     /*!< Pointer to current functional unit to explore */
+  /*@out@*/ unsigned int* hit,       /*!< Holds total number of lines hit */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to the number of excluded lines */
+  /*@out@*/ unsigned int* total      /*!< Holds total number of lines parsed */
 ) { PROFILE(LINE_GET_STATS);
 
   statement* stmt;  /* Pointer to current statement */
@@ -93,6 +94,9 @@ void line_get_stats(
         *total = *total + 1;
         if( (stmt->exp->exec_num > 0) || (stmt->suppl.part.excluded == 1) ) {
           (*hit)++;
+          if( stmt->suppl.part.excluded == 1 ) {
+            (*excluded)++;
+          }
         }
       }
 
@@ -181,21 +185,15 @@ void line_collect(
  Looks up summary information for specified functional unit.
 */
 void line_get_funit_summary(
-            func_unit*    funit,  /*!< Pointer to functional unit */
-  /*@out@*/ unsigned int* total,  /*!< Pointer to total number of lines in this functional unit */
-  /*@out@*/ unsigned int* hit     /*!< Pointer to number of lines hit in this functional unit */
+            func_unit*    funit,     /*!< Pointer to functional unit */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to number of lines hit in this functional unit */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of lines excluded in this functional unit */
+  /*@out@*/ unsigned int* total      /*!< Pointer to total number of lines in this functional unit */
 ) { PROFILE(LINE_GET_FUNIT_SUMMARY);
 
-  char         tmp[21];  /* Temporary string for total */
-  unsigned int rv;
-
-  rv = snprintf( tmp, 21, "%20u", funit->stat->line_total );
-  assert( rv < 21 );
-
-  rv = sscanf( tmp, "%u", total );
-  assert( rv == 1 );
-
-  *hit = funit->stat->line_hit;
+  *hit      = funit->stat->line_hit;
+  *excluded = funit->stat->line_excluded; 
+  *total    = funit->stat->line_total;
 
   PROFILE_END;
 
@@ -205,21 +203,15 @@ void line_get_funit_summary(
  Looks up summary information for specified functional unit instance.
 */
 void line_get_inst_summary(
-            funit_inst*   inst,   /*!< Pointer to functional unit instance */
-  /*@out@*/ unsigned int* total,  /*!< Pointer to total number of lines in this functional unit */
-  /*@out@*/ unsigned int* hit     /*!< Pointer to number of lines hit in this functional unit */
+            funit_inst*   inst,      /*!< Pointer to functional unit instance */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to number of lines hit in this functional unit */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of lines excluded in this functional unit */
+  /*@out@*/ unsigned int* total      /*!< Pointer to total number of lines in this functional unit */
 ) { PROFILE(LINE_GET_INST_SUMMARY);
 
-  char         tmp[21];  /* Temporary string for total */
-  unsigned int rv;
-
-  rv = snprintf( tmp, 21, "%20u", inst->stat->line_total );
-  assert( rv < 21 );
-
-  rv = sscanf( tmp, "%u", total );
-  assert( rv == 1 );
-
-  *hit = inst->stat->line_hit;
+  *hit      = inst->stat->line_hit;
+  *excluded = inst->stat->line_excluded;
+  *total    = inst->stat->line_total;
 
   PROFILE_END;
 
@@ -655,6 +647,9 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.89.4.3  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.89.4.2  2008/08/06 20:11:34  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

@@ -30,8 +30,9 @@
 /*! \brief Calculates line coverage numbers for the specified expression list. */
 void line_get_stats(
             func_unit*    funit,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
 );
 
 /*! \brief Gathers line numbers from specified functional unit that were not hit during simulation. */
@@ -47,15 +48,17 @@ void line_collect(
 /*! \brief Returns hit and total information for specified functional unit. */
 void line_get_funit_summary(
             func_unit*    funit,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
 );
 
 /*! \brief Returns hit and total information for specified functional unit instance */
 void line_get_inst_summary(
             funit_inst*   inst,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
 );
 
 /*! \brief Generates report output for line coverage. */
@@ -67,6 +70,9 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.18.6.3  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.18.6.2  2008/08/06 20:11:34  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

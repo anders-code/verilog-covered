@@ -37,13 +37,12 @@
 
 extern db**         db_list;
 extern unsigned int curr_db;
-
-extern bool   report_covered;
-extern bool   report_instance;
-extern char** leading_hierarchies;
-extern int    leading_hier_num;
-extern bool   leading_hiers_differ;
-extern isuppl info_suppl;
+extern bool         report_covered;
+extern bool         report_instance;
+extern char**       leading_hierarchies;
+extern int          leading_hier_num;
+extern bool         leading_hiers_differ;
+extern isuppl       info_suppl;
 
 
 /*!
@@ -51,12 +50,13 @@ extern isuppl info_suppl;
 */
 void memory_get_stat(
   vsignal*      sig,         /*!< Pointer to signal list to traverse for memories */
-  unsigned int* ae_total,    /*!< Pointer to total number of addressable elements */
   unsigned int* wr_hit,      /*!< Pointer to total number of addressable elements written */
   unsigned int* rd_hit,      /*!< Pointer to total number of addressable elements read */
-  unsigned int* tog_total,   /*!< Pointer to total number of bits in memories that can be toggled */
+  unsigned int* ae_total,    /*!< Pointer to total number of addressable elements */
   unsigned int* tog01_hit,   /*!< Pointer to total number of bits toggling from 0->1 */
   unsigned int* tog10_hit,   /*!< Pointer to total number of bits toggling from 1->0 */
+  unsigned int* tog_total,   /*!< Pointer to total number of bits in memories that can be toggled */
+  unsigned int* excluded,    /*!< Pointer to total number of excluded memory coverage points */
   bool          ignore_excl  /*!< If set to TRUE, ignores the current value of the excluded bit */
 ) { PROFILE(MEMORY_GET_STAT);
 
@@ -80,6 +80,7 @@ void memory_get_stat(
     if( (sig->suppl.part.excluded == 1) && !ignore_excl ) {
       (*wr_hit)++;
       (*rd_hit)++;
+      *excluded += 2;
     } else {
       wr = 0;
       rd = 0;
@@ -99,6 +100,7 @@ void memory_get_stat(
   if( (sig->suppl.part.excluded == 1) && !ignore_excl ) {
     *tog01_hit += sig->value->width;
     *tog10_hit += sig->value->width;
+    *excluded  += (sig->value->width * 2);
   } else {
     vector_toggle_count( sig->value, tog01_hit, tog10_hit );
   }
@@ -112,12 +114,13 @@ void memory_get_stat(
 */
 void memory_get_stats(
             sig_link*     sigl,       /*!< Pointer to signal list to traverse for memories */
-  /*@out@*/ unsigned int* ae_total,   /*!< Pointer to total number of addressable elements */
   /*@out@*/ unsigned int* wr_hit,     /*!< Pointer to total number of addressable elements written */
   /*@out@*/ unsigned int* rd_hit,     /*!< Pointer to total number of addressable elements read */
-  /*@out@*/ unsigned int* tog_total,  /*!< Pointer to total number of bits in memories that can be toggled */
+  /*@out@*/ unsigned int* ae_total,   /*!< Pointer to total number of addressable elements */
   /*@out@*/ unsigned int* tog01_hit,  /*!< Pointer to total number of bits toggling from 0->1 */
-  /*@out@*/ unsigned int* tog10_hit   /*!< Pointer to total number of bits toggling from 1->0 */
+  /*@out@*/ unsigned int* tog10_hit,  /*!< Pointer to total number of bits toggling from 1->0 */
+  /*@out@*/ unsigned int* tog_total,  /*!< Pointer to total number of bits in memories that can be toggled */
+  /*@out@*/ unsigned int* excluded    /*!< Pointer to total number of excluded memory coverage points */
 ) { PROFILE(MEMORY_GET_STATS);
 
   while( sigl != NULL ) {
@@ -125,7 +128,7 @@ void memory_get_stats(
     /* Calculate only for memory elements (must contain one or more unpacked dimensions) */
     if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_MEM) && (sigl->sig->udim_num > 0) ) {
 
-      memory_get_stat( sigl->sig, ae_total, wr_hit, rd_hit, tog_total, tog01_hit, tog10_hit, FALSE );
+      memory_get_stat( sigl->sig, wr_hit, rd_hit, ae_total, tog01_hit, tog10_hit, tog_total, excluded, FALSE );
 
     }
 
@@ -141,21 +144,15 @@ void memory_get_stats(
  Retrieves memory summary information for a given functional unit made by a GUI request.
 */
 void memory_get_funit_summary(
-            func_unit*    funit,  /*!< Pointer to found functional unit */
-  /*@out@*/ unsigned int* total,  /*!< Pointer to total number of memories in the given functional unit */
-  /*@out@*/ unsigned int* hit     /*!< Pointer to number of memories that received 100% coverage of all memory metrics */
+            func_unit*    funit,     /*!< Pointer to found functional unit */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to number of memories that received 100% coverage of all memory metrics */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded memory coverage points */
+  /*@out@*/ unsigned int* total      /*!< Pointer to total number of memories in the given functional unit */
 ) { PROFILE(MEMORY_GET_FUNIT_SUMMARY);
 
-  char         tmp[21];  /* Temporary string for total */
-  unsigned int rv;       /* Return value */
-  
-  rv = snprintf( tmp, 21, "%20u", ((funit->stat->mem_ae_total * 2) + (funit->stat->mem_tog_total * 2)) );
-  assert( rv < 21 );
-
-  rv = sscanf( tmp, "%u", total );
-  assert( rv == 1 );
-
-  *hit = funit->stat->mem_wr_hit + funit->stat->mem_rd_hit + funit->stat->mem_tog01_hit + funit->stat->mem_tog10_hit;
+  *hit      = funit->stat->mem_wr_hit + funit->stat->mem_rd_hit + funit->stat->mem_tog01_hit + funit->stat->mem_tog10_hit;
+  *excluded = funit->stat->mem_excluded;
+  *total    = (funit->stat->mem_ae_total * 2) + (funit->stat->mem_tog_total * 2);
 
   PROFILE_END;
 
@@ -165,21 +162,15 @@ void memory_get_funit_summary(
  Retrieves memory summary information for a given functional unit instance made by a GUI request.
 */
 void memory_get_inst_summary(
-            funit_inst*   inst,   /*!< Pointer to found functional unit instance */
-  /*@out@*/ unsigned int* total,  /*!< Pointer to total number of memories in the given functional unit instance */
-  /*@out@*/ unsigned int* hit     /*!< Pointer to number of memories that received 100% coverage of all memory metrics */
+            funit_inst*   inst,      /*!< Pointer to found functional unit instance */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to number of memories that received 100% coverage of all memory metrics */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded memory coverage points */
+  /*@out@*/ unsigned int* total      /*!< Pointer to total number of memories in the given functional unit instance */
 ) { PROFILE(MEMORY_GET_INST_SUMMARY);
 
-  char         tmp[21];  /* Temporary string for total */
-  unsigned int rv;       /* Return value */
-  
-  rv = snprintf( tmp, 21, "%20u", ((inst->stat->mem_ae_total * 2) + (inst->stat->mem_tog_total * 2)) );
-  assert( rv < 21 );
-
-  rv = sscanf( tmp, "%u", total );
-  assert( rv == 1 );
-
-  *hit = inst->stat->mem_wr_hit + inst->stat->mem_rd_hit + inst->stat->mem_tog01_hit + inst->stat->mem_tog10_hit;
+  *hit      = inst->stat->mem_wr_hit + inst->stat->mem_rd_hit + inst->stat->mem_tog01_hit + inst->stat->mem_tog10_hit;
+  *excluded = inst->stat->mem_excluded;
+  *total    = (inst->stat->mem_ae_total * 2) + (inst->stat->mem_tog_total * 2);
   
   PROFILE_END; 
   
@@ -480,12 +471,13 @@ void memory_collect(
 ) { PROFILE(MEMORY_COLLECT);
 
   sig_link*    sigl;           /* Pointer to current signal link being evaluated */
-  unsigned int ae_total  = 0;  /* Total number of addressable elements */
   unsigned int wr_hit    = 0;  /* Total number of addressable elements written */
   unsigned int rd_hit    = 0;  /* Total number of addressable elements read */
-  unsigned int tog_total = 0;  /* Total number of toggle bits */
+  unsigned int ae_total  = 0;  /* Total number of addressable elements */
   unsigned int hit01     = 0;  /* Number of bits that toggled from 0 to 1 */
   unsigned int hit10     = 0;  /* Number of bits that toggled from 1 to 0 */
+  unsigned int tog_total = 0;  /* Total number of toggle bits */
+  unsigned int excluded  = 0;  /* Number of excluded memory coverage points */
 
   sigl = funit->sig_head;
 
@@ -495,7 +487,7 @@ void memory_collect(
 
       ae_total = 0;
    
-      memory_get_stat( sigl->sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &hit01, &hit10, TRUE );
+      memory_get_stat( sigl->sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &hit01, &hit10, &excluded, TRUE );
 
       /* If this signal meets the coverage requirement, add it to the signal list */
       if( ((cov == 1) && (wr_hit > 0) && (rd_hit > 0) && (hit01 == tog_total) && (hit10 == tog_total)) ||
@@ -1266,6 +1258,9 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.29.2.3  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.29.2.2  2008/08/06 20:11:34  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

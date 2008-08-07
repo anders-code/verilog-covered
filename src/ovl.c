@@ -179,9 +179,10 @@ void ovl_add_assertions_to_no_score_list(
  stores this information in the total and hit pointers.
 */
 void ovl_get_funit_stats(
-            const func_unit* funit,  /*!< Pointer to functional unit to gather OVL assertion coverage information for */
-  /*@out@*/ unsigned int*    total,  /*!< Pointer to the total number of assertions in the given module */
-  /*@out@*/ unsigned int*    hit     /*!< Pointer to the number of assertions hit in the given module during simulation */
+            const func_unit* funit,     /*!< Pointer to functional unit to gather OVL assertion coverage information for */
+  /*@out@*/ unsigned int*    hit,       /*!< Pointer to the number of assertions hit in the given module during simulation */
+  /*@out@*/ unsigned int*    excluded,  /*!< Pointer to the number of excluded assertions */
+  /*@out@*/ unsigned int*    total      /*!< Pointer to the total number of assertions in the given module */
 ) { PROFILE(OVL_GET_FUNIT_STATS);
 
   funit_inst* funiti;      /* Pointer to found functional unit instance containing this functional unit */
@@ -214,6 +215,9 @@ void ovl_get_funit_stats(
             *total = *total + 1;
             if( (stmt->exp->exec_num > 0) || (ESUPPL_EXCLUDED( stmt->exp->suppl ) == 1) ) {
               (*hit)++;
+              if( ESUPPL_EXCLUDED( stmt->exp->suppl ) == 1 ) {
+                (*excluded)++;
+              }
             }
           }
 
@@ -496,6 +500,9 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.27.2.3  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.27.2.2  2008/08/06 20:11:34  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

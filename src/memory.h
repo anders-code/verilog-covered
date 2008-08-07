@@ -31,38 +31,42 @@
 /*! \brief Calculates the memory coverage numbers for a given memory signal */
 void memory_get_stat(
             vsignal*      sig,
-  /*@out@*/ unsigned int* ae_total,
   /*@out@*/ unsigned int* wr_hit,
   /*@out@*/ unsigned int* rd_hit,
-  /*@out@*/ unsigned int* tog_total,
+  /*@out@*/ unsigned int* ae_total,
   /*@out@*/ unsigned int* tog01_hit,
   /*@out@*/ unsigned int* tog10_hit,
+  /*@out@*/ unsigned int* tog_total,
+  /*@out@*/ unsigned int* excluded,
             bool          ignore_excl
 );
 
 /*! \brief Calculates memory coverage numbers for the specified signal list. */
 void memory_get_stats(
             sig_link*     sigl,
-  /*@out@*/ unsigned int* ae_total,
   /*@out@*/ unsigned int* wr_hit,
   /*@out@*/ unsigned int* rd_hit,
-  /*@out@*/ unsigned int* tog_total,
+  /*@out@*/ unsigned int* ae_total,
   /*@out@*/ unsigned int* tog01_hit,
-  /*@out@*/ unsigned int* tog10_hit
+  /*@out@*/ unsigned int* tog10_hit,
+  /*@out@*/ unsigned int* tog_total,
+  /*@out@*/ unsigned int* excluded
 );
 
 /*! \brief Gets memory summary information for a GUI request */
 void memory_get_funit_summary(
             func_unit*    funit,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
 );
 
 /*! \brief Gets memory summary information for a GUI request */
 void memory_get_inst_summary(
             funit_inst*   funit,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
 );
 
 /*! \brief Gets coverage information for the specified memory */
@@ -93,6 +97,9 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.10.6.3  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.10.6.2  2008/08/06 20:11:34  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

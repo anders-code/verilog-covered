@@ -39,8 +39,9 @@ void ovl_add_assertions_to_no_score_list( bool rm_tasks );
 /*! \brief Gathers the OVL assertion coverage summary statistics for the given functional unit. */
 void ovl_get_funit_stats(
             const func_unit* funit,
-  /*@out@*/ unsigned int*    total,
-  /*@out@*/ unsigned int*    hit
+  /*@out@*/ unsigned int*    hit,
+  /*@out@*/ unsigned int*    excludes,
+  /*@out@*/ unsigned int*    total
 );
 
 /*! \brief Displays the verbose hit/miss information to the given output file for the given functional unit. */
@@ -69,6 +70,9 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.14.6.3  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.14.6.2  2008/08/06 20:11:34  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.
