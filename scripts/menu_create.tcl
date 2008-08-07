@@ -153,7 +153,10 @@ proc menu_create {} {
           return
         }
       }
-      exit
+      if {[.menubar.file entrycget 4 -state] == "normal"} {
+        tcl_func_close_cdd
+      }
+      destroy .
     }
   }
 

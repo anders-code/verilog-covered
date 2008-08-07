@@ -2593,20 +2593,18 @@ void combination_collect(
   /*@out@*/ int**         excludes  /*!< Pointer to an array of integers indicating exclusion property of each uncovered expression */
 ) { PROFILE(COMBINATION_COLLECT);
 
-  func_iter    fi;              /* Functional unit iterator */
-  statement*   stmt;            /* Pointer to current statement */
-  int          any_missed;      /* Specifies if any of the subexpressions were missed in this expression */
-  int          any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
-  unsigned int exp_size;        /* Current maximum allocated space in exprs array */
+  func_iter  fi;              /* Functional unit iterator */
+  statement* stmt;            /* Pointer to current statement */
+  int        any_missed;      /* Specifies if any of the subexpressions were missed in this expression */
+  int        any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
  
   /* Reset combination counted bits */
   combination_reset_counted_exprs( funit );
 
   /* Create an array that will hold the number of uncovered combinations */
-  exp_size  = 20;
   *exp_cnt  = 0;
-  *exprs    = (expression**)malloc_safe( sizeof( expression* ) * exp_size );
-  *excludes = (int*)malloc_safe( sizeof( expression* ) * exp_size );
+  *exprs    = NULL;
+  *excludes = NULL;
 
   func_iter_init( &fi, funit );
 
@@ -2622,11 +2620,9 @@ void combination_collect(
     if( ((cov == 0) && (any_missed == 1)) ||
         ((cov == 1) && (any_missed == 0) && (any_measurable == 1)) ) {
       if( stmt->exp->line != 0 ) {
-        if( *exp_cnt == exp_size ) {
-          exp_size += 20;
-          *exprs    = (expression**)realloc_safe( *exprs, (sizeof( expression* ) * (exp_size - 20)), (sizeof( expression* ) * exp_size) );
-          *excludes = (int*)realloc_safe( *excludes, (sizeof( int* ) * (exp_size - 20)), (sizeof( int* ) * exp_size) );
-        }
+        *exprs    = (expression**)realloc_safe( *exprs,    (sizeof( expression* ) * (*exp_cnt)), (sizeof( expression* ) * (*exp_cnt + 1)) );
+        *excludes =         (int*)realloc_safe( *excludes, (sizeof( int* )        * (*exp_cnt)), (sizeof( int* )        * (*exp_cnt + 1)) );
+
         (*exprs)[(*exp_cnt)]    = stmt->exp;
         (*excludes)[(*exp_cnt)] = (any_measurable && (stmt->suppl.part.excluded == 0)) ? 0 : 1;
         (*exp_cnt)++;
@@ -2896,6 +2892,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.194.2.6  2008/08/07 20:51:04  phase1geo
+ Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
+ table output and exclusion.  Checkpointing.
+
  Revision 1.194.2.5  2008/08/07 06:39:10  phase1geo
  Adding "Excluded" column to the summary listbox.
 

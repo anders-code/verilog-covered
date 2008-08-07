@@ -373,6 +373,10 @@ void exclude_set_fsm_exclude(
       exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, (value == 1), stat );
     }
 
+    /* Deallocate vectors */
+    vector_dealloc( from_vec );
+    vector_dealloc( to_vec );
+
   }
 
   PROFILE_END;
@@ -432,6 +436,10 @@ void exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.24.2.5  2008/08/07 20:51:04  phase1geo
+ Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
+ table output and exclusion.  Checkpointing.
+
  Revision 1.24.2.4  2008/08/07 18:03:51  phase1geo
  Fixing instance exclusion segfault issue with GUI.  Also cleaned up function
  documentation in link.c.
