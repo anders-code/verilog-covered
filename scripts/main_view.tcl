@@ -49,7 +49,7 @@ proc main_view {} {
   menu_create
 
   # Create the information frame
-  frame .covbox -width 710 -height 25
+  frame .covbox -width 710 -height 25 -relief raised -borderwidth 1
   cov_create .covbox
 
   # Create the bottom frame
@@ -73,15 +73,17 @@ proc main_view {} {
   button .bot.right.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled -relief flat -command {
     goto_uncov $next_uncov_index
   }
-  frame .bot.right.h.search
-  button .bot.right.h.search.find -text "Find:" -state disabled -command {
+  frame .bot.right.h.search -borderwidth 1 -relief ridge -bg white
+  label .bot.right.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -bg white -state disabled -relief flat -borderwidth 0
+  bind .bot.right.h.search.find <ButtonPress-1> {
     perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
   }
-  entry .bot.right.h.search.e -width 15 -relief sunken -state disabled
+  entry .bot.right.h.search.e -width 15 -bg white -state disabled -relief flat -insertborderwidth 0 -highlightthickness 0 -disabledbackground white
   bind .bot.right.h.search.e <Return> {
     perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
   }
-  button .bot.right.h.search.clear -text "Clear" -state disabled -command {
+  label .bot.right.h.search.clear -image [image create photo -file [file join $HOME scripts clear.gif]] -bg white -state disabled -relief flat -borderwidth 0
+  bind .bot.right.h.search.clear <ButtonPress-1> {
     .bot.right.txt tag delete search_found
     .bot.right.h.search.e delete 0 end
     set main_start_search_index 1.0
@@ -93,7 +95,7 @@ proc main_view {} {
 
   # Pack the search frame
   pack .bot.right.h.search.find  -side left
-  pack .bot.right.h.search.e     -side left
+  pack .bot.right.h.search.e     -side left -padx 3
   pack .bot.right.h.search.clear -side left
 
   # Pack the textbox header frame
@@ -209,7 +211,7 @@ proc populate_listbox {} {
   if {$cdd_name != ""} {
 
     # If we are in module mode, list modules (otherwise, list instances)
-    if {$mod_inst_type == "module"} {
+    if {$mod_inst_type == "Module"} {
 
       # Get the list of functional units
       set block_list [tcl_func_get_funit_list]
@@ -309,9 +311,6 @@ proc clear_text {} {
   .bot.right.txt configure -state normal
   .bot.right.txt delete 1.0 end
   .bot.right.txt configure -state disabled
-
-  # Clear the summary info
-  cov_clear_summary
 
   # Reset the last_lb_index
   set last_lb_index ""
@@ -583,7 +582,7 @@ proc manage_tl_popup {} {
   global tableColName tableColHide mod_inst_type
 
   # Calculate starting index
-  if {$mod_inst_type == "module"} {
+  if {$mod_inst_type == "Module"} {
     set no_display_cols {{Instance Name} Index}
   } else {
     set no_display_cols {Index}
@@ -606,7 +605,7 @@ proc manage_tl_popup {} {
 
     # Handle the instance name column show/hide status
     if {$name eq "Instance Name"} {
-      if {$mod_inst_type eq "module"} {
+      if {$mod_inst_type eq "Module"} {
         .bot.left.tl columnconfigure $num -hide true
       } else {
         .bot.left.tl columnconfigure $num -hide false

@@ -4,7 +4,7 @@ set cdd_name           ""
 set uncov_type         1
 set cov_type           0
 set race_type          0
-set mod_inst_type      "module"
+set mod_inst_type      "Module"
 set last_mod_inst_type ""
 
 set file_types {
@@ -166,17 +166,15 @@ proc menu_create {} {
 
   global mod_inst_type cov_uncov_type cov_rb
 
-  $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "module" -underline 0 -command {
-    populate_listbox
-    clear_all_windows
-    .bot.left.tl columnconfigure 1 -hide false
-    .menubar.view entryconfigure 4 -label "Hide Summary Module Column" -state disabled
-  }
-  $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "instance" -underline 1 -command {
-    populate_listbox
-    clear_all_windows
-    .menubar.view entryconfigure 4 -state normal
-  }
+  $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "Module" -underline 0
+  $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "Instance" -underline 0
+  $report add separator
+  $report add radiobutton -label "Line"   -variable cov_rb -value "Line"   -underline 0
+  $report add radiobutton -label "Toggle" -variable cov_rb -value "Toggle" -underline 0
+  $report add radiobutton -label "Memory" -variable cov_rb -value "Memory" -underline 1
+  $report add radiobutton -label "Logic"  -variable cov_rb -value "Logic"  -underline 2
+  $report add radiobutton -label "FSM"    -variable cov_rb -value "FSM"    -underline 0
+  $report add radiobutton -label "Assert" -variable cov_rb -value "Assert" -underline 0
   $report add separator
   $report add checkbutton -label "Show Uncovered" -variable uncov_type -onvalue 1 -offvalue 0 -underline 5 -command {
     set text_x [.bot.right.txt xview]
@@ -241,7 +239,7 @@ proc menu_create {} {
     .bot.right.txt xview moveto [lindex $text_x 0]
     .bot.right.txt yview moveto [lindex $text_y 0]
   }
-  set mod_inst_type  "module"
+  set mod_inst_type  "Module"
 
   # Configure the color options
   set m [menu $mb.view -tearoff false]

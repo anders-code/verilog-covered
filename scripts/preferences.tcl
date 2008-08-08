@@ -588,11 +588,6 @@ proc apply_preferences {} {
     # Update the listbox
     populate_listbox
 
-    # Update the summary window, if it currently exists
-    if {[winfo exists .sumwin] == 1} {
-      create_summary
-    }
-
   }
 
   return $changed
