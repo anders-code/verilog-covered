@@ -992,7 +992,7 @@ void command_report(
 
         /* Get the COVERED_BROWSER environment variable */
 #ifndef COVERED_BROWSER
-        covered_browser = getenv( "COVERED_BROWSER" );
+        covered_browser = strdup_safe( getenv( "COVERED_BROWSER" ) );
 #else
         covered_browser = strdup_safe( COVERED_BROWSER );
 #endif
@@ -1050,6 +1050,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104.2.10  2008/08/08 23:02:38  phase1geo
+ Modifying the look of the text search element.  Enhancing a few other GUI enhancements.
+
  Revision 1.104.2.9  2008/08/07 20:51:04  phase1geo
  Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
  table output and exclusion.  Checkpointing.
