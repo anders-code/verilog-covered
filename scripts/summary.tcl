@@ -229,7 +229,7 @@ proc calculate_summary {} {
     }
 
     ;# Add this functional unit to the list to sort
-    if {$mod_inst_type == "module"} {
+    if {$mod_inst_type == "Module"} {
       lappend summary_list [list "" [tcl_func_get_funit_name $block] $hit $miss $excluded $total $percent $bcolor $lcolor]
     } else {
       lappend summary_list [list [tcl_func_get_inst_scope $block] [tcl_func_get_funit_name $block] $hit $miss $excluded $total $percent $bcolor $lcolor]
