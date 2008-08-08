@@ -75,6 +75,7 @@ extern bool         report_combination;
 extern bool         report_fsm;
 extern bool         report_assertion;
 extern bool         report_race;
+extern bool         report_instance;
 extern isuppl       info_suppl;
 
 
@@ -2904,6 +2905,9 @@ int tcl_func_generate_report(
 
       report_print_header( ofile );
 
+      /* Set the current database correctly */
+      curr_db = report_instance ? 0 : 1;
+
       /* Call out the proper reports for the specified metrics to report */
       if( report_line ) {
         line_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
@@ -3038,6 +3042,9 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.77.4.9  2008/08/08 23:20:28  phase1geo
+ Fixing bug with report generator.  Modifying search widgets in output viewer.
+
  Revision 1.77.4.8  2008/08/07 23:22:49  phase1geo
  Added initial code to synchronize module and instance exclusion information.  Checkpointing.
 

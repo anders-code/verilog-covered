@@ -3,6 +3,7 @@ set viewer_start_search_index 1.0
 proc viewer_show {type title fname} {
 
   global viewer_start_search_index
+  global HOME
 
   # Create window name
   set win [join [list .$type viewwin] ""]
@@ -13,17 +14,19 @@ proc viewer_show {type title fname} {
     wm title $win "Covered - $title - $fname"
 
     # Create search button frame
-    frame  $win.search
-    button $win.search.f -text "Find:" -command "perform_search $win.text.t $win.search.e $win.info viewer_start_search_index"
-    entry  $win.search.e -width 15 -relief sunken
+    frame  $win.search -borderwidth 1 -relief ridge -bg white
+    label $win.search.f -image [image create photo -file [file join $HOME scripts find.gif]] -bg white -relief flat -borderwidth 0
+    bind $win.search.f <ButtonPress-1> "perform_search $win.text.t $win.search.e $win.info viewer_start_search_index"
+    entry  $win.search.e -width 15 -bg white -relief flat -insertborderwidth 0 -highlightthickness 0 -disabledbackground white
     bind $win.search.e <Return> "perform_search $win.text.t $win.search.e $win.info viewer_start_search_index"
-    button $win.search.c -text "Clear" -command "
+    label $win.search.c -image [image create photo -file [file join $HOME scripts clear.gif]] -bg white -relief flat -borderwidth 0
+    bind $win.search.c <ButtonPress-1> "
       $win.text.t tag delete search_found
       $win.search.e delete 0 end
       $win.info configure -text {}
     "
     pack $win.search.c -side right
-    pack $win.search.e -side right
+    pack $win.search.e -side right -padx 3
     pack $win.search.f -side right
 
     # Create text box frame
@@ -41,7 +44,7 @@ proc viewer_show {type title fname} {
     label $win.info -anchor w
    
     # Pack the top-level widgets
-    pack $win.search -fill x
+    pack $win.search -fill
     pack $win.text   -fill both -expand yes
     pack $win.info   -fill x
 
