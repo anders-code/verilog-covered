@@ -37,7 +37,7 @@ set next_uncov_index        ""
 proc main_view {} {
 
   global race_msgs prev_uncov_index next_uncov_index
-  global HOME tableCol main_start_search_index
+  global HOME main_start_search_index
 
   # Start off 
 
@@ -121,7 +121,7 @@ proc main_view {} {
   # Create Tablelist and associated scrollbars
   tablelist::tablelist .bot.left.tl \
     -columns {0 "Instance Name" 0 "Module Name" 0 "Hit" right 0 "Miss" right 0 "Excluded" right 0 "Total" right 0 "Hit %" right 0 "Index"} \
-    -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.sbf.vb set} -stretch all
+    -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.sbf.vb set} -stretch all -movablecolumns 1
   .bot.left.tl columnconfigure 0 -hide true
   .bot.left.tl columnconfigure 2 -sortmode integer -stretchable false
   .bot.left.tl columnconfigure 3 -sortmode integer -stretchable false
@@ -153,20 +153,10 @@ proc main_view {} {
 
   # Create and bind the listbox label to a popup menu
   menu .lbm -tearoff false
-  set num 0
-  foreach {width name align} [.bot.left.tl cget -columns] {
-    if {[expr ! [.bot.left.tl columncget $num -hide]]} {
-      .lbm add checkbutton -label $name -variable tableCol($num) -command {
-        foreach col [array names tableCol] {
-          .bot.left.tl columnconfigure $col -hide [expr ! $tableCol($col)]
-        }
-      }
-      set tableCol($num) 1
-    }
-    incr num
-  }
+  manage_tl_popup
   bind .bot.left.sbf.ml <ButtonPress-1> {.lbm post %X %Y}
   bind .lbm <Leave> {.lbm unpost}
+  bind .bot.left.tl <<TablelistColumnMoved>> {manage_tl_popup}
 
   # Pack the bottom window
   update
@@ -200,7 +190,10 @@ proc populate_listbox {} {
   global uncov_fgColor uncov_bgColor
   global lb_fgColor lb_bgColor
   global summary_list
- 
+
+  # Make sure that the tablelist columns are setup appropriately
+  manage_tl_popup
+
   # Get the currently loaded indices, if any
   if {$last_mod_inst_type == $mod_inst_type} {
     set curr_indices  [.bot.left.tl getcolumn 7]
@@ -237,7 +230,7 @@ proc populate_listbox {} {
       } else {
         set index $i
       }
-      set funit [lindex $summary_list $index]
+      set funit [sort_tl_columns [lindex $summary_list $index]]
       .bot.left.tl insert end [list [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] [lindex $funit 5] [lindex $funit 6] $index]
       .bot.left.tl rowconfigure end -background [lindex $funit 8] -selectbackground [lindex $funit 7]
     }
@@ -250,13 +243,6 @@ proc populate_listbox {} {
     # Set the last module/instance type variable to the current
     set last_mod_inst_type $mod_inst_type;
 
-  }
-
-  # Regardless of CDD file existence, hide/show the needed columns in the window
-  if {$mod_inst_type == "module"} {
-    .bot.left.tl columnconfigure 0 -hide true
-  } else {
-    .bot.left.tl columnconfigure 0 -hide false
   }
 
 }
@@ -590,6 +576,77 @@ proc goto_prev_pane {w} {
   $parent paneconfigure $w -hide true
   $parent paneconfigure [lindex $panes [expr [lsearch $panes $w] - 1]] -hide false
   
+}
+
+proc manage_tl_popup {} {
+
+  global tableColName tableColHide mod_inst_type
+
+  # Calculate starting index
+  if {$mod_inst_type == "module"} {
+    set no_display_cols {{Instance Name} Index}
+  } else {
+    set no_display_cols {Index}
+  }
+
+  # Delete all menu entries
+  .lbm delete 0 end
+
+  set num 0
+
+  foreach {width name align} [.bot.left.tl cget -columns] {
+
+    if {[lsearch $no_display_cols $name] == -1} {
+      .lbm add checkbutton -label $name -variable tableColHide($num) -command {
+        foreach col [array names tableColHide] {
+          .bot.left.tl columnconfigure $col -hide [expr ! $tableColHide($col)]
+        }
+      }
+    }
+
+    # Handle the instance name column show/hide status
+    if {$name eq "Instance Name"} {
+      if {$mod_inst_type eq "module"} {
+        .bot.left.tl columnconfigure $num -hide true
+      } else {
+        .bot.left.tl columnconfigure $num -hide false
+      }
+    }
+
+    set tableColName($num) $name
+    set tableColHide($num) [expr ! [.bot.left.tl columncget $num -hide]]
+    incr num
+
+  }
+
+}
+
+proc sort_tl_columns {info} {
+
+  global tableColName
+
+  foreach col [lsort -integer [array names tableColName]] {
+    set name $tableColName($col)
+    if {$name eq "Instance Name"} {
+      lappend new_info [lindex $info 0]
+    } elseif {$name eq "Module Name"} {
+      lappend new_info [lindex $info 1]
+    } elseif {$name eq "Hit"} {
+      lappend new_info [lindex $info 2]
+    } elseif {$name eq "Miss"} {
+      lappend new_info [lindex $info 3]
+    } elseif {$name eq "Excluded"} {
+      lappend new_info [lindex $info 4]
+    } elseif {$name eq "Total"} {
+      lappend new_info [lindex $info 5]
+    } elseif {$name eq "Hit %"} {
+      lappend new_info [lindex $info 6]
+    }
+  }
+  lappend new_info [lindex $info 7] [lindex $info 8]
+
+  return $new_info
+
 }
 
 # Read configuration file
