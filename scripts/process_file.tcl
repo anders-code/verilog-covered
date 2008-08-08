@@ -169,9 +169,6 @@ proc display_line_cov {} {
 
     if {$end_line != 0} {
 
-      # First, populate the summary information
-      cov_display_summary $line_summary_hit $line_summary_total
-
       # Next, populate text box with file contents including highlights for covered/uncovered lines
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
@@ -340,9 +337,6 @@ proc display_toggle_cov {} {
 
     if {$end_line != 0} {
 
-      # First, populate the summary information
-      cov_display_summary $toggle_summary_hit $toggle_summary_total
-
       # Next, populate text box with file contents
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
@@ -506,9 +500,6 @@ proc display_memory_cov {} {
 
     if {$end_line != 0} {
 
-      # First, populate the summary information
-      cov_display_summary $memory_summary_hit $memory_summary_total
-
       # Next, populate text box with file contents
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
@@ -670,9 +661,6 @@ proc display_comb_cov {} {
     set linecount 1
 
     if {$end_line != 0} {
-
-      # First, populate the summary information
-      cov_display_summary $comb_summary_hit $comb_summary_total
 
       # Next, populate text box with file contents including highlights for covered/uncovered lines
       foreach phrase $contents {
@@ -860,9 +848,6 @@ proc display_fsm_cov {} {
 
     if {$end_line != 0} {
 
-      # First, populate the summary information
-      cov_display_summary $fsm_summary_hit $fsm_summary_total
-
       # Next, populate text box with file contents including highlights for covered/uncovered lines
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
@@ -1024,9 +1009,6 @@ proc display_assert_cov {} {
     set linecount 1
 
     if {$end_line != 0} {
-
-      # First, populate the summary information
-      cov_display_summary $assert_summary_hit $assert_summary_total
 
       # Next, populate text box with file contents including highlights for covered/uncovered lines
       foreach phrase $contents {
