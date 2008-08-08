@@ -4,70 +4,24 @@ set last_cov_rb Line
 proc cov_create {f} {
 
   global cov_rb file_name start_line end_line last_cov_rb
+  global mod_inst_type
 
-  # Create frame for the radio buttons
-  frame $f.m -relief raised -borderwidth 1
+  # Create option menus
+  tk_optionMenu $f.mod_inst mod_inst_type Module Instance
+  tk_optionMenu $f.metrics cov_rb Line Toggle Memory Logic FSM Assert
 
-  tk_optionMenu $f.m.metrics cov_rb Line Toggle Memory Logic FSM Assert
+  $f.mod_inst configure -width 8
+  $f.metrics  configure -width 8
 
-  trace add variable cov_rb write cov_change_metric
+  trace add variable cov_rb        write cov_change_metric
+  trace add variable mod_inst_type write cov_change_type
 
   # Pack radiobuttons
-  pack $f.m.metrics
-
-  # Create summary frame and widgets
-  frame $f.s -relief raised -borderwidth 1
-  label $f.s.l -text "Summary Information:"
-  label $f.s.ht -width 45 -anchor w
-
-  # Pack the summary frame
-  pack $f.s.l  -side left
-  pack $f.s.ht -side left -fill both
-
-  # Pack the coverage box frame
-  pack $f.m -side left -fill both
-  pack $f.s -side left -fill both -expand yes
+  pack $f.metrics  -side left  -fill x
+  pack $f.mod_inst -side right -fill x
 
   # Pack the metric selection and summary frames into the current window
   pack $f -side top -fill both
-
-}
-
-proc cov_display_summary {hit total} {
-
-  global cov_rb
-
-  # Create summary information text
-  if {$cov_rb == "Line"} {
-    set info "$hit out of $total lines executed"
-  } elseif {$cov_rb == "Toggle"} {
-    set info "$hit out of $total signals fully toggled"
-  } elseif {$cov_rb == "Memory"} {
-    set info "$hit out of $total memories fully covered"
-  } elseif {$cov_rb == "Logic"} {
-    set info "$hit out of $total logical combinations hit"
-  } elseif {$cov_rb == "FSM"} {
-    if {$total == -1} {
-      set info "$hit FSM state transitions hit"
-    } else {
-      set info "$hit out of $total FSM state transitions hit"
-    }
-  } elseif {$cov_rb == "Assert"} {
-    set info "$hit out of $total assertion coverage points hit"
-  } else {
-    set info ""
-  }
-
-  # Display text to GUI
-  if {$info != ""} {
-    .covbox.s.ht configure -text $info
-  }
-
-}
-
-proc cov_clear_summary {} {
-
-  .covbox.s.ht configure -text ""
 
 }
 
@@ -112,6 +66,21 @@ proc cov_change_metric args {
     }
     .bot.right.txt xview moveto [lindex $text_x 0]
     .bot.right.txt yview moveto [lindex $text_y 0]
+  }
+
+}
+
+proc cov_change_type args {
+
+  global mod_inst_type last_mod_inst_type
+
+  if {$mod_inst_type != $last_mod_inst_type} {
+
+    set last_mod_inst_type $mod_inst_type
+
+    populate_listbox
+    clear_all_windows
+
   }
 
 }
