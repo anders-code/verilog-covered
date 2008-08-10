@@ -3,6 +3,8 @@ set comb_curr_uline_id 0
 set comb_curr_exp_id   0
 set comb_bheight       -1
 set curr_comb_ptr      "" 
+set comb_geometry      ""
+set comb_gui_saved     0
 
 proc K {x y} {
   set x
@@ -506,12 +508,15 @@ proc create_comb_window {expr_id sline} {
   global prev_comb_index next_comb_index
   global curr_comb_ptr comb_curr_excluded
   global comb_exp_excludes HOME
+  global comb_geometry comb_gui_saved
 
   # Clear the comb_curr_excluded global variable
   set comb_curr_excluded 0
 
   # Now create the window and set the grab to this window
   if {[winfo exists .combwin] == 0} {
+
+    set comb_gui_saved 0
 
     # Create new window
     toplevel .combwin
@@ -521,7 +526,6 @@ proc create_comb_window {expr_id sline} {
     panedwindow .combwin.pw -bg grey -width 700 -height 350 -sashrelief raised -sashwidth 4 -orient vertical
     frame .combwin.pw.top -relief raised -borderwidth 1
     frame .combwin.pw.bot -relief raised -borderwidth 1
-    frame .combwin.pw.handle -borderwidth 2 -relief raised -cursor sb_v_double_arrow
 
     # Add expression information
     label .combwin.pw.top.l -anchor w -text "Expression:"
@@ -599,6 +603,20 @@ proc create_comb_window {expr_id sline} {
     pack .combwin.pw   -fill both -expand yes
     pack .combwin.info -fill both
     pack .combwin.bf   -fill both
+
+    # If the geometry was specified for this window, use it
+    if {$comb_geometry != ""} {
+      wm geometry .combwin $comb_geometry
+    }
+
+    # Handle the closing of this window
+    wm protocol .combwin WM_DELETE_WINDOW {
+      save_comb_gui_elements 0
+      destroy .combwin
+    }
+    bind .combwin <Destroy> {
+      save_comb_gui_elements 0
+    }
 
   } else {
 
@@ -700,3 +718,19 @@ proc clear_comb {} {
   destroy .combwin
 
 }
+
+# Saves the GUI elements from the combinational logic window setup that should be saved
+proc save_comb_gui_elements {main_exit} {
+
+  global comb_gui_saved
+  global comb_geometry comb_top_height
+
+  if {$comb_gui_saved == 0 } {
+    if {$main_exit == 0 || [winfo exists .combwin] == 1} {
+      set comb_gui_saved  1
+      set comb_geometry   [winfo geometry .combwin]
+    }
+  }
+
+}
+

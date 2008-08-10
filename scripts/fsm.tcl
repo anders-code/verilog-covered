@@ -7,13 +7,18 @@ set fsm_in_state   next_state
 set fsm_out_state  state
 set fsm_bheight    -1
 set curr_fsm_ptr   ""
+set fsm_geometry   ""
+set fsm_gui_saved  0
 
 proc create_fsm_window {expr_id} {
 
   global prev_fsm_index next_fsm_index HOME
+  global fsm_geometry fsm_gui_saved
 
   # Now create the window and set the grab to this window
   if {[winfo exists .fsmwin] == 0} {
+
+    set fsm_gui_saved 0
 
     # Create new window
     toplevel .fsmwin
@@ -86,6 +91,20 @@ proc create_fsm_window {expr_id} {
     pack .fsmwin.pw   -fill both -expand yes
     pack .fsmwin.info -fill both
     pack .fsmwin.bf   -fill x
+
+    # Set window geometry, if specified
+    if {$fsm_geometry != ""} {
+      wm geometry .fsmwin $fsm_geometry
+    }
+
+    # Handle the destruction of this window
+    wm protocol .fsmwin WM_DELETE_WINDOW {
+      save_fsm_gui_elements 0
+      destroy .fsmwin
+    }
+    bind .fsmwin <Destroy> {
+      save_fsm_gui_elements 0
+    }
 
   }
 
@@ -526,3 +545,18 @@ proc clear_fsm {} {
   destroy .fsmwin
 
 }
+
+# Saves the GUI elements from the FSM window setup that should be saved
+proc save_fsm_gui_elements {main_exit} {
+
+  global fsm_geometry fsm_gui_saved
+
+  if {$fsm_gui_saved == 0} {
+    if {$main_exit == 0 || [winfo exists .fsmwin] == 1} {
+      set fsm_gui_saved 1
+      set fsm_geometry  [winfo geometry .fsmwin]
+    }
+  }
+
+}
+

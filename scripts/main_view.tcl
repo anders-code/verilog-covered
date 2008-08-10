@@ -38,6 +38,8 @@ proc main_view {} {
 
   global race_msgs prev_uncov_index next_uncov_index
   global HOME main_start_search_index
+  global main_geometry
+  global mod_inst_tl_columns mod_inst_tl_init_hidden mod_inst_tl_width
 
   # Start off 
 
@@ -122,14 +124,15 @@ proc main_view {} {
 
   # Create Tablelist and associated scrollbars
   tablelist::tablelist .bot.left.tl \
-    -columns {0 "Instance Name" 0 "Module Name" 0 "Hit" right 0 "Miss" right 0 "Excluded" right 0 "Total" right 0 "Hit %" right 0 "Index"} \
+    -columns $mod_inst_tl_columns \
     -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.sbf.vb set} -stretch all -movablecolumns 1
-  .bot.left.tl columnconfigure 0 -hide true
-  .bot.left.tl columnconfigure 2 -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 3 -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 4 -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 5 -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 6 -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 0 -hide [lindex $mod_inst_tl_init_hidden 0]
+  .bot.left.tl columnconfigure 1 -hide [lindex $mod_inst_tl_init_hidden 1]
+  .bot.left.tl columnconfigure 2 -hide [lindex $mod_inst_tl_init_hidden 2] -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 3 -hide [lindex $mod_inst_tl_init_hidden 3] -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 4 -hide [lindex $mod_inst_tl_init_hidden 4] -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 5 -hide [lindex $mod_inst_tl_init_hidden 5] -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 6 -hide [lindex $mod_inst_tl_init_hidden 6] -sortmode integer -stretchable false
   .bot.left.tl columnconfigure 7 -hide true
 
   # Create vertical scrollbar frame and pack it
@@ -163,6 +166,9 @@ proc main_view {} {
   # Pack the bottom window
   update
   .bot add .bot.left -minsize [expr [winfo reqheight .bot.left] + 100]
+  if {$mod_inst_tl_width != ""} {
+    .bot.left configure -width $mod_inst_tl_width
+  }
   .bot add .bot.right
 
   # Create bottom information bar
@@ -175,8 +181,12 @@ proc main_view {} {
   # Set the window icon
   wm title . "Covered - Verilog Code Coverage Tool"
 
+  # If window position variables have been set, use them
+  if {$main_geometry != ""} {
+    wm geometry . $main_geometry
+  }
+
   # Set focus on the new window
-  #wm attributes . -topmost true
   wm focusmodel . active
   raise .
 
@@ -184,6 +194,15 @@ proc main_view {} {
   set icon_img [image create photo -file [file join $HOME scripts cov_icon.gif]]
   wm iconphoto . -default $icon_img
 
+  # Catch the closing of the application and potentially save GUI elements
+  wm protocol . WM_DELETE_WINDOW {
+    save_gui_elements . .
+    destroy .
+  }
+  bind . <Destroy> {
+    save_gui_elements . %W
+  }
+  
 }
 
 proc populate_listbox {} {

@@ -29,7 +29,7 @@ proc create_wizard {} {
 
     # Checkbutton to disable this window
     checkbutton .wizwin.f.show -text "Display this window at startup of Covered" -variable show_wizard -onvalue true -offvalue false -command {
-      write_coveredrc
+      write_coveredrc 0
     }
 
     # Pack the buttons

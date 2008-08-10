@@ -1,5 +1,7 @@
-set sig_name        ""
-set curr_toggle_ptr ""
+set sig_name         ""
+set curr_toggle_ptr  ""
+set toggle_geometry  ""
+set toggle_gui_saved 0
 
 proc display_toggle {curr_index} {
 
@@ -32,11 +34,14 @@ proc create_toggle_window {signal} {
   global toggle_msb toggle_lsb
   global curr_block
   global curr_toggle_ptr HOME
+  global toggle_geometry toggle_gui_saved
 
   set sig_name $signal
 
   # Now create the window and set the grab to this window
   if {[winfo exists .togwin] == 0} {
+
+    set toggle_gui_saved 0
 
     # Create new window
     toplevel .togwin
@@ -101,6 +106,20 @@ proc create_toggle_window {signal} {
 
     pack .togwin.f  -fill both -expand yes
     pack .togwin.bf -fill x
+
+    # Set the geometry of the toggle window if it was saved
+    if {$toggle_geometry != ""} {
+      wm geometry .togwin $toggle_geometry
+    }
+
+    # Bind the destructor
+    wm protocol . WM_DELETE_WINDOW {
+      save_toggle_gui_elements 0
+      destroy .togwin
+    }
+    bind .togwin <Destroy> {
+      save_toggle_gui_elements 0
+    }
 
   }
 
@@ -216,5 +235,19 @@ proc clear_toggle {} {
 
   # Destroy the window
   destroy .togwin
+
+}
+
+# Saves the GUI elements from the toggle window setup that should be saved
+proc save_toggle_gui_elements {main_exit} {
+
+  global toggle_geometry toggle_gui_saved
+
+  if {$toggle_gui_saved == 0} {
+    if {$main_exit == 0 || [winfo exists .togwin] == 1} {
+      set toggle_gui_saved 1
+      set toggle_geometry  [winfo geometry .togwin]
+    }
+  }
 
 }

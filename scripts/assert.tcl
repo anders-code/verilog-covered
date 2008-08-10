@@ -1,4 +1,6 @@
-set curr_assert_ptr ""
+set curr_assert_ptr  ""
+set assert_geometry  ""
+set assert_gui_saved 0
 
 proc assert_yset {args} {
 
@@ -46,10 +48,12 @@ proc create_assert_window {inst} {
   global curr_assert_ptr assert_cov_points assert_cov_mod
   global uncov_bgColor uncov_fgColor
   global cov_bgColor cov_fgColor
-  global HOME
+  global HOME assert_geometry assert_gui_saved
 
   # Now create the window and set the grab to this window
   if {[winfo exists .assertwin] == 0} {
+
+    set assert_gui_saved 0
 
     # Create new window
     toplevel .assertwin
@@ -110,6 +114,20 @@ proc create_assert_window {inst} {
 
     pack .assertwin.f  -fill both -expand yes
     pack .assertwin.bf -fill x
+
+    # Set the geometry if it is known
+    if {$assert_geometry != ""} {
+      wm geometry .assertwin $assert_geometry
+    }
+
+    # Handle the destruction of the assertion window
+    wm protocol .assertwin WM_DELETE_WINDOW {
+      save_assert_gui_elements 0
+      destroy .assertwin
+    }
+    bind .assertwin <Destroy> {
+      save_assert_gui_elements 0
+    }
 
   }
 
@@ -357,5 +375,19 @@ proc populate_assertion_text {fname} {
 
   # Set state back to disabled for read-only access
   .amodwin.f.t configure -state disabled
+
+}
+
+# Saves the contents of the assertion detailed window for later usage
+proc save_assert_gui_elements {main_exit} {
+
+  global assert_geometry assert_gui_saved
+
+  if {$assert_gui_saved == 0} {
+    if {$main_exit == 0 || [winfo exists .assertwin] == 1} {
+      set assert_gui_saved 1
+      set assert_geometry  [winfo geometry .assertwin]
+    }
+  }
 
 }

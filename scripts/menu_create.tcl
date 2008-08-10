@@ -156,6 +156,7 @@ proc menu_create {} {
       if {[.menubar.file entrycget 4 -state] == "normal"} {
         tcl_func_close_cdd
       }
+      save_gui_elements . .
       destroy .
     }
   }

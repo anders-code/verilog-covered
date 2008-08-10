@@ -1,6 +1,8 @@
-set mem_name        ""
-set curr_memory_ptr ""
-set mem_curr_entry  ""
+set mem_name         ""
+set curr_memory_ptr  ""
+set mem_curr_entry   ""
+set memory_geometry  ""
+set memory_gui_saved 0
 
 proc display_memory {curr_index} {
 
@@ -36,11 +38,14 @@ proc create_memory_window {signal} {
   global uncov_fgColor uncov_bgColor
   global cov_fgColor cov_bgColor
   global HOME
+  global memory_geometry memory_gui_saved
 
   set mem_name $signal
 
   # Now create the window and set the grab to this window
   if {[winfo exists .memwin] == 0} {
+
+    set memory_gui_saved 0
 
     # Create new window
     toplevel .memwin
@@ -134,6 +139,20 @@ proc create_memory_window {signal} {
 
     pack .memwin.f  -fill both -expand yes
     pack .memwin.bf -fill x
+
+    # Set the geometry of the window if necessary
+    if {$memory_geometry != ""} {
+      wm geometry .memwin $memory_geometry
+    }
+
+    # Handle the destruction of this window
+    wm protocol .memwin WM_DELETE_WINDOW {
+      save_memory_gui_elements 0
+      destroy .memwin
+    }
+    bind .memwin <Destroy> {
+      save_memory_gui_elements 0
+    }
 
   }
 
@@ -383,3 +402,18 @@ proc clear_memory {} {
   destroy .memwin
 
 }
+
+# Saves the GUI elements from the memory window setup that should be saved
+proc save_memory_gui_elements {main_exit} {
+
+  global memory_geometry memory_gui_saved
+
+  if {$memory_gui_saved == 0} {
+    if {$main_exit == 0 || [winfo exists .memwin] == 1} {
+      set memory_gui_saved 1
+      set memory_geometry  [winfo geometry .memwin]
+    }
+  }
+
+}
+
