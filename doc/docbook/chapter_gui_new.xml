@@ -404,7 +404,8 @@
     <sect2 id="section.gui.new.options2.define" xreflabel="CDD Creation Define Option">
       <title>Define...</title>
       <para>
-      TBD
+      Selecting this insert option will cause a window to be displayed that will allow the user to add a command-line
+      variable definition to be added to the score command (i.e., the +define+ option to most Verilog compilers).
       </para>
       <para>
         <figure id="figure.gui.new.options2.define" xreflabel="CDD Creation Define Window">
@@ -413,8 +414,17 @@
         </figure>
       </para>
       <para>
-      TBD
+      To add a new define, enter the name of the definition variable in the entry box to the right of "Define name:".  If
+      the variable does not require a value, simply click on the <emphasis role="bold">OK</emphasis> button to submit it
+      to the main window option listbox.  If the variable requires a value, click on the <emphasis role="bold">=</emphasis>
+      button, enter the value in the entry box to the left of that button, and click on the
+      <emphasis role="bold">OK</emphasis> button. To abort the addition of the definition, simply click on the
+      <emphasis role="bold">Cancel</emphasis> button.
       </para>
+      <note>
+      The <emphasis role="bold">OK</emphasis> will only be enabled when the user has entered a value in the "Define name:"
+      entry box.
+      </note>
     </sect2>
     
     <sect2 id="section.gui.new.options2.param" xreflabel="CDD Creation Parameter Override Option">
