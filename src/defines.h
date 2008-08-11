@@ -2836,14 +2836,14 @@ struct db_s {
  for comparing coverages for ranking purposes.
 */
 struct comp_cdd_cov_s {
-  char*          cdd_name;                /*!< Name of CDD that this coverage information is for */
-  uint64         timesteps;               /*!< Number of simulations timesteps stored in the CDD file */
-  uint64         total_cps;               /*!< Number of total coverage points this CDD file represents */
-  uint64         unique_cps;              /*!< Number of unique coverage points this CDD file represents */
-  uint64         score;                   /*!< Storage for current score */
-  bool           required;                /*!< Set to TRUE if this CDD is required to be in the ranked list by the user */
-  unsigned char* cps[CP_TYPE_NUM];        /*!< Compressed coverage points for each coverage metric */
-  unsigned int   cps_index[CP_TYPE_NUM];  /*!< Contains index of current bit to populate */
+  char*        cdd_name;                /*!< Name of CDD that this coverage information is for */
+  uint64       timesteps;               /*!< Number of simulations timesteps stored in the CDD file */
+  uint64       total_cps;               /*!< Number of total coverage points this CDD file represents */
+  uint64       unique_cps;              /*!< Number of unique coverage points this CDD file represents */
+  uint64       score;                   /*!< Storage for current score */
+  bool         required;                /*!< Set to TRUE if this CDD is required to be in the ranked list by the user */
+  ulong*       cps[CP_TYPE_NUM];        /*!< Compressed coverage points for each coverage metric */
+  unsigned int cps_index[CP_TYPE_NUM];  /*!< Contains index of current bit to populate */
 };
 
 /*!
@@ -2855,6 +2855,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.297.2.5  2008/08/11 21:40:50  phase1geo
+ Changing compressed coverage structure to store coverage points as unsigned long values
+ instead of unsigned char to increase performance.
+
  Revision 1.297.2.4  2008/08/07 06:39:10  phase1geo
  Adding "Excluded" column to the summary listbox.
 
