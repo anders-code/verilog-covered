@@ -99,6 +99,11 @@ static unsigned int cp_depth = 0;
 */
 static unsigned int longest_name_len = 0;
 
+/*!
+ If set to TRUE, outputs behind the scenes output during the rank selection process.
+*/
+static bool rank_verbose = FALSE;
+
 
 /*!
  \return Returns the number of bits that are set in the given unsigned char
@@ -256,6 +261,9 @@ static void rank_usage() {
   printf( "                                  used to rank non-unique coverage points.\n" );
   printf( "      -weight-assert <number>   Specifies a relative weighting for assertion coverage used to rank\n" );
   printf( "                                  non-unique coverage points.\n" );
+  printf( "      -v                        Outputs verbose information during the rank selection process.  This output\n" );
+  printf( "                                  is not for debugging purposes, but rather gives the user insight into\n" );
+  printf( "                                  what's going on \"behind the scenes\" during the ranking process.\n" );
   printf( "\n" );
 
 }
@@ -524,6 +532,10 @@ static void rank_parse_args(
       } else {
         Throw 0;
       }
+
+    } else if( strncmp( "-v", argv[i], 2 ) == 0 ) {
+
+      rank_verbose = TRUE;
 
     } else {
 
@@ -1089,9 +1101,10 @@ static void rank_selected_cdd_cov(
   unsigned int        i, j;
   uint64              merged_index = 0;
   static unsigned int dots_output  = 0;
+  comp_cdd_cov*       tmp;
 
   /* Output status indicator, if necessary */
-  if( !output_suppressed || debug_mode ) {
+  if( (!output_suppressed || debug_mode) && !rank_verbose ) {
     while( ((unsigned int)(((next_cdd + 1) / (float)comp_cdd_num) * 100) - (dots_output * 10)) >= 10 ) { 
       printf( "." );
       fflush( stdout );
@@ -1100,7 +1113,7 @@ static void rank_selected_cdd_cov(
   }
 
   /* Move the most unique CDD to the next position */
-  comp_cdd_cov* tmp       = comp_cdds[next_cdd];
+  tmp                     = comp_cdds[next_cdd];
   comp_cdds[next_cdd]     = comp_cdds[selected_cdd];
   comp_cdds[selected_cdd] = tmp;
 
@@ -1125,7 +1138,7 @@ static void rank_selected_cdd_cov(
     }
   }
 
-  if( !output_suppressed || debug_mode ) {
+  if( (!output_suppressed || debug_mode) && !rank_verbose ) {
     if( (next_cdd + 1) == comp_cdd_num ) {
       if( dots_output < 10 ) {
         printf( "." );
@@ -1252,6 +1265,27 @@ static void rank_perform_greedy_sort(
 }
 
 /*!
+ \return Returns the number of coverage points hit in the given list.
+*/
+uint64 rank_count_cps(
+  uint16*      list,      /*!< List of cp counts */
+  unsigned int list_size  /*!< Number of elements in the list */
+) { PROFILE(RANK_COUNT_CPS);
+
+  uint64       cps = 0;
+  unsigned int i;
+
+  for( i=0; i<list_size; i++ ) {
+    cps += (list[i] > 0) ? 1 : 0;
+  }
+
+  PROFILE_END;
+
+  return( cps );
+
+}
+
+/*!
  Performs the task of ranking the CDD files and rearranging them in the comp_cdds array such that the
  first CDD file is located at index 0.
 */
@@ -1265,8 +1299,10 @@ static void rank_perform(
   uint16*      unranked_merged;
   uint16       merged_index = 0;
   uint64       total        = 0;
+  uint64       total_hitable;
   unsigned int next_cdd     = 0;
   unsigned int most_unique;
+  unsigned int count;
 
   if( !output_suppressed || debug_mode ) {
     printf( "Ranking CDD files " );
@@ -1282,6 +1318,12 @@ static void rank_perform(
   /* Allocate merged array */
   ranked_merged   = (uint16*)calloc_safe( total, sizeof( uint16 ) );
   unranked_merged = (uint16*)malloc_safe_nolimit( sizeof( uint16 ) * total );
+
+  if( rank_verbose ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Ranking %u CDD files with %llu coverage points (%u line, %u toggle, %u memory, %u logic, %u FSM, %u assertion)",
+              comp_cdd_num, total, num_cps[CP_TYPE_LINE], num_cps[CP_TYPE_TOGGLE], num_cps[CP_TYPE_MEM], num_cps[CP_TYPE_LOGIC], num_cps[CP_TYPE_FSM], num_cps[CP_TYPE_ASSERT] );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+  }
 
   /* Step 1 - Initialize merged results array, calculate uniqueness and total values of each compressed CDD coverage structure */
   for( i=0; i<CP_TYPE_NUM; i++ ) {
@@ -1304,12 +1346,33 @@ static void rank_perform(
     }
   }
 
+  if( rank_verbose ) {
+    total_hitable = rank_count_cps( unranked_merged, total ); 
+    snprintf( user_msg, USER_MSG_LENGTH, "Ignoring %llu coverage points that were not hit by any CDD file", (total - total_hitable) );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+    print_output( "Phase 1:  User-required files", NORMAL, __FILE__, __LINE__ );
+  }
+
   /* Step 2 - Immediately rank all of the required CDDs */
+  count = 0;
   for( i=0; i<comp_cdd_num; i++ ) {
     if( comp_cdds[i]->required ) {
       rank_selected_cdd_cov( comp_cdds, comp_cdd_num, ranked_merged, unranked_merged, next_cdd, i );
       next_cdd++;
+      count++;
     }
+  }
+
+  if( rank_verbose ) {
+    uint64 ranked_cps = rank_count_cps( ranked_merged, total );
+    snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total: %u, Remaining: %u)", next_cdd, next_cdd, (comp_cdd_num - next_cdd) );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+  
+    count = next_cdd;
+    print_output( "Phase 2:  Unique coverage point selection", NORMAL, __FILE__, __LINE__ );
   }
 
   /* Step 3 - Start with the most unique CDDs */
@@ -1326,9 +1389,33 @@ static void rank_perform(
     }
   } while( (next_cdd < comp_cdd_num) && (comp_cdds[most_unique]->unique_cps > 0) );
 
+  if( rank_verbose ) {
+    uint64 ranked_cps = rank_count_cps( ranked_merged, total );
+    snprintf( user_msg, USER_MSG_LENGTH, "  Ranked another %u CDD files (Total: %u, Remaining: %u)", (next_cdd - count), next_cdd, (comp_cdd_num - next_cdd) );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+   
+    count = next_cdd;
+    print_output( "Phase 3:  Remaining coverage point selection", NORMAL, __FILE__, __LINE__ );
+  }
+
   /* Step 4 - Select coverage based on user-specified factors */
   if( next_cdd < comp_cdd_num ) {
     rank_perform_weighted_selection( comp_cdds, comp_cdd_num, ranked_merged, unranked_merged, total, next_cdd );
+  }
+
+  if( rank_verbose ) {
+    uint64 ranked_cps = rank_count_cps( ranked_merged, total );
+    snprintf( user_msg, USER_MSG_LENGTH, "  Ranked another %u CDD files (Total: %u, Remaining: %u)", (next_cdd - count), next_cdd, (comp_cdd_num - next_cdd) );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Eliminated %u CDD files that do not add coverage", (comp_cdd_num - next_cdd) );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+    print_output( "Phase 4:  Ordering CDD file selected for ranking", NORMAL, __FILE__, __LINE__ );
   }
 
   /* Step 5 - Re-sort the list using a greedy algorithm */
@@ -1584,6 +1671,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.15  2008/08/11 04:02:27  phase1geo
+ Adding -v option to the rank command to display verbose information during the ranking
+ phase.
+
  Revision 1.1.4.14  2008/08/05 04:29:04  phase1geo
  Fixing the last issue in regards to required file support.  Added a few diagnostics
  to the regression list to verify this behavior.
