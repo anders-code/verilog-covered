@@ -68,7 +68,7 @@ static char* rank_file = NULL;
 /*!
  Array containing the number of coverage points for each metric for all compressed CDD coverage structures.
 */
-static unsigned int num_cps[CP_TYPE_NUM] = {0};
+static uint64 num_cps[CP_TYPE_NUM] = {0};
 
 /*!
  Array containing the weights to be used for each of the CDD metric types.
@@ -183,7 +183,7 @@ comp_cdd_cov* rank_create_comp_cdd_cov(
   for( i=0; i<CP_TYPE_NUM; i++ ) {
     comp_cov->cps_index[i] = 0;
     if( num_cps[i] > 0 ) {
-      comp_cov->cps[i] = (unsigned char*)calloc_safe( ((num_cps[i] >> 3) + 1), sizeof( unsigned char ) );
+      comp_cov->cps[i] = (ulong*)calloc_safe( (UL_DIV(num_cps[i]) + 1), sizeof( ulong ) );
     } else {
       comp_cov->cps[i] = NULL;
     }
@@ -211,7 +211,7 @@ void rank_dealloc_comp_cdd_cov(
 
     /* Deallocate compressed coverage point information */
     for( i=0; i<CP_TYPE_NUM; i++ ) {
-      free_safe( comp_cov->cps[i], (sizeof( unsigned char ) * ((num_cps[i] >> 3) + 1)) );
+      free_safe( comp_cov->cps[i], (sizeof( ulong ) * (UL_DIV( num_cps[i] ) + 1)) );
     }
 
     /* Now deallocate ourselves */
@@ -614,6 +614,7 @@ static void rank_check_index(
 ) { PROFILE(RANK_CHECK_INDEX);
 
   if( index >= num_cps[type] ) {
+    assert( 0 );
     snprintf( user_msg, USER_MSG_LENGTH, "Last read in CDD file is incompatible with previously read in CDD files.  Exiting..." );
     print_output( user_msg, FATAL, __FILE__, line );
     Throw 0;
@@ -642,10 +643,10 @@ static void rank_gather_signal_cov(
       for( i=0; i<sig->value->width; i++ ) {
         uint64 index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
         rank_check_index( CP_TYPE_TOGGLE, index, __LINE__ );
-        comp_cov->cps[CP_TYPE_TOGGLE][index >> 3] |= 0x1 << (index & 0x7);
+        comp_cov->cps[CP_TYPE_TOGGLE][UL_DIV(index)] |= 0x1 << UL_MOD(index);
         index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
         rank_check_index( CP_TYPE_TOGGLE, index, __LINE__ );
-        comp_cov->cps[CP_TYPE_TOGGLE][index >> 3] |= 0x1 << (index & 0x7);
+        comp_cov->cps[CP_TYPE_TOGGLE][UL_DIV(index)] |= 0x1 << UL_MOD(index);
       }
     } else {
       switch( sig->value->suppl.part.data_type ) {
@@ -653,10 +654,10 @@ static void rank_gather_signal_cov(
           for( i=0; i<sig->value->width; i++ ) {
             uint64 index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
             rank_check_index( CP_TYPE_TOGGLE, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_TOGGLE][index >> 3] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_SIG_TOG01] >> UL_MOD(i)) << (index & 0x7);
+            comp_cov->cps[CP_TYPE_TOGGLE][UL_DIV(index)] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_SIG_TOG01] >> UL_MOD(i)) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
             rank_check_index( CP_TYPE_TOGGLE, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_TOGGLE][index >> 3] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_SIG_TOG10] >> UL_MOD(i)) << (index & 0x7);
+            comp_cov->cps[CP_TYPE_TOGGLE][UL_DIV(index)] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_SIG_TOG10] >> UL_MOD(i)) << UL_MOD(index);
           }
         break;
         default :  assert( 0 );  break;
@@ -684,10 +685,10 @@ static void rank_gather_signal_cov(
       if( sig->suppl.part.excluded == 1 ) {
         uint64 index = comp_cov->cps_index[CP_TYPE_MEM]++;
         rank_check_index( CP_TYPE_MEM, index, __LINE__ );
-        comp_cov->cps[CP_TYPE_MEM][index >> 3] |= 0x1 << (index & 0x7);
+        comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= 0x1 << UL_MOD(index);
         index = comp_cov->cps_index[CP_TYPE_MEM]++;
         rank_check_index( CP_TYPE_MEM, index, __LINE__ );
-        comp_cov->cps[CP_TYPE_MEM][index >> 3] |= 0x1 << (index & 0x7);
+        comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= 0x1 << UL_MOD(index);
       } else {
         unsigned int wr = 0;
         unsigned int rd = 0;
@@ -695,10 +696,10 @@ static void rank_gather_signal_cov(
         vector_mem_rw_count( sig->value, (int)i, (int)((i + pwidth) - 1), &wr, &rd );
         index = comp_cov->cps_index[CP_TYPE_MEM]++;
         rank_check_index( CP_TYPE_MEM, index, __LINE__ );
-        comp_cov->cps[CP_TYPE_MEM][index >> 3] |= ((wr > 0) ? 1 : 0) << (index & 0x7);
+        comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= ((wr > 0) ? 1 : 0) << UL_MOD(index);
         index = comp_cov->cps_index[CP_TYPE_MEM]++;
         rank_check_index( CP_TYPE_MEM, index, __LINE__ );
-        comp_cov->cps[CP_TYPE_MEM][index >> 3] |= ((rd > 0) ? 1 : 0) << (index & 0x7);
+        comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= ((rd > 0) ? 1 : 0) << UL_MOD(index);
       }
     }
 
@@ -707,10 +708,10 @@ static void rank_gather_signal_cov(
       for( i=0; i<sig->value->width; i++ ) {
         uint64 index = comp_cov->cps_index[CP_TYPE_MEM]++;
         rank_check_index( CP_TYPE_MEM, index, __LINE__ );
-        comp_cov->cps[CP_TYPE_MEM][index >> 3] |= 0x1 << (index & 0x7);
+        comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= 0x1 << UL_MOD(index);
         index = comp_cov->cps_index[CP_TYPE_MEM]++;
         rank_check_index( CP_TYPE_MEM, index, __LINE__ );
-        comp_cov->cps[CP_TYPE_MEM][index >> 3] |= 0x1 << (index & 0x7);
+        comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= 0x1 << UL_MOD(index);
       }
     } else {
       switch( sig->value->suppl.part.data_type ) {
@@ -718,10 +719,10 @@ static void rank_gather_signal_cov(
           for( i=0; i<sig->value->width; i++ ) {  
             uint64 index = comp_cov->cps_index[CP_TYPE_MEM]++;
             rank_check_index( CP_TYPE_MEM, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_MEM][index >> 3] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_MEM_TOG01] >> UL_MOD(i)) << (index & 0x7);
+            comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_MEM_TOG01] >> UL_MOD(i)) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_MEM]++;
             rank_check_index( CP_TYPE_MEM, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_MEM][index >> 3] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_MEM_TOG10] >> UL_MOD(i)) << (index & 0x7);
+            comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= (sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_MEM_TOG10] >> UL_MOD(i)) << UL_MOD(index);
           }
           break;
         default :  assert( 0 );  break;
@@ -767,48 +768,48 @@ static void rank_gather_comb_cov(
             if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
               index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
               rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-              comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_FALSE( exp->left->suppl ) << (index & 0x7);
+              comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= ESUPPL_WAS_FALSE( exp->left->suppl ) << UL_MOD(index);
               index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
               rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-              comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_FALSE( exp->right->suppl ) << (index & 0x7);
+              comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= ESUPPL_WAS_FALSE( exp->right->suppl ) << UL_MOD(index);
               index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
               rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-              comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_11 << (index & 0x7);
+              comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= exp->suppl.part.eval_11 << UL_MOD(index);
             } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
               index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
               rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-              comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_TRUE( exp->left->suppl ) << (index & 0x7);
+              comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= ESUPPL_WAS_TRUE( exp->left->suppl ) << UL_MOD(index);
               index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
               rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-              comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_TRUE( exp->right->suppl ) << (index & 0x7);
+              comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= ESUPPL_WAS_TRUE( exp->right->suppl ) << UL_MOD(index);
               index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
               rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-              comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_00 << (index & 0x7);
+              comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= exp->suppl.part.eval_00 << UL_MOD(index);
             } else {
               index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
               rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-              comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_00 << (index & 0x7);
+              comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= exp->suppl.part.eval_00 << UL_MOD(index);
               index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
               rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-              comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_01 << (index & 0x7);
+              comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= exp->suppl.part.eval_01 << UL_MOD(index);
               index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
               rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-              comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_10 << (index & 0x7);
+              comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= exp->suppl.part.eval_10 << UL_MOD(index);
               index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
               rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-              comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= exp->suppl.part.eval_11 << (index & 0x7);
+              comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= exp->suppl.part.eval_11 << UL_MOD(index);
             }
           } else if( EXPR_IS_EVENT( exp ) == 1 ) {
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_TRUE( exp->suppl ) << (index & 0x7);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= ESUPPL_WAS_TRUE( exp->suppl ) << UL_MOD(index);
           } else {
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_TRUE( exp->suppl ) << (index & 0x7);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= ESUPPL_WAS_TRUE( exp->suppl ) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][index>>3] |= ESUPPL_WAS_FALSE( exp->suppl ) << (index & 0x7);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= ESUPPL_WAS_FALSE( exp->suppl ) << UL_MOD(index);
           }
   
         }
@@ -851,7 +852,7 @@ static void rank_gather_expression_cov(
     uint64 index = comp_cov->cps_index[CP_TYPE_LINE]++;
     rank_check_index( CP_TYPE_LINE, index, __LINE__ );
     if( (exp->exec_num > 0) || exclude ) {
-      comp_cov->cps[CP_TYPE_LINE][index >> 3] |= 0x1 << (index & 0x7);
+      comp_cov->cps[CP_TYPE_LINE][UL_DIV(index)] |= 0x1 << UL_MOD(index);
     }
   }
 
@@ -889,11 +890,11 @@ static void rank_gather_fsm_cov(
         if( state_hits[table->arcs[i]->from]++ == 0 ) {
           index = comp_cov->cps_index[CP_TYPE_FSM]++;
           rank_check_index( CP_TYPE_FSM, index, __LINE__ );
-          comp_cov->cps[CP_TYPE_FSM][index >> 3] |= 0x1 << (index & 0x7);
+          comp_cov->cps[CP_TYPE_FSM][UL_DIV(index)] |= 0x1 << UL_MOD(index);
         }
         index = comp_cov->cps_index[CP_TYPE_FSM]++;
         rank_check_index( CP_TYPE_FSM, index, __LINE__ );
-        comp_cov->cps[CP_TYPE_FSM][index >> 3] |= 0x1 << (index & 0x7);
+        comp_cov->cps[CP_TYPE_FSM][UL_DIV(index)] |= 0x1 << UL_MOD(index);
       } else {
         if( state_hits[table->arcs[i]->from]++ == 0 ) {
           index = comp_cov->cps_index[CP_TYPE_FSM]++;
@@ -917,8 +918,8 @@ static void rank_gather_fsm_cov(
  Recursively iterates through the instance tree, accumulating values for num_cps array.
 */
 static void rank_calc_num_cps(
-            funit_inst*  inst,              /*!< Pointer to instance tree to calculate num_cps array */
-  /*@out@*/ unsigned int nums[CP_TYPE_NUM]  /*!< Array of coverage point numbers to populate */
+            funit_inst* inst,              /*!< Pointer to instance tree to calculate num_cps array */
+  /*@out@*/ uint64      nums[CP_TYPE_NUM]  /*!< Array of coverage point numbers to populate */
 ) { PROFILE(RANK_CALC_NUM_CPS);
 
   funit_inst* child;  /* Pointer to child instance */
@@ -1024,8 +1025,8 @@ static void rank_read_cdd(
 
   Try {
 
-    inst_link*   instl;
-    unsigned int tmp_nums[CP_TYPE_NUM] = {0};
+    inst_link* instl;
+    uint64     tmp_nums[CP_TYPE_NUM] = {0};
 
     /* Read in database */
     db_read( cdd_name, READ_MODE_REPORT_NO_MERGE );
@@ -1123,7 +1124,7 @@ static void rank_selected_cdd_cov(
   /* Subtract all of the set coverage points from the merged value */
   for( i=0; i<CP_TYPE_NUM; i++ ) {
     for( j=0; j<num_cps[i]; j++ ) {
-      if( comp_cdds[next_cdd]->cps[i][j>>3] & (0x1 << (j & 0x7)) ) {
+      if( comp_cdds[next_cdd]->cps[i][UL_DIV(j)] & (0x1 << UL_MOD(j)) ) {
         /*
          If we have not seen this coverage point get hit the needed "depth" amount in the ranked
          list, increment the unique_cps value for the selected compressed CDD coverage structure.
@@ -1180,7 +1181,7 @@ static void rank_perform_weighted_selection(
       for( j=0; j<CP_TYPE_NUM; j++ ) {
         unsigned int total = 0;
         for( k=0; k<num_cps[j]; k++ ) {
-	  if( comp_cdds[i]->cps[j][k>>3] & (0x1 << (k & 0x7)) ) {
+	  if( comp_cdds[i]->cps[j][UL_DIV(k)] & (0x1 << UL_MOD(k)) ) {
             total++;
             if( ranked_merged[x] < cp_depth ) {
               unique_found = TRUE;
@@ -1232,7 +1233,7 @@ static void rank_perform_greedy_sort(
       comp_cdds[j]->unique_cps = 0;
       for( k=0; k<CP_TYPE_NUM; k++ ) {
         for( l=0; l<num_cps[k]; l++ ) {
-          if( comp_cdds[j]->cps[k][l>>3] & (0x1 << (l & 0x7)) ) {
+          if( comp_cdds[j]->cps[k][UL_DIV(l)] & (0x1 << UL_MOD(l)) ) {
             if( ranked_merged[x] < cp_depth ) {
               comp_cdds[j]->unique_cps++;
             }
@@ -1252,7 +1253,7 @@ static void rank_perform_greedy_sort(
     x = 0;
     for( j=0; j<CP_TYPE_NUM; j++ ) {
       for( k=0; k<num_cps[j]; k++ ) {
-        if( comp_cdds[i]->cps[j][k>>3] & (0x1 << (k & 0x7)) ) {
+        if( comp_cdds[i]->cps[j][UL_DIV(k)] & (0x1 << UL_MOD(k)) ) {
           ranked_merged[x]++;
         }
         x++;
@@ -1331,7 +1332,7 @@ static void rank_perform(
       uint16       bit_total = 0;
       unsigned int set_cdd;
       for( k=0; k<comp_cdd_num; k++ ) {
-        if( comp_cdds[k]->cps[i][j>>3] & (0x1 << (j & 0x7)) ) {
+        if( comp_cdds[k]->cps[i][UL_DIV(j)] & (0x1 << UL_MOD(j)) ) {
           comp_cdds[k]->total_cps++;
           set_cdd = k;
           bit_total++;
@@ -1671,6 +1672,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.16  2008/08/11 21:40:50  phase1geo
+ Changing compressed coverage structure to store coverage points as unsigned long values
+ instead of unsigned char to increase performance.
+
  Revision 1.1.4.15  2008/08/11 04:02:27  phase1geo
  Adding -v option to the rank command to display verbose information during the ranking
  phase.
