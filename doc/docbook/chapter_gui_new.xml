@@ -356,21 +356,25 @@
     <sect2 id="section.gui.new.options2.source" xreflabel="CDD Creation Source File Option">
       <title>Source File...</title>
       <para>
-      TBD
+      Selecting this insert option will cause an open file selector window to be displayed.  Use it to choose a single file
+      that will be parsed as a library file (i.e., the -v option to most Verilog compilers).
       </para>
     </sect2>
     
     <sect2 id="section.gui.new.options2.libdir" xreflabel="CDD Creation Library Directory Option">
       <title>Library Directory...</title>
       <para>
-      TBD
+      Selecting this insert option will cause an open directory selector window to be displayed.  Use it to choose a single
+      directory that will be used as a library directory (i.e., the -y option to most Verilog compilers).
       </para>
     </sect2>
     
     <sect2 id="section.gui.new.options2.libext" xreflabel="CDD Creation Library Extension Option">
       <title>Library Extension(s)...</title>
       <para>
-      TBD
+      Selecting this insert option will cause a window to be displayed that will allow the user to add library file
+      extensions to the library file parser (i.e., the +libext+ option to most Verilog compilers). 
+      <xref linkend="figure.gui.new.options2.libext"> is a display of this window.
       </para>
       <para>
         <figure id="figure.gui.new.options2.libext" xreflabel="CDD Creation Library Extension Window">
@@ -379,14 +383,21 @@
         </figure>
       </para>
       <para>
-      TBD
+      To add a new extension, select the <emphasis role="bold">Click to Add New Extension</emphasis> item in the extension
+      box (selected by default), type in the name of the extension in the upper entry box and either hit the "Enter" key or
+      click on the <emphasis role="bold">Update</emphasis> button. If an incorrect extension was input, you may edit it by
+      clicking on the incorrect item in the extension listbox. This will cause the item to be listed in the upper entry box
+      where it can be edited or removed. Click the <emphasis role="bold">OK</emphasis> button to accept the specified
+      library extensions and add these to the main window listbox. Click the <emphasis role="bold">Cancel</emphasis> button
+      to ignore the recent updates in this window.
       </para>
     </sect2>
     
     <sect2 id="section.gui.new.options2.incdir" xreflabel="CDD Creation Include Directory Option">
       <title>Include Directory...</title>
       <para>
-      TBD
+      Selecting this insert option will cause an open directory selector window to be displayed. Use it to choose a single
+      directory that will be used as an include directory (i.e., the +incdir+ option to most Verilog compilers).
       </para>
     </sect2>
     
