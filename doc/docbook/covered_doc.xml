@@ -53,7 +53,7 @@
     </copyright>
   </bookinfo>
   
-  <part>
+  <part id="part.overview">
     <title>Overview</title>
     &cintro;
     &cmetrics;
@@ -62,12 +62,12 @@
     &cattributes;
   </part>
   
-  <part>
+  <part id="part.installation">
     <title>Installation</title>
     &cinstallation;
   </part>
   
-  <part>
+  <part id="part.command.line.usage">
     <title>Command-line Usage</title>
     &cstarting;
     &cusing;
@@ -79,7 +79,7 @@
     &cdebug;
   </part>
   
-  <part>
+  <part id="part.gui">
     <title>Graphical User Interface</title>
     &cguiintro;
     &cguimain;
@@ -96,12 +96,12 @@
     &cguinew;
   </part>
   
-  <part>
+  <part id="part.faq">
     <title>FAQ</title>
     &cfaq;
   </part>
   
-  <part>
+  <part id="part.epilogue">
     <title>Epilogue</title>
     &cepilogue;
   </part>
