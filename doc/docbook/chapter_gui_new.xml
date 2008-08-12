@@ -374,7 +374,7 @@
       <para>
       Selecting this insert option will cause a window to be displayed that will allow the user to add library file
       extensions to the library file parser (i.e., the +libext+ option to most Verilog compilers). 
-      <xref linkend="figure.gui.new.options2.libext"> is a display of this window.
+      <xref linkend="figure.gui.new.options2.libext"/> is a display of this window.
       </para>
       <para>
         <figure id="figure.gui.new.options2.libext" xreflabel="CDD Creation Library Extension Window">
