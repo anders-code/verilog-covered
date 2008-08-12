@@ -1304,7 +1304,7 @@ void gen_char_string(
 /*!
  Clears the total accumulated time in the specified timer structure.
 */
-static void timer_clear(
+void timer_clear(
   timer** tm  /*!< Pointer to timer structure to clear */
 ) {
 
@@ -1346,6 +1346,35 @@ void timer_stop(
 
   gettimeofday( &tmp, NULL );
   (*tm)->total += ((tmp.tv_sec - (*tm)->start.tv_sec) * 1000000) + (tmp.tv_usec - (*tm)->start.tv_usec);
+
+}
+
+/*!
+ \return Returns a user-readable version of the timer structure.
+*/
+char* timer_to_string(
+  timer* tm  /*!< Pointer to timer structure */
+) {
+
+  static char str[33];  /* Minimal amount of space needed to store the current time */
+
+  /* If the time is less than a minute, output the seconds and milliseconds */
+  printf( "In timer_to_string, %lu\n", tm->total );
+  if( tm->total < 10 ) {
+    snprintf( str, 33, "0.00000%1u seconds", tm->total );
+  } else if( tm->total < 100 ) {
+    snprintf( str, 33, "0.0000%1u seconds", (tm->total / 10) ); 
+  } else if( tm->total < 1000 ) {
+    snprintf( str, 33, "0.000%1u seconds", (tm->total / 100) );
+  } else if( tm->total < 60000000 ) {
+    snprintf( str, 33, "%2u.%03u seconds", (tm->total / 1000000), ((tm->total % 1000000) / 1000) );
+  } else if( tm->total < 360000000 ) {
+    snprintf( str, 33, "%2u minutes, %2u seconds", (tm->total / 60000000), ((tm->total % 60000000) / 1000000) );
+  } else {
+    snprintf( str, 33, "%2u hours, %2u minutes, %2u seconds", (tm->total / 360000000), ((tm->total % 360000000) / 6000000), ((tm->total % 60000000) / 1000000) );
+  }
+
+  return( str );
 
 }
 #endif
@@ -1492,6 +1521,9 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.92.2.6  2008/08/12 16:53:10  phase1geo
+ Adding timer information for -v option to the rank command.
+
  Revision 1.92.2.5  2008/07/24 23:23:49  phase1geo
  Adding -required option to the rank command.
 

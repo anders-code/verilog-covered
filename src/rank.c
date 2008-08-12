@@ -1299,6 +1299,7 @@ static void rank_perform(
   unsigned int most_unique;
   unsigned int count;
   unsigned int cdds_ranked  = 0;
+  timer*       atimer;
 
   if( !output_suppressed || debug_mode ) {
     printf( "Ranking CDD files " );
@@ -1348,6 +1349,9 @@ static void rank_perform(
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     print_output( "Phase 1:  User-required files", NORMAL, __FILE__, __LINE__ );
+    fflush( stdout );
+    timer_clear( &atimer );
+    timer_start( &atimer );
   }
 
   /* Step 2 - Immediately rank all of the required CDDs */
@@ -1360,13 +1364,19 @@ static void rank_perform(
 
   if( rank_verbose ) {
     uint64 ranked_cps = rank_count_cps( ranked_merged, total );
+    timer_stop( &atimer );
     snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total: %u, Remaining: %u)", next_cdd, next_cdd, (comp_cdd_num - next_cdd) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    snprintf( user_msg, USER_MSG_LENGTH, "  Completed phase 1 in %s", timer_to_string( atimer ) );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
   
     count = next_cdd;
     print_output( "Phase 2:  Unique coverage point selection", NORMAL, __FILE__, __LINE__ );
+    fflush( stdout );
+    timer_clear( &atimer );
+    timer_start( &atimer );
   }
 
   /* Step 3 - Start with the most unique CDDs */
@@ -1385,13 +1395,19 @@ static void rank_perform(
 
   if( rank_verbose ) {
     uint64 ranked_cps = rank_count_cps( ranked_merged, total );
+    timer_stop( &atimer );
     snprintf( user_msg, USER_MSG_LENGTH, "  Ranked another %u CDD files (Total: %u, Remaining: %u)", (next_cdd - count), next_cdd, (comp_cdd_num - next_cdd) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    snprintf( user_msg, USER_MSG_LENGTH, "  Completed phase 2 in %s", timer_to_string( atimer ) );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
    
     count = next_cdd;
     print_output( "Phase 3:  Remaining coverage point selection", NORMAL, __FILE__, __LINE__ );
+    fflush( stdout );
+    timer_clear( &atimer );
+    timer_start( &atimer );
   }
 
   /* Step 4 - Select coverage based on user-specified factors */
@@ -1401,19 +1417,33 @@ static void rank_perform(
 
   if( rank_verbose ) {
     uint64 ranked_cps = rank_count_cps( ranked_merged, total );
+    timer_stop( &atimer );
     snprintf( user_msg, USER_MSG_LENGTH, "  Ranked another %u CDD files (Total: %u, Remaining: %u)", cdds_ranked, (count + cdds_ranked), (comp_cdd_num - (count + cdds_ranked)) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    snprintf( user_msg, USER_MSG_LENGTH, "  Completed phase 3 in %s", timer_to_string( atimer ) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     snprintf( user_msg, USER_MSG_LENGTH, "Eliminated %u CDD files that do not add coverage", (comp_cdd_num - (count + cdds_ranked)) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     print_output( "Phase 4:  Ordering CDD file selected for ranking", NORMAL, __FILE__, __LINE__ );
+    fflush( stdout );
+    timer_clear( &atimer );
+    timer_start( &atimer );
   }
 
   /* Step 5 - Re-sort the list using a greedy algorithm */
   rank_perform_greedy_sort( comp_cdds, comp_cdd_num, ranked_merged, total );
+
+  if( rank_verbose ) {
+    timer_stop( &atimer );
+    snprintf( user_msg, USER_MSG_LENGTH, "  Completed phase 4 in %s", timer_to_string( atimer ) );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    fflush( stdout );
+    free_safe( atimer, sizeof( timer ) );
+  }
 
   /* Deallocate merged CDD coverage structure */
   free_safe( ranked_merged,   (sizeof( uint16 ) * total ) );
@@ -1665,6 +1695,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.18  2008/08/12 16:53:10  phase1geo
+ Adding timer information for -v option to the rank command.
+
  Revision 1.1.4.17  2008/08/12 06:17:53  phase1geo
  Fixing bugs in calculation and report of coverage points in rank reports.
 
