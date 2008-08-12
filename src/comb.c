@@ -354,7 +354,8 @@ void combination_get_tree_stats(
             ((exp->op != EXP_OP_AND) &&
              (exp->op != EXP_OP_LAND) &&
              (exp->op != EXP_OP_OR)   &&
-             (exp->op != EXP_OP_LOR)) ) {
+             (exp->op != EXP_OP_LOR)) ||
+             !allow_multi_expr ) {
 
           /* Calculate current expression combination coverage */
           if( (((exp->left != NULL) &&
@@ -541,11 +542,9 @@ void combination_get_stats(
     func_iter_init( &fi, funit );
 
     /* Traverse statements in the given functional unit */
-    stmt = func_iter_get_next_statement( &fi );
-    while( stmt != NULL ) {
+    while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
       ulid = 1;
       combination_get_tree_stats( stmt->exp, &ulid, 0, stmt->suppl.part.excluded, hit, excluded, total );
-      stmt = func_iter_get_next_statement( &fi );
     }
 
     /* Deallocate functional unit iterator */
@@ -2892,6 +2891,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.194.2.7  2008/08/12 06:17:53  phase1geo
+ Fixing bugs in calculation and report of coverage points in rank reports.
+
  Revision 1.194.2.6  2008/08/07 20:51:04  phase1geo
  Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
  table output and exclusion.  Checkpointing.
