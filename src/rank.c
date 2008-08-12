@@ -73,8 +73,8 @@ static uint64 num_cps[CP_TYPE_NUM] = {0};
 /*!
  Array containing the weights to be used for each of the CDD metric types.
 */
-static unsigned int cdd_type_weight[CP_TYPE_NUM] = {10,1,2,5,3,0};
-//static unsigned int cdd_type_weight[CP_TYPE_NUM] = {1,1,1,1,1,0};
+//static unsigned int cdd_type_weight[CP_TYPE_NUM] = {10,1,2,5,3,0};
+static unsigned int cdd_type_weight[CP_TYPE_NUM] = {1,1,1,1,1,0};
 
 /*!
  Set to TRUE when the user has specified the corresponding weight value on the command-line.  Allows us to
@@ -250,17 +250,23 @@ static void rank_usage() {
   printf( "                                  a period (.) should be specified.\n" );
   printf( "      -o <filename>             Name of file to output ranking information to.  Default is stdout.\n" );
   printf( "      -weight-line <number>     Specifies a relative weighting for line coverage used to rank\n" );
-  printf( "                                  non-unique coverage points.\n" );
+  printf( "                                  non-unique coverage points.  A value of 0 removes line coverage\n" );
+  printf( "                                  from ranking consideration.  Default value is 1.\n" );
   printf( "      -weight-toggle <number>   Specifies a relative weighting for toggle coverage used to rank\n" );
-  printf( "                                  non-unique coverage points.\n" );
+  printf( "                                  non-unique coverage points.  A value of 0 removes toggle coverage\n" );
+  printf( "                                  from ranking consideration.  Default value is 1.\n" );
   printf( "      -weight-memory <number>   Specifies a relative weighting for memory coverage used to rank\n" );
-  printf( "                                  non-unique coverage points.\n" );
+  printf( "                                  non-unique coverage points.  A value of 0 removes memory coverage\n" );
+  printf( "                                  from ranking consideration.  Default value is 1.\n" );
   printf( "      -weight-comb <number>     Specifies a relative weighting for combinational logic coverage used\n" );
-  printf( "                                  to rank non-unique coverage points.\n" );
+  printf( "                                  to rank non-unique coverage points.  A value of 0 removes combinational\n" );
+  printf( "                                  logic coverage from ranking consideration.  Default value is 1.\n" );
   printf( "      -weight-fsm <number>      Specifies a relative weighting for FSM state/state transition coverage\n" );
-  printf( "                                  used to rank non-unique coverage points.\n" );
+  printf( "                                  used to rank non-unique coverage points.  A value of 0 removes FSM\n" );
+  printf( "                                  coverage from ranking consideration.  Default value is 1.\n" );
   printf( "      -weight-assert <number>   Specifies a relative weighting for assertion coverage used to rank\n" );
-  printf( "                                  non-unique coverage points.\n" );
+  printf( "                                  non-unique coverage points.  A value of 0 removes assertion coverage\n" );
+  printf( "                                  from ranking consideration.  Default value is 0.\n" );
   printf( "      -v                        Outputs verbose information during the rank selection process.  This output\n" );
   printf( "                                  is not for debugging purposes, but rather gives the user insight into\n" );
   printf( "                                  what's going on \"behind the scenes\" during the ranking process.\n" );
@@ -1112,16 +1118,18 @@ static void rank_selected_cdd_cov(
   /* Subtract all of the set coverage points from the merged value */
   for( i=0; i<CP_TYPE_NUM; i++ ) {
     for( j=0; j<num_cps[i]; j++ ) {
-      if( comp_cdds[next_cdd]->cps[i][UL_DIV(j)] & ((ulong)0x1 << UL_MOD(j)) ) {
-        /*
-         If we have not seen this coverage point get hit the needed "depth" amount in the ranked
-         list, increment the unique_cps value for the selected compressed CDD coverage structure.
-        */
-        if( ranked_merged[merged_index] < cp_depth ) {
-          comp_cdds[next_cdd]->unique_cps++;
+      if( unranked_merged[merged_index] > 0 ) {
+        if( comp_cdds[next_cdd]->cps[i][UL_DIV(j)] & ((ulong)0x1 << UL_MOD(j)) ) {
+          /*
+           If we have not seen this coverage point get hit the needed "depth" amount in the ranked
+           list, increment the unique_cps value for the selected compressed CDD coverage structure.
+          */
+          if( ranked_merged[merged_index] < cp_depth ) {
+            comp_cdds[next_cdd]->unique_cps++;
+          }
+          unranked_merged[merged_index]--;
+          ranked_merged[merged_index]++;
         }
-        unranked_merged[merged_index]--;
-        ranked_merged[merged_index]++;
       }
       merged_index++;
     }
@@ -1170,10 +1178,12 @@ static void rank_perform_weighted_selection(
       for( j=0; j<CP_TYPE_NUM; j++ ) {
         unsigned int total = 0;
         for( k=0; k<num_cps[j]; k++ ) {
-	  if( comp_cdds[i]->cps[j][UL_DIV(k)] & ((ulong)0x1 << UL_MOD(k)) ) {
-            total++;
-            if( ranked_merged[x] < cp_depth ) {
-              unique_found = TRUE;
+          if( unranked_merged[x] > 0 ) {
+  	    if( comp_cdds[i]->cps[j][UL_DIV(k)] & ((ulong)0x1 << UL_MOD(k)) ) {
+              total++;
+              if( ranked_merged[x] < cp_depth ) {
+                unique_found = TRUE;
+              }
             }
           }
           x++;
@@ -1301,7 +1311,7 @@ static void rank_perform(
   unsigned int cdds_ranked  = 0;
   timer*       atimer;
 
-  if( !output_suppressed || debug_mode ) {
+  if( (!output_suppressed || debug_mode) && !rank_verbose ) {
     printf( "Ranking CDD files " );
     fflush( stdout );
   }
@@ -1317,7 +1327,7 @@ static void rank_perform(
   unranked_merged = (uint16*)malloc_safe_nolimit( sizeof( uint16 ) * total );
 
   if( rank_verbose ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Ranking %u CDD files with %llu coverage points (%llu line, %llu toggle, %llu memory, %llu logic, %llu FSM, %llu assertion)",
+    snprintf( user_msg, USER_MSG_LENGTH, "\nRanking %u CDD files with %llu coverage points (%llu line, %llu toggle, %llu memory, %llu logic, %llu FSM, %llu assertion)",
               comp_cdd_num, total, num_cps[CP_TYPE_LINE], num_cps[CP_TYPE_TOGGLE], num_cps[CP_TYPE_MEM], num_cps[CP_TYPE_LOGIC], num_cps[CP_TYPE_FSM], num_cps[CP_TYPE_ASSERT] );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
   }
@@ -1348,7 +1358,7 @@ static void rank_perform(
     snprintf( user_msg, USER_MSG_LENGTH, "Ignoring %llu coverage points that were not hit by any CDD file", (total - total_hitable) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    print_output( "Phase 1:  User-required files", NORMAL, __FILE__, __LINE__ );
+    print_output( "\nPhase 1:  User-required files", NORMAL, __FILE__, __LINE__ );
     fflush( stdout );
     timer_clear( &atimer );
     timer_start( &atimer );
@@ -1369,11 +1379,11 @@ static void rank_perform(
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    snprintf( user_msg, USER_MSG_LENGTH, "  Completed phase 1 in %s", timer_to_string( atimer ) );
+    snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 1 in %s", timer_to_string( atimer ) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
   
     count = next_cdd;
-    print_output( "Phase 2:  Unique coverage point selection", NORMAL, __FILE__, __LINE__ );
+    print_output( "\nPhase 2:  Unique coverage point selection", NORMAL, __FILE__, __LINE__ );
     fflush( stdout );
     timer_clear( &atimer );
     timer_start( &atimer );
@@ -1400,11 +1410,11 @@ static void rank_perform(
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    snprintf( user_msg, USER_MSG_LENGTH, "  Completed phase 2 in %s", timer_to_string( atimer ) );
+    snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 2 in %s", timer_to_string( atimer ) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
    
     count = next_cdd;
-    print_output( "Phase 3:  Remaining coverage point selection", NORMAL, __FILE__, __LINE__ );
+    print_output( "\nPhase 3:  Remaining coverage point selection", NORMAL, __FILE__, __LINE__ );
     fflush( stdout );
     timer_clear( &atimer );
     timer_start( &atimer );
@@ -1422,13 +1432,13 @@ static void rank_perform(
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    snprintf( user_msg, USER_MSG_LENGTH, "  Completed phase 3 in %s", timer_to_string( atimer ) );
+    snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 3 in %s", timer_to_string( atimer ) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Eliminated %u CDD files that do not add coverage", (comp_cdd_num - (count + cdds_ranked)) );
+    snprintf( user_msg, USER_MSG_LENGTH, "\nEliminated %u CDD files that do not add coverage", (comp_cdd_num - (count + cdds_ranked)) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    print_output( "Phase 4:  Ordering CDD file selected for ranking", NORMAL, __FILE__, __LINE__ );
+    print_output( "\nPhase 4:  Ordering CDD file selected for ranking", NORMAL, __FILE__, __LINE__ );
     fflush( stdout );
     timer_clear( &atimer );
     timer_start( &atimer );
@@ -1439,7 +1449,7 @@ static void rank_perform(
 
   if( rank_verbose ) {
     timer_stop( &atimer );
-    snprintf( user_msg, USER_MSG_LENGTH, "  Completed phase 4 in %s", timer_to_string( atimer ) );
+    snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 4 in %s", timer_to_string( atimer ) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     fflush( stdout );
     free_safe( atimer, sizeof( timer ) );
@@ -1466,9 +1476,9 @@ static void rank_output(
   FILE* ofile;
 
   if( rank_file == NULL ) {
-    print_output( "Generating report output to standard output...", NORMAL, __FILE__, __LINE__ );
+    print_output( "\nGenerating report output to standard output...", NORMAL, __FILE__, __LINE__ );
   } else {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Generating report file \"%s\"...", rank_file );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "\nGenerating report file \"%s\"...", rank_file );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
   }
@@ -1695,6 +1705,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.1.4.19  2008/08/12 17:52:57  phase1geo
+ Adding another attempt to speed up ranking.
+
  Revision 1.1.4.18  2008/08/12 16:53:10  phase1geo
  Adding timer information for -v option to the rank command.
 

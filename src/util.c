@@ -1359,7 +1359,6 @@ char* timer_to_string(
   static char str[33];  /* Minimal amount of space needed to store the current time */
 
   /* If the time is less than a minute, output the seconds and milliseconds */
-  printf( "In timer_to_string, %lu\n", tm->total );
   if( tm->total < 10 ) {
     snprintf( str, 33, "0.00000%1u seconds", tm->total );
   } else if( tm->total < 100 ) {
@@ -1521,6 +1520,9 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.92.2.7  2008/08/12 17:52:57  phase1geo
+ Adding another attempt to speed up ranking.
+
  Revision 1.92.2.6  2008/08/12 16:53:10  phase1geo
  Adding timer information for -v option to the rank command.
 
