@@ -560,9 +560,7 @@ proc create_comb_window {expr_id sline} {
       rm_pointer curr_comb_ptr
       destroy .combwin
     }
-    button .combwin.bf.help -text "Help" -width 10 -command {
-      help_show_manual comb
-    }
+    help_button .combwin.bf.help chapter.gui.logic ""
     button .combwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_comb $prev_comb_index
     }
@@ -573,7 +571,7 @@ proc create_comb_window {expr_id sline} {
     # Pack the button widgets into button frame
     pack .combwin.bf.prev  -side left
     pack .combwin.bf.next  -side left
-    pack .combwin.bf.help  -side right -padx 8 -pady 4
+    pack .combwin.bf.help  -side right -pady 4
     pack .combwin.bf.close -side right -padx 8 -pady 4
 
     # Pack the widgets into the top frame

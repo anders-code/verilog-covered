@@ -83,8 +83,8 @@ proc create_assert_window {inst} {
       destroy .assertwin
       destroy .amodwin
     }
-    button .assertwin.bf.help -text "Help" -width 10 -command {
-      help_show_manual assert
+    button .assertwin.bf.help -text "?" -width 10 -command {
+      help_show_manual chapter.gui.assert ""
     }
     button .assertwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_assert $prev_assert_index
@@ -314,8 +314,8 @@ proc display_assertion_module {name filename} {
     button .amodwin.bf.close -text "Close" -width 10 -command {
       destroy .amodwin
     }
-    button .amodwin.bf.help -text "Help" -width 10 -command {
-      help_show_manual src_view
+    button .amodwin.bf.help -text "?" -width 10 -command {
+      help_show_manual chapter.gui.assert.source ""
     }
 
     # Pack the button bar

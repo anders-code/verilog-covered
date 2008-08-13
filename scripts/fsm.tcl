@@ -77,8 +77,8 @@ proc create_fsm_window {expr_id} {
     button .fsmwin.bf.close -text "Close" -width 10 -command {
       destroy .fsmwin
     }
-    button .fsmwin.bf.help -text "Help" -width 10 -command {
-      help_show_manual fsm
+    button .fsmwin.bf.help -text "?" -width 10 -command {
+      help_show_manual chapter.gui.fsm ""
     }
 
     # Pack the buttons into the button frame
