@@ -30,13 +30,17 @@ proc help_show_about {} {
 
 }
 
-proc help_show_manual {section} {
+proc help_show_manual {chapter {section ""}} {
 
   global HOME BROWSER
 
-  set fpath [file join $HOME doc gui $section].html
+  set fpath "file://[file join $HOME doc docbook html $chapter].html"
 
-  if {[catch {exec $BROWSER -remote "openFile( $fpath )"}]} {
+  if {$section != ""} {
+    set fpath $fpath#$section
+  }
+
+  if {[catch {exec $BROWSER -remote "openURL( $fpath )"}]} {
 
     # perhaps browser doesn't understand -remote flag
     if {[catch "exec $BROWSER \"$fpath\" &" emsg]} {
