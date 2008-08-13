@@ -77,9 +77,7 @@ proc create_toggle_window {signal} {
       rm_pointer curr_toggle_ptr
       destroy .togwin
     }
-    button .togwin.bf.help -text "Help" -width 10 -command {
-      help_show_manual toggle
-    }
+    help_button .togwin.bf.help chapter.gui.toggle ""
     button .togwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_toggle $prev_toggle_index
     }
@@ -90,7 +88,7 @@ proc create_toggle_window {signal} {
     # Pack the buttons into the button frame
     pack .togwin.bf.prev  -side left
     pack .togwin.bf.next  -side left
-    pack .togwin.bf.help  -side right -padx 8 -pady 4
+    pack .togwin.bf.help  -side right -pady 4
     pack .togwin.bf.close -side right -padx 8 -pady 4
 
     # Pack the widgets into the bottom frame
