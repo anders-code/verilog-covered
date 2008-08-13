@@ -435,16 +435,17 @@ proc create_preferences {start_index} {
     button .prefwin.bf.cancel -width 10 -text "Cancel" -command {
       destroy .prefwin
     }
-    button .prefwin.bf.help -width 10 -text "Help" -command {
+    help_button .prefwin.bf.help ""
+    .prefwin.bf.help configure -command {
       switch [.prefwin.lbf.lb curselection] {
-        0 { help_show_manual pref_general }
-        1 { help_show_manual pref_color }
-        2 { help_show_manual pref_goals }
-        3 { help_show_manual pref_syntax }
-        default { help_show_manual pref_main }
+        0 { help_show_manual chapter.gui.preferences "section.gui.pref.general" }
+        1 { help_show_manual chapter.gui.preferences "section.gui.pref.color" }
+        2 { help_show_manual chapter.gui.preferences "section.gui.pref.goals" }
+        3 { help_show_manual chapter.gui.preferences "section.gui.pref.syntax" }
+        default { help_show_manual chapter.gui.preferences "" }
       }
     }
-    pack .prefwin.bf.help   -side right -padx 8 -pady 4
+    pack .prefwin.bf.help   -side right -pady 4
     pack .prefwin.bf.cancel -side right -padx 8 -pady 4
     pack .prefwin.bf.ok     -side right -padx 8 -pady 4
     pack .prefwin.bf.apply  -side right -padx 8 -pady 4

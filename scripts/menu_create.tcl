@@ -283,7 +283,7 @@ proc menu_create {} {
 
   # Add Manual and About information
   $thm add command -label "Manual" -state disabled -underline 0 -command {
-    help_show_manual "contents"
+    help_show_manual index ""
   }
   # Do not display the About information in the help menu if we are running on Mac OS X
   if {[tk windowingsystem] ne "aqua"} {

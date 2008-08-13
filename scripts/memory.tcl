@@ -117,9 +117,7 @@ proc create_memory_window {signal} {
       rm_pointer curr_memory_ptr
       destroy .memwin
     }
-    button .memwin.bf.help -text "Help" -width 10 -command {
-      help_show_manual memory
-    }
+    help_button .memwin.bf.help chapter.gui.memory ""
     button .memwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_memory $prev_memory_index
     }
@@ -130,7 +128,7 @@ proc create_memory_window {signal} {
     # Pack the buttons into the button frame
     pack .memwin.bf.prev  -side left
     pack .memwin.bf.next  -side left
-    pack .memwin.bf.help  -side right -padx 8 -pady 4
+    pack .memwin.bf.help  -side right -pady 4
     pack .memwin.bf.close -side right -padx 8 -pady 4
 
     # Pack the upper frames

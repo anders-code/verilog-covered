@@ -421,7 +421,7 @@ proc create_report_generation_options {w} {
   button $w.bf.create -width 10 -text "Create" -command "create_report $w"
   button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   button $w.bf.help   -width 10 -text "Help" -command {
-    help_show_manual report_gen
+    help_show_manual chapter.gui.genreport
   }
   pack $w.bf.help   -side right -padx 4 -pady 4
   pack $w.bf.cancel -side right -padx 4 -pady 4
