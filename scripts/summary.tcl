@@ -95,7 +95,7 @@ proc create_summary {} {
     }
 
     button .sumwin.bf.help -width 10 -text "Help" -command {
-      help_show_manual summary
+      help_show_manual "" ""
     }
 
     pack .sumwin.bf.help  -side right -padx 8 -pady 4
