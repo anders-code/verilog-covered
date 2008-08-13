@@ -32,12 +32,11 @@
 <!ENTITY cepilogue       SYSTEM "chapter_epilogue.xml">
 ]>
 
-<!-- Use the following command to generate in the html directory: 
-     openjade -t sgml -d /sw/share/sgml/dsssl/docbook-dsssl-nwalsh/html/docbook.dsl ../covered_doc.xml -->
-
 <book>
   <bookinfo>
-    <title>Covered - Verilog Code Coverage Analyzer</title>
+    <mediaobject><imageobject><imagedata fileref="img/banner.gif" format="GIF"/></imageobject></mediaobject>
+    <title>Covered</title>
+    <subtitle>Verilog Code Coverage Analyzer</subtitle>
     <author>
       <firstname>Trevor</firstname>
       <surname>Williams</surname>
@@ -49,7 +48,7 @@
     </author>
     <copyright>
       <year>2008</year>
-      <holder role="mailto:your e-mail address">Trevor Williams</holder>
+      <holder role="mailto:phase1geo@gmail.com">Trevor Williams</holder>
     </copyright>
   </bookinfo>
   
