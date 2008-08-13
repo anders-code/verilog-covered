@@ -14,7 +14,6 @@
 
 @SET_MAKE@
 
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -33,7 +32,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = scripts
+subdir = doc/docbook
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -43,9 +42,6 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(tcldir)" "$(DESTDIR)$(cfgdir)"
-tclSCRIPT_INSTALL = $(INSTALL_SCRIPT)
-SCRIPTS = $(tcl_SCRIPTS)
 SOURCES =
 DIST_SOURCES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -54,8 +50,10 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-cfgDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(cfg_DATA)
+am__installdirs = "$(DESTDIR)$(docdir)" "$(DESTDIR)$(imgdir)"
+docDATA_INSTALL = $(INSTALL_DATA)
+imgDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(doc_DATA) $(img_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -146,7 +144,7 @@ build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
-docdir = @docdir@
+docdir = $(datadir)/covered/doc/docbook/html
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
@@ -180,37 +178,124 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 use_tcltk = @use_tcltk@
-tcldir = $(datadir)/covered/scripts
-tcl_SCRIPTS = assert.tcl \
-              banner.gif \
-              cdd_view.tcl \
-              clear.gif \
-              comb.tcl \
-              cov_create.tcl \
-              cov_icon.gif \
-              find.gif \
-              fsm.tcl \
-              gen_new.tcl \
-              gen_rank.tcl \
-              gen_report.tcl \
-              help.tcl \
-              help_wrapper.tcl \
-              help_tbl.tcl \
-              left_arrow.gif \
-              main_view.tcl \
-              memory.tcl \
-              menu_create.tcl \
-              preferences.tcl \
-              process_file.tcl \
-              right_arrow.gif \
-              summary.tcl \
-              toggle.tcl \
-              verilog.tcl \
-              viewer.tcl \
-              wizard.tcl
+doc_DATA = html/chapter.attr.html \
+           html/chapter.boundaries.html \
+           html/chapter.debug.html \
+           html/chapter.epilogue.html \
+           html/chapter.faq.html \
+           html/chapter.gui.assert.html \
+           html/chapter.gui.assert.source.html \
+           html/chapter.gui.fsm.html \
+           html/chapter.gui.genreport.html \
+           html/chapter.gui.intro.html \
+           html/chapter.gui.line.html \
+           html/chapter.gui.logic.html \
+           html/chapter.gui.main.html \
+           html/chapter.gui.memory.html \
+           html/chapter.gui.new.html \
+           html/chapter.gui.preferences.html \
+           html/chapter.gui.toggle.html \
+           html/chapter.gui.wizard.html \
+           html/chapter.installation.html \
+           html/chapter.intro.html \
+           html/chapter.merge.html \
+           html/chapter.metrics.html \
+           html/chapter.race.html \
+           html/chapter.rank.html \
+           html/chapter.reading.html \
+           html/chapter.report.html \
+           html/chapter.score.html \
+           html/chapter.start.html \
+           html/chapter.using.html \
+           html/index.html \
+           html/part.command.line.usage.html \
+           html/part.epilogue.html \
+           html/part.faq.html \
+           html/part.gui.html \
+           html/part.installation.html \
+           html/part.overview.html
 
-cfgdir = $(datadir)/covered
-cfg_DATA = .coveredrc
+imgdir = $(datadir)/covered/doc/docbook/html/img
+img_DATA = html/img/assert_excl.gif \
+           html/img/assert_src.gif \
+           html/img/assert_window.gif \
+           html/img/banner.gif \
+           html/img/close_warn.gif \
+           html/img/color.gif \
+           html/img/comb_complex.gif \
+           html/img/comb_event.gif \
+           html/img/comb_simple.gif \
+           html/img/comb_simple_and.gif \
+           html/img/comb_simple_or.gif \
+           html/img/comb_unary.gif \
+           html/img/dn_button.gif \
+           html/img/exit_warn.gif \
+           html/img/file_menu.gif \
+           html/img/file_viewer.gif \
+           html/img/fsm_excl.gif \
+           html/img/fsm_window.gif \
+           html/img/gen_menu.gif \
+           html/img/help_menu.gif \
+           html/img/home.gif \
+           html/img/line_excl.gif \
+           html/img/line_incl.gif \
+           html/img/main_cov.gif \
+           html/img/main_info.gif \
+           html/img/main_lb.gif \
+           html/img/main_menu.gif \
+           html/img/main_summary.gif \
+           html/img/main_viewer.gif \
+           html/img/main_window.gif \
+           html/img/memory_full.gif \
+           html/img/new_cdd_define.gif \
+           html/img/new_cdd_fsm.gif \
+           html/img/new_cdd_gen.gif \
+           html/img/new_cdd_insert_menu.gif \
+           html/img/new_cdd_lib_ext.gif \
+           html/img/new_cdd_mod_excl.gif \
+           html/img/new_cdd_mod_gen.gif \
+           html/img/new_cdd_name.gif \
+           html/img/new_cdd_options.gif \
+           html/img/new_cdd_options2.gif \
+           html/img/new_cdd_options2.tiff \
+           html/img/new_cdd_parm_oride.gif \
+           html/img/new_cdd_selection.gif \
+           html/img/new_cdd_type.gif \
+           html/img/next.gif \
+           html/img/note.gif \
+           html/img/open_cdd.gif \
+           html/img/populated_lb.gif \
+           html/img/pref_color.gif \
+           html/img/pref_goals.gif \
+           html/img/pref_main.gif \
+           html/img/pref_report.gif \
+           html/img/pref_syntax.gif \
+           html/img/prev.gif \
+           html/img/report_gen.gif \
+           html/img/report_menu.gif \
+           html/img/summary_window.gif \
+           html/img/toggle_full.gif \
+           html/img/up.gif \
+           html/img/up_button.gif \
+           html/img/view_menu.gif
+
+XML_CATALOG_FILES = "catalog.xml" xsltproc \
+                --stringparam draft.mode no \
+                --stringparam section.autolabel 1 \
+                --stringparam section.label.includes.component.label 1 \
+                --stringparam use.extensions 0 \
+                --stringparam chunk.section.depth 0 \
+                --stringparam chunk.first.sections 1 \
+                --stringparam use.id.as.filename 1 \
+                --stringparam admon.graphics.path img/ \
+                --stringparam admon.graphics.extension .gif \
+                --stringparam admon.graphics 1 \
+                --stringparam navig.graphics.path img/ \
+                --stringparam navig.graphics.extension .gif \
+                --stringparam navig.graphics 1 \
+                --stringparam base.dir html/ \
+                covered.xsl covered_doc.xml
+
 all: all-am
 
 .SUFFIXES:
@@ -223,9 +308,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  scripts/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  doc/docbook/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  scripts/Makefile
+	  $(AUTOMAKE) --gnu  doc/docbook/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -243,41 +328,39 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-tclSCRIPTS: $(tcl_SCRIPTS)
+install-docDATA: $(doc_DATA)
 	@$(NORMAL_INSTALL)
-	test -z "$(tcldir)" || $(MKDIR_P) "$(DESTDIR)$(tcldir)"
-	@list='$(tcl_SCRIPTS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  if test -f $$d$$p; then \
-	    f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
-	    echo " $(tclSCRIPT_INSTALL) '$$d$$p' '$(DESTDIR)$(tcldir)/$$f'"; \
-	    $(tclSCRIPT_INSTALL) "$$d$$p" "$(DESTDIR)$(tcldir)/$$f"; \
-	  else :; fi; \
-	done
-
-uninstall-tclSCRIPTS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(tcl_SCRIPTS)'; for p in $$list; do \
-	  f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
-	  echo " rm -f '$(DESTDIR)$(tcldir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(tcldir)/$$f"; \
-	done
-install-cfgDATA: $(cfg_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(cfgdir)" || $(MKDIR_P) "$(DESTDIR)$(cfgdir)"
-	@list='$(cfg_DATA)'; for p in $$list; do \
+	test -z "$(docdir)" || $(MKDIR_P) "$(DESTDIR)$(docdir)"
+	@list='$(doc_DATA)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(cfgDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(cfgdir)/$$f'"; \
-	  $(cfgDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(cfgdir)/$$f"; \
+	  echo " $(docDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(docdir)/$$f'"; \
+	  $(docDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(docdir)/$$f"; \
 	done
 
-uninstall-cfgDATA:
+uninstall-docDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(cfg_DATA)'; for p in $$list; do \
+	@list='$(doc_DATA)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(cfgdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(cfgdir)/$$f"; \
+	  echo " rm -f '$(DESTDIR)$(docdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(docdir)/$$f"; \
+	done
+install-imgDATA: $(img_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(imgdir)" || $(MKDIR_P) "$(DESTDIR)$(imgdir)"
+	@list='$(img_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(imgDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(imgdir)/$$f'"; \
+	  $(imgDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(imgdir)/$$f"; \
+	done
+
+uninstall-imgDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(img_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(imgdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(imgdir)/$$f"; \
 	done
 tags: TAGS
 TAGS:
@@ -314,9 +397,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(SCRIPTS) $(DATA)
+all-am: Makefile $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(tcldir)" "$(DESTDIR)$(cfgdir)"; do \
+	for dir in "$(DESTDIR)$(docdir)" "$(DESTDIR)$(imgdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -361,7 +444,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-cfgDATA install-tclSCRIPTS
+install-data-am: install-docDATA install-imgDATA
 
 install-dvi: install-dvi-am
 
@@ -395,22 +478,24 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-cfgDATA uninstall-tclSCRIPTS
+uninstall-am: uninstall-docDATA uninstall-imgDATA
 
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic distclean \
 	distclean-generic distdir dvi dvi-am html html-am info info-am \
-	install install-am install-cfgDATA install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip install-tclSCRIPTS \
+	install install-am install-data install-data-am \
+	install-docDATA install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-imgDATA \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am uninstall uninstall-am uninstall-cfgDATA \
-	uninstall-tclSCRIPTS
+	pdf-am ps ps-am uninstall uninstall-am uninstall-docDATA \
+	uninstall-imgDATA
 
+
+mk-html:   
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
