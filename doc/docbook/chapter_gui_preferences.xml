@@ -26,7 +26,6 @@
         <listitem><para><xref linkend="section.gui.pref.color"/></para></listitem>
         <listitem><para><xref linkend="section.gui.pref.goals"/></para></listitem>
         <listitem><para><xref linkend="section.gui.pref.syntax"/></para></listitem>
-        <listitem><para><xref linkend="section.gui.pref.report"/></para></listitem>
       </itemizedlist>
     </para>
   </sect1>
@@ -129,8 +128,8 @@
     task.  The following subsections describe the controls available within this pane.
     </para>
     
-    <sect2 id="section.gui.pref.general.wizard" xreflabel="Wizard Popup on Startup">
-      <title>Wizard Popup on Startup</title>
+    <sect2 id="section.gui.pref.general.wizard" xreflabel="Show wizard window on startup">
+      <title>Show wizard window on startup</title>
       <para>
       This checkbutton selects if Covered's <xref linkend="chapter.gui.wizard"/> popup window will be displayed upon
       starting Covered.  Simply check this button if you would like to see the wizard at the beginning of each startup
@@ -141,6 +140,24 @@
       Note that you can always display the wizard window by selecting its menu option in the 
       <xref linkend="section.gui.main.viewmenu"/> menu.
       </para>
+    </sect2>
+
+    <sect2 id="section.gui.pref.general.state" xreflabel="Save state of GUI when exiting the application">
+     <title>Save state of GUI when exiting the application</title>
+     <para>
+     This checkbutton determines if certain GUI element (i.e., window placement/sizing, module/instance listbox 
+     column arrangement/width/state, etc.) information is saved when the GUI exits.  If this checkbutton is selected,
+     the state is saved to the configuration file on application exit and will be used when the application is started.
+     If the checkbutton is deselected, the state will not be saved and the default GUI element behaviors will be used.
+     </para>
+     <para>
+     This setting allows the user to setup the various GUI elements to their liking and retains this information whenever
+     the application is restarted, saving the user the hassle of getting the environment setup again.
+     </para>
+     <note>
+     While the application is being used, any GUI state information will be remembered for the duration of the application
+     run, regardless of the setting of this preference item.
+     </note>
     </sect2>
   </sect1>
   
@@ -282,93 +299,6 @@
       </para>
       <para>
       If the syntax highlighting mode is disabled by the user, the color selection buttons will be disabled.
-      </para>
-    </sect2>
-  </sect1>
-  
-  <sect1 id="section.gui.pref.report" xreflabel="Preferences ASCII Report Options Pane">
-    <title>Preferences ASCII Report Options Pane</title>
-    <para>
-    The ASCII report preferences pane allows the user to modify the options passed to the ASCII report generator.
-    </para>
-    <para>
-      <figure id="figure.gui.pref.report" xreflabel="ASCII Report Preferences Pane">
-        <title>ASCII Report Preferences Pane</title>
-        <mediaobject><imageobject><imagedata fileref="img/pref_report.gif" format="GIF"/></imageobject></mediaobject>
-      </figure>
-    </para>
-    <sect2 id="section.gui.pref.report.navigate" xreflabel="Navigating the Set ASCII Report Generation Options pane">
-      <title>Navigating the Set ASCII Report Generation Options pane</title>
-      <para>
-      This pane contains six categories of options that can be modified for report generation purposes. These 
-      categories are described below:
-      </para>
-      <para>
-        <itemizedlist>
-         <listitem>
-           <para><emphasis role="bold">Limit line width</emphasis></para>
-           <para>
-           Be default, all Verilog code output in the report file will be displayed retaining the line breaks that are 
-           found in the source code.  However, Covered allows the user to override this behavior by limiting the number 
-           of characters that can be displayed on a line. To accept the default behavior, make sure that the 
-           checkbutton to the left of this option is not checked. To override the default behavior, check the 
-           checkbutton and enter a numerical value in the entry box that represents the maximum number of characters 
-           allowed on a given line. Only valid numbers will be allowed to be entered in this field. Attempting to enter 
-           a non-numerical value will cause a bell sound to occur and no value will be entered in the entry field.
-           </para>
-         </listitem>
-         <listitem>
-           <para><emphasis role="bold">Suppress Modules/Instances from Output</emphasis></para>
-           <para>
-           By default, all modules simulated for coverage will appear in reports for all selected metrics; however, for 
-           modules/instances that contain no coverage information, their appearance in the coverage reports can add 
-           more information than is necessary. If the user wants to omit any modules/instances that contain no coverage 
-           information (either covered or uncovered), select this option.
-           </para>
-         </listitem>
-         <listitem>
-           <para><emphasis role="bold">Level of Detail</emphasis></para>
-           <para>
-           This set of options allows the user to generate a summary report, a detailed report (more descriptive than 
-           the summary window but less terse than a verbose report) or a verbose report. Only one of these options can 
-           be selected at a given time. To change the level of detail provided in the report, simply click on the 
-           button to the left of the associated option.
-           </para>
-         </listitem>
-         <listitem>
-           <para><emphasis role="bold">Accumulate By</emphasis></para>
-           <para>
-           This category allows the user to report coverage on a per module or instance basis. Module accumulation 
-           takes all instances of the same module and merges their coverage information together to give the user an 
-           idea of which logic within a module has been tested. Instance accumulation reports the coverage individually 
-           for each instance, allowing the user to see which logic for each instance has been tested. Only one of these 
-           options can be selected at a given time. To change the accumulation algorithm for the report, simply click 
-           on the radiobutton to the left of the associated option.
-           </para>
-         </listitem>
-         <listitem>
-           <para><emphasis role="bold">Show Metrics</emphasis></para>
-           <para>
-           This category contains a list of all of the metrics to output in the ASCII coverage report. Each metric can 
-           be invidually selected/deselected using the checkbutton to the left of each option.
-           </para>
-         </listitem>
-         <listitem>
-           <para><emphasis role="bold">Coverage Type</emphasis></para>
-           <para>
-           The coverage type category allows the user to generate a report that shows all uncovered or all covered 
-           coverage cases. Uncovered information is useful for understanding which logic is untested. Covered 
-           information is useful for understanding what logic Covered is examining. Only one of the options can be 
-           selected at a given time. To change the coverage type for the report, simply click on the radiobutton to the 
-           left of the associated option.
-           </para>
-         </listitem>
-        </itemizedlist>
-      </para>
-      <para>
-      When the <emphasis role="bold">Apply</emphasis> or <emphasis role="bold">OK</emphasis> button is clicked at the 
-      bottom of the preferences window, the ASCII reporting options will be updated in the 
-      <xref linkend="chapter.gui.genreport"/> if that window is currently being displayed.
       </para>
     </sect2>
   </sect1>

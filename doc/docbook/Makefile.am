@@ -79,7 +79,6 @@ img_DATA = html/img/assert_excl.gif \
            html/img/new_cdd_name.gif \
            html/img/new_cdd_options.gif \
            html/img/new_cdd_options2.gif \
-           html/img/new_cdd_options2.tiff \
            html/img/new_cdd_parm_oride.gif \
            html/img/new_cdd_selection.gif \
            html/img/new_cdd_type.gif \
@@ -102,7 +101,7 @@ img_DATA = html/img/assert_excl.gif \
            html/img/view_menu.gif
 
 mk-html:   
-        XML_CATALOG_FILES="catalog.xml" xsltproc \
+	XML_CATALOG_FILES="catalog.xml" xsltproc \
                 --stringparam draft.mode no \
                 --stringparam section.autolabel 1 \
                 --stringparam section.label.includes.component.label 1 \

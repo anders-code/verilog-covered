@@ -255,7 +255,7 @@
             the version of the parser which is used for the entire design.
             </para>
             <para>
-            For informatin regarding the ability to specify a certain version of the parser for a specific module,
+            For information regarding the ability to specify a certain version of the parser for a specific module,
             see <xref linkend="section.gui.new.options2.modgen"/>.
             </para>
           </listitem>
@@ -430,7 +430,9 @@
     <sect2 id="section.gui.new.options2.param" xreflabel="CDD Creation Parameter Override Option">
       <title>Parameter Override...</title>
       <para>
-      TBD
+      Selecting this insert option will cause a window to be displayed that will allow the user to add a parameter overload
+      option to the score command. Because Verilog "defparam" is not used by the Covered parser, this option is the only way to
+      override parameter values.
       </para>
       <para>
         <figure id="figure.gui.new.options2.param" xreflabel="CDD Creation Parameter Override Window">
@@ -439,14 +441,23 @@
         </figure>
       </para>
       <para>
-      TBD
+      To add a new parameter override option, enter the full hierarchical path to the parameter to override in the left entry
+      box and add the override value in the right entry box. See <xref linkend="section.score.param"/> for details on how to
+      specify an override value. After both values have been input, click the <emphasis role="bold">OK</emphasis> button to
+      add the parameter override option to the main window listbox. To abort the parameter override addition, click on the
+      <emphasis role="bold">Cancel</emphasis> button.
       </para>
+      <note>
+      The <emphasis role="bold">OK</emphasis> button will only be enabled if both values are input in the entry boxes.
+      </note>
     </sect2>
     
     <sect2 id="section.gui.new.options2.fsm" xreflabel="CDD Creation FSM Specification Option">
       <title>FSM...</title>
       <para>
-      TBD
+      Selecting this insert option will cause a window to be displayed that will allow the user to add an FSM input/output
+      state on the score command line.  This option allows the user to specify the location of FSMs within the design without
+      inlining this information with the use of pragmas for the purposes of gaining FSM coverage information.
       </para>
       <para>
         <figure id="figure.gui.new.options2.fsm" xreflabel="CDD Creation FSM Specification Window">
@@ -455,14 +466,27 @@
         </figure>
       </para>
       <para>
-      TBD
+      To add a new FSM option, enter the name of the module containing the FSM in the upper-left entry box, the description of
+      the output state in the upper-right entry box (see <xref linkend="section.score.fsm"/> for information on properly
+      specifying the output/input state information). If the input state is the same as the output state, simply click on the
+      <emphasis role="bold">Input == Output</emphasis> button which will fill in the input state with the same value as the
+      output state value.  If the input state differs from the output state, enter the input state in the lower-right entry
+      box.  When all entry fields have been filled in, click on the <emphasis role="bold">OK</emphasis> button to add
+      the FSM description to the main window listbox.  To abort the addition, click on the 
+      <emphasis role="bold">Cancel</emphasis> button.
       </para>
+      <note>
+      The <emphasis role="bold">OK</emphasis> button will only be enabled if all entry fields have been filled in.
+      </note>
     </sect2>
     
     <sect2 id="section.gui.new.options2.modgen" xreflabel="CDD Creation Module Generation Option">
       <title>Module Generation...</title>
       <para>
-      TBD
+      Selecting this insert option will cause a window to be displayed that will allow the user to specify a Verilog generation
+      (Verilog 1995, Verilog 2001 or SystemVerilog) for a particular module. This generation value will override the universal
+      generation value (see the "Default Verilog Generation" item in <xref linkend="section.gui.new.options1.general"/>) for the
+      design.
       </para>
       <para>
         <figure id="figure.gui.new.options2.modgen" xreflabel="CDD Creation Module Generation Window">
@@ -471,14 +495,22 @@
         </figure>
       </para>
       <para>
-      TBD
+      To specify a Verilog generation to be used for a specific module, enter the name of the module in the left entry box and
+      select one of the Verilog generations in the drop-down menu on the left. Once this information has been specified, click on
+      the <emphasis role="bold">OK</emphasis> button to add this option to the main window listbox. To abort the module generation
+      addition, click on the <emphasis role="bold">Cancel</emphasis> button.
       </para>
+      <note>
+      The <emphasis role="bold">OK</emphasis> button will only be enabled if a module name is specified in the left entry box.
+      </note>
     </sect2>
     
     <sect2 id="section.gui.new.options2.modexcl" xreflabel="CDD Creation Module Exclusion Option">
       <title>Module Exclusion...</title>
       <para>
-      TBD
+      Selecting this insert option will cause a window to be displayed that will allow the user to specify a module to exclude
+      from parsing and coverage consideration. More information on the purpose for excluding modules is discussed in
+      <xref linkend="section.score.t"></xref>.
       </para>
       <para>
         <figure id="figure.gui.new.options2.modexcl" xreflabel="CDD Creation Module Exclusion Window">
@@ -487,14 +519,22 @@
         </figure>
       </para>
       <para>
-      TBD
+      To specify a Verilog module to exclude from the score command parser, enter the name of the module in the entry box to
+      exclude. Click on the <emphasis role="bold">OK</emphasis> button to add the module exclusion option to the main window
+      listbox. Click on the <emphasis role="bold">Cancel</emphasis> button to abort the option addition.
       </para>
+      <note>
+      The <emphasis role="bold">OK</emphasis> button will only be enabled if a value is specified in the entry box.
+      </note>
     </sect2>
     
     <sect2 id="section.gui.new.options2.cmdfile" xreflabel="CDD Creation Command File Option">
       <title>Command File...</title>
       <para>
-      TBD
+      Selecting this insert option will cause an open file selector window to be displayed which will allow the user
+      to find a file that contains Covered score command-line options within it. Select a file and click on the
+      <emphasis role="bold">Open</emphasis> button to cause the selected file to be added to the main window listbox.
+      Click on the <emphasis role="bold">Cancel</emphasis> button to abort this action.
       </para>
     </sect2>
     
