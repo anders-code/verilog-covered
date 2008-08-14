@@ -136,7 +136,7 @@
     The user may exclude/include any uncovered memory in the design for memory coverage by simply clicking on the 
     <emphasis role="bold">Excluded</emphasis> checkbutton in the upper right-hand portion of the Memory Coverage 
     window. If this checkbutton is checked, the summary coverage information will automatically be recalculated and 
-    redisplayed in the <xref linkend="section.gui.main.sumcov"/> and the background color of the underlined memory in 
+    redisplayed in the <xref linkend="section.gui.main.listbox"/> and the background color of the underlined memory in 
     the <xref linkend="section.gui.main.viewer"/> will change from the uncovered background color to the covered 
     background color.  However, the memory will still remain underlined, allowing the user to see the verbose memory 
     coverage information, if necessary.  If the <emphasis role="bold">Excluded</emphasis> checkbutton is unchecked, the 
