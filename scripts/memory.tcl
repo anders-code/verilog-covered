@@ -61,7 +61,7 @@ proc create_memory_window {signal} {
     scrollbar .memwin.f.fae.hb -orient horizontal -command ".memwin.f.fae.t"
 
     # Create exclude checkbutton
-    checkbutton .memwin.f.fae.excl -text "Exclude" -variable memory_excluded -command {
+    checkbutton .memwin.f.fae.excl -text "Excluded" -variable memory_excluded -command {
       tcl_func_set_memory_exclude $curr_block $mem_name $memory_excluded
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
@@ -72,6 +72,7 @@ proc create_memory_window {signal} {
       enable_cdd_save
       set_pointer curr_memory_ptr $curr_memory_ptr
     }
+    set_balloon .memwin.f.fae.excl "If set, excludes this entire memory from coverage consideration"
 
     # Pack the addressable memory elements frame
     grid rowconfigure    .memwin.f.fae 1 -weight 1
@@ -121,9 +122,11 @@ proc create_memory_window {signal} {
     button .memwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_memory $prev_memory_index
     }
+    set_balloon .memwin.bf.prev "Click to view the previous uncovered memory in this window"
     button .memwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_memory $next_memory_index
     }
+    set_balloon .memwin.bf.next "Click to view the next uncovered memory in this window"
 
     # Pack the buttons into the button frame
     pack .memwin.bf.prev  -side left

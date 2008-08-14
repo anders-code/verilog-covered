@@ -565,11 +565,11 @@ proc create_comb_window {expr_id sline} {
     button .combwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_comb $prev_comb_index
     }
-    set_balloon .combwin.bf.help "Click to view the previous uncovered expression tree in this window"
+    set_balloon .combwin.bf.prev "Click to view the previous uncovered expression tree in this window"
     button .combwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_comb $next_comb_index
     }
-    set_balloon .combwin.bf.help "Click to view the next uncovered expression tree in this window"
+    set_balloon .combwin.bf.next "Click to view the next uncovered expression tree in this window"
     
     # Pack the button widgets into button frame
     pack .combwin.bf.prev  -side left
