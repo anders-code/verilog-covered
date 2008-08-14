@@ -8,10 +8,10 @@ proc cov_create {f} {
 
   # Create option menus
   tk_optionMenu $f.mod_inst mod_inst_type Module Instance
-  setTooltip $f.mod_inst "Selects the coverage accumulated by module or instance"
+  set_balloon $f.mod_inst "Selects the coverage accumulated by module or instance"
 
   tk_optionMenu $f.metrics cov_rb Line Toggle Memory Logic FSM Assert
-  setTooltip $f.metrics "Selects the current coverage metric to examine"
+  set_balloon $f.metrics "Selects the current coverage metric to examine"
 
   $f.mod_inst configure -width 8
   $f.metrics  configure -width 8
