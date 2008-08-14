@@ -38,11 +38,13 @@ doc_DATA = html/chapter.attr.html \
            html/part.overview.html
 
 imgdir   = $(datadir)/covered/doc/docbook/html/img
-img_DATA = html/img/assert_excl.gif \
+img_DATA = html/img/app_menu.gif \
+           html/img/assert_excl.gif \
            html/img/assert_src.gif \
            html/img/assert_window.gif \
            html/img/banner.gif \
            html/img/close_warn.gif \
+           html/img/col_show_hide.gif \
            html/img/color.gif \
            html/img/comb_complex.gif \
            html/img/comb_event.gif \
@@ -65,7 +67,6 @@ img_DATA = html/img/assert_excl.gif \
            html/img/main_info.gif \
            html/img/main_lb.gif \
            html/img/main_menu.gif \
-           html/img/main_summary.gif \
            html/img/main_viewer.gif \
            html/img/main_window.gif \
            html/img/memory_full.gif \
@@ -89,16 +90,17 @@ img_DATA = html/img/assert_excl.gif \
            html/img/pref_color.gif \
            html/img/pref_goals.gif \
            html/img/pref_main.gif \
-           html/img/pref_report.gif \
            html/img/pref_syntax.gif \
            html/img/prev.gif \
-           html/img/report_gen.gif \
            html/img/report_menu.gif \
-           html/img/summary_window.gif \
+           html/img/rpt_gen_view.gif \
+           html/img/rpt_gen_selection.gif \
+           html/img/rpt_gen_options.gif \
            html/img/toggle_full.gif \
            html/img/up.gif \
            html/img/up_button.gif \
-           html/img/view_menu.gif
+           html/img/view_menu.gif \
+           html/img/wizard.gif
 
 mk-html:   
 	XML_CATALOG_FILES="catalog.xml" xsltproc \
