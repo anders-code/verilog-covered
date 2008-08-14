@@ -71,9 +71,11 @@ proc create_fsm_window {expr_id} {
     button .fsmwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -state disabled -command {
       display_fsm $prev_fsm_index
     }
+    set_balloon .fsmwin.bf.prev "Click to view the previous uncovered FSM in this window"
     button .fsmwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -state disabled -command {
       display_fsm $next_fsm_index
     }
+    set_balloon .fsmwin.bf.prev "Click to view the next uncovered FSM in this window"
     button .fsmwin.bf.close -text "Close" -width 10 -command {
       destroy .fsmwin
     }

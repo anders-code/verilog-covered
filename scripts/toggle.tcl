@@ -70,6 +70,7 @@ proc create_toggle_window {signal} {
       enable_cdd_save
       set_pointer curr_toggle_ptr $curr_toggle_ptr
     }
+    set_balloon .togwin.f.excl "If set, excludes this signal from toggle coverage consideration"
 
     # Create bottom button bar
     frame .togwin.bf -relief raised -borderwidth 1
@@ -81,9 +82,11 @@ proc create_toggle_window {signal} {
     button .togwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_toggle $prev_toggle_index
     }
+    set_balloon .togwin.bf.prev "Click to view the previous uncovered signal in this window"
     button .togwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_toggle $next_toggle_index
     }
+    set_balloon .togwin.bf.next "Click to view the next uncovered signal in this window"
 
     # Pack the buttons into the button frame
     pack .togwin.bf.prev  -side left
