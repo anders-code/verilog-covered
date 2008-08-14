@@ -89,9 +89,11 @@ proc create_assert_window {inst} {
     button .assertwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_assert $prev_assert_index
     }
+    set_balloon .assertwin.bf.prev "Click to view the previous uncovered assertion in this window"
     button .assertwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_assert $next_assert_index
     }
+    set_balloon .assertwin.bf.prev "Click to view the next uncovered assertion in this window"
 
     # Pack the buttons into the button frame
     pack .assertwin.bf.prev  -side left

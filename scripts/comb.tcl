@@ -547,6 +547,7 @@ proc create_comb_window {expr_id sline} {
       enable_cdd_save
       set_pointer curr_comb_ptr $curr_comb_ptr
     }
+    set_balloon .combwin.pw.bot.e "If set, excludes the expression/subexpression displayed in the lower panel from coverage consideration"
     text  .combwin.pw.bot.t -height 10 -width 100 -xscrollcommand ".combwin.pw.bot.hb set" -yscrollcommand ".combwin.pw.bot.vb set" -wrap none -state disabled
     scrollbar .combwin.pw.bot.hb -orient horizontal -command ".combwin.pw.bot.t xview"
     scrollbar .combwin.pw.bot.vb -orient vertical   -command ".combwin.pw.bot.t yview"
@@ -564,9 +565,11 @@ proc create_comb_window {expr_id sline} {
     button .combwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_comb $prev_comb_index
     }
+    set_balloon .combwin.bf.help "Click to view the previous uncovered expression tree in this window"
     button .combwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_comb $next_comb_index
     }
+    set_balloon .combwin.bf.help "Click to view the next uncovered expression tree in this window"
     
     # Pack the button widgets into button frame
     pack .combwin.bf.prev  -side left
