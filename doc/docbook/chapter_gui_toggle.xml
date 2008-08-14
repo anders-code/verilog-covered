@@ -41,7 +41,7 @@
     <para>
     The user may exclude/include any uncovered signal in the design for toggle coverage by simply clicking on the 
     <emphasis role="bold">Excluded</emphasis> checkbutton.  If this checkbutton is checked, the summary coverage 
-    information will automatically be recalculated and redisplayed in the <xref linkend="section.gui.main.sumcov"/> and 
+    information will automatically be recalculated and redisplayed in the <xref linkend="section.gui.main.listbox"/> and 
     the background color of the underlined signal in the <xref linkend="section.gui.main.viewer"/> will change from the 
     uncovered background color to the covered background color.  However, the signal will still remain underlined, 
     allowing the user to see the verbose toggle coverage information, if necessary.  If the 
