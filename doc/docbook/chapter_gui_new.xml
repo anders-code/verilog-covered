@@ -1,25 +1,29 @@
 <chapter id="chapter.gui.new" xreflabel="Creating a New CDD">
   <title>Creating a New CDD</title>
   <para>
-  Creating a new CDD file from the GUI can be accomplished by either clicking on the "Generate New CDD File" button in
-  the Wizard window (see <xref linkend="chapter.gui.wizard"/> for more details on this window), by selecting the
+  Creating a new CDD file from the GUI can be accomplished by either clicking on the 
+  <emphasis role="bold">Generate New CDD File</emphasis> button in the Wizard window (see 
+  <xref linkend="chapter.gui.wizard"/> for more details on this window), by selecting the
   <code>File -> Generate -> New CDD...</code> menu option, or using the shortcut "Shift-Control-N".  This file creation
   "wizard" allows the user to create a new CDD file that can be opened/merged into the GUI for coverage analysis.  The
   methods that the CDD creation GUI allows for creating a new CDD file are quite flexible and are completely compatible
   with the command-line commands.
   </para>
   <para>
-  The following subsections describe the various windows used to create a GUI.  Note that the CDD creation wizard
-  uses several "pages" to describe the various options to set for creating a new CDD file, using "Back" and "Next" 
-  buttons on each page for navigation.  Clicking on the "Back" button will not cause previously filled in pages to be
+  The following subsections describe the various windows used to create a CDD.  Note that the CDD creation wizard
+  uses several "pages" to describe the various options to set for creating a new CDD file, using 
+  <emphasis role="bold">Back</emphasis> and <emphasis role="bold">Next</emphasis> buttons on each page for navigation.
+  Clicking on the <emphasis role="bold">Back</emphasis> button will not cause previously filled in pages to be
   reverted to their default values but rather will remain populated with the user's data. Similarly, if a page has been
-  filled in with data and the "Back" button is clicked and then the "Next" button is clicked, the page contents are
-  retained.  The only way to clear out fields is to click the "Cancel" button at the bottom of each page and startup
-  the CDD creation wizard again.
+  filled in with data and the <emphasis role="bold">Back</emphasis> button is clicked and then the 
+  <emphasis role="bold">Next</emphasis> button is clicked, the page contents are
+  retained.  The only way to clear out fields is to click the <emphasis role="bold">Cancel</emphasis> button at the 
+  bottom of each page and startup the CDD creation wizard again.
   </para>
   <para>
-  Clicking the "Cancel" button at any time will cause the CDD creation wizard to immediately exit.  Clicking on the
-  "Help" button at any time will bring up the user documentation for the current page (context sensitive help).
+  Clicking the <emphasis role="bold">Cancel</emphasis> button at any time will cause the CDD creation wizard to immediately 
+  exit.  Clicking on the <emphasis role="bold">Help</emphasis> button at any time will bring up the user documentation for 
+  the current page (context sensitive help).
   </para>
   
   <sect1 id="section.gui.new.select" xreflabel="Navigating the New CDD Creation Option Selection Page">
@@ -34,7 +38,7 @@
       </figure>
     </para>
     <para>
-    The first page of the CDD creation window allows the user to select whether all options should be interactiely
+    The first page of the CDD creation window allows the user to select whether all options should be interactively
     selected within the GUI or if a file should be read in which contains command-line options to the score command
     to use.  If the latter is chosen, the contents of that file are read in and are populated in the GUI, but the
     CDD creation wizard will continue in the same fashion as the first option, allowing the user to change, remove or

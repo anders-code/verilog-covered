@@ -159,6 +159,15 @@
      run, regardless of the setting of this preference item.
      </note>
     </sect2>
+    
+    <sect2 id="section.gui.pref.general.tooltips" xreflabel="Show tooltips">
+      <title>Show tooltips</title>
+      <para>
+      This checkbutton specifies if GUI widget tooltips should be displayed if the user hovers the cursor over a GUI element
+      that has a tooltip associated with it.  To disable tooltips from being used, uncheck this option and click either the
+      <emphasis role="bold">Apply</emphasis> or <emphasis role="bold">OK</emphasis> buttons.
+      </para>
+    </sect2>
   </sect1>
   
   <sect1 id="section.gui.pref.color" xreflabel="Preferences Color Pane">
