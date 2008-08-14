@@ -27,26 +27,34 @@
 #
 
 bind Bulle <Enter> {
+  if {$show_tooltips == true} {
     set Bulle(set) 0
     set Bulle(first) 1
     set Bulle(id) [after 500 {balloon %W $Bulle(%W) %X %Y}]
+  }
 }
 
 bind Bulle <Button> {
+  if {$show_tooltips == true} {
     set Bulle(first) 0
     kill_balloon
+  }
 }
 
 bind Bulle <Leave> {
+  if {$show_tooltips == true} {
     set Bulle(first) 0
     kill_balloon
+  }
 }
 
 bind Bulle <Motion> {
+  if {$show_tooltips == true} {
     if {$Bulle(set) == 0} {
         after cancel $Bulle(id)
         set Bulle(id) [after 500 {balloon %W $Bulle(%W) %X %Y}]
     }
+  }
 }
 
 proc set_balloon {target message} {
