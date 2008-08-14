@@ -20,6 +20,7 @@ source [file join $HOME scripts gen_new.tcl]
 source [file join $HOME scripts gen_report.tcl]
 source [file join $HOME scripts gen_rank.tcl]
 source [file join $HOME scripts viewer.tcl]
+source [file join $HOME scripts balloon.tcl]
 
 # The Tablelist package is used for displaying instance/module hit/miss/total/percent hit information
 package require Tablelist
@@ -138,6 +139,7 @@ proc main_view {} {
   # Create vertical scrollbar frame and pack it
   frame      .bot.left.sbf
   ttk::label .bot.left.sbf.ml -relief flat -style TablelistHeader.TLabel -image [image create bitmap -data "#define stuff_width 16\n#define stuff_height 16\nstatic unsigned char stuff_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x00, 0x00, 0x00, 0x00};"]
+  set_balloon .bot.left.sbf.ml "Controls the column hide/show state"
 
   scrollbar  .bot.left.sbf.vb -command {.bot.left.tl yview}
   ttk::label .bot.left.sbf.l
@@ -674,62 +676,6 @@ proc help_button {w file {section ""}} {
   button $w -image $help_img -relief flat -command "help_show_manual $file $section"
 
   return $w
-
-}
-
-#################################################################
-# Implementation of a tooltip system taken from the Tcl/Tk Wiki #
-#################################################################
-
-# Main tooltip function to call for creating the tooltip
-proc setTooltip {widget text} {
-
-  if { $text != "" } {
-
-    # 2) Adjusted timings and added key and button bindings. These seem to
-    # make artifacts tolerably rare.
-    bind $widget <Any-Enter>    [list after 1000 [list showTooltip %W $text]]
-    bind $widget <Any-Leave>    [list destroy %W.tooltip]
-    bind $widget <Any-KeyPress> [list destroy %W.tooltip]
-    bind $widget <Any-Button>   [list destroy %W.tooltip]
-
-  }
-
-}
-
-proc showTooltip {widget text} {
-
-  global tcl_platform
-
-  if { [string match $widget* [winfo containing  [winfo pointerx .] [winfo pointery .]] ] == 0  } {
-    return
-  }
-
-  catch { destroy $widget.tooltip }
-
-  set scrh [winfo screenheight $widget]    ; # 1) flashing window fix
-  set scrw [winfo screenwidth $widget]     ; # 1) flashing window fix
-  set tooltip [toplevel $widget.tooltip -bd 1 -bg black]
-  wm geometry $tooltip +$scrh+$scrw        ; # 1) flashing window fix
-  wm overrideredirect $tooltip 1
-
-#  if {$tcl_platform(platform) == {windows}} { ; # 3) wm attributes...
-    wm attributes $tooltip -topmost 1         ; # 3) assumes...
-#  }                                           ; # 3) Windows
-  pack [label $tooltip.label -bg lightyellow -fg black -text $text -justify left]
-
-  set width [winfo reqwidth $tooltip.label]
-  set height [winfo reqheight $tooltip.label]
-
-  set positionX [winfo pointerx .]
-  set positionY [expr [winfo pointery .] + 25]
-
-  wm geometry $tooltip [join  "$width x $height + $positionX + $positionY" {}]
-  raise $tooltip
-
-  # 2) Kludge: defeat rare artifact by passing mouse over a tooltip to destroy it.
-  bind $widget.tooltip <Any-Enter> {destroy %W}
-  bind $widget.tooltip <Any-Leave> {destroy %W}
 
 }
 
