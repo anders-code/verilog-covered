@@ -73,14 +73,17 @@ proc main_view {} {
   button .bot.right.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled -relief flat -command {
     goto_uncov $prev_uncov_index
   }
+  set_balloon .bot.right.h.pn.prev "Click to view the previous uncovered item"
   button .bot.right.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled -relief flat -command {
     goto_uncov $next_uncov_index
   }
+  set_balloon .bot.right.h.pn.next "Click to view the next uncovered item"
   frame .bot.right.h.search -borderwidth 1 -relief ridge -bg white
   label .bot.right.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -bg white -state disabled -relief flat -borderwidth 0
   bind .bot.right.h.search.find <ButtonPress-1> {
     perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
   }
+  set_balloon .bot.right.h.search.find "Click to find the next occurrence of the search string"
   entry .bot.right.h.search.e -width 15 -bg white -state disabled -relief flat -insertborderwidth 0 -highlightthickness 0 -disabledbackground white
   bind .bot.right.h.search.e <Return> {
     perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
@@ -91,6 +94,7 @@ proc main_view {} {
     .bot.right.h.search.e delete 0 end
     set main_start_search_index 1.0
   }
+  set_balloon .bot.right.h.search.clear "Click to clear the search string"
 
   # Pack the previous/next frame
   pack .bot.right.h.pn.prev -side left
@@ -198,10 +202,12 @@ proc main_view {} {
 
   # Catch the closing of the application and potentially save GUI elements
   wm protocol . WM_DELETE_WINDOW {
+    check_to_save_and_close_cdd
     save_gui_elements . .
     destroy .
   }
   bind . <Destroy> {
+    check_to_save_and_close_cdd
     save_gui_elements . %W
   }
   
@@ -674,6 +680,7 @@ proc help_button {w file {section ""}} {
   set help_img [image create bitmap -data "#define help2_width 22\n#define help2_height 22\nstatic unsigned char help2_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3f, 0x00, 0x80, 0x7f, 0x00, 0xc0, 0xe1, 0x00, 0xc0, 0xc0, 0x00, 0xc0, 0xc0, 0x00, 0x00, 0xc0, 0x00, 0x00, 0xc0, 0x00, 0x00, 0xe0, 0x00, 0x00, 0x70, 0x00, 0x00, 0x38, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"]
 
   button $w -image $help_img -relief flat -command "help_show_manual $file $section"
+  set_balloon $w "Click to display context-sensitive documentation for this window"
 
   return $w
 

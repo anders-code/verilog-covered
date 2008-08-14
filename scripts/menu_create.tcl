@@ -101,17 +101,7 @@ proc menu_create {} {
   }
   # FILE - entry 4
   $tfm add command -label "Close CDD(s)" -accelerator "Ctrl-w" -state disabled -underline 0 -command {
-    if {[.menubar.file entrycget 3 -state] == "normal"} {
-      set exit_status [tk_messageBox -message "Opened database has changed.  Would you like to save before closing?" \
-                       -type yesnocancel -icon warning]
-      if {$exit_status == "yes"} {
-        .menubar.file invoke 3
-      } elseif {$exit_status == "cancel"} {
-        return
-      }
-    }
-    tcl_func_close_cdd
-    puts "Closed all opened/merged CDD files"
+    check_to_save_and_close_cdd
     .info configure -text "$cdd_name closed"
     set cdd_name ""
     clear_cdd_filelist
@@ -144,18 +134,7 @@ proc menu_create {} {
     $tfm add separator
     # FILE - entry 8
     $tfm add command -label Exit -accelerator "Ctrl-x" -underline 1 -command {
-      if {[.menubar.file entrycget 3 -state] == "normal"} {
-        set exit_status [tk_messageBox -message "Opened database has changed.  Would you like to save before exiting?" \
-                                       -type yesnocancel -icon warning]
-        if {$exit_status == "yes"} {
-          .menubar.file invoke 3
-        } elseif {$exit_status == "cancel"} {
-          return
-        }
-      }
-      if {[.menubar.file entrycget 4 -state] == "normal"} {
-        tcl_func_close_cdd
-      }
+      check_to_save_and_close_cdd
       save_gui_elements . .
       destroy .
     }
@@ -384,3 +363,21 @@ proc open_files {fnames} {
 
 }
 
+# Call this function when the main window will be destroyed or when a CDD is attempting to be closed
+proc check_to_save_and_close_cdd {} {
+
+  if {[.menubar.file entrycget 3 -state] == "normal"} {
+    set exit_status [tk_messageBox -message "Opened database has changed.  Would you like to save before exiting?" -type yesnocancel -icon warning]
+    if {$exit_status == "yes"} {
+      .menubar.file invoke 3
+    } elseif {$exit_status == "cancel"} {
+      return
+    }
+  }
+
+  if {[.menubar.file entrycget 4 -state] == "normal"} {
+    tcl_func_close_cdd
+    puts "Closed all opened/merged CDD files"
+  }
+
+}
