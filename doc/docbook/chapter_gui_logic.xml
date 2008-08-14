@@ -380,7 +380,7 @@
     the window.  If this option is checked, Covered will recalculate combinational logic summary coverage information 
     for the current module/instance by adding to the "Hit" count the number of uncovered combinational logic values for 
     the given subexpression (and all subexpressions below this expression within the expression tree).  This new 
-    summary information will be redisplayed on the <xref linkend="section.gui.main.sumcov"/>. The subexpression 
+    summary information will be redisplayed on the <xref linkend="section.gui.main.listbox"/>. The subexpression 
     background color in the top frame will also change from the uncovered background color to the covered background 
     color.  However, the subexpression will still contain an underline that may be clicked on at any time to view its 
     coverage information or the coverage information for any subexpressions that are uncovered.  To include a 

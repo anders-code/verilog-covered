@@ -51,7 +51,7 @@
     This is accomplished by clicking on the "0" (ACP is currently included in coverage) or "E" (ACP is current excluded 
     from coverage) value in the "# of hits" column.  Changing an ACP from "0" to "E" (excluding the ACP from coverage 
     consideration) will cause the summary assertion coverage information to be recalculated and redisplayed in the 
-    <xref linkend="section.gui.main.sumcov"/> and the background color of the ACP will change from the uncovered to the 
+    <xref linkend="section.gui.main.listbox"/> and the background color of the ACP will change from the uncovered to the 
     covered background color.  Changing an ACP from "E" to "0" (including the ACP for coverage consideration) will 
     cause the summary assertion coverage information to be recalculated and redisplayed in the Main Window Summary Bar 
     and background color of the ACP will change from the covered to the uncovered background color. 

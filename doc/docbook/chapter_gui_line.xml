@@ -69,7 +69,7 @@
     Any uncovered line in the design may be included/excluded from coverage consideration.  To the left of each 
     uncovered line is an underlined "I" (line is included in coverage) or "E" (line is excluded in coverage). Clicking 
     on this character will change the coverage exclusion property of the line by recalculating the summary line 
-    coverage information, redisplaying it in the <xref linkend="section.gui.main.sumcov"/>, changing the background 
+    coverage information, redisplaying it in the <xref linkend="section.gui.main.listbox"/>, changing the background 
     color of the line from the uncovered background color to the covered background color, and changing the leftmost 
     character of the line to the opposite value to indicate its current status. 
     <xref linkend="figure.gui.line.include"/> shows an uncovered line that is included for coverage consideration. 
