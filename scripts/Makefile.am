@@ -1,5 +1,6 @@
 tcldir      = $(datadir)/covered/scripts
 tcl_SCRIPTS = assert.tcl \
+              balloon.tcl \
               banner.gif \
               cdd_view.tcl \
               clear.gif \
