@@ -8,6 +8,7 @@
 set main_geometry           ""
 set show_wizard             true
 set save_gui_on_exit        false
+set show_tooltips           true
 set saved_gui               0
 set uncov_fgColor           blue
 set uncov_bgColor           yellow
@@ -42,7 +43,7 @@ for {set i 100} {$i >= 0} {incr i -1} {
 
 proc read_coveredrc {} {
 
-  global show_wizard save_gui_on_exit
+  global show_wizard save_gui_on_exit show_tooltips
   global uncov_fgColor uncov_bgColor
   global cov_fgColor   cov_bgColor
   global race_fgColor  race_bgColor
@@ -89,6 +90,8 @@ proc read_coveredrc {} {
           set show_wizard $value
         } elseif {$field == "SaveGuiOnExit"} {
           set save_gui_on_exit $value
+        } elseif {$field == "ShowTooltips"} {
+          set show_tooltips $value
         } elseif {$field == "UncoveredForegroundColor"} {
           set uncov_fgColor $value
         } elseif {$field == "UncoveredBackgroundColor"} {
@@ -165,7 +168,7 @@ proc read_coveredrc {} {
 
 proc write_coveredrc {exiting} {
 
-  global show_wizard save_gui_on_exit
+  global show_wizard save_gui_on_exit show_tooltips
   global uncov_fgColor uncov_bgColor
   global cov_fgColor   cov_bgColor
   global race_fgColor  race_bgColor
@@ -197,6 +200,11 @@ proc write_coveredrc {exiting} {
     puts $rc "# to cause the Covered GUI to use the default values.\n"
 
     puts $rc "SaveGuiOnExit = $save_gui_on_exit\n"
+
+    puts $rc "# If set to true, causes tooltips to be used for many widgets within the GUI.  If set"
+    puts $rc "# to false, causes all tooltip support to be disabled."
+
+    puts $rc "ShowTooltips = $show_tooltips\n"
 
     puts $rc "# Sets the foreground color for all source code that is found"
     puts $rc "# to be uncovered during simulation.  The value can be any legal color"
@@ -346,6 +354,7 @@ proc create_preferences {start_index} {
 
   global show_wizard      tmp_show_wizard
   global save_gui_on_exit tmp_save_gui_on_exit
+  global show_tooltips    tmp_show_tooltips
   global cov_fgColor   cov_bgColor   tmp_cov_fgColor   tmp_cov_bgColor
   global uncov_fgColor uncov_bgColor tmp_uncov_fgColor tmp_uncov_bgColor
   global race_fgColor  race_bgColor  tmp_race_fgColor  tmp_race_bgColor
@@ -370,6 +379,7 @@ proc create_preferences {start_index} {
     # Initialize all temporary preference values
     set tmp_show_wizard             $show_wizard
     set tmp_save_gui_on_exit        $save_gui_on_exit
+    set tmp_show_tooltips           $show_tooltips
     set tmp_cov_fgColor             $cov_fgColor
     set tmp_cov_bgColor             $cov_bgColor
     set tmp_uncov_fgColor           $uncov_fgColor
@@ -510,6 +520,7 @@ proc apply_preferences {} {
 
   global show_wizard      tmp_show_wizard
   global save_gui_on_exit tmp_save_gui_on_exit
+  global show_tooltips    tmp_show_tooltips
   global cov_fgColor      tmp_cov_fgColor
   global cov_bgColor      tmp_cov_bgColor
   global uncov_fgColor    tmp_uncov_fgColor
@@ -538,9 +549,15 @@ proc apply_preferences {} {
 
   # Check for changes and update global preference variables accordingly
   if {$show_wizard != $tmp_show_wizard} {
+    set show_wizard $tmp_show_wizard
     set changed 1
   }
   if {$save_gui_on_exit != $tmp_save_gui_on_exit} {
+    set save_gui_on_exit $tmp_save_gui_on_exit
+    set changed 1
+  }
+  if {$show_tooltips != $tmp_show_tooltips} {
+    set show_tooltips $tmp_show_tooltips
     set changed 1
   }
   if {$cov_fgColor != $tmp_cov_fgColor} {
@@ -769,20 +786,24 @@ proc populate_pref {} {
 
 proc create_general_pref {} {
 
-  global show_wizard save_gui_on_exit
+  global tmp_show_wizard tmp_save_gui_on_exit tmp_show_tooltips
 
   # Create main frame
   labelframe .prefwin.pf.f -labelanchor nw -text "General Options" -pady 6 -padx 4
 
   # Create "Show Wizard" checkbutton
-  checkbutton .prefwin.pf.f.wiz -text "Show wizard window on startup" -variable show_wizard -onvalue true -offvalue false -anchor w
+  checkbutton .prefwin.pf.f.wiz -text "Show wizard window on startup" -variable tmp_show_wizard -onvalue true -offvalue false -anchor w
 
   # Create checkbutton for saving GUI elements to configuration file upon exit
-  checkbutton .prefwin.pf.f.save_gui_on_exit -text "Save state of GUI when exiting the application" -variable save_gui_on_exit -onvalue true -offvalue false -anchor w
+  checkbutton .prefwin.pf.f.save_gui_on_exit -text "Save state of GUI when exiting the application" -variable tmp_save_gui_on_exit -onvalue true -offvalue false -anchor w
+
+  # Create checkbutton for displayint tooltips
+  checkbutton .prefwin.pf.f.show_tooltips -text "Show tooltips" -variable tmp_show_tooltips -onvalue true -offvalue false -anchor w
 
   # Pack main frame
   grid .prefwin.pf.f.wiz              -row 0 -column 0 -sticky news -padx 4
   grid .prefwin.pf.f.save_gui_on_exit -row 1 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.show_tooltips    -row 2 -column 0 -sticky news -padx 4
 
   # Pack the frame
   pack .prefwin.pf.f -fill both

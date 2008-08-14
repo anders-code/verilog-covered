@@ -18,6 +18,7 @@ proc viewer_show {type title fname} {
     frame  $win.top.search -borderwidth 1 -relief ridge -bg white
     label  $win.top.search.f -image [image create photo -file [file join $HOME scripts find.gif]] -bg white -relief flat -borderwidth 0
     bind   $win.top.search.f <ButtonPress-1> "perform_search $win.text.t $win.top.search.e $win.info viewer_start_search_index"
+    set_balloon $win.top.search.f "Click to find the next occurrence of the search string"
     entry  $win.top.search.e -width 15 -bg white -relief flat -insertborderwidth 0 -highlightthickness 0 -disabledbackground white
     bind   $win.top.search.e <Return> "perform_search $win.text.t $win.top.search.e $win.info viewer_start_search_index"
     label  $win.top.search.c -image [image create photo -file [file join $HOME scripts clear.gif]] -bg white -relief flat -borderwidth 0
@@ -26,6 +27,7 @@ proc viewer_show {type title fname} {
       $win.top.search.e delete 0 end
       $win.info configure -text {}
     "
+    set_balloon $win.top.search.c "Click to clear the search string"
     pack $win.top.search.c -side right
     pack $win.top.search.e -side right -padx 3
     pack $win.top.search.f -side right
