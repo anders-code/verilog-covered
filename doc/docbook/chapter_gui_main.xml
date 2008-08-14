@@ -1,14 +1,13 @@
 <chapter id="chapter.gui.main" xreflabel="Navigating the Main Window">
   <title>Navigating the Main Window</title>
   <para>
-  <xref linkend="figure.gui.main.window"/> shows the main window prior to a CDD file being loaded.  There are six main 
+  <xref linkend="figure.gui.main.window"/> shows the main window prior to a CDD file being loaded.  There are five main 
   components of the main window.  These components are the following (from top to bottom, left to right):
   </para>
   <para>
     <orderedlist>
       <listitem><para><xref linkend="section.gui.main.menubar"/></para></listitem>
       <listitem><para><xref linkend="section.gui.main.covbar"/></para></listitem>
-      <listitem><para><xref linkend="section.gui.main.sumcov"/></para></listitem>
       <listitem><para><xref linkend="section.gui.main.listbox"/></para></listitem>
       <listitem><para><xref linkend="section.gui.main.viewer"/></para></listitem>
       <listitem><para><xref linkend="section.gui.main.infobar"/></para></listitem>
@@ -419,28 +418,12 @@
     coverage metric displayed.  There are six main types of coverage metrics that Covered can provide:  line, toggle, memory, logic (combinational logic), FSM (state 
     and arc) and assert (assertion coverage).  When the Covered GUI is first invoked, the line coverage metric is the default mode.  To view a different metric, simply 
     left click, select the desired coverage metric, and left click again.  Doing so will automatically set the selection indicator to the new mode and display the new 
-    metric information in the <xref linkend="section.gui.main.sumcov"/>, <xref linkend="section.gui.main.listbox"/>, and <xref linkend="section.gui.main.viewer"/>.
+    metric information in the <xref linkend="section.gui.main.listbox"/> and <xref linkend="section.gui.main.viewer"/>.
     </para>
     <para>
       <figure id="figure.gui.main.covbar" xreflabel="Covered Main Coverage Type View Bar">
         <title>Covered Main Coverage Type View Bar</title>
         <mediaobject><imageobject><imagedata fileref="img/main_cov.gif" format="GIF"/></imageobject></mediaobject>
-      </figure>
-    </para>
-  </sect1>
-  
-  <sect1 id="section.gui.main.sumcov" xreflabel="The Summary Coverage Bar">
-    <title>The Summary Coverage Bar</title>
-    <para>
-    The summary coverage bar contains the high-level coverage information for the currently selected module/instance and coverage metric.  Typically, this information will 
-    tell the user the number of coverage points that were hit out of the total number of coverage points that Covered measured during simulation.  If the number hit is less 
-    than the total, the currently selected module/instance was found to be not fully covered, and the name of the module/instance will be highlighted in the 
-    <xref linkend="section.gui.main.listbox"/> with the uncovered color scheme.
-    </para>
-    <para>
-      <figure id="figure.gui.main.sumbar" xreflabel="Covered Main Summary Coverage Bar">
-        <title>Covered Main Summary Coverage Bar</title>
-        <mediaobject><imageobject><imagedata fileref="img/main_summary.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
     </para>
   </sect1>
