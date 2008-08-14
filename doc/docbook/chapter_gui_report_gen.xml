@@ -1,17 +1,11 @@
-<chapter id="chapter.gui.genreport" xreflabel="Navigating the ASCII Report Generator Window">
-  <title>Navigating the ASCII Report Generator Window</title>
+<chapter id="chapter.gui.genreport" xreflabel="Creating an ASCII report file">
+  <title>Creating an ASCII report file</title>
   <para>
   When the <emphasis role="bold">File->Generate->ASCII Report</emphasis> menu option is selected, the ASCII Report 
-  Generator Window is created to allow the user to view the current report output options, edit those options, and 
-  create a name for the report file.  Once the report has been generated, this window will automatically close. The 
-  resulting report file can be viewed with any text file viewer and is equivalent to a report file generated with a 
-  "covered report ..." command-line call.  <xref linkend="figure.gui.genreport"/> shows an example of this window.
-  </para>
-  <para>
-    <figure id="figure.gui.genreport" xreflabel="The ASCII Report Generate Window">
-      <title>The ASCII Report Generate Window</title>
-      <mediaobject><imageobject><imagedata fileref="img/report_gen.gif" format="GIF"/></imageobject></mediaobject>
-    </figure>
+  Generator Window is created to allow the user to specify the current report output options and generate the report 
+  file.  Once the report has been generated, it can be viewed within the GUI itself or it can be viewed with any type
+  of file viewer/editor available.  The following sections describe each of the window panes within the ASCII
+  report generation wizard.
   </para>
   
   <sect1 id="section.gui.genreport.navigate" xreflabel="Navigating the Report Generator Window">

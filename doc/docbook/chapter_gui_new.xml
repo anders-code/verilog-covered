@@ -552,4 +552,26 @@
       </para>
     </sect2>
   </sect1>
+  
+  <sect1 id="section.gui.new.output">
+    <title>CDD Creation Output Pane</title>
+    <para>
+    The final pane in the CDD creation window wizard is the output window. After the <emphasis role="bold">Generate</emphasis>
+    button is pressed, the user-supplied options are gathered and executed within a system shell and the output of that command
+    is sent to this pane's textbox. If the score command run was a success, the 
+    <emphasis role="bold">Open/Merge the newly created CDD</emphasis> checkbutton will be enabled, allowing the user to
+    open or merge the new CDD file into the GUI immediately.  To exit the CDD creation process, click on the
+    <emphasis role="bold">Finish</emphasis> button.  If the score command failed for any reason, the user may click on the 
+    <emphasis role="bold">Back</emphasis> button to change the options specified to the score command or simply click the 
+    <emphasis role="bold">Finish</emphasis> button to exit the new CDD creation wizard.
+    </para>
+    <para>
+      <figure id="figure.gui.new.output" xreflabel="CDD Creation Output Window">
+	      <title>CDD Creation Output Window</title>
+	      <mediaobject><imageobject><imagedata fileref="img/new_cdd_gen.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+  </sect1>
+
+
 </chapter>
