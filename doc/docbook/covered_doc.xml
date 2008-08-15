@@ -26,6 +26,7 @@
 <!ENTITY cguiassertsrc   SYSTEM "chapter_gui_assert_src.xml">
 <!ENTITY cguinew         SYSTEM "chapter_gui_new.xml">
 <!ENTITY cguireportgen   SYSTEM "chapter_gui_report_gen.xml">
+<!ENTITY cguirank        SYSTEM "chapter_gui_rank.xml">
 <!ENTITY cguipreferences SYSTEM "chapter_gui_preferences.xml">
 <!ENTITY cguiwizard      SYSTEM "chapter_gui_wizard.xml">
 <!ENTITY cfaq            SYSTEM "chapter_faq.xml">
@@ -91,6 +92,7 @@
     &cguiassertsrc;
     &cguinew;
     &cguireportgen;
+    &cguirank;
     &cguipreferences;
     &cguiwizard;
   </part>
