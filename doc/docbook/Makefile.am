@@ -16,6 +16,7 @@ doc_DATA = html/chapter.attr.html \
            html/chapter.gui.memory.html \
            html/chapter.gui.new.html \
            html/chapter.gui.preferences.html \
+           html/chapter.gui.rank.html \
            html/chapter.gui.toggle.html \
            html/chapter.gui.wizard.html \
            html/chapter.installation.html \
