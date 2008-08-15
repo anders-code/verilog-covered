@@ -1,4 +1,6 @@
-SUBDIRS = user gui docbook
+SUBDIRS = docbook
+
+man_MANS = covered.1
 
 devel_doc:
 	-doxygen covered.dox
