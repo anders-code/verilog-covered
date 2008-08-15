@@ -89,22 +89,15 @@
         This menu option is used to either open a new CDD file or merge a related CDD file into the currently opened 
         CDD file(s).  This action needs to be performed before any coverage viewing can take place.  When this option 
         is selected, a standard file window is displayed allowing the user to select one (or possibly more depending on 
-        your version of Tcl/Tk) CDD file to open or merge (see <xref linkend="section.gui.main.file.openmerge"/>).  To 
-        select more than one CDD file with one call to this option, simply press and hold the Control key while 
-        selecting files with the left mouse button.  If your version of Tcl/Tk supports this feature, you will see 
-        multiple files highlighted for selection; otherwise, only the last selected file will be selected.  If no CDD 
-        files currently are opened, any CDD file may be opened.  If one or more CDD files have been opened/merged, only 
-        CDD files generated from the same design may be merged.
+        your version of Tcl/Tk) CDD file to open or merge.  To select more than one CDD file with one call to this 
+        option, simply press and hold the Control key while selecting files with the left mouse button.  If your version
+        of Tcl/Tk supports this feature, you will see multiple files highlighted for selection; otherwise, only the last
+        selected file will be selected.  If no CDD files currently are opened, any CDD file may be opened.  If one or
+        more CDD files have been opened/merged, only CDD files generated from the same design may be merged.
         </para>
         <para>
-        Note that this option has an accelerator keystroke &lt;Control-o&gt;.  Hitting this keystroke combination will 
+        Note that this option has an accelerator keystroke &lt;Control-O&gt;.  Hitting this keystroke combination will 
         also open new CDD file(s).
-        </para>
-        <para>
-          <figure id="section.gui.main.file.openmerge" xreflabel="The Open/Merge CDD Selection Window">
-            <title>The Open/Merge CDD Selection Window</title>
-            <mediaobject><imageobject><imagedata fileref="img/open_cdd.gif" format="GIF"/></imageobject></mediaobject>
-          </figure>
         </para>
       </sect3>
       

@@ -176,12 +176,6 @@
     The color preference pane allows the user to adjust the foreground and background colors for all code that is 
     considered covered, uncovered, or in a race condition state.
     </para>
-    <para>
-      <figure id="figure.gui.pref.color" xreflabel="The Color Preferences Pane">
-        <title>The Color Preferences Pane</title>
-        <mediaobject><imageobject><imagedata fileref="img/pref_color.gif" format="GIF"/></imageobject></mediaobject>
-      </figure>
-    </para>
     
     <sect2 id="section.gui.pref.color.set" xreflabel="Preferences - Set Highlight Color">
       <title>Set Highlight Color</title>
