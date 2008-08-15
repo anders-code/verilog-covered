@@ -45,7 +45,6 @@ img_DATA = html/img/app_menu.gif \
            html/img/banner.gif \
            html/img/close_warn.gif \
            html/img/col_show_hide.gif \
-           html/img/color.gif \
            html/img/comb_complex.gif \
            html/img/comb_event.gif \
            html/img/comb_simple.gif \
@@ -85,7 +84,6 @@ img_DATA = html/img/app_menu.gif \
            html/img/new_cdd_type.gif \
            html/img/next.gif \
            html/img/note.gif \
-           html/img/open_cdd.gif \
            html/img/populated_lb.gif \
            html/img/pref_color.gif \
            html/img/pref_goals.gif \
