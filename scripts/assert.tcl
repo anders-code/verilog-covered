@@ -83,9 +83,7 @@ proc create_assert_window {inst} {
       destroy .assertwin
       destroy .amodwin
     }
-    button .assertwin.bf.help -text "?" -width 10 -command {
-      help_show_manual chapter.gui.assert ""
-    }
+    help_button .assertwin.bf.help chapter.gui.assert
     button .assertwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_assert $prev_assert_index
     }
@@ -93,13 +91,13 @@ proc create_assert_window {inst} {
     button .assertwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_assert $next_assert_index
     }
-    set_balloon .assertwin.bf.prev "Click to view the next uncovered assertion in this window"
+    set_balloon .assertwin.bf.next "Click to view the next uncovered assertion in this window"
 
     # Pack the buttons into the button frame
     pack .assertwin.bf.prev  -side left
     pack .assertwin.bf.next  -side left
-    pack .assertwin.bf.help  -side right -padx 8 -pady 4
-    pack .assertwin.bf.close -side right -padx 8 -pady 4
+    pack .assertwin.bf.help  -side right -pady 3
+    pack .assertwin.bf.close -side right -padx 3 -pady 3
 
     # Pack the widgets into the bottom frame
     grid rowconfigure    .assertwin.f 1 -weight 1
@@ -316,14 +314,12 @@ proc display_assertion_module {name filename} {
     button .amodwin.bf.close -text "Close" -width 10 -command {
       destroy .amodwin
     }
-    button .amodwin.bf.help -text "?" -width 10 -command {
-      help_show_manual chapter.gui.assert.source ""
-    }
+    help_button .amodwin.bf.help chapter.gui.assert.source
 
     # Pack the button bar
-    pack .amodwin.bf.back  -side left  -padx 8 -pady 4
-    pack .amodwin.bf.help  -side right -padx 8 -pady 4
-    pack .amodwin.bf.close -side right -padx 8 -pady 4
+    pack .amodwin.bf.back  -side left  -padx 3 -pady 3
+    pack .amodwin.bf.help  -side right -pady 3
+    pack .amodwin.bf.close -side right -padx 3 -pady 3
 
     # Pack the frames
     pack .amodwin.f -fill both -expand yes

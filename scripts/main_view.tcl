@@ -202,12 +202,12 @@ proc main_view {} {
 
   # Catch the closing of the application and potentially save GUI elements
   wm protocol . WM_DELETE_WINDOW {
-    check_to_save_and_close_cdd
+    check_to_save_and_close_cdd exiting
     save_gui_elements . .
     destroy .
   }
   bind . <Destroy> {
-    check_to_save_and_close_cdd
+    check_to_save_and_close_cdd exiting
     save_gui_elements . %W
   }
   
