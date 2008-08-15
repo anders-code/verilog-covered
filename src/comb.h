@@ -76,7 +76,6 @@ void combination_get_inst_summary(
 
 /*! \brief Gets output for specified expression including underlines and code */
 void combination_get_expression(
-            func_unit*    funit,
             int           expr_id,
   /*@out@*/ char***       code,
   /*@out@*/ int**         uline_groups,
@@ -89,7 +88,6 @@ void combination_get_expression(
 
 /*! \brief Gets output for specified expression including coverage information */
 void combination_get_coverage(
-            func_unit* funit,
             int        exp_id,
             int        uline_id,
   /*@out@*/ char***    info,
@@ -105,6 +103,12 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.25.6.4  2008/08/15 05:11:05  phase1geo
+ Converting more old graphics to new style.  Updated documentation.  Cleaned up
+ some issues with the build structure per recent documentation changes.  Also fixing
+ some issues with the GUI and viewing combination logic coverage that is in an unnamed
+ functional unit (more work to do here).  Checkpointing.
+
  Revision 1.25.6.3  2008/08/07 06:39:10  phase1geo
  Adding "Excluded" column to the summary listbox.
 

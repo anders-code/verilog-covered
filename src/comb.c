@@ -2681,7 +2681,6 @@ static void combination_get_exclude_list(
  code and ulines arrays.  Used by the GUI for displaying an expression's coverage information.
 */
 void combination_get_expression(
-            func_unit*    funit,         /*!< Pointer to functional unit */
             int           expr_id,       /*!< Expression ID to retrieve information for */
   /*@out@*/ char***       code,          /*!< Pointer to an array of strings containing generated code for this expression */
   /*@out@*/ int**         uline_groups,  /*!< Pointer to an array of integers used for underlined missed subexpressions in this expression */
@@ -2700,9 +2699,14 @@ void combination_get_expression(
   unsigned int tmp_uline_size;
   int          start     = 0;
   unsigned int uline_max = 20;
+  func_unit*   funit;
 
+  /* Find functional unit that contains this expression */
+  funit = funit_find_by_id( expr_id );
+  assert( funit != NULL );
+
+  /* Find the expression itself */
   expl = exp_link_find( expr_id, funit->exp_head );
-
   assert( expl != NULL );
 
   /* Generate line of code that missed combinational coverage */
@@ -2788,15 +2792,19 @@ void combination_get_expression(
  is used in the ASCII reports.
 */
 void combination_get_coverage(
-            func_unit* funit,     /*!< Pointer to functional unit */
             int        exp_id,    /*!< Expression ID of statement containing subexpression to get coverage detail for */
             int        uline_id,  /*!< Underline ID of subexpression to get coverage detail for */
   /*@out@*/ char***    info,      /*!< Pointer to string array that will be populated with the coverage detail */
   /*@out@*/ int*       info_size  /*!< Number of entries in info array */
 ) { PROFILE(COMBINATION_GET_COVERAGE);
 
-  exp_link*   expl;  /* Pointer to current expression link */
-  expression* exp;   /* Pointer to found expression */
+  func_unit*  funit;  /* Pointer to found functional unit */
+  exp_link*   expl;   /* Pointer to current expression link */
+  expression* exp;    /* Pointer to found expression */
+
+  /* Find the functional unit that contains this expression */
+  funit = funit_find_by_id( exp_id );
+  assert( funit != NULL );
 
   /* Find statement containing this expression */
   expl = exp_link_find( exp_id, funit->exp_head );
@@ -2891,6 +2899,12 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.194.2.8  2008/08/15 05:11:05  phase1geo
+ Converting more old graphics to new style.  Updated documentation.  Cleaned up
+ some issues with the build structure per recent documentation changes.  Also fixing
+ some issues with the GUI and viewing combination logic coverage that is in an unnamed
+ functional unit (more work to do here).  Checkpointing.
+
  Revision 1.194.2.7  2008/08/12 06:17:53  phase1geo
  Fixing bugs in calculation and report of coverage points in rank reports.
 

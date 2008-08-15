@@ -1088,58 +1088,47 @@ int tcl_func_get_comb_expression(
   unsigned int exclude_size;     /* Number of elements stored in the excludes array */
   unsigned int i;                /* Loop iterator */
   char         tmp[20];          /* Temporary string container */
-  func_unit*   funit;            /* Pointer to found functional unit */
 
   expr_id = atoi( argv[2] );
 
-  if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
-
-    char**       code;
-    int*         uline_groups;
-    unsigned int code_size;
-    char**       ulines;
-    unsigned int uline_size;
-    int*         excludes;
-    unsigned int exclude_size;
-
-    combination_get_expression( funit, expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size, &excludes, &exclude_size );
-
-    for( i=0; i<code_size; i++ ) {
-      Tcl_SetVar( tcl, "comb_code", code[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      snprintf( tmp, 20, "%d", uline_groups[i] );
-      Tcl_SetVar( tcl, "comb_uline_groups", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( code[i], (strlen( code[i] ) + 1) );
-    }
-
-    for( i=0; i<uline_size; i++ ) {
-      Tcl_SetVar( tcl, "comb_ulines", ulines[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( ulines[i], (strlen( ulines[i] ) + 1) );
-    }
-
-    for( i=0; i<exclude_size; i++ ) {
-      snprintf( tmp, 20, "%d", excludes[i] );
-      Tcl_SetVar( tcl, "comb_exp_excludes", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-    }
-
-    /* Free up allocated memory */
-    if( code_size > 0 ) {
-      free_safe( code, (sizeof( char* ) * code_size) );
-      free_safe( uline_groups, (sizeof( char* ) * code_size) );
-    }
-
-    if( uline_size > 0 ) {
-      free_safe( ulines, (sizeof( char* ) * uline_size) );
-    }
-
-    if( exclude_size > 0 ) {
-      free_safe( excludes, (sizeof( int ) * exclude_size) );
-    }
-
+  /* Set the curr_db value appropriately for combination_get_expression */
+  if( tcl_func_is_funit( tcl, argv[1] ) ) {
+    curr_db = 1;
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
-    Tcl_AddErrorInfo( tcl, user_msg );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    retval = TCL_ERROR;
+    curr_db = 0;
+  }
+
+  combination_get_expression( expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size, &excludes, &exclude_size );
+
+  for( i=0; i<code_size; i++ ) {
+    Tcl_SetVar( tcl, "comb_code", code[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+    snprintf( tmp, 20, "%d", uline_groups[i] );
+    Tcl_SetVar( tcl, "comb_uline_groups", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+    free_safe( code[i], (strlen( code[i] ) + 1) );
+  }
+
+  for( i=0; i<uline_size; i++ ) {
+    Tcl_SetVar( tcl, "comb_ulines", ulines[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+    free_safe( ulines[i], (strlen( ulines[i] ) + 1) );
+  }
+
+  for( i=0; i<exclude_size; i++ ) {
+    snprintf( tmp, 20, "%d", excludes[i] );
+    Tcl_SetVar( tcl, "comb_exp_excludes", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+  }
+
+  /* Free up allocated memory */
+  if( code_size > 0 ) {
+    free_safe( code, (sizeof( char* ) * code_size) );
+    free_safe( uline_groups, (sizeof( char* ) * code_size) );
+  }
+
+  if( uline_size > 0 ) {
+    free_safe( ulines, (sizeof( char* ) * uline_size) );
+  }
+
+  if( exclude_size > 0 ) {
+    free_safe( excludes, (sizeof( int ) * exclude_size) );
   }
 
   return( retval );
@@ -1160,39 +1149,29 @@ int tcl_func_get_comb_coverage(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_GET_COMB_COVERAGE);
 
-  int        retval = TCL_OK;  /* Return value for this function */
-  int        expid;            /* Expression ID of statement containing desired subexpression */
-  int        ulid;             /* Underline ID of expression to find */
-  int        i;                /* Loop iterator */
-  func_unit* funit;            /* Pointer to found functional unit */
+  int    retval = TCL_OK;  /* Return value for this function */
+  int    expid;            /* Expression ID of statement containing desired subexpression */
+  int    ulid;             /* Underline ID of expression to find */
+  int    i;                /* Loop iterator */
+  char** info;
+  int    info_size;
 
   expid = atoi( argv[2] );
   ulid  = atoi( argv[3] );
 
-  if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
+  /* Calculate the value of curr_db */
+  curr_db = tcl_func_is_funit( tcl, argv[1] ) ? 1 : 0;
 
-    char** info;
-    int    info_size;
+  combination_get_coverage( expid, ulid, &info, &info_size );
 
-    combination_get_coverage( funit, expid, ulid, &info, &info_size );
+  if( info_size > 0 ) {
 
-    if( info_size > 0 ) {
-
-      for( i=0; i<info_size; i++ ) {
-        Tcl_AppendElement( tcl, info[i] );
-        free_safe( info[i], (strlen( info[i] ) + 1) );
-      }
-
-      free_safe( info, (sizeof( char* ) * info_size) );
-
+    for( i=0; i<info_size; i++ ) {
+      Tcl_AppendElement( tcl, info[i] );
+      free_safe( info[i], (strlen( info[i] ) + 1) );
     }
 
-  } else {
-
-    strcpy( user_msg, "Internal Error:  Unable to find functional unit in design" );
-    Tcl_AddErrorInfo( tcl, user_msg );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    retval = TCL_ERROR;
+    free_safe( info, (sizeof( char* ) * info_size) );
 
   }
 
@@ -2583,8 +2562,8 @@ int tcl_func_set_comb_exclude(
 ) { PROFILE(TCL_FUNC_SET_COMB_EXCLUDE);
 
   int         retval = TCL_OK;  /* Return value for this function */
-  func_unit*  funit  = NULL;    /* Pointer to found functional unit */
   funit_inst* inst   = NULL;    /* Pointer to found functional unit instance */
+  func_unit*  funit  = NULL;    /* Pointer to found functional unit */
   int         expr_id;
   int         uline_id;
   int         value;
@@ -2596,8 +2575,10 @@ int tcl_func_set_comb_exclude(
   /* If the current block is a functional unit, deal with the functional unit database */
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
 
-    if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
-
+    /* Search for functional unit */
+    curr_db = 1;
+    if( (funit = funit_find_by_id( expr_id )) != NULL ) {
+    
       unsigned int i;
 
       /* Set the combinational logic exclusion value for the functional unit database */
@@ -2617,12 +2598,17 @@ int tcl_func_set_comb_exclude(
   /* Otherwise, deal with the functional unit instance database */
   } else {
 
-    if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
+    inst_link* instl;
+    int        ignore = 0;
+
+    if( ((funit = funit_find_by_id( expr_id )) != NULL) && ((instl = inst_link_find_by_funit( funit, db_list[0]->inst_head, &ignore )) != NULL) ) {
 
       unsigned int i = gui_inst_index;
 
+      inst = instl->inst;
+
       /* Set the combinational logic exclusion value for the instance database */
-      exclude_set_comb_exclude( inst->funit, expr_id, uline_id, value, inst->stat );
+      exclude_set_comb_exclude( funit, expr_id, uline_id, value, inst->stat );
 
       /* If we are attempting to exclude the expression, check all other instances -- if they all exclude this expression, exclude the expression from the functional unit */
       if( value == 1 ) {
@@ -3042,6 +3028,12 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.77.4.10  2008/08/15 05:11:05  phase1geo
+ Converting more old graphics to new style.  Updated documentation.  Cleaned up
+ some issues with the build structure per recent documentation changes.  Also fixing
+ some issues with the GUI and viewing combination logic coverage that is in an unnamed
+ functional unit (more work to do here).  Checkpointing.
+
  Revision 1.77.4.9  2008/08/08 23:20:28  phase1geo
  Fixing bug with report generator.  Modifying search widgets in output viewer.
 
