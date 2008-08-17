@@ -194,6 +194,7 @@ doc_DATA = html/chapter.attr.html \
            html/chapter.gui.memory.html \
            html/chapter.gui.new.html \
            html/chapter.gui.preferences.html \
+           html/chapter.gui.rank.html \
            html/chapter.gui.toggle.html \
            html/chapter.gui.wizard.html \
            html/chapter.installation.html \
@@ -268,6 +269,11 @@ img_DATA = html/img/app_menu.gif \
            html/img/pref_main.gif \
            html/img/pref_syntax.gif \
            html/img/prev.gif \
+           html/img/rank_files.gif \
+           html/img/rank_options.gif \
+           html/img/rank_output.gif \
+           html/img/rank_report.gif \
+           html/img/rank_selection.gif \
            html/img/report_menu.gif \
            html/img/rpt_gen_view.gif \
            html/img/rpt_gen_selection.gif \
