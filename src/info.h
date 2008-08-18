@@ -50,8 +50,10 @@ void info_dealloc();
 
 /*
  $Log$
- Revision 1.9  2008/07/29 06:34:22  phase1geo
- Merging in contents of development branch to the main development trunk.
+ Revision 1.10  2008/08/18 23:07:27  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
 
  Revision 1.8.4.2  2008/07/25 21:08:35  phase1geo
  Modifying CDD file format to remove the potential for memory allocation assertion
