@@ -33,7 +33,7 @@
   <xsl:param name="navig.graphics.path" select="'img/'"/>
   <xsl:param name="navig.graphics.extension" select="'.gif'"/>
   <xsl:param name="navig.graphics" select="1"/>
-  <xsl:param name="base.dir" select="'html/'"/>
+  <xsl:param name="base.dir" select="'../html/'"/>
   <xsl:param name="toc.max.depth" select="2"/>
 
   <!-- Customized templates -->

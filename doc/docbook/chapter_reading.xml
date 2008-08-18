@@ -7,7 +7,7 @@
   </para>
   <para>
   To help describe the various sections of a Covered report, we will use a relatively small Verilog file containing our DUT, generating the two main types of 
-  reports (module and instance) based on the CDD generated for this file. This example file is provided <ulink url="test/example.v.html">here</ulink>
+  reports (module and instance) based on the CDD generated for this file. This example file is provided <ulink url="example.v.html">here</ulink>
   </para>
   <para>
   After being compiled and run, this module is scored with the following Covered command:
@@ -51,7 +51,7 @@
       <title>Summary Information Description - Module-based</title>
       <para>
       For module-based reports, the summary table for line metrics includes information for the name of each module that was covered and the name of the 
-      file in which the module is described in. Lines <ulink url="test/example.rptM.html#15">15 through 24</ulink> of the module-based report show what 
+      file in which the module is described in. Lines <ulink url="example.rptM.html#15">15 through 24</ulink> of the module-based report show what 
       this information looks like in the report. We have three modules that were scored within our DUT: main, fsma and fsmb. The table shows that all three 
       modules were described in the file "example.v".
       </para>
@@ -61,7 +61,7 @@
       <title>Summary Information Description - Instance-based</title>
       <para>
       For instance-based reports, the summary table for line metrics includes information for the Verilog hierarchy pertaining to each instance on the 
-      left-hand-side of each row. Lines <ulink url="test/example.rptI.html#15"></ulink> of the instance-based report show what this information looks like 
+      left-hand-side of each row. Lines <ulink url="example.rptI.html#15"></ulink> of the instance-based report show what this information looks like 
       in the report. In our DUT example, there are three instances within the design with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".
       </para>
     </sect2>
@@ -89,8 +89,8 @@
       command-line (specifying to output verbose reporting information), the line that was missed during simulation will be output below the summary 
       information per module that contained missed lines. In our sample report, there was one line that was missed during simulation (according to the 
       summary output) for the module called "fsmb" (instance "main.fsmb"). The line number and Verilog line that was missed is output in lines <ulink 
-      url="test/example.rptM.html#25">25 through 29</ulink> of the module-based report and in lines 
-      <ulink url="test/example.rptI.html#25">25 through 29</ulink> of the instance-based report.
+      url="example.rptM.html#25">25 through 29</ulink> of the module-based report and in lines 
+      <ulink url="example.rptI.html#25">25 through 29</ulink> of the instance-based report.
       </para>
       <para>
       If a module does not contain any missed lines and the '-d v' option was specified, no verbose output will be displayed for this module. Likewise, if 
@@ -143,7 +143,7 @@
       <title>Summary Information Description - Module-based</title>
       <para>
       For module-based reports, the summary table for toggle metrics includes information for the name of each module that was covered and the name of the 
-      file in which the module is described in. Lines <ulink url="test/example.rptM.html#41">41 through 51</ulink> of the module-based report show what 
+      file in which the module is described in. Lines <ulink url="example.rptM.html#41">41 through 51</ulink> of the module-based report show what 
       this information looks like in the report. We have three modules that were scored within our DUT: main, fsma and fsmb. The table shows that all three 
       modules were described in the file "example.v".
       </para>
@@ -153,7 +153,7 @@
       <title>Summary Information Description - Instance-based</title>
       <para>
       For instance-based reports, the summary table for toggle metrics includes information for the Verilog hierarchy pertaining to each instance on the 
-      left-hand-side of each row. Lines <ulink url="test/example.rptI.html#41">41 through 51</ulink> of the instance-based report show what this 
+      left-hand-side of each row. Lines <ulink url="example.rptI.html#41">41 through 51</ulink> of the instance-based report show what this 
       information looks like in the report. In our DUT example, there are three instances within the design with the Verilog hierarchies of "main", 
       "main.fsm1" and "main.fsm2".
       </para>
@@ -188,7 +188,7 @@
       will be output below the summary information per module/instance that contained missed signal bit toggles. In our sample module-based report, there 
       were three signals in module "main" ("go", "state", and "error"), three signals in module "fsma" ("go", "state" and "next_state"), and three signals 
       in module "fsmb" ("go", "next_state" and "state") that were not fully toggled (see lines 
-      <ulink url="test/example.rptM.html#53">53 through 90</ulink>).
+      <ulink url="example.rptM.html#53">53 through 90</ulink>).
       </para>
       <para>
       For each signal in the verbose toggle table, the format is the following:
@@ -231,7 +231,7 @@
       <title>Summary Information Description - Module-based</title>
       <para>
       For module-based reports, the summary table for memory metrics includes information for the name of each module, instantiating one or more memories, that was 
-      analyzed and the name of the file in which the module is described in. Lines <ulink url="test/example.rptM.html#93">93 through 111</ulink> of the module-based 
+      analyzed and the name of the file in which the module is described in. Lines <ulink url="example.rptM.html#93">93 through 111</ulink> of the module-based 
       report show what this information looks like in the report. We have three modules that were scored within our DUT: main, fsma and fsmb. The table shows that all 
       three modules were described in the file "example.v".
       </para>
@@ -241,7 +241,7 @@
       <title>Summary Information Description - Instance-based</title>
       <para>
       For instance-based reports, the summary table for memory metrics includes information for the Verilog hierarchy pertaining to each instance on the left-hand-side 
-      of each row. Lines <ulink url="test/example.rptI.html#93">93 through 111</ulink> of the instance-based report show what this information looks like in the report. 
+      of each row. Lines <ulink url="example.rptI.html#93">93 through 111</ulink> of the instance-based report show what this information looks like in the report. 
       In our DUT example, there are three instances within the design with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".
       </para>
     </sect2>
@@ -279,7 +279,7 @@
       The answers to each of the questions listed above are specified with a 0 (meaning that the answer is "NO") or a 1 (meaning that the answer is "YES"). Note that in 
       the toggle coverage information, like toggle coverage verbose information, the individual bits are grouped together and displayed in hexidecimal form to conserve 
       space and make the task of figuring out exactly which bit positions did not toggle easier. See lines 
-      <ulink url="test/example.rptM.html#117">117 through 151</ulink> for an example of this output.
+      <ulink url="example.rptM.html#117">117 through 151</ulink> for an example of this output.
       </para>
       <para>
       If the -c option is used, Covered outputs the names of the memories that were fully covered during simulation only.
@@ -294,7 +294,7 @@
       <title>Summary Information Description - Module-based</title>
       <para>
       For module-based reports, the summary table for combinational logic metrics includes information for the name of each module that was covered and the name of the 
-      file in which the module is described in. Lines <ulink url="test/example.rptM.html#154">154 through 164</ulink> of the module-based report show what this 
+      file in which the module is described in. Lines <ulink url="example.rptM.html#154">154 through 164</ulink> of the module-based report show what this 
       information looks like in the report. We have three modules that were scored within our DUT: main, fsma, and fsmb. The table shows that all three modules were 
       described in the file "example.v".
       </para>
@@ -304,7 +304,7 @@
       <title>Summary Information Description - Instance-based</title>
       <para>
       For instance-based reports, the summary table for combinational logic metrics includes information for the Verilog hierarchy pertaining to each instance on the 
-      left-hand-side of each row. Lines <ulink url="test/example.rptI.html#154">154 through 164</ulink> of the instance-based report show what this information looks 
+      left-hand-side of each row. Lines <ulink url="example.rptI.html#154">154 through 164</ulink> of the instance-based report show what this information looks 
       like in the report. In our DUT example, there are three instances within the design with the Verilog hierarchies of "main", "main.fsm1", and "main.fsm2".
       </para>
     </sect2>
@@ -332,7 +332,7 @@
       The verbose output for combinational coverage is a bit more sophisticated than the line or toggle. Basically, for each expression that was found to not be fully 
       covered (either the expression itself or some sub-expression in the tree was not fully covered), the expression is output with various sub-expressions underlined 
       and identified with a number. Each expression is also supplied with the line number that the expression started at in its module file. In our example, there is an 
-      uncovered expression in the module called "main" (see lines <ulink url="test/example.rptM.html#170">170 through 205</ulink> (numbered 5) which contains four 
+      uncovered expression in the module called "main" (see lines <ulink url="example.rptM.html#170">170 through 205</ulink> (numbered 5) which contains four 
       uncovered subexpressions (numbered 1 through 4).
       </para>
       <para>
@@ -366,7 +366,7 @@
       <title>Summary Information Description - Module-based</title>
       <para>
       For module-based reports, the summary table for FSM metrics includes information for the name of each module that was covered and the name of the file in which 
-      the module is described in. Lines <ulink url="test/example.rptM.html#344">344 through 354</ulink> of the module-based report show what this information looks like 
+      the module is described in. Lines <ulink url="example.rptM.html#344">344 through 354</ulink> of the module-based report show what this information looks like 
       in the report. We have three modules that were scored within our DUT: main, fsma and fsmb. The table shows that all three modules were described in the file 
       "example.v".
       </para>
@@ -376,7 +376,7 @@
       <title>Summary Information Description - Instance-based</title>
       <para>
       For instance-based reports, the summary table for FSM metrics includes information for the Verilog hierarchy pertaining to each instance on the left-hand-side of 
-      each row. Lines <ulink url="test/example.rptI.html#344">344 through 354</ulink> of the instance-based report show what this information looks like in the report. 
+      each row. Lines <ulink url="example.rptI.html#344">344 through 354</ulink> of the instance-based report show what this information looks like in the report. 
       In our DUT example, there are three instances within the design with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".
       </para>
     </sect2>
@@ -436,7 +436,7 @@
       <title>Summary Information Description - Module-based</title>
       <para>
       For module-based reports, the summary table for assertion metrics includes information for the name of each module, instantiating one or more assertions, that was 
-      covered and the name of the file in which the module is described in. Lines <ulink url="test/example.rptM.html#397">397 through 405</ulink> of the module-based 
+      covered and the name of the file in which the module is described in. Lines <ulink url="example.rptM.html#397">397 through 405</ulink> of the module-based 
       report show what this information looks like in the report. We have three modules that were scored within our DUT: main, fsma and fsmb. The table shows that all 
       three modules were described in the file "example.v".
       </para>
@@ -446,7 +446,7 @@
       <title>Summary Information Description - Instance-based</title>
       <para>
       For instance-based reports, the summary table for assertion metrics includes information for the Verilog hierarchy pertaining to each instance on the left-hand-
-      side of each row. Lines <ulink url="test/example.rptI.html#397">397 through 405</ulink> of the instance-based report show what this information looks like in the 
+      side of each row. Lines <ulink url="example.rptI.html#397">397 through 405</ulink> of the instance-based report show what this information looks like in the 
       report. In our DUT example, there are three instances within the design with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".
       </para>
     </sect2>
