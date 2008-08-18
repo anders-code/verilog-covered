@@ -252,8 +252,10 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
- Revision 1.37  2008/07/29 06:34:22  phase1geo
- Merging in contents of development branch to the main development trunk.
+ Revision 1.38  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
 
  Revision 1.35.2.2  2008/07/21 06:36:29  phase1geo
  Updating code from rank-devel-branch branch.
