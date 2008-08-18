@@ -39,8 +39,10 @@ void ovl_add_assertions_to_no_score_list( bool rm_tasks );
 /*! \brief Gathers the OVL assertion coverage summary statistics for the given functional unit. */
 void ovl_get_funit_stats(
             const func_unit* funit,
-  /*@out@*/ unsigned int*    total,
-  /*@out@*/ unsigned int*    hit );
+  /*@out@*/ unsigned int*    hit,
+  /*@out@*/ unsigned int*    excludes,
+  /*@out@*/ unsigned int*    total
+);
 
 /*! \brief Displays the verbose hit/miss information to the given output file for the given functional unit. */
 void ovl_display_verbose(
@@ -51,11 +53,10 @@ void ovl_display_verbose(
 /*! \brief Finds the instance names of all uncovered and covered assertions in the specified functional unit. */
 void ovl_collect(
                  func_unit*    funit,
-  /*@null out@*/ char***       uncov_inst_names,
+                 int           cov,
+  /*@null out@*/ char***       inst_names,
   /*@out@*/      int**         excludes,
-  /*@out@*/      unsigned int* uncov_inst_size,
-  /*@out@*/      char***       cov_inst_names,
-  /*@out@*/      unsigned int* cov_inst_size
+  /*@out@*/      unsigned int* inst_size
 );
 
 /*! \brief Gets missed coverage points for the given assertion */
@@ -69,8 +70,17 @@ void ovl_get_coverage(
 
 /*
  $Log$
- Revision 1.16  2008/07/29 06:34:22  phase1geo
- Merging in contents of development branch to the main development trunk.
+ Revision 1.17  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
+ Revision 1.14.6.3  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
+ Revision 1.14.6.2  2008/08/06 20:11:34  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
 
  Revision 1.14.6.1  2008/07/10 22:43:53  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
