@@ -764,7 +764,6 @@ void funit_db_merge(
         }
       } Catch_anonymous {
         free_safe( curr_line, curr_line_size );
-        // printf( "func_unit Throw D\n" ); - HIT
         Throw 0;
       }
       free_safe( curr_line, curr_line_size );
@@ -797,7 +796,6 @@ void funit_db_merge(
         }
       } Catch_anonymous {
         free_safe( curr_line, curr_line_size );
-        // printf( "func_unit Throw H\n" ); - HIT
         Throw 0;
       }
       free_safe( curr_line, curr_line_size );
@@ -1468,8 +1466,14 @@ void funit_dealloc(
 
 /*
  $Log$
- Revision 1.107  2008/07/29 06:34:22  phase1geo
- Merging in contents of development branch to the main development trunk.
+ Revision 1.108  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
+ Revision 1.104.2.2  2008/08/06 20:11:33  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
 
  Revision 1.104.2.1  2008/07/10 22:43:51  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
