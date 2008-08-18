@@ -577,8 +577,10 @@ void fsm_var_cleanup() { PROFILE(FSM_VAR_CLEANUP);
 
 /*
  $Log$
- Revision 1.50  2008/07/29 06:34:22  phase1geo
- Merging in contents of development branch to the main development trunk.
+ Revision 1.51  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
 
  Revision 1.47.4.1  2008/07/10 22:43:51  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
