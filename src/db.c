@@ -85,7 +85,7 @@ extern int         for_mode;
 /*!
  Size of the db_list array.
 */
-static unsigned int db_size = 0;
+unsigned int db_size = 0;
 
 /*!
  Index of current database in db_list array that is being handled. 
@@ -2915,8 +2915,14 @@ bool db_do_timestep(
 
 /*
  $Log$
- Revision 1.317  2008/07/29 06:34:20  phase1geo
- Merging in contents of development branch to the main development trunk.
+ Revision 1.318  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
+ Revision 1.309.2.3  2008/08/06 20:11:33  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
 
  Revision 1.309.2.2  2008/07/25 21:08:35  phase1geo
  Modifying CDD file format to remove the potential for memory allocation assertion
