@@ -299,8 +299,10 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
- Revision 1.46  2008/07/29 06:34:23  phase1geo
- Merging in contents of development branch to the main development trunk.
+ Revision 1.47  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
 
  Revision 1.44.4.2  2008/07/23 21:38:42  phase1geo
  Adding better formatting for ranking reports to allow the inclusion of the full
