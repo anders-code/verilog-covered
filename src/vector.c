@@ -4699,8 +4699,10 @@ void vector_dealloc(
 
 /*
  $Log$
- Revision 1.151  2008/07/29 06:34:23  phase1geo
- Merging in contents of development branch to the main development trunk.
+ Revision 1.152  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
 
  Revision 1.142.2.3  2008/07/10 22:43:55  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
