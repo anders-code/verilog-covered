@@ -2565,7 +2565,7 @@ struct tnode_s {
 */
 struct timer_s {
   struct timeval start;              /*!< Contains start time of a particular timer */
-  time_t         total;              /*!< Contains the total amount of user time accrued for this timer */
+  uint64         total;              /*!< Contains the total amount of user time accrued for this timer */
 };
 #endif
 
@@ -2855,6 +2855,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.303  2008/08/19 05:14:26  phase1geo
+ Attempting to fix bug 2054684.
+
  Revision 1.302  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
