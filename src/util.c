@@ -1367,10 +1367,10 @@ char* timer_to_string(
     snprintf( str, 33, "0.000%1u seconds", (tm->total / 100) );
   } else if( tm->total < 60000000 ) {
     snprintf( str, 33, "%2u.%03u seconds", (tm->total / 1000000), ((tm->total % 1000000) / 1000) );
-  } else if( tm->total < 360000000 ) {
+  } else if( tm->total < 3600000000LL ) {
     snprintf( str, 33, "%2u minutes, %2u seconds", (tm->total / 60000000), ((tm->total % 60000000) / 1000000) );
   } else {
-    snprintf( str, 33, "%2u hours, %2u minutes, %2u seconds", (tm->total / 360000000), ((tm->total % 360000000) / 6000000), ((tm->total % 60000000) / 1000000) );
+    snprintf( str, 33, "%2u hours, %2u minutes, %2u seconds", (tm->total / 3600000000LL), ((tm->total % 3600000000LL) / 60000000), ((tm->total % 60000000) / 1000000) );
   }
 
   return( str );
@@ -1520,6 +1520,9 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.101  2008/08/19 05:14:26  phase1geo
+ Attempting to fix bug 2054684.
+
  Revision 1.100  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
