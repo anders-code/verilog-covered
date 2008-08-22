@@ -264,16 +264,18 @@ bool exclude_is_line_excluded(
   int        line    /*!< Line number of line to check */
 ) { PROFILE(EXCLUDE_IS_LINE_EXCLUDED);
 
-  stmt_iter si;  /* Statement iterator */
+  func_iter  fi;    /* Functional unit iterator */
+  statement* stmt;  /* Pointer to current statement */
 
-  stmt_iter_reset( &si, funit->stmt_head );
-  while( (si.curr != NULL) && (si.curr->stmt->exp->line != line) ) {
-    stmt_iter_next( &si );
-  }
+  func_iter_init( &fi, funit, TRUE, FALSE );
+
+  while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->line != line) );
+
+  func_iter_dealloc( &fi );
 
   PROFILE_END;
 
-  return( (si.curr == NULL) || (si.curr->stmt->suppl.part.excluded == 1) );
+  return( (stmt == NULL) || (stmt->suppl.part.excluded == 1) );
 
 }
 
@@ -289,19 +291,19 @@ void exclude_set_line_exclude(
   /*@out@*/ statistic* stat    /*!< Pointer to statistics structure to update */
 ) { PROFILE(EXCLUDE_SET_LINE_EXCLUDE);
 
-  exp_link* expl;  /* Pointer to current expression link */
+  func_iter  fi;    /* Functional unit iterator */
+  statement* stmt;  /* Pointer to current statement */
 
-  /* Find the expression(s) that match the given line number */
-  expl = funit->exp_head;
+  func_iter_init( &fi, funit, TRUE, FALSE );
+
   do {
-    while( (expl != NULL) && ((expl->exp->line != line) || (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0)) ) {
-      expl = expl->next;
+    while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->line != line) );
+    if( stmt != NULL ) {
+      exclude_expr_assign_and_recalc( stmt->exp, funit, (value == 1), TRUE, stat );
     }
-    if( expl != NULL ) {
-      exclude_expr_assign_and_recalc( expl->exp, funit, (value == 1), TRUE, stat );
-      expl = expl->next;
-    }
-  } while( expl != NULL );
+  } while( stmt != NULL );
+
+  func_iter_dealloc( &fi );
 
   PROFILE_END;
 
@@ -516,7 +518,7 @@ bool exclude_is_assert_excluded(
     assert( curr_child != NULL );
 
     /* Initialize the functional unit iterator */
-    func_iter_init( &fi, curr_child->funit );
+    func_iter_init( &fi, curr_child->funit, TRUE, FALSE );
 
     while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->id != expr_id) );
 
@@ -563,7 +565,7 @@ void exclude_set_assert_exclude(
     assert( curr_child != NULL );
 
     /* Initialize the functional unit iterator */
-    func_iter_init( &fi, curr_child->funit );
+    func_iter_init( &fi, curr_child->funit, TRUE, FALSE );
 
     while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->id != expr_id) );
 
@@ -584,6 +586,10 @@ void exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.28  2008/08/22 20:56:35  phase1geo
+ Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
+ Not complete yet.  Also making updates to documentation.  Checkpointing.
+
  Revision 1.27  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

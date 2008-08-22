@@ -539,7 +539,7 @@ void combination_get_stats(
   if( !funit_is_unnamed( funit ) ) {
 
     /* Initialize functional unit iterator */
-    func_iter_init( &fi, funit );
+    func_iter_init( &fi, funit, TRUE, FALSE );
 
     /* Traverse statements in the given functional unit */
     while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
@@ -2418,7 +2418,7 @@ static void combination_display_verbose(
   }
 
   /* Initialize functional unit iterator */
-  func_iter_init( &fi, funit );
+  func_iter_init( &fi, funit, TRUE, FALSE );
 
   /* Display missed combinations */
   stmt = func_iter_get_next_statement( &fi );
@@ -2605,7 +2605,7 @@ void combination_collect(
   *exprs    = NULL;
   *excludes = NULL;
 
-  func_iter_init( &fi, funit );
+  func_iter_init( &fi, funit, TRUE, FALSE );
 
   stmt = func_iter_get_next_statement( &fi );
   while( stmt != NULL ) {
@@ -2899,6 +2899,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.199  2008/08/22 20:56:35  phase1geo
+ Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
+ Not complete yet.  Also making updates to documentation.  Checkpointing.
+
  Revision 1.198  2008/08/18 23:07:25  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
