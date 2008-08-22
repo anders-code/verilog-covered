@@ -206,7 +206,7 @@ void ovl_get_funit_stats(
       if( (curr_child->funit->type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
 
         /* Initialize the functional unit iterator */
-        func_iter_init( &fi, curr_child->funit );
+        func_iter_init( &fi, curr_child->funit, TRUE, FALSE );
 
         while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
@@ -306,7 +306,7 @@ void ovl_display_verbose(
     if( (curr_child->funit->type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
 
       /* Initialize the functional unit iterator */
-      func_iter_init( &fi, curr_child->funit );
+      func_iter_init( &fi, curr_child->funit, TRUE, FALSE );
 
       while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
@@ -385,7 +385,7 @@ void ovl_collect(
       hit   = 0;
 
       /* Initialize the functional unit iterator */
-      func_iter_init( &fi, curr_child->funit );
+      func_iter_init( &fi, curr_child->funit, TRUE, FALSE );
 
       while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
@@ -472,7 +472,7 @@ void ovl_get_coverage(
   snprintf( *assert_mod, str_size, "%s %s", curr_child->funit->name, curr_child->funit->filename );
 
   /* Initialize the functional unit iterator */
-  func_iter_init( &fi, curr_child->funit );
+  func_iter_init( &fi, curr_child->funit, TRUE, FALSE );
 
   /* Gather all missed coverage points */
   while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
@@ -502,6 +502,10 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.31  2008/08/22 20:56:35  phase1geo
+ Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
+ Not complete yet.  Also making updates to documentation.  Checkpointing.
+
  Revision 1.30  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
