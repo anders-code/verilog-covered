@@ -30,7 +30,7 @@
 
 /*! \brief Calculates the toggle coverage for the specifed expression and signal lists. */
 void toggle_get_stats(
-            sig_link*     sigl,
+            func_unit*    funit,
   /*@out@*/ unsigned int* hit01,
   /*@out@*/ unsigned int* hit10,
   /*@out@*/ unsigned int* excluded,
@@ -82,6 +82,9 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.22  2008/08/23 20:00:30  phase1geo
+ Full fix for bug 2054686.  Also cleaned up Cver regressions.
+
  Revision 1.21  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

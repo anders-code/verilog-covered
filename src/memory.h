@@ -43,7 +43,7 @@ void memory_get_stat(
 
 /*! \brief Calculates memory coverage numbers for the specified signal list. */
 void memory_get_stats(
-            sig_link*     sigl,
+            func_unit*    funit,
   /*@out@*/ unsigned int* wr_hit,
   /*@out@*/ unsigned int* rd_hit,
   /*@out@*/ unsigned int* ae_total,
@@ -97,6 +97,9 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.14  2008/08/23 20:00:30  phase1geo
+ Full fix for bug 2054686.  Also cleaned up Cver regressions.
+
  Revision 1.13  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
