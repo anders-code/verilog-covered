@@ -71,8 +71,8 @@ gen_item* gen_item_create_bind( const char* name, expression* expr );
 /*! \brief Resizes all statements and signals in the given generate item block */
 void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit );
 
-/*! \brief Assigns unique expression IDs to all expressions for specified statement block */
-void gen_item_assign_expr_ids( gen_item* gi, func_unit* funit );
+/*! \brief Assigns unique signal ID or expression IDs to all expressions for specified statement block */
+void gen_item_assign_ids( gen_item* gi, func_unit* funit );
 
 /*! \brief Outputs the current generate item to the given output file if it matches the type specified */
 void gen_item_db_write( gen_item* gi, uint32 type, FILE* file );
@@ -97,6 +97,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.27  2008/08/27 23:06:00  phase1geo
+ Starting to make updates for supporting command-line exclusions.  Signals now
+ have a unique ID associated with them in the CDD file.  Checkpointing.
+
  Revision 1.26  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
