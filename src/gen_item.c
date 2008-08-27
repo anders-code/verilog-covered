@@ -45,6 +45,7 @@ extern unsigned int curr_db;
 extern char         user_msg[USER_MSG_LENGTH];
 extern bool         debug_mode;
 extern func_unit*   curr_funit;
+extern unsigned int curr_sig_id;
 
 
 /*!
@@ -759,16 +760,23 @@ void gen_item_resize_stmts_and_sigs(
 /*!
  \throws anonymous statement_assign_expr_ids
 
- Assigns unique expression IDs to each expression in the tree given for a generated statement.
+ Assigns unique expression and signal IDs to each expression in the tree given for a generated statement
+ or for the given signal.
 */
-void gen_item_assign_expr_ids(
+void gen_item_assign_ids(
   gen_item*  gi,    /*!< Pointer to generate item to check and assign expression IDs for */
   func_unit* funit  /*!< Pointer to functional unit containing this generate item */
-) { PROFILE(GEN_ITEM_ASSIGN_EXPR_IDS);
+) { PROFILE(GEN_ITEM_ASSIGN_IDS);
 
-  if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->suppl.part.removed == 0) ) {
+  if( gi->suppl.part.removed == 0 ) {
 
-    statement_assign_expr_ids( gi->elem.stmt, funit );
+    /* Assign expression IDs if this is a statement */
+    if( gi->suppl.part.type == GI_TYPE_STMT ) {
+      statement_assign_expr_ids( gi->elem.stmt, funit );
+    } else if( gi->suppl.part.type == GI_TYPE_SIG ) {
+      gi->elem.sig->id = curr_sig_id;
+      curr_sig_id++;
+    }
 
   }
 
@@ -1204,6 +1212,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.73  2008/08/27 23:06:00  phase1geo
+ Starting to make updates for supporting command-line exclusions.  Signals now
+ have a unique ID associated with them in the CDD file.  Checkpointing.
+
  Revision 1.72  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
