@@ -2151,7 +2151,7 @@ struct expression_s {
  end of the run, this signal has been simulated.
 */
 struct vsignal_s {
-  unsigned int id;                   /*!< Numerical identifier that is unique from all other signals (used for exclusions) */
+  int          id;                   /*!< Numerical identifier that is unique from all other signals (used for exclusions) */
   char*        name;                 /*!< Full hierarchical name of signal in design */
   int          line;                 /*!< Specifies line number that this signal was declared on */
   ssuppl       suppl;                /*!< Supplemental information for this signal */
@@ -2856,6 +2856,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.305  2008/08/28 04:37:17  phase1geo
+ Starting to add support for exclusion output and exclusion IDs to generated
+ reports.  These changes should break regressions.  Checkpointing.
+
  Revision 1.304  2008/08/27 23:06:00  phase1geo
  Starting to make updates for supporting command-line exclusions.  Signals now
  have a unique ID associated with them in the CDD file.  Checkpointing.
