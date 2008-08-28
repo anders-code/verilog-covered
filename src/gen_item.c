@@ -45,7 +45,7 @@ extern unsigned int curr_db;
 extern char         user_msg[USER_MSG_LENGTH];
 extern bool         debug_mode;
 extern func_unit*   curr_funit;
-extern unsigned int curr_sig_id;
+extern int          curr_sig_id;
 
 
 /*!
@@ -1212,6 +1212,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.74  2008/08/28 04:37:18  phase1geo
+ Starting to add support for exclusion output and exclusion IDs to generated
+ reports.  These changes should break regressions.  Checkpointing.
+
  Revision 1.73  2008/08/27 23:06:00  phase1geo
  Starting to make updates for supporting command-line exclusions.  Signals now
  have a unique ID associated with them in the CDD file.  Checkpointing.
