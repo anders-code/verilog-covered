@@ -694,6 +694,10 @@ void report_print_header(
     fprintf( ofile, "* Reported by                    : Module\n\n" );
   }
 
+  if( flag_output_exclusion_ids ) {
+    fprintf( ofile, "* Report contains exclusion IDs (value within parenthesis preceding verbose output)\n\n" );
+  }
+
   if( (info_suppl.part.excl_assign == 1) ||
       (info_suppl.part.excl_always == 1) ||
       (info_suppl.part.excl_init   == 1) ||
@@ -1077,6 +1081,11 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.116  2008/08/28 13:59:19  phase1geo
+ More updates to be more efficient in outputting exclusion IDs.  Also added
+ capability (or the start of) to output exclusions when the -e option is
+ specified.  Updated regressions per these changes.  Checkpointing.
+
  Revision 1.115  2008/08/27 23:06:00  phase1geo
  Starting to make updates for supporting command-line exclusions.  Signals now
  have a unique ID associated with them in the CDD file.  Checkpointing.

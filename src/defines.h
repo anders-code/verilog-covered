@@ -1131,6 +1131,15 @@ typedef enum cp_indices_e {
 } cp_indices;
 
 /*!
+ Enumeration of report types to output.
+*/
+typedef enum rpt_type_e {
+  RPT_TYPE_HIT,
+  RPT_TYPE_MISS,
+  RPT_TYPE_EXCL
+} rpt_type;
+
+/*!
  Mask for signal supplemental field when writing to CDD file.
 */
 #define VSUPPL_MASK               0x7f
@@ -2856,6 +2865,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.306  2008/08/28 13:59:18  phase1geo
+ More updates to be more efficient in outputting exclusion IDs.  Also added
+ capability (or the start of) to output exclusions when the -e option is
+ specified.  Updated regressions per these changes.  Checkpointing.
+
  Revision 1.305  2008/08/28 04:37:17  phase1geo
  Starting to add support for exclusion output and exclusion IDs to generated
  reports.  These changes should break regressions.  Checkpointing.
