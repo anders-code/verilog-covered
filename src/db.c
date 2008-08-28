@@ -195,7 +195,7 @@ uint64 num_timesteps = 0;
 /*!
  Number of chars allocated for the exclusion_id array.
 */
-static unsigned int exclusion_id_size = 0;
+unsigned int exclusion_id_size = 0;
 
 
 /*!
@@ -2976,6 +2976,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.321  2008/08/28 16:52:22  phase1geo
+ Adding toggle and memory exclusion support in report command.  Checkpointing.
+
  Revision 1.320  2008/08/28 13:59:18  phase1geo
  More updates to be more efficient in outputting exclusion IDs.  Also added
  capability (or the start of) to output exclusions when the -e option is
