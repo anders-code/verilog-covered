@@ -1037,7 +1037,7 @@ static bool memory_display_verbose(
 
         fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
         fprintf( ofile, "      " );
-        if( flag_output_exclusion_ids ) {
+        if( flag_output_exclusion_ids && (rtype != RPT_TYPE_HIT) ) {
           fprintf( ofile, "(%s)  ", db_gen_exclusion_id( 'M', sig->id ) );
         }
         fprintf( ofile, "Memory name:  %s", pname );
@@ -1302,6 +1302,9 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.37  2008/08/29 13:01:17  phase1geo
+ Removing exclusion ID from covered coverage points.  Checkpointing.
+
  Revision 1.36  2008/08/28 16:52:22  phase1geo
  Adding toggle and memory exclusion support in report command.  Checkpointing.
 

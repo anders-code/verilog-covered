@@ -429,7 +429,7 @@ static bool toggle_display_verbose(
     case RPT_TYPE_EXCL :  fprintf( ofile, "    Signals excluded from toggle coverage\n\n" );      break;
   }
 
-  if( flag_output_exclusion_ids ) { 
+  if( flag_output_exclusion_ids && (rtype != RPT_TYPE_HIT) ) { 
     eid_size = db_get_exclusion_id_size();
   }
 
@@ -471,11 +471,7 @@ static bool toggle_display_verbose(
 
           if( (hit01 == sig->value->width) && (hit10 == sig->value->width) ) {
         
-            if( flag_output_exclusion_ids ) {
-              fprintf( ofile, "      (%s)  %-24s\n", db_gen_exclusion_id( 'T', sig->id ), pname );
-            } else {
-              fprintf( ofile, "      %-24s\n", pname );
-            }
+            fprintf( ofile, "      %-24s\n", pname );
 
           }
 
@@ -716,6 +712,9 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.83  2008/08/29 13:01:17  phase1geo
+ Removing exclusion ID from covered coverage points.  Checkpointing.
+
  Revision 1.82  2008/08/28 21:24:15  phase1geo
  Adding support for exclusion output for assertions.  Updated regressions accordingly.
  Checkpointing.
