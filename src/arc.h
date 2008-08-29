@@ -106,13 +106,14 @@ void arc_get_states(
 
 /*! \brief Outputs arc array state transition values to specified output stream. */
 void arc_get_transitions(
-  char***          from_states,
-  char***          to_states,
-  int**            excludes,
-  int*             arc_size,
-  const fsm_table* table,
-  bool             hit,
-  bool             any
+  /*@out@*/ char***          from_states,
+  /*@out@*/ char***          to_states,
+  /*@out@*/ int**            ids,
+  /*@out@*/ int**            excludes,
+  /*@out@*/ int*             arc_size,
+            const fsm_table* table,
+            bool             hit,
+            bool             any
 );
 
 /*! \brief Specifies if any state transitions have been excluded from coverage. */
@@ -127,6 +128,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.32  2008/08/29 05:38:36  phase1geo
+ Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
+ option usage for all metrics, I believe (certainly for FSM).  Checkpointing.
+
  Revision 1.31  2008/08/18 23:07:25  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

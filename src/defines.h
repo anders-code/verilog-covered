@@ -2192,6 +2192,7 @@ struct fsm_table_arc_s {
   asuppl       suppl;                /*!< Supplemental field for this state transition entry */
   unsigned int from;                 /*!< Index to from_state vector value in fsm_table vector array */
   unsigned int to;                   /*!< Index to to_state vector value in fsm_table vector array */
+  unsigned int id;                   /*!< Unique identifier used for exclusions */
 };
 
 /*!
@@ -2865,6 +2866,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.307  2008/08/29 05:38:37  phase1geo
+ Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
+ option usage for all metrics, I believe (certainly for FSM).  Checkpointing.
+
  Revision 1.306  2008/08/28 13:59:18  phase1geo
  More updates to be more efficient in outputting exclusion IDs.  Also added
  capability (or the start of) to output exclusions when the -e option is
