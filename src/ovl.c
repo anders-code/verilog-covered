@@ -105,9 +105,7 @@ bool ovl_is_assertion_module(
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to current functional unit link */
 
-  assert( funit != NULL );
-
-  if( ovl_is_assertion_name( funit->name ) ) {
+  if( (funit != NULL) && ovl_is_assertion_name( funit->name ) ) {
 
     /*
      If the module matches in name, check to see if the ovl_cover_t task exists (this
@@ -525,6 +523,9 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.34  2008/09/02 05:20:41  phase1geo
+ More updates for exclude command.  Updates to CVER regression.
+
  Revision 1.33  2008/08/29 13:01:17  phase1geo
  Removing exclusion ID from covered coverage points.  Checkpointing.
 
