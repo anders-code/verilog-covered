@@ -47,14 +47,16 @@ funit_inst* instance_find_by_funit(
 
 /*! \brief Returns signal that matches the given exclusion ID */
 vsignal* instance_find_signal_by_exclusion_id(
-  funit_inst* root,
-  int         id
+            funit_inst* root,
+            int         id,
+  /*@out@*/ func_unit** found_funit
 );
 
 /*! \brief Returns expression that matches the given exclusion ID */
 expression* instance_find_expression_by_exclusion_id(
-  funit_inst* root,
-  int         id
+            funit_inst* root,
+            int         id,
+  /*@out@*/ func_unit** found_funit
 );
 
 /*! \brief Attaches the given child instance to the given parent instance */
@@ -94,6 +96,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.36  2008/09/02 22:41:45  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.35  2008/09/02 05:20:41  phase1geo
  More updates for exclude command.  Updates to CVER regression.
 
