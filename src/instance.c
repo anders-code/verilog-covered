@@ -401,8 +401,8 @@ expression* instance_find_expression_by_exclusion_id(
     assert( root->funit != NULL );
  
     if( (root->funit->exp_head != NULL) && 
-        (root->funit->exp_head->exp->id >= id) && 
-        (root->funit->exp_tail->exp->id <= id) ) {
+        (root->funit->exp_head->exp->id <= id) && 
+        (root->funit->exp_tail->exp->id >= id) ) {
 
       exp_link* expl = root->funit->exp_head;
 
@@ -1240,6 +1240,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.102  2008/09/02 05:53:54  phase1geo
+ More code additions for exclude command.  Fixing a few bugs in this code as well.
+ Checkpointing.
+
  Revision 1.101  2008/09/02 05:20:41  phase1geo
  More updates for exclude command.  Updates to CVER regression.
 
