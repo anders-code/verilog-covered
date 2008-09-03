@@ -45,7 +45,7 @@ void ovl_get_funit_stats(
 );
 
 /*! \brief Displays the verbose hit/miss information to the given output file for the given functional unit. */
-bool ovl_display_verbose(
+void ovl_display_verbose(
   FILE*            ofile,
   const func_unit* funit,
   rpt_type         rtype
@@ -71,6 +71,9 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.19  2008/09/03 03:46:37  phase1geo
+ Updates for memory and assertion exclusion output.  Checkpointing.
+
  Revision 1.18  2008/08/28 21:24:15  phase1geo
  Adding support for exclusion output for assertions.  Updated regressions accordingly.
  Checkpointing.
