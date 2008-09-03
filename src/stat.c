@@ -61,6 +61,7 @@ void statistic_create(
   (*stat)->mem_tog01_hit   = 0;
   (*stat)->mem_tog10_hit   = 0;
   (*stat)->mem_tog_total   = 0;
+  (*stat)->mem_cov_found   = FALSE;
   (*stat)->mem_excluded    = 0;
   (*stat)->show            = TRUE;
 
@@ -115,6 +116,9 @@ void statistic_dealloc(
 
 /*
  $Log$
+ Revision 1.18  2008/09/03 03:46:37  phase1geo
+ Updates for memory and assertion exclusion output.  Checkpointing.
+
  Revision 1.17  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
