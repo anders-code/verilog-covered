@@ -26,9 +26,6 @@
 #include <stdio.h>
 
 
-/*! \brief Initializes all information variables. */
-void info_initialize();
-
 /*! \brief Writes info line to specified CDD file. */
 void info_db_write( FILE* file );
 
@@ -50,6 +47,10 @@ void info_dealloc();
 
 /*
  $Log$
+ Revision 1.11  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.10  2008/08/18 23:07:27  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
