@@ -54,7 +54,8 @@ void toggle_get_coverage(
   /*@out@*/ int*       lsb,
   /*@out@*/ char**     tog01,
   /*@out@*/ char**     tog10,
-  /*@out@*/ int*       excluded
+  /*@out@*/ int*       excluded,
+  /*@out@*/ char**     reason
 );
 
 /*! \brief Gets total and hit toggle signal status for the specified functional unit */
@@ -82,6 +83,10 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.23  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.22  2008/08/23 20:00:30  phase1geo
  Full fix for bug 2054686.  Also cleaned up Cver regressions.
 
