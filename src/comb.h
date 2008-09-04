@@ -83,6 +83,7 @@ void combination_get_expression(
   /*@out@*/ char***       ulines,
   /*@out@*/ unsigned int* uline_size,
   /*@out@*/ int**         excludes,
+  /*@out@*/ char***       reasons,
   /*@out@*/ unsigned int* exclude_size
 );
 
@@ -103,6 +104,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.29  2008/09/04 23:08:06  phase1geo
+ More work on exclusions via GUI.  Still work to go.  Checkpointing.
+
  Revision 1.28  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
