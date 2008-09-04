@@ -2850,6 +2850,9 @@ struct profiler_s {
 */
 struct db_s {
   char*       top_module;            /*!< Name of top-most module in the design */
+  char**      leading_hierarchies;   /*!< Specifies the Verilog hierarchy leading up to the DUT (taken from the -i value) */
+  int         leading_hier_num;      /*!< Specifies the number of hierarchies stored in the leading_hierarchies array */
+  bool        leading_hiers_differ;  /*!< Set to TRUE if more than one leading hierarchy exists and it differs with the first leading hierarchy */
   inst_link*  inst_head;             /*!< Pointer to head of instance tree list */
   inst_link*  inst_tail;             /*!< Pointer to tail of instance tree list */
   funit_link* funit_head;            /*!< Pointer to head of functional unit list */
@@ -2891,6 +2894,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.310  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.309  2008/09/03 03:46:37  phase1geo
  Updates for memory and assertion exclusion output.  Checkpointing.
 

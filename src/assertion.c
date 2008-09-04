@@ -38,9 +38,6 @@ extern db**         db_list;
 extern unsigned int curr_db;
 extern bool         report_covered;
 extern bool         report_instance;
-extern char**       leading_hierarchies;
-extern int          leading_hier_num;
-extern bool         leading_hiers_differ;
 extern isuppl       info_suppl;
 extern bool         report_exclusions;
 
@@ -432,11 +429,11 @@ void assertion_report(
 
   if( report_instance ) {
 
-    if( leading_hiers_differ ) {
+    if( db_list[curr_db]->leading_hiers_differ ) {
       strcpy( tmp, "<NA>" );
     } else {
-      assert( leading_hier_num > 0 );
-      strcpy( tmp, leading_hierarchies[0] );
+      assert( db_list[curr_db]->leading_hier_num > 0 );
+      strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
     }
 
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
@@ -556,6 +553,10 @@ void assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.38  2008/09/04 21:34:19  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.37  2008/09/03 03:46:37  phase1geo
  Updates for memory and assertion exclusion output.  Checkpointing.
 
