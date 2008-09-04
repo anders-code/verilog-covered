@@ -56,9 +56,6 @@ extern unsigned int curr_db;
 extern char*        top_module;
 extern char*        top_instance;
 extern char         user_msg[USER_MSG_LENGTH];
-extern char**       leading_hierarchies;
-extern int          leading_hier_num;
-extern bool         leading_hiers_differ;
 extern func_unit*   global_funit;
 extern func_unit*   curr_funit;
 extern unsigned int flag_global_generation;
@@ -111,20 +108,20 @@ void search_init() { PROFILE(SEARCH_INIT);
   if( top_instance == NULL ) {
     top_instance = strdup_safe( top_module );
     (void)inst_link_add( instance_create( mod, top_instance, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
-    leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
-    leading_hierarchies[leading_hier_num] = strdup_safe( "*" );
-    leading_hier_num++;
+    db_list[curr_db]->leading_hierarchies = (char**)realloc_safe( db_list[curr_db]->leading_hierarchies, (sizeof( char* ) * db_list[curr_db]->leading_hier_num), (sizeof( char* ) * (db_list[curr_db]->leading_hier_num + 1)) );
+    db_list[curr_db]->leading_hierarchies[db_list[curr_db]->leading_hier_num] = strdup_safe( "*" );
+    db_list[curr_db]->leading_hier_num++;
   } else {
     scope_extract_back( top_instance, dutname, lhier );
     (void)inst_link_add( instance_create( mod, dutname, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
     if( lhier[0] == '\0' ) {
-      leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
-      leading_hierarchies[leading_hier_num] = strdup_safe( "*" );
-      leading_hier_num++;
+      db_list[curr_db]->leading_hierarchies = (char**)realloc_safe( db_list[curr_db]->leading_hierarchies, (sizeof( char* ) * db_list[curr_db]->leading_hier_num), (sizeof( char* ) * (db_list[curr_db]->leading_hier_num + 1)) );
+      db_list[curr_db]->leading_hierarchies[db_list[curr_db]->leading_hier_num] = strdup_safe( "*" );
+      db_list[curr_db]->leading_hier_num++;
     } else {
-      leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
-      leading_hierarchies[leading_hier_num] = strdup_safe( lhier );
-      leading_hier_num++;
+      db_list[curr_db]->leading_hierarchies = (char**)realloc_safe( db_list[curr_db]->leading_hierarchies, (sizeof( char* ) * db_list[curr_db]->leading_hier_num), (sizeof( char* ) * (db_list[curr_db]->leading_hier_num + 1)) );
+      db_list[curr_db]->leading_hierarchies[db_list[curr_db]->leading_hier_num] = strdup_safe( lhier );
+      db_list[curr_db]->leading_hier_num++;
     }
   }
 
@@ -299,6 +296,10 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.48  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.47  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

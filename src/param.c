@@ -85,9 +85,9 @@
 */
 static funit_inst* defparam_list = NULL;
 
-extern char   user_msg[USER_MSG_LENGTH];
-extern char** leading_hierarchies;
-extern int    leading_hier_num;
+extern char         user_msg[USER_MSG_LENGTH];
+extern db**         db_list;
+extern unsigned int curr_db;
 
 
 /*!
@@ -874,14 +874,14 @@ static inst_parm* param_has_defparam(
     scope[0] = '\0';
     instance_gen_scope( scope, inst, FALSE );
 
-    assert( leading_hier_num > 0 );
+    assert( db_list[curr_db]->leading_hier_num > 0 );
 
     /* Generate full hierarchy of this parameter */
-    if( strcmp( leading_hierarchies[0], "*" ) == 0 ) {
+    if( strcmp( db_list[curr_db]->leading_hierarchies[0], "*" ) == 0 ) {
       unsigned int rv = snprintf( parm_scope, 4096, "%s.%s", scope, mparm->name );
       assert( rv < 4096 );
     } else {
-      unsigned int rv = snprintf( parm_scope, 4096, "%s.%s.%s", leading_hierarchies[0], scope, mparm->name );
+      unsigned int rv = snprintf( parm_scope, 4096, "%s.%s.%s", db_list[curr_db]->leading_hierarchies[0], scope, mparm->name );
       assert( rv < 4096 );
     }
 
@@ -1129,6 +1129,10 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.113  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.112  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

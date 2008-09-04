@@ -271,9 +271,6 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
     /* Parse score command-line */
     merge_parse_args( argc, last_arg, argv );
 
-    /* Initialize all global information */
-    info_initialize();
-
     /* Read in base database */
     rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in_head->str );
     assert( rv < USER_MSG_LENGTH );
@@ -313,6 +310,10 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.54  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.53  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

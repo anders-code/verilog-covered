@@ -244,9 +244,6 @@ void parse_and_score_dumpfile(
     }
 #endif
 
-    /* Initialize all global information variables */
-    info_initialize();
-
     /* Read in contents of specified database file */
     db_read( db, READ_MODE_NO_MERGE );
   
@@ -302,6 +299,10 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.72  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.71  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

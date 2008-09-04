@@ -1039,7 +1039,6 @@ void command_score(
     /* Parse design */
     if( use_files_head != NULL ) {
       print_output( "Reading design...", NORMAL, __FILE__, __LINE__ );
-      info_initialize();
       search_init();
       parse_design( top_module, output_db );
       print_output( "", NORMAL, __FILE__, __LINE__ );
@@ -1116,6 +1115,10 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.136  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.135  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
