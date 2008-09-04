@@ -66,12 +66,17 @@ void report_save_cdd(
 void report_output_exclusion_reason(
   FILE* ofile,
   int   leading_spaces,
-  char* msg
+  char* msg,
+  bool  header
 );
 
 
 /*
  $Log$
+ Revision 1.20  2008/09/04 04:15:10  phase1geo
+ Adding -p option to exclude command.  Updating other files per this change.
+ Checkpointing.
+
  Revision 1.19  2008/09/02 22:41:46  phase1geo
  Starting to work on adding exclusion reason output to report files.  Added
  support for exclusion reasons to CDD files.  Checkpointing.
