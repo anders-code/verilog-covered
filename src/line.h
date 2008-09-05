@@ -41,6 +41,7 @@ void line_collect(
             int        cov,
   /*@out@*/ int**      lines,
   /*@out@*/ int**      excludes,
+  /*@out@*/ char***    reasons,
   /*@out@*/ int*       line_cnt,
   /*@out@*/ int*       line_size
 );
@@ -70,6 +71,10 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.23  2008/09/05 23:19:03  phase1geo
+ Adding exclusion preference pane.  Also added support for exclusion reason for
+ line coverage.  Checkpointing.
+
  Revision 1.22  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
