@@ -1100,7 +1100,7 @@ char* exclude_format_reason(
       msg[0] = '\0';
     }
     strcat( msg, str );
-    msg[strlen(msg)-1] = '\0';
+    msg[strlen(msg)] = '\0';
   }
 
   PROFILE_END;
@@ -1698,6 +1698,12 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.38  2008/09/06 05:59:45  phase1geo
+ Adding assertion exclusion reason support and have most code implemented for
+ FSM exclusion reason support (still working on debugging this code).  I believe
+ that assertions, FSMs and lines might suffer from the same problem...
+ Checkpointing.
+
  Revision 1.37  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.

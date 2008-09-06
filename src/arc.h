@@ -116,8 +116,10 @@ void arc_get_transitions(
   /*@out@*/ char***          to_states,
   /*@out@*/ int**            ids,
   /*@out@*/ int**            excludes,
+  /*@out@*/ char***          reasons,
   /*@out@*/ int*             arc_size,
             const fsm_table* table,
+            func_unit*       funit,
             bool             hit,
             bool             any
 );
@@ -134,6 +136,12 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.34  2008/09/06 05:59:45  phase1geo
+ Adding assertion exclusion reason support and have most code implemented for
+ FSM exclusion reason support (still working on debugging this code).  I believe
+ that assertions, FSMs and lines might suffer from the same problem...
+ Checkpointing.
+
  Revision 1.33  2008/09/03 05:33:06  phase1geo
  Adding in FSM exclusion support to exclude and report -e commands.  Updating
  regressions per recent changes.  Checkpointing.

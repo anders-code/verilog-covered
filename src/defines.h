@@ -2076,6 +2076,7 @@ struct exp_info_s {
 */
 struct str_link_s {
   char*         str;                 /*!< String to store */
+  char*         str2;                /*!< Addition string to store */
   uint32        suppl;               /*!< 32-bit additional information */
   uint32        suppl2;              /*!< 32-bit additional information */
   uint8         suppl3;              /*!< 8-bit additional information */
@@ -2894,6 +2895,12 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.311  2008/09/06 05:59:45  phase1geo
+ Adding assertion exclusion reason support and have most code implemented for
+ FSM exclusion reason support (still working on debugging this code).  I believe
+ that assertions, FSMs and lines might suffer from the same problem...
+ Checkpointing.
+
  Revision 1.310  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
