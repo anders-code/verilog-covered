@@ -4827,6 +4827,9 @@ bool expression_op_func__dim(
   /* If the right-hand dimensional LSB value is different than our own, set it to the new value and return TRUE */
   retval = (rlsb != expr->elem.dim->curr_lsb);
   expr->elem.dim->curr_lsb = rlsb;
+
+  /* Get coverage information */
+  expression_set_tf_preclear( expr, retval );
  
   PROFILE_END;
 
@@ -5608,6 +5611,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.341  2008/09/11 04:51:21  phase1geo
+ Fixing bugs 2104947 and 2104924.  Adding mem4 diagnostic to verify.  Also
+ added negate2 diagnostic for coverage purposes.
+
  Revision 1.340  2008/08/28 13:59:18  phase1geo
  More updates to be more efficient in outputting exclusion IDs.  Also added
  capability (or the start of) to output exclusions when the -e option is

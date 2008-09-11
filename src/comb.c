@@ -1063,6 +1063,7 @@ static void combination_underline_tree(
                 if( (ESUPPL_IS_ROOT( exp->suppl ) == 0) &&
                     (exp->parent->expr->op == EXP_OP_DIM) &&
                     (exp->parent->expr->right == exp) ) {
+                  *size = l_size + r_size + 2;
                   code_fmt[0] = '\0';
                 } else {
                   unsigned int i;
@@ -1081,6 +1082,7 @@ static void combination_underline_tree(
                 if( (ESUPPL_IS_ROOT( exp->suppl ) == 0) &&
                     (exp->parent->expr->op == EXP_OP_DIM) &&
                     (exp->parent->expr->right == exp) ) {
+                  *size = l_size + r_size + 3;
                   code_fmt[0] = '\0';
                 } else {
                   unsigned int i;
@@ -1101,6 +1103,7 @@ static void combination_underline_tree(
                 if( (ESUPPL_IS_ROOT( exp->suppl ) == 0) &&
                     (exp->parent->expr->op == EXP_OP_DIM) &&
                     (exp->parent->expr->right == exp) ) {
+                  *size = l_size + r_size + 4;
                   code_fmt[0] = '\0';
                 } else {
                   unsigned int i;
@@ -3092,6 +3095,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.208  2008/09/11 04:51:21  phase1geo
+ Fixing bugs 2104947 and 2104924.  Adding mem4 diagnostic to verify.  Also
+ added negate2 diagnostic for coverage purposes.
+
  Revision 1.207  2008/09/09 22:07:47  phase1geo
  Fixing bug 2095796.
 
