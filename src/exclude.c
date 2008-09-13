@@ -644,10 +644,10 @@ void exclude_set_fsm_exclude(
       /* Handle the exclusion reason */
       if( value == 1 ) {
         if( reason != NULL ) {
-          exclude_add_exclude_reason( 'F', curr_fsm->table->table->arcs[found_index]->id, reason, funit );
+          exclude_add_exclude_reason( 'F', (curr_fsm->table->table->id + found_index), reason, funit );
         }
       } else {
-        exclude_remove_exclude_reason( 'F', curr_fsm->table->table->arcs[found_index]->id, funit );
+        exclude_remove_exclude_reason( 'F', (curr_fsm->table->table->id + found_index), funit );
       }
 
     }
@@ -1699,6 +1699,11 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.40  2008/09/13 13:04:47  phase1geo
+ Moving exclusion ID of FSM from the arc transitions to the FSM itself (only one
+ ID needed to be stored).  This improves on memory usage and performance when
+ searching for exclusions.
+
  Revision 1.39  2008/09/10 23:06:36  phase1geo
  Adding several new diagnostics for coverage testing purposes.  Fixed a few
  bugs that surfaced when performing this testing.

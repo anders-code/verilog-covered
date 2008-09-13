@@ -2204,7 +2204,6 @@ struct fsm_table_arc_s {
   asuppl       suppl;                /*!< Supplemental field for this state transition entry */
   unsigned int from;                 /*!< Index to from_state vector value in fsm_table vector array */
   unsigned int to;                   /*!< Index to to_state vector value in fsm_table vector array */
-  unsigned int id;                   /*!< Unique identifier used for exclusions */
 };
 
 /*!
@@ -2212,6 +2211,7 @@ struct fsm_table_arc_s {
 */
 struct fsm_table_s {
   fsuppl          suppl;             /*!< Supplemental field for FSM table */
+  unsigned int    id;                /*!< Starting exclusion ID of arc list */
   vector**        fr_states;         /*!< List of FSM from state vectors that are valid for this FSM (VTYPE_VAL) */
   unsigned int    num_fr_states;     /*!< Contains the number of from states stored in this table */
   vector**        to_states;         /*!< List of FSM to state vectors that are valid for this FSM (VTYPE_VAL) */
@@ -2895,6 +2895,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.312  2008/09/13 13:04:47  phase1geo
+ Moving exclusion ID of FSM from the arc transitions to the FSM itself (only one
+ ID needed to be stored).  This improves on memory usage and performance when
+ searching for exclusions.
+
  Revision 1.311  2008/09/06 05:59:45  phase1geo
  Adding assertion exclusion reason support and have most code implemented for
  FSM exclusion reason support (still working on debugging this code).  I believe
