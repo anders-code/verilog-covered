@@ -28,7 +28,9 @@
 #include "defines.h"
 
 
-/*! \brief Allocates and initializes new state transition array. */
+/*!
+ \brief Allocates and initializes new state transition array.
+*/
 fsm_table* arc_create();
 
 /*! \brief Adds new state transition arc entry to specified table. */
@@ -136,6 +138,9 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.35  2008/09/15 05:00:18  phase1geo
+ Documentation updates.
+
  Revision 1.34  2008/09/06 05:59:45  phase1geo
  Adding assertion exclusion reason support and have most code implemented for
  FSM exclusion reason support (still working on debugging this code).  I believe
