@@ -399,7 +399,7 @@ static bool line_funit_summary(
  Displays the lines missed during simulation to standard output from the
  specified expression list.
 */
-static line_display_verbose(
+static void line_display_verbose(
   FILE*      ofile,  /*!< Pointer to file to output results to */
   func_unit* funit,  /*!< Pointer to functional unit containing lines to display in verbose format */
   rpt_type   rtype   /*!< Specifies the type of lines to output */
@@ -681,6 +681,9 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.103  2008/09/15 03:43:49  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.102  2008/09/05 23:19:03  phase1geo
  Adding exclusion preference pane.  Also added support for exclusion reason for
  line coverage.  Checkpointing.
