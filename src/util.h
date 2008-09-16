@@ -82,6 +82,12 @@ const char* get_basename( /*@returned@*/ const char* str );
 /*! \brief Extracts directory path from file pathname. */
 char* get_dirname( char* str );
 
+/*! \brief Allocates memory for and gets the absolute pathname for a given filename. */
+char* get_absolute_path( const char* filename );
+
+/*! \brief Allocates memory for and gets the relative pathname for a given absolute filename. */
+char* get_relative_path( const char* abs_path );
+
 /*! \brief Returns TRUE if the specified directory exists. */
 bool directory_exists( const char* dir );
 
@@ -213,6 +219,11 @@ void gen_exclusion_id(
 
 /*
  $Log$
+ Revision 1.47  2008/09/16 23:15:20  phase1geo
+ Adding initial versions of utility functions to calculate the relative and
+ absolute pathnames of files.  This functionality has not been tested and has
+ not been used in the code at this time.  Checkpointing.
+
  Revision 1.46  2008/08/28 04:37:18  phase1geo
  Starting to add support for exclusion output and exclusion IDs to generated
  reports.  These changes should break regressions.  Checkpointing.
