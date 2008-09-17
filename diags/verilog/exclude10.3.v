@@ -7,21 +7,22 @@
 
 module main;
 
-wire a, b;
-reg  c, d;
+wire a, b, c;
+reg  d, e;
 
-assign a = c & d;
-assign b = c | d;
+assign a = d & e;
+assign b = d | e;
+assign c = d ^ e;
 
 initial begin
 `ifdef DUMP
         $dumpfile( "exclude10.3.vcd" );
         $dumpvars( 0, main );
 `endif
-	c = 1'b0;
 	d = 1'b0;
+	e = 1'b0;
 	#5;
-	d = 1'b1;
+	e = 1'b1;
         #10;
         $finish;
 end
