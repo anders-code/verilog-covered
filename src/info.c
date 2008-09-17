@@ -316,8 +316,10 @@ void merged_cdd_db_read(
 
     } else if( merge_in_num > 0 ) {
 
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s in CDD file has been specified on the command-line", tmp1 );
+      char* file = get_relative_path( tmp1 );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s in CDD file has been specified on the command-line", file );
       assert( rv < USER_MSG_LENGTH );
+      free_safe( file, (strlen( file ) + 1) );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       Throw 0;
 
@@ -367,6 +369,11 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.44  2008/09/17 04:55:46  phase1geo
+ Integrating new get_absolute_path and get_relative_path functions and
+ updating regressions.  Also fixed a few coding bugs with these new functions.
+ IV and Cver regressions fully pass at the moment.
+
  Revision 1.43  2008/09/16 13:00:17  phase1geo
  Fixing some memory issues with the obfuscation functionality and minore
  optimizations to this code.  Other insignificant updates.
