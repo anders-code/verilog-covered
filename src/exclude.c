@@ -1043,25 +1043,29 @@ char* exclude_format_reason(
 
   str[0] = '\0';
 
-  for( i=0; i<strlen( old_str ); i++ ) {
+  if( old_str != NULL ) {
 
-    c = old_str[i];
+    for( i=0; i<strlen( old_str ); i++ ) {
 
-    /* Convert any formatting characters to spaces */
-    c = ((c == '\n') || (c == '\t') || (c == '\r')) ? ' ' : c;
+      c = old_str[i];
 
-    /* If the user has specified multiple formatting characters together, ignore all but the first. */
-    if( (c != ' ') || !sp_just_seen ) {
-      sp_just_seen = (c == ' ') ? TRUE : FALSE;
-      str[(index % 100) + 0] = c;
-      str[(index % 100) + 1] = '\0';
-      if( ((index + 1) % 100) == 0 ) {
-        msg       = (char*)realloc_safe( msg, msg_size, (msg_size + 100) );
-        msg_size += 100;
-        strcat( msg, str );
-        str[0] = '\0';
+      /* Convert any formatting characters to spaces */
+      c = ((c == '\n') || (c == '\t') || (c == '\r')) ? ' ' : c;
+
+      /* If the user has specified multiple formatting characters together, ignore all but the first. */
+      if( (c != ' ') || !sp_just_seen ) {
+        sp_just_seen = (c == ' ') ? TRUE : FALSE;
+        str[(index % 100) + 0] = c;
+        str[(index % 100) + 1] = '\0';
+        if( ((index + 1) % 100) == 0 ) {
+          msg       = (char*)realloc_safe( msg, msg_size, (msg_size + 100) );
+          msg_size += 100;
+          strcat( msg, str );
+          str[0] = '\0';
+        }
+        index++;
       }
-      index++;
+
     }
 
   }
@@ -1167,7 +1171,7 @@ static void exclude_handle_exclude_reason(
 
     char* str = exclude_get_message( id );
 
-    if( strlen( str ) > 0 ) {
+    if( (str != NULL) && (strlen( str ) > 0) ) {
       exclude_add_exclude_reason( id[0], atoi( id + 1 ), str, funit );
     }
 
@@ -1678,6 +1682,9 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.42  2008/09/18 06:04:40  phase1geo
+ Adding more diagnostics to regression to cover exclude.c missed cases.
+
  Revision 1.41  2008/09/15 03:43:49  phase1geo
  Cleaning up splint warnings.
 
