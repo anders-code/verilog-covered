@@ -68,6 +68,12 @@ void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
            and adds to functional unit list. */
 void funit_db_read( func_unit* funit, /*@out@*/char* scope, char** line );
 
+/*! \brief Reads the functional unit version information from the functional unit line and adds it to the current functional unit */
+void funit_version_db_read(
+  func_unit* funit,
+  char**     line
+);
+
 /*! \brief Merges two functional units into the base functional unit. */
 void funit_merge(
   func_unit* base,
@@ -130,6 +136,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.38  2008/09/19 22:59:16  phase1geo
+ Adding initial support for module version information.  Verified that the new
+ code does not break existing regression.  Also added new Covered banner.
+
  Revision 1.37  2008/04/15 06:08:46  phase1geo
  First attempt to get both instance and module coverage calculatable for
  GUI purposes.  This is not quite complete at the moment though it does
