@@ -2864,6 +2864,8 @@ struct db_s {
   inst_link*  inst_tail;             /*!< Pointer to tail of instance tree list */
   funit_link* funit_head;            /*!< Pointer to head of functional unit list */
   funit_link* funit_tail;            /*!< Pointer to tail of functional unit list */
+  str_link*   fver_head;             /*!< Pointer to head of file version list */
+  str_link*   fver_tail;             /*!< Pointer to head of file version list */
 };
 
 /*!
@@ -2901,6 +2903,12 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.314  2008/09/21 13:36:59  phase1geo
+ Completing code to get functional unit version information into CDD file and
+ functional units.  Added new version1 and version1.1 diagnostics to verify that
+ this functionality works as expected.  Still need to make use of this
+ information.
+
  Revision 1.313  2008/09/19 22:59:16  phase1geo
  Adding initial support for module version information.  Verified that the new
  code does not break existing regression.  Also added new Covered banner.
