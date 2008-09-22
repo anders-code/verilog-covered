@@ -489,7 +489,9 @@ void db_read(
               assert( !merge_mode );
  
               /* Parse rest of line for user-supplied message */
-              message_db_read( &rest_line );
+              if( (read_mode != READ_MODE_MERGE_NO_MERGE) && (read_mode != READ_MODE_MERGE_INST_MERGE) ) {
+                message_db_read( &rest_line );
+              }
 
             } else if( type == DB_TYPE_MERGED_CDD ) {
 
@@ -3072,6 +3074,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.330  2008/09/22 04:19:53  phase1geo
+ Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
+
  Revision 1.329  2008/09/21 13:36:59  phase1geo
  Completing code to get functional unit version information into CDD file and
  functional units.  Added new version1 and version1.1 diagnostics to verify that

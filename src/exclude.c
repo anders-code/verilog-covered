@@ -270,16 +270,23 @@ static void exclude_add_exclude_reason(
 ) { PROFILE(EXCLUDE_ADD_EXCLUDE_REASON);
 
   exclude_reason* er;
+  int             rv;
+  struct timeval  tv;
 
   /*
    If the coverage point was not previously excluded, allow the user to specify a reason and
    store this information in the functional unit.
   */
-  er         = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
-  er->type   = type;
-  er->id     = id;
-  er->reason = reason;
-  er->next   = NULL;
+  er            = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
+  er->type      = type;
+  er->id        = id;
+  er->reason    = reason;
+  er->next      = NULL;
+
+  /* Add timestamp information */
+  rv = gettimeofday( &tv, NULL );
+  assert( rv == 0 );
+  er->timestamp = tv.tv_sec;
 
   if( funit->er_head == NULL ) { 
     funit->er_head = funit->er_tail = er; 
@@ -891,7 +898,7 @@ void exclude_db_write(
   FILE*           ofile  /*!< Pointer to output file stream */
 ) { PROFILE(EXCLUDE_DB_WRITE);
 
-  fprintf( ofile, "%d %c %d %s\n", DB_TYPE_EXCLUDE, er->type, er->id, er->reason );
+  fprintf( ofile, "%d %c %d %ld %s\n", DB_TYPE_EXCLUDE, er->type, er->id, er->timestamp, er->reason );
 
   PROFILE_END;
 
@@ -905,22 +912,24 @@ void exclude_db_read(
   func_unit* curr_funit  /*!< Pointer to the current functional unit */
 ) { PROFILE(EXCLUDE_DB_READ);
 
-  char type;        /* Specifies the type of exclusion this structure represents */
-  int  id;          /* ID of signal/expression/FSM */
-  int  chars_read;  /* Number of characters read from line */
+  char   type;        /* Specifies the type of exclusion this structure represents */
+  int    id;          /* ID of signal/expression/FSM */
+  int    chars_read;  /* Number of characters read from line */
+  time_t timestamp;   /* Reason timestamp */
 
-  if( sscanf( *line, " %c %d%n", &type, &id, &chars_read ) == 2 ) {
+  if( sscanf( *line, " %c %d %ld%n", &type, &id, &timestamp, &chars_read ) == 3 ) {
 
     exclude_reason* er;
 
     *line = *line + chars_read;
 
     /* Allocate and initialize the exclude reason structure */
-    er         = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
-    er->type   = type;
-    er->id     = id;
-    er->reason = NULL;
-    er->next   = NULL;
+    er            = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
+    er->type      = type;
+    er->id        = id;
+    er->reason    = NULL;
+    er->timestamp = timestamp;
+    er->next      = NULL;
 
     /* Remove leading whitespace */
     while( (*line)[0] == ' ' ) {
@@ -1682,6 +1691,9 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.45  2008/09/22 04:19:54  phase1geo
+ Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
+
  Revision 1.44  2008/09/18 21:55:21  phase1geo
  Fixing memory issues in exclude.c and adding missing exclude13.err file in
  regressions.
