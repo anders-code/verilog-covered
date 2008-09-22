@@ -272,7 +272,7 @@ void message_db_read(
 ) { PROFILE(MESSAGE_DB_READ);
 
   /* All we need to do is copy the message */
-  if( strlen( *line + 1 ) > 0 ) {
+  if( (cdd_message == NULL) && (strlen( *line + 1 ) > 0) ) {
     cdd_message = strdup_safe( *line + 1 );
   }
 
@@ -369,6 +369,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.45  2008/09/22 04:19:56  phase1geo
+ Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
+
  Revision 1.44  2008/09/17 04:55:46  phase1geo
  Integrating new get_absolute_path and get_relative_path functions and
  updating regressions.  Also fixed a few coding bugs with these new functions.
