@@ -673,6 +673,7 @@ void funit_db_write(
       curr_fsm = curr_fsm->next;
     }
 
+    /* Now print all of the exclusion reasons in the functional unit */
     curr_er = funit->er_head;
     while( curr_er != NULL ) {
       exclude_db_write( curr_er, file );
@@ -1552,6 +1553,9 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.112  2008/09/22 05:04:49  phase1geo
+ Adding parsing support for new -er option.
+
  Revision 1.111  2008/09/21 13:36:59  phase1geo
  Completing code to get functional unit version information into CDD file and
  functional units.  Added new version1 and version1.1 diagnostics to verify that
