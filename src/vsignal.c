@@ -392,6 +392,9 @@ void vsignal_db_merge(
 
     } else {
 
+      /* Make sure that the exclude bit is merged */
+      base->suppl.part.excluded |= suppl.part.excluded;
+
       i = 0;
       while( (i < (pdim_num + udim_num)) && (sscanf( *line, " %d %d%n", &msb, &lsb, &chars_read ) == 2) ) {
         *line = *line + chars_read;
@@ -759,6 +762,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.81  2008/09/22 22:15:05  phase1geo
+ Initial code for supporting the merging and resolution of exclusion reasons.
+ This code is completely untested at this point but does compile.  Checkpointing.
+
  Revision 1.80  2008/09/15 23:01:39  phase1geo
  Updating regressions per latest change.
 
