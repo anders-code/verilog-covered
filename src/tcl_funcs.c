@@ -1782,8 +1782,6 @@ int tcl_func_merge_cdd(
       retval = TCL_ERROR;
     }
 
-    free_safe( ifile, (strlen( ifile ) + 1) );
-
   }
 
   return( retval );
@@ -3077,6 +3075,10 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.91  2008/09/23 21:38:55  phase1geo
+ Fixing segmentation fault issues with GUI and fixing exclusion reason conflict
+ resolution code.  This now works in the GUI as needed.
+
  Revision 1.90  2008/09/23 14:02:02  phase1geo
  Adding exclusion reason conflict resolution to GUI.
 
