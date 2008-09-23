@@ -136,7 +136,6 @@ static expression* fsm_arg_parse_state(
         } Catch_anonymous {
           vsignal_dealloc( sig );
           expression_dealloc( expr, FALSE );
-          // printf( "fsm_arg Throw A\n" ); - HIT
           Throw 0;
         }
 
@@ -759,6 +758,10 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.56  2008/09/23 05:48:49  phase1geo
+ Fixing bug 2123730 (bug 2123300 was also fixed in a previous checkin).  Also adding
+ delay3 diagnostic to verify this bug fix.
+
  Revision 1.55  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
