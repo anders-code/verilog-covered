@@ -91,6 +91,7 @@ void line_get_stats(
           (stmt->exp->op != EXP_OP_FORK)    &&
           (stmt->exp->op != EXP_OP_JOIN)    &&
           (stmt->exp->op != EXP_OP_NOOP)    &&
+          (stmt->exp->op != EXP_OP_FOREVER) &&
           (stmt->exp->line != 0) ) {
         *total = *total + 1;
         if( (stmt->exp->exec_num > 0) || (stmt->suppl.part.excluded == 1) ) {
@@ -154,6 +155,7 @@ void line_collect(
         (stmt->exp->op != EXP_OP_FORK)    &&
         (stmt->exp->op != EXP_OP_JOIN)    &&
         (stmt->exp->op != EXP_OP_NOOP)    &&
+        (stmt->exp->op != EXP_OP_FOREVER) &&
         (stmt->exp->line != 0) ) {
 
       if( ((stmt->exp->exec_num > 0) ? 1 : 0) == cov ) {
@@ -433,6 +435,7 @@ static void line_display_verbose(
         (stmt->exp->op != EXP_OP_FORK)    &&
         (stmt->exp->op != EXP_OP_JOIN)    &&
         (stmt->exp->op != EXP_OP_NOOP)    &&
+        (stmt->exp->op != EXP_OP_FOREVER) &&
         (stmt->exp->line != 0) ) {
 
       if( ((((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered) && (stmt->suppl.part.excluded == 0) && (rtype != RPT_TYPE_EXCL)) ||
@@ -681,6 +684,9 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.104  2008/09/29 23:00:27  phase1geo
+ Attempting to fix bug 2136474.  Also adding support for $time system function call.
+
  Revision 1.103  2008/09/15 03:43:49  phase1geo
  Cleaning up splint warnings.
 
