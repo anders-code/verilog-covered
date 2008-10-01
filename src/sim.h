@@ -69,8 +69,7 @@ bool sim_expression(
   expression*     expr,
   thread*         thr,
   const sim_time* time,
-  bool            lhs,
-  bool*           clear_changed
+  bool            lhs
 );
 
 /*! \brief Simulates one thread until it has either completed or enters a context switch */
@@ -94,6 +93,11 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.39  2008/10/01 06:07:01  phase1geo
+ Finishing code support needed for the $time operation.  Adding several new
+ diagnostics to regression suite to verify the newly supported system task calls.
+ Added several new system task calls to the list of "supported" task calls.
+
  Revision 1.38  2008/09/30 23:13:32  phase1geo
  Checkpointing (TOT is broke at this point).
 
