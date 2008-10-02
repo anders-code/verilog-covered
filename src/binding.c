@@ -620,7 +620,7 @@ static void bind_task_function_ports(
   if( expr != NULL ) {
 
     /* If the expression is a list, traverse left and right expression trees */
-    if( expr->op == EXP_OP_LIST ) {
+    if( expr->op == EXP_OP_PLIST ) {
 
       bind_task_function_ports( expr->left,  funit, name, order, funit_exp );
       bind_task_function_ports( expr->right, funit, name, order, funit_exp );
@@ -977,6 +977,11 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.136  2008/10/02 05:51:09  phase1geo
+ Reworking system task call parsing which will allow us to implement system tasks with
+ parameters (also will allow us to handle system tasks correctly for the given generation).
+ Fixing bug 2127694.  Fixing issue with current time in threads.  Full regressions pass.
+
  Revision 1.135  2008/08/18 23:07:25  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
