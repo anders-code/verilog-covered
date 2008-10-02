@@ -2817,8 +2817,11 @@ bool expression_op_func__random(
 
   /* Store the returned seed into the left expression, if one exists */
   if( seeded ) {
-    vector_from_int( expr->left->value, seed );
-    expression_assign( expr->left->right, expr->left, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+    exp_op_type op = expr->left->right->op;
+    if( (op == EXP_OP_SIG) || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_MBIT_SEL) || (op == EXP_OP_DIM) ) {
+      vector_from_int( expr->left->value, seed );
+      expression_assign( expr->left->right, expr->left, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+    }
   }
 
   PROFILE_END;
@@ -5675,6 +5678,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.349  2008/10/02 22:52:52  phase1geo
+ Adding code to random function so that we don't attempt to store the new seed
+ value into an expression.  Checkpointing.
+
  Revision 1.348  2008/10/02 21:39:25  phase1geo
  Fixing issues with $random system task call.  Added more diagnostics to verify
  its functionality.
