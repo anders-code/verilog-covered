@@ -2142,6 +2142,7 @@ void vector_from_int(
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
       {
+#if UL_BITS < SIZEOF_INT
         unsigned int i;
         unsigned int size = UL_SIZE( vec->width );
         for( i=0; i<size; i++ ) {
@@ -2149,6 +2150,10 @@ void vector_from_int(
           vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = 0;
           value >>= UL_BITS;
         }
+#else
+        vec->value.ul[0][VTYPE_INDEX_VAL_VALL] = (ulong)value;
+        vec->value.ul[0][VTYPE_INDEX_VAL_VALH] = 0;
+#endif
       }
       break;
     default :  assert( 0 );  break;
@@ -2175,6 +2180,7 @@ void vector_from_uint64(
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
       {
+#if UL_BITS < 8
         unsigned int i;
         unsigned int size = UL_SIZE( vec->width );
         for( i=0; i<size; i++ ) {
@@ -2182,6 +2188,10 @@ void vector_from_uint64(
           vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = 0;
           value >>= UL_BITS;
         }
+#else
+        vec->value.ul[0][VTYPE_INDEX_VAL_VALL] = (ulong)value;
+        vec->value.ul[0][VTYPE_INDEX_VAL_VALH] = 0;
+#endif
       }
       break;
     default :  assert( 0 );  break;
@@ -4675,6 +4685,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.159  2008/10/02 22:54:23  phase1geo
+ Attempting to fix vector_from_int and vector_from_uint64 warnings.
+
  Revision 1.158  2008/10/02 21:39:25  phase1geo
  Fixing issues with $random system task call.  Added more diagnostics to verify
  its functionality.
