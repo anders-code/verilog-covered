@@ -2806,7 +2806,6 @@ bool expression_op_func__random(
 
   /* If $random contains a seed parameter, get it */
   if( seeded ) {
-    printf( "In expression_op_func__random, getting seed: %ld\n", seed );
     seed = (long)vector_to_int( expr->left->value );
   }
   
@@ -5676,6 +5675,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.348  2008/10/02 21:39:25  phase1geo
+ Fixing issues with $random system task call.  Added more diagnostics to verify
+ its functionality.
+
  Revision 1.347  2008/10/02 14:54:01  phase1geo
  Fixing parameterized $random system task calls.  This also lays the foundation for
  how to return values from system task calls.  Updating random1.1 files.  Full
