@@ -2142,7 +2142,7 @@ void vector_from_int(
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
       {
-#if UL_BITS < SIZEOF_INT
+#if UL_BITS < (SIZEOF_INT * 8)
         unsigned int i;
         unsigned int size = UL_SIZE( vec->width );
         for( i=0; i<size; i++ ) {
@@ -2180,7 +2180,7 @@ void vector_from_uint64(
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
       {
-#if UL_BITS < 8
+#if UL_BITS < 64
         unsigned int i;
         unsigned int size = UL_SIZE( vec->width );
         for( i=0; i<size; i++ ) {
@@ -4685,6 +4685,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.160  2008/10/03 03:13:49  phase1geo
+ Fixing problem with vector_from_int and vector_from_uint64 changes.  Full regression
+ passes again.
+
  Revision 1.159  2008/10/02 22:54:23  phase1geo
  Attempting to fix vector_from_int and vector_from_uint64 warnings.
 
