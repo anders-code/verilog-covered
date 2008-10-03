@@ -587,6 +587,18 @@ void codegen_gen_expr(
       (*code)[0]  = strdup_safe( "always_latch" );
       *code_depth = 1;
 
+    } else if( expr->op == EXP_OP_STIME ) {
+   
+      *code       = (char**)malloc_safe( sizeof( char* ) );
+      (*code)[0]  = strdup_safe( "$time" );
+      *code_depth = 1;
+
+    } else if( (expr->op == EXP_OP_SRANDOM) && (expr->left == NULL) ) {
+
+      *code       = (char**)malloc_safe( sizeof( char* ) );
+      (*code)[0]  = strdup_safe( "$random" );
+      *code_depth = 1;
+
     } else {
 
       if( parent_op == expr->op ) {
@@ -795,6 +807,7 @@ void codegen_gen_expr(
                                right_code, right_code_depth, expr->right, "}}" );
           break;
         case EXP_OP_LIST     :
+        case EXP_OP_PLIST    :
           codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, ", ",
                                right_code, right_code_depth, expr->right, NULL );
           break;
@@ -879,6 +892,7 @@ void codegen_gen_expr(
                                right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_PASSIGN  :
+        case EXP_OP_SASSIGN  :
           *code            = right_code;
           *code_depth      = right_code_depth;
           right_code_depth = 0;
@@ -932,6 +946,10 @@ void codegen_gen_expr(
           codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, "",
                                right_code, right_code_depth, expr->right, NULL );
           break;
+        case EXP_OP_SRANDOM  :
+          codegen_create_expr( code, code_depth, expr->line, "$random( ", left_code, left_code_depth, expr->left, " )",
+                               NULL, 0, NULL, NULL );
+          break;
         default:  break;
       }
 
@@ -957,6 +975,10 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.100  2008/10/03 04:22:01  phase1geo
+ Adding support for $random and $time output in reports.  Added diagnostics to
+ verify this behavior works as expected.  Full regressions pass.
+
  Revision 1.99  2008/08/18 23:07:25  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

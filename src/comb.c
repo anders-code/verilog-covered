@@ -933,6 +933,16 @@ static void combination_underline_tree(
       *size = 12;
       strcpy( code_fmt, "always_latch" );
 
+    } else if( exp->op == EXP_OP_STIME ) {
+
+      *size = 5;
+      strcpy( code_fmt, "$time" );
+
+    } else if( (exp->op == EXP_OP_SRANDOM) && (exp->left == NULL) ) {
+
+      *size = 7;
+      strcpy( code_fmt, "$random" );
+
     } else {
 
       Try {
@@ -1131,6 +1141,7 @@ static void combination_underline_tree(
                 break;
               case EXP_OP_EXPAND   :  *size = l_size + r_size + 4;  strcpy( code_fmt, " %s %s  "         );  break;
               case EXP_OP_CONCAT   :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
+              case EXP_OP_PLIST    :
               case EXP_OP_LIST     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s  %s"           );  break;
               case EXP_OP_PEDGE    :
                 if( (ESUPPL_IS_ROOT( exp->suppl ) == 1)       ||
@@ -1177,6 +1188,7 @@ static void combination_underline_tree(
               case EXP_OP_DLY_ASSIGN :
               case EXP_OP_BASSIGN  :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s" );           break;
               case EXP_OP_NASSIGN  :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );          break;
+              case EXP_OP_SASSIGN  :
               case EXP_OP_PASSIGN  :  *size = r_size;               strcpy( code_fmt, "%s" );                break;
               case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
               case EXP_OP_REPEAT   :  *size = r_size + 10;          strcpy( code_fmt, "        %s  " );      break;
@@ -1208,6 +1220,7 @@ static void combination_underline_tree(
               case EXP_OP_IDEC     :  *size = l_size + 2;           strcpy( code_fmt, "  %s"             );  break;
               case EXP_OP_PINC     :
               case EXP_OP_PDEC     :  *size = l_size + 2;           strcpy( code_fmt, "%s  "             );  break;
+              case EXP_OP_SRANDOM  :  *size = l_size + 11;          strcpy( code_fmt, "         %s  "    );  break;
               default              :
                 rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
                                exp->op );
@@ -3089,6 +3102,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.211  2008/10/03 04:22:01  phase1geo
+ Adding support for $random and $time output in reports.  Added diagnostics to
+ verify this behavior works as expected.  Full regressions pass.
+
  Revision 1.210  2008/09/15 23:17:53  phase1geo
  Fix for bug 2112613.
 
