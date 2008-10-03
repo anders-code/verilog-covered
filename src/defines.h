@@ -840,6 +840,9 @@ typedef enum exp_op_type_e {
   EXP_OP_SRANDOM,         /*!< 106:0x6a.  Specifies the $random call */
   EXP_OP_PLIST,           /*!< 107:0x6b.  Task/function port list glue */
   EXP_OP_SASSIGN,         /*!< 108:0x6c.  System task port assignment holder */
+  EXP_OP_SSRANDOM,        /*!< 109:0x6d.  Specifies the $srandom call */
+  EXP_OP_SURANDOM,        /*!< 110:0x6e.  Specifies the $urandom call */
+  EXP_OP_SURAND_RANGE,    /*!< 111:0x6f.  Specifies the $urandom_range call */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -2944,6 +2947,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.322  2008/10/03 13:14:36  phase1geo
+ Inserting placeholders for $srandom, $urandom, and $urandom_range system call
+ support.  Checkpointing.
+
  Revision 1.321  2008/10/02 14:54:01  phase1geo
  Fixing parameterized $random system task calls.  This also lays the foundation for
  how to return values from system task calls.  Updating random1.1 files.  Full
