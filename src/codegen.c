@@ -599,6 +599,12 @@ void codegen_gen_expr(
       (*code)[0]  = strdup_safe( "$random" );
       *code_depth = 1;
 
+    } else if( (expr->op == EXP_OP_SURANDOM) && (expr->left == NULL) ) {
+ 
+      *code       = (char**)malloc_safe( sizeof( char* ) );
+      (*code)[0]  = strdup_safe( "$urandom" );
+      *code_depth = 1;
+
     } else {
 
       if( parent_op == expr->op ) {
@@ -950,6 +956,18 @@ void codegen_gen_expr(
           codegen_create_expr( code, code_depth, expr->line, "$random( ", left_code, left_code_depth, expr->left, " )",
                                NULL, 0, NULL, NULL );
           break;
+        case EXP_OP_SURANDOM :
+          codegen_create_expr( code, code_depth, expr->line, "$urandom( ", left_code, left_code_depth, expr->left, " )",
+                               NULL, 0, NULL, NULL );
+          break;
+        case EXP_OP_SURAND_RANGE :
+          codegen_create_expr( code, code_depth, expr->line, "$urandom_range( ", left_code, left_code_depth, expr->left, " )",
+                               NULL, 0, NULL, NULL );
+          break;
+        case EXP_OP_SSRANDOM :
+          codegen_create_expr( code, code_depth, expr->line, "$srandom( ", left_code, left_code_depth, expr->left, " )",
+                               NULL, 0, NULL, NULL );
+          break;
         default:  break;
       }
 
@@ -975,6 +993,11 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.101  2008/10/04 04:28:47  phase1geo
+ Adding code to support $urandom, $srandom and $urandom_range.  Added one test
+ to begin verifying $urandom functionality.  The rest of the system tasks need
+ to be verified.  Checkpointing.
+
  Revision 1.100  2008/10/03 04:22:01  phase1geo
  Adding support for $random and $time output in reports.  Added diagnostics to
  verify this behavior works as expected.  Full regressions pass.
