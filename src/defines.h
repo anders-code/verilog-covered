@@ -728,6 +728,16 @@
 /*! @} */
 
 /*!
+ Reasons for excluding a logic block from coverage consideration.
+*/
+typedef enum logic_rm_type_e {
+  LOGIC_RM_REAL = 0,     /*!< 0.  Statement block excluded because it contains a real number. */
+  LOGIC_RM_SYSFUNC,      /*!< 1.  Statement block excluded because it contains a system function. */
+  LOGIC_RM_SYSTASK,      /*!< 2.  Statement block excluded because it contains a system task. */
+  LOGIC_RM_NUM           /*!< Number of valid reasons */
+} logic_rm_type;
+
+/*!
  Enumeration of the various expression operations that Covered supports.
 */
 typedef enum exp_op_type_e {
@@ -2947,6 +2957,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.323  2008/10/06 04:05:19  phase1geo
+ Adding support for logic block removal warning output.
+
  Revision 1.322  2008/10/03 13:14:36  phase1geo
  Inserting placeholders for $srandom, $urandom, and $urandom_range system call
  support.  Checkpointing.
