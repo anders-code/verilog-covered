@@ -49,7 +49,7 @@ static const char* logic_rm_msgs[LOGIC_RM_NUM] = {
 
 
 extern func_unit* curr_funit;
-extern char*      user_msg[USER_MSG_LENGTH];
+extern char       user_msg[USER_MSG_LENGTH];
 
 
 /*!
@@ -146,6 +146,9 @@ void stmt_blk_specify_removal_reason(
 
 /*
  $Log$
+ Revision 1.18  2008/10/06 22:21:25  phase1geo
+ Fixing compile warning with stmt_blk.c.
+
  Revision 1.17  2008/10/06 04:05:19  phase1geo
  Adding support for logic block removal warning output.
 
