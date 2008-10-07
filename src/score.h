@@ -24,6 +24,9 @@
 */
 
 
+/*! \brief Creates a module that contains all of the signals to dump from the design for coverage purposes. */
+void score_generate_top_dumpvars_module( const char* dumpvars_file );
+
 /*! \brief Parses the specified define from the command-line */
 void score_parse_define( const char* def );
 
@@ -33,6 +36,10 @@ void command_score( int argc, int last_arg, const char** argv );
 
 /*
  $Log$
+ Revision 1.13  2008/10/07 05:24:18  phase1geo
+ Adding -dumpvars option.  Need to resolve a few issues before this work is considered
+ complete.
+
  Revision 1.12  2008/02/09 19:32:45  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.
