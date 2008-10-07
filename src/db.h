@@ -82,6 +82,9 @@ void db_add_file_version(
   const char* version
 );
 
+/*! \brief Outputs all needed signals in $dumpvars calls to the specified file. */
+void db_output_dumpvars( FILE* vfile );
+
 /*! \brief Adds specified functional unit node to functional unit tree.  Called by parser. */
 func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range );
 
@@ -220,6 +223,10 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.97  2008/10/07 05:24:17  phase1geo
+ Adding -dumpvars option.  Need to resolve a few issues before this work is considered
+ complete.
+
  Revision 1.96  2008/10/02 05:51:09  phase1geo
  Reworking system task call parsing which will allow us to implement system tasks with
  parameters (also will allow us to handle system tasks correctly for the given generation).
