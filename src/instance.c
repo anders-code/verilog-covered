@@ -1196,6 +1196,34 @@ void instance_dealloc_single(
 }
 
 /*!
+ Outputs dumpvars to the specified file.
+*/
+void instance_output_dumpvars(
+  FILE*       vfile,  /*!< Pointer to file to output dumpvars to */
+  funit_inst* root    /*!< Pointer to current instance */
+) { PROFILE(INSTANCE_OUTPUT_DUMPVARS);
+
+  funit_inst* child = root->child_head;
+  char        scope[4096];
+
+  /* Generate instance scope */
+  scope[0] = '\0';
+  instance_gen_scope( scope, root, FALSE );
+
+  /* Outputs dumpvars for the given functional unit */
+  funit_output_dumpvars( vfile, root->funit, scope );
+
+  /* Outputs all children instances */
+  while( child != NULL ) {
+    instance_output_dumpvars( vfile, child );
+    child = child->next;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  Recursively traverses instance tree, deallocating heap memory used to store the
  the tree.
 */
@@ -1292,6 +1320,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.106  2008/10/07 05:24:17  phase1geo
+ Adding -dumpvars option.  Need to resolve a few issues before this work is considered
+ complete.
+
  Revision 1.105  2008/09/24 22:47:28  phase1geo
  Fixing bugs 2125451 and 2127185.  Adding if1 diagnostic to verify the fix for
  2127185.

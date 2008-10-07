@@ -95,6 +95,9 @@ void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt )
 /*! \brief Removes expressions from instance parameters within the given instance that match the given expression */
 void instance_remove_parms_with_expr( funit_inst* root, statement* stmt );
 
+/*! \brief Outputs dumpvars to the given file for the given instance */
+void instance_output_dumpvars( FILE* vfile, funit_inst* root );
+
 /*! \brief Recursively deallocates all memory for the associated instance tree */
 void instance_dealloc_tree( funit_inst* root );
 
@@ -104,6 +107,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.38  2008/10/07 05:24:18  phase1geo
+ Adding -dumpvars option.  Need to resolve a few issues before this work is considered
+ complete.
+
  Revision 1.37  2008/09/03 05:33:06  phase1geo
  Adding in FSM exclusion support to exclude and report -e commands.  Updating
  regressions per recent changes.  Checkpointing.
