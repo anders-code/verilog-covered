@@ -945,6 +945,24 @@ void db_add_file_version(
 }
 
 /*!
+ Outputs all signals that need to be dumped to the given files.
+*/
+void db_output_dumpvars(
+  FILE* vfile  /*!< Pointer to file to output dumpvars output to */
+) { PROFILE(DB_OUTPUT_DUMPVARS);
+
+  inst_link* instl = db_list[curr_db]->inst_head;
+
+  while( instl != NULL ) {
+    instance_output_dumpvars( vfile, instl->inst );
+    instl = instl->next;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns a pointer to the created functional unit if the instance was added to the hierarchy;
          otherwise, returns NULL.
 
@@ -3077,6 +3095,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.338  2008/10/07 05:24:17  phase1geo
+ Adding -dumpvars option.  Need to resolve a few issues before this work is considered
+ complete.
+
  Revision 1.337  2008/10/04 04:28:47  phase1geo
  Adding code to support $urandom, $srandom and $urandom_range.  Added one test
  to begin verifying $urandom functionality.  The rest of the system tasks need
