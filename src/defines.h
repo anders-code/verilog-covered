@@ -77,7 +77,7 @@
 /*!
  Default filename that will contain the code necessary to dump only the needed signals of the design.
 */
-#define DFLT_DUMPVARS_NAME "covered_dumpvars.v"
+#define DFLT_DUMPVARS_NAME "covered_dump.v"
 
 /*!
  Determine size of integer in bits.
@@ -2962,6 +2962,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.325  2008/10/07 20:19:44  phase1geo
+ Adding documentation for the new -dumpvars option.  Also added support for this
+ feature in the GUI CDD generator wizard.
+
  Revision 1.324  2008/10/07 05:24:17  phase1geo
  Adding -dumpvars option.  Need to resolve a few issues before this work is considered
  complete.
