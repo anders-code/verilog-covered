@@ -26,7 +26,7 @@
 
 
 /*! \brief Performs $srandom system task call. */
-long sys_task_srandom(
+void sys_task_srandom(
   long seed
 );
 
@@ -48,6 +48,9 @@ unsigned long sys_task_urandom_range(
 
 /*
  $Log$
+ Revision 1.4  2008/10/07 22:31:42  phase1geo
+ Cleaning up splint warnings.  Cleaning up development documentation.
+
  Revision 1.3  2008/10/04 04:28:47  phase1geo
  Adding code to support $urandom, $srandom and $urandom_range.  Added one test
  to begin verifying $urandom functionality.  The rest of the system tasks need
