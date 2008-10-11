@@ -886,9 +886,7 @@ void codegen_gen_expr(
                                right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_DASSIGN  :
-          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " = ",
-                               right_code, right_code_depth, expr->right, NULL );
-          break;
+        case EXP_OP_RASSIGN  :
         case EXP_OP_BASSIGN  :
           codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " = ",
                                right_code, right_code_depth, expr->right, NULL );
@@ -993,6 +991,9 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.102  2008/10/11 02:55:38  phase1geo
+ Fixing bug 2158297.
+
  Revision 1.101  2008/10/04 04:28:47  phase1geo
  Adding code to support $urandom, $srandom and $urandom_range.  Added one test
  to begin verifying $urandom functionality.  The rest of the system tasks need
