@@ -5034,7 +5034,7 @@ void expression_set_assigned(
      If we are on the LHS of a BASSIGN operator, set the assigned bit to indicate that
      this signal will be assigned by Covered and not the dumpfile.
     */
-    if( (curr->op == EXP_OP_BASSIGN) || (curr->op == EXP_OP_RASSIGN) ) {
+    if( curr->op == EXP_OP_BASSIGN ) {
       expr->sig->suppl.part.assigned = 1;
     }
 
@@ -5441,6 +5441,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.356  2008/10/11 03:59:19  phase1geo
+ Fixing bug 2158626.  Also removing RASSIGN expression statements from line coverage
+ (they are always executed and therefore will never be interesting from a line coverage
+ standpoint).
+
  Revision 1.355  2008/10/07 22:31:42  phase1geo
  Cleaning up splint warnings.  Cleaning up development documentation.
 
