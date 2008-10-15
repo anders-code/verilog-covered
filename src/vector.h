@@ -30,13 +30,24 @@
 
 /*! \brief Initializes specified vector. */
 void vector_init_ulong(
-  /*@out@*/ vector*  vec,
-            ulong**  value,
-            ulong    data_l,
-            ulong    data_h,
-            bool     owns_value,
-            int      width,
-            int      type
+  /*@out@*/ vector* vec,
+            ulong** value,
+            ulong   data_l,
+            ulong   data_h,
+            bool    owns_value,
+            int     width,
+            int     type
+);
+
+/*! \brief Initializes specified vector with realtime information. */
+void vector_init_r64(
+  /*@out@*/ vector* vec,
+            rv64*   value,
+            double  data,
+            char*   str,
+            bool    owns_value,
+            int     width,
+            int     type
 );
 
 /*! \brief Creates and initializes new vector */
@@ -581,6 +592,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.65  2008/10/15 13:28:37  phase1geo
+ Beginning to add support for real numbers.  Things are broken in regards
+ to real numbers at the moment.  Checkpointing.
+
  Revision 1.64  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
