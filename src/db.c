@@ -1449,6 +1449,9 @@ void db_add_signal(
     if( type == SSUPPL_TYPE_GENVAR ) {
       /* For genvars, set the size to 32, automatically */
       sig = vsignal_create( name, type, 32, line, col );
+    } else if( type == SSUPPL_TYPE_DECL_REAL ) {
+      /* For real types, they should be automatically sized to 64 */
+      sig = vsignal_create( name, type, 64, line, col );
     } else {
       /* For normal signals just make the width a value of 1 for now -- it will be resized during funit_resize_elements */
       sig = vsignal_create( name, type, 1, line, col );
@@ -3095,6 +3098,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.339  2008/10/16 05:16:06  phase1geo
+ More work on real number support.  Still a work in progress.  Checkpointing.
+
  Revision 1.338  2008/10/07 05:24:17  phase1geo
  Adding -dumpvars option.  Need to resolve a few issues before this work is considered
  complete.
