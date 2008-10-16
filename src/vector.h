@@ -50,6 +50,17 @@ void vector_init_r64(
             int     type
 );
 
+/*! \brief Initializes specified vector with shortreal information. */
+void vector_init_r32(
+  /*@out@*/ vector* vec,
+            rv32*   value,
+            float   data,
+            char*   str,
+            bool    owns_value,
+            int     width,
+            int     type
+);
+
 /*! \brief Creates and initializes new vector */
 vector* vector_create(
   int  width,
@@ -267,8 +278,11 @@ bool vector_set_to_x( vector* vec );
 /*! \brief Converts vector into integer value. */
 int vector_to_int( const vector* vec );
 
-/*! \brief Converts vector into a 64-bit value. */
+/*! \brief Converts vector into a 64-bit unsigned integer value. */
 uint64 vector_to_uint64( const vector* vec );
+
+/*! \brief Converts vector into a 64-bit real value. */
+real64 vector_to_real64( const vector* vec );
 
 /*! \brief Converts vector into a sim_time structure. */
 void vector_to_sim_time(
@@ -592,6 +606,12 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.66  2008/10/16 23:11:50  phase1geo
+ More work on support for real numbers.  I believe that all of the code now
+ exists in vector.c to support them.  Still need to do work in expr.c.  Added
+ two new tests for real numbers to begin verifying their support (they both do
+ not currently pass, however).  Checkpointing.
+
  Revision 1.65  2008/10/15 13:28:37  phase1geo
  Beginning to add support for real numbers.  Things are broken in regards
  to real numbers at the moment.  Checkpointing.
