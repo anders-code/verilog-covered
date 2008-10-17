@@ -284,8 +284,9 @@ real64 vector_to_real64( const vector* vec );
 
 /*! \brief Converts vector into a sim_time structure. */
 void vector_to_sim_time(
-  const vector* vec,
-  sim_time*     time
+            const vector* vec,
+            uint64        scale,
+  /*@out@*/ sim_time*     time
 );
 
 /*! \brief Converts integer into vector value. */
@@ -604,6 +605,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.68  2008/10/17 23:20:51  phase1geo
+ Continuing to add support support for real values.  Making some good progress here
+ (real delays should be working now).  Updated regressions per recent changes.
+ Checkpointing.
+
  Revision 1.67  2008/10/17 07:26:49  phase1geo
  Updating regressions per recent changes and doing more work to fixing real
  value bugs (still not working yet).  Checkpointing.

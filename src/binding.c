@@ -441,8 +441,8 @@ bool bind_signal(
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
 
-      /* Otherwise, implicitly create the signal and bind to it */
-      } else {
+      /* Otherwise, implicitly create the signal and bind to it if the signal exists on the LHS of the equation */
+      } else if( ESUPPL_IS_LHS( exp->suppl ) == 1 ) {
         assert( exp != NULL );
         rv = snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", obf_sig( name ) );
         assert( rv < USER_MSG_LENGTH );
@@ -457,6 +457,10 @@ bool bind_signal(
         found_sig->dim[0].msb = 0;
         found_sig->dim[0].lsb = 0;
         sig_link_add( found_sig, &(funit_exp->sig_head), &(funit_exp->sig_tail) );
+
+      /* Otherwise, don't attempt to bind the signal */
+      } else {
+        retval = FALSE;
       }
 
     } else {
@@ -931,6 +935,11 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.138  2008/10/17 23:20:51  phase1geo
+ Continuing to add support support for real values.  Making some good progress here
+ (real delays should be working now).  Updated regressions per recent changes.
+ Checkpointing.
+
  Revision 1.137  2008/10/16 23:11:50  phase1geo
  More work on support for real numbers.  I believe that all of the code now
  exists in vector.c to support them.  Still need to do work in expr.c.  Added
