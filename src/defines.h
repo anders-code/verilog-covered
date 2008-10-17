@@ -51,7 +51,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        17
+#define CDD_VERSION        18
 
 /*!
  This contains the header information specified when executing this tool.
@@ -3013,6 +3013,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.331  2008/10/17 13:50:19  phase1geo
+ A few more code updates for real support.  Updating CDD version and updating
+ regression files (what we can currently run).  Checkpointing.
+
  Revision 1.330  2008/10/17 07:26:48  phase1geo
  Updating regressions per recent changes and doing more work to fixing real
  value bugs (still not working yet).  Checkpointing.
