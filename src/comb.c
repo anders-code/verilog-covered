@@ -1219,16 +1219,22 @@ static void combination_underline_tree(
                   free_safe( pname, (strlen( pname ) + 1) );
                 }
                 break;
-              case EXP_OP_NEGATE   :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
-              case EXP_OP_DIM      :  *size = l_size + r_size;      strcpy( code_fmt, "%s%s"             );  break;
-              case EXP_OP_IINC     :
-              case EXP_OP_IDEC     :  *size = l_size + 2;           strcpy( code_fmt, "  %s"             );  break;
-              case EXP_OP_PINC     :
-              case EXP_OP_PDEC     :  *size = l_size + 2;           strcpy( code_fmt, "%s  "             );  break;
-              case EXP_OP_SRANDOM  :  *size = l_size + 11;          strcpy( code_fmt, "         %s  "    );  break;
-              case EXP_OP_SURANDOM :  *size = l_size + 12;          strcpy( code_fmt, "          %s  "   );  break;
-              case EXP_OP_SURAND_RANGE :  *size = l_size + 18;      strcpy( code_fmt, "                %s  " );  break;
-              case EXP_OP_SSRANDOM :  *size = l_size + 12;          strcpy( code_fmt, "          %s  "   );  break;
+              case EXP_OP_NEGATE       :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"                    );  break;
+              case EXP_OP_DIM          :  *size = l_size + r_size;      strcpy( code_fmt, "%s%s"                   );  break;
+              case EXP_OP_IINC         :
+              case EXP_OP_IDEC         :  *size = l_size + 2;           strcpy( code_fmt, "  %s"                   );  break;
+              case EXP_OP_PINC         :
+              case EXP_OP_PDEC         :  *size = l_size + 2;           strcpy( code_fmt, "%s  "                   );  break;
+              case EXP_OP_SRANDOM      :  *size = l_size + 11;          strcpy( code_fmt, "         %s  "          );  break;
+              case EXP_OP_SURANDOM     :  *size = l_size + 12;          strcpy( code_fmt, "          %s  "         );  break;
+              case EXP_OP_SURAND_RANGE :  *size = l_size + 18;          strcpy( code_fmt, "                %s  "   );  break;
+              case EXP_OP_SSRANDOM     :  *size = l_size + 12;          strcpy( code_fmt, "          %s  "         );  break;
+              case EXP_OP_SR2B         :
+              case EXP_OP_SB2R         :  *size = l_size + 15;          strcpy( code_fmt, "            %s  "       );  break;
+              case EXP_OP_SI2R         :
+              case EXP_OP_SR2I         :  *size = l_size + 9;           strcpy( code_fmt, "       %s  "            );  break;
+              case EXP_OP_SSR2B        :
+              case EXP_OP_SB2SR        :  *size = l_size + 20;          strcpy( code_fmt, "                  %s  " );  break;
               default              :
                 rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
                                exp->op );
@@ -3110,6 +3116,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.213  2008/10/18 06:14:20  phase1geo
+ Continuing to add support for real values and associated system function calls.
+ Updating regressions per these changes.  Checkpointing.
+
  Revision 1.212  2008/10/04 04:28:47  phase1geo
  Adding code to support $urandom, $srandom and $urandom_range.  Added one test
  to begin verifying $urandom functionality.  The rest of the system tasks need
