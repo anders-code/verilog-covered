@@ -1920,10 +1920,14 @@ expression* db_create_expression(
   /* Set the clear_changed bit if any of our children have their clear_changed bit set or if we are a system function expression */
   if( ((left  != NULL) && 
        ((left->suppl.part.clear_changed == 1) ||
-        (left->op == EXP_OP_STIME) || (left->op == EXP_OP_SRANDOM) || (left->op == EXP_OP_SURANDOM) || (left->op == EXP_OP_SURAND_RANGE))) ||
+        (left->op == EXP_OP_STIME) || (left->op == EXP_OP_SRANDOM) || (left->op == EXP_OP_SURANDOM) || (left->op == EXP_OP_SURAND_RANGE) ||
+        (left->op == EXP_OP_SB2R)  || (left->op == EXP_OP_SR2B)    || (left->op == EXP_OP_SI2R)     || (left->op == EXP_OP_SR2I) ||
+        (left->op == EXP_OP_SB2SR) || (left->op == EXP_OP_SSR2B))) ||
       ((right != NULL) &&
        ((right->suppl.part.clear_changed == 1) ||
-        (right->op == EXP_OP_STIME) || (right->op == EXP_OP_SRANDOM) || (right->op == EXP_OP_SURANDOM) || (right->op == EXP_OP_SURAND_RANGE))) ) {
+        (right->op == EXP_OP_STIME) || (right->op == EXP_OP_SRANDOM) || (right->op == EXP_OP_SURANDOM) || (right->op == EXP_OP_SURAND_RANGE) ||
+        (right->op == EXP_OP_SB2R)  || (right->op == EXP_OP_SR2B)    || (right->op == EXP_OP_SI2R)     || (right->op == EXP_OP_SR2I) ||
+        (right->op == EXP_OP_SB2SR) || (right->op == EXP_OP_SSR2B))) ) {
     expr->suppl.part.clear_changed = 1;
   }
 
@@ -3098,6 +3102,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.341  2008/10/20 22:29:00  phase1geo
+ Updating more regression files.  Adding reentrant support for real numbers.
+ Also fixing uninitialized memory access issue in expr.c.
+
  Revision 1.340  2008/10/16 23:11:50  phase1geo
  More work on support for real numbers.  I believe that all of the code now
  exists in vector.c to support them.  Still need to do work in expr.c.  Added

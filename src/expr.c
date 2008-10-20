@@ -557,6 +557,7 @@ expression* expression_create(
   new_expr->value               = (vector*)malloc_safe( sizeof( vector ) );
   new_expr->suppl.part.owns_vec = 1;
   new_expr->value->value.ul     = NULL;
+  new_expr->value->suppl.all    = 0;
   new_expr->table               = NULL;
   new_expr->elem.funit          = NULL;
   new_expr->name                = NULL;
@@ -5717,6 +5718,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.365  2008/10/20 22:29:00  phase1geo
+ Updating more regression files.  Adding reentrant support for real numbers.
+ Also fixing uninitialized memory access issue in expr.c.
+
  Revision 1.364  2008/10/20 13:00:25  phase1geo
  More updates to support real numbers.  Updating regressions per recent changes.
  Checkpointing.
