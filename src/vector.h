@@ -290,9 +290,10 @@ void vector_to_sim_time(
 );
 
 /*! \brief Converts integer into vector value. */
-void vector_from_int(
+bool vector_from_int(
   vector* vec,
-  int     value
+  int     value,
+  bool    cover
 );
 
 /*! \brief Converts a 64-bit integer into a vector value. */
@@ -605,6 +606,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.69  2008/10/20 23:20:02  phase1geo
+ Adding support for vector_from_int coverage accumulation (untested at this point).
+ Updating Cver regressions.  Checkpointing.
+
  Revision 1.68  2008/10/17 23:20:51  phase1geo
  Continuing to add support support for real values.  Making some good progress here
  (real delays should be working now).  Updated regressions per recent changes.
