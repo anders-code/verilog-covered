@@ -2065,7 +2065,7 @@ expression* db_create_expr_from_static(
 
       /* Create the new vector */
       vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-      (void)vector_from_int( vec, se->num, FALSE );
+      (void)vector_from_int( vec, se->num );
 
       /* Assign the new vector to the expression's vector (after deallocating the expression's old vector) */
       assert( expr->value->value.ul == NULL );
@@ -3102,6 +3102,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.343  2008/10/21 05:38:41  phase1geo
+ More updates to support real values.  Added vector_from_real64 functionality.
+ Checkpointing.
+
  Revision 1.342  2008/10/20 23:20:02  phase1geo
  Adding support for vector_from_int coverage accumulation (untested at this point).
  Updating Cver regressions.  Checkpointing.
