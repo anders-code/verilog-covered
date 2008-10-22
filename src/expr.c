@@ -4213,9 +4213,20 @@ bool expression_op_func__bassign(
   /* Perform assignment */
   switch( expr->right->value->suppl.part.data_type ) {
     case VDATA_UL :
-      {
-        int intval = 0;
-        expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+      switch( expr->left->value->suppl.part.data_type ) {
+        case VDATA_UL :
+          {
+            int intval = 0;
+            expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+          }
+          break;
+        case VDATA_R64 :
+          expr->left->value->value.r64->val = vector_to_real64( expr->right->value );
+          break;
+        case VDATA_R32 :
+          expr->left->value->value.r32->val = (float)vector_to_real64( expr->right->value );
+          break;
+        default :  assert( 0 );  break;
       }
       break;
     case VDATA_R64 :
@@ -5728,6 +5739,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.369  2008/10/22 22:00:37  phase1geo
+ Updating VCS regressions (fully pass now).  Made a few fixes to get VCS regressions
+ to pass.  We are now at a known good state.  Further testing of real numbers will
+ proceed.
+
  Revision 1.368  2008/10/21 22:55:24  phase1geo
  More updates to get real values working.  IV and Cver regressions work (except for VPI
  mode of operation).  Checkpointing.
