@@ -2897,7 +2897,9 @@ void vector_from_string(
 
     }
 
-  } else if( (sscanf( *str, "%[0-9_]%[.]%[0-9_]", value, value, value ) == 3) && (sscanf( *str, "%lf%n", &real, &chars_read ) == 1) ) {
+  } else if( ((sscanf( *str, "%[0-9_]%[.]%[0-9_]", value, value, value ) == 3) ||
+              (sscanf( *str, "-%[0-9_]%[.]%[0-9_]", value, value, value ) == 3)) &&
+             (sscanf( *str, "%lf%n", &real, &chars_read ) == 1) ) {
 
     *vec                         = vector_create( 64, VTYPE_VAL, VDATA_R64, TRUE );
     (*vec)->value.r64->val       = real;
@@ -5093,6 +5095,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.176  2008/10/23 23:00:10  phase1geo
+ Working on more real number diagnostics.  Fixes for negative real number parsing
+ from command line.  Also added an error message when the value specified for the
+ -P option to the score command is an illegal value.
+
  Revision 1.175  2008/10/23 22:16:21  phase1geo
  Fixing -P support.
 

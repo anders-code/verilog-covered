@@ -898,6 +898,12 @@ static void score_parse_args(
             *ptr = '\0';
             ptr++;
             vector_from_string( &ptr, FALSE, &vec, &base );
+            if( vec == NULL ) {
+              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to parse value for option -P %s=%s", tmp, ptr );
+              assert( rv < USER_MSG_LENGTH );
+              print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              Throw 0;
+            }
             defparam_add( tmp, vec );
           }
         } Catch_anonymous {
@@ -1209,6 +1215,11 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.141  2008/10/23 23:00:09  phase1geo
+ Working on more real number diagnostics.  Fixes for negative real number parsing
+ from command line.  Also added an error message when the value specified for the
+ -P option to the score command is an illegal value.
+
  Revision 1.140  2008/10/07 15:09:57  phase1geo
  Changed -vpi_ts to -top_ts.
 
