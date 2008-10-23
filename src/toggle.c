@@ -78,6 +78,7 @@ void toggle_get_stats(
     /* Search signal list */
     while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
       if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+          (sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
           (sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
           (sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
           (sig->suppl.part.type != SSUPPL_TYPE_DECL_REAL)  &&
@@ -131,6 +132,7 @@ void toggle_collect(
     hit10 = 0;
 
     if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+        (sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
         (sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
         (sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
         (sig->suppl.part.type != SSUPPL_TYPE_DECL_REAL)  &&
@@ -465,6 +467,7 @@ static void toggle_display_verbose(
     pname = scope_gen_printable( sig->name );
 
     if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+        (sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
         (sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
         (sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
         (sig->suppl.part.type != SSUPPL_TYPE_DECL_REAL)  &&
@@ -736,6 +739,10 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.88  2008/10/23 20:54:52  phase1geo
+ Adding support for real parameters.  Added more real number diagnostics to
+ regression suite.
+
  Revision 1.87  2008/10/17 23:20:51  phase1geo
  Continuing to add support support for real values.  Making some good progress here
  (real delays should be working now).  Updated regressions per recent changes.
