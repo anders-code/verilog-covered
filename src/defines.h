@@ -567,6 +567,9 @@
 /*! This signal is a real */
 #define SSUPPL_TYPE_DECL_REAL     17
 
+/*! This signal is a real parameter */
+#define SSUPPL_TYPE_PARAM_REAL    18
+
 /*! @} */
 
 /*!
@@ -3022,6 +3025,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.335  2008/10/23 20:54:52  phase1geo
+ Adding support for real parameters.  Added more real number diagnostics to
+ regression suite.
+
  Revision 1.334  2008/10/23 16:04:06  phase1geo
  Fixing issue with real1.1 regression failure.  Full regression passes.
 
