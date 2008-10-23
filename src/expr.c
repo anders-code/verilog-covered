@@ -133,6 +133,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 
 #include "binding.h"
 #include "defines.h"
@@ -5847,6 +5848,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.372  2008/10/23 16:04:06  phase1geo
+ Fixing issue with real1.1 regression failure.  Full regression passes.
+
  Revision 1.371  2008/10/23 14:21:10  phase1geo
  Fixing splint errors with new real number support.
 
