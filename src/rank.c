@@ -674,9 +674,10 @@ static void rank_gather_signal_cov(
 ) { PROFILE(RANK_GATHER_SIGNAL_COV);
 
   /* Populate toggle coverage information */
-  if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-      (sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-      (sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
+  if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+      (sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
+      (sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
+      (sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
       (sig->suppl.part.mba == 0) ) {
 
     unsigned int i;
@@ -1799,6 +1800,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.11  2008/10/23 20:54:52  phase1geo
+ Adding support for real parameters.  Added more real number diagnostics to
+ regression suite.
+
  Revision 1.10  2008/09/19 04:47:18  phase1geo
  Adding several new diagnostics to regression suite to add coverage for
  rank.c file (parsing option errors mostly).  Fixing issue with rank command
@@ -1829,6 +1834,10 @@ void command_rank(
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.11  2008/10/23 20:54:52  phase1geo
+ Adding support for real parameters.  Added more real number diagnostics to
+ regression suite.
+
  Revision 1.10  2008/09/19 04:47:18  phase1geo
  Adding several new diagnostics to regression suite to add coverage for
  rank.c file (parsing option errors mostly).  Fixing issue with rank command
