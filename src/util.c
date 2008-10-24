@@ -1444,7 +1444,8 @@ void gen_char_string(
 }
 
 /*!
- \return Returns a pointer to the modified string.
+ \return Returns a pointer to the modified string (or NULL if the string only contains
+         underscores).
 */
 char* remove_underscores(
   char* str  /*!< String to remove underscore characters from */
@@ -1452,7 +1453,7 @@ char* remove_underscores(
 
   char*        start = NULL;
   unsigned int i;
-  unsigned int cur;
+  unsigned int cur   = 1;
 
   for( i=0; i<strlen( str ); i++ ) {
     if( str[i] != '_' ) {
@@ -1717,6 +1718,9 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.109  2008/10/24 17:27:46  phase1geo
+ Fixing issues with removing underscores from real numbers.
+
  Revision 1.108  2008/10/24 15:26:50  phase1geo
  Working on the ability to read real numbers with underscores in them.  Still have some
  work to do here.  Checkpointing.
