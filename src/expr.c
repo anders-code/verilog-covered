@@ -923,6 +923,7 @@ void expression_resize(
       case EXP_OP_WHILE          :
       case EXP_OP_LAST           :
       case EXP_OP_DIM            :
+      case EXP_OP_STIME          :
       case EXP_OP_SRANDOM        :
       case EXP_OP_SURANDOM       :
       case EXP_OP_SURAND_RANGE   :
@@ -5847,6 +5848,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.374  2008/10/24 17:27:46  phase1geo
+ Fixing issues with removing underscores from real numbers.
+
  Revision 1.373  2008/10/23 20:54:52  phase1geo
  Adding support for real parameters.  Added more real number diagnostics to
  regression suite.
