@@ -2997,7 +2997,7 @@ void vector_from_string(
         /* Create vector */
         *vec = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
         if( *base == DECIMAL ) {
-          (void)vector_from_int( *vec, ato32( value ) );
+          (void)vector_from_uint64( *vec, ato64( value ) );
         } else {
           vector_set_static( *vec, value, bits_per_char ); 
         }
@@ -3690,6 +3690,10 @@ bool vector_op_eq(
 ) { PROFILE(VECTOR_OP_EQ);
 
   bool retval;  /* Return value for this function */
+
+  // printf( "In vector_op_eq...\n" );
+  // printf( "  left:  " );  vector_display( left );
+  // printf( "  right: " );  vector_display( right );
 
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
 
@@ -5129,6 +5133,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.179  2008/10/24 22:35:05  phase1geo
+ Adding more timescale diagnostics to verify $time functionality.  Changing decimal
+ value string converter to use vector_from_uint64 instead of vector_from_int
+ to allow greater decimal values to be used.
+
  Revision 1.178  2008/10/24 17:27:46  phase1geo
  Fixing issues with removing underscores from real numbers.
 
