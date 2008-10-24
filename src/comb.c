@@ -1240,7 +1240,7 @@ static void combination_underline_tree(
               case EXP_OP_SURAND_RANGE :  *size = l_size + 18;          strcpy( code_fmt, "                %s  "   );  break;
               case EXP_OP_SSRANDOM     :  *size = l_size + 12;          strcpy( code_fmt, "          %s  "         );  break;
               case EXP_OP_SR2B         :
-              case EXP_OP_SB2R         :  *size = l_size + 15;          strcpy( code_fmt, "            %s  "       );  break;
+              case EXP_OP_SB2R         :  *size = l_size + 15;          strcpy( code_fmt, "             %s  "      );  break;
               case EXP_OP_SI2R         :
               case EXP_OP_SR2I         :  *size = l_size + 9;           strcpy( code_fmt, "       %s  "            );  break;
               case EXP_OP_SSR2B        :
@@ -3126,6 +3126,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.215  2008/10/24 05:27:04  phase1geo
+ Adding several new diagnostics to verify real number support.
+
  Revision 1.214  2008/10/20 13:00:24  phase1geo
  More updates to support real numbers.  Updating regressions per recent changes.
  Checkpointing.
