@@ -77,8 +77,8 @@ int sys_task_rtoi(
 );
 
 /*! \brief Scans command-line for plusargs */
-void sys_task_store_plusargs(
-  const char* args
+void sys_task_store_plusarg(
+  const char* arg
 );
 
 /*! \brief Returns 1 if the specified plusarg was found; otherwise, returns 0. */
@@ -95,8 +95,15 @@ ulong sys_task_value_plusargs(
   vector*     vec
 );
 
+/*! \brief Deallocates any memory allocated within this file. */
+void sys_task_dealloc();
+
 /*
  $Log$
+ Revision 1.8  2008/10/27 18:13:19  phase1geo
+ Finished work to get $test$plusargs to work properly.  Added test_plusargs1
+ diagnostic to regression suite to verify this functionality.
+
  Revision 1.7  2008/10/27 13:20:55  phase1geo
  More work on $test$plusargs and $value$plusargs support.  Checkpointing.
 
