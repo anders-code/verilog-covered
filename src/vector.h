@@ -314,6 +314,12 @@ char* vector_to_string(
   bool    show_all
 );
 
+/*! \brief Converts a string to a preallocated vector. */
+void vector_from_string_fixed(
+  vector*     vec,
+  const char* str
+);
+
 /*! \brief Converts character string value into vector. */
 void vector_from_string(
             char**   str,
@@ -611,6 +617,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.71  2008/10/27 21:14:02  phase1geo
+ First pass at getting the $value$plusargs system function call to work.  More
+ work to do here.  Checkpointing.
+
  Revision 1.70  2008/10/21 05:38:42  phase1geo
  More updates to support real values.  Added vector_from_real64 functionality.
  Checkpointing.
