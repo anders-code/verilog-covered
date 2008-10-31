@@ -81,7 +81,7 @@ statement* expression_get_root_statement( expression* exp );
 void expression_assign_expr_ids( expression* root, func_unit* funit );
 
 /*! \brief Writes this expression to the specified database file. */
-void expression_db_write( expression* expr, FILE* file, bool parse_mode );
+void expression_db_write( expression* expr, FILE* file, bool parse_mode, bool ids_issued );
 
 /*! \brief Writes the entire expression tree to the specified data file. */
 void expression_db_write_tree( expression* root, FILE* file );
@@ -141,6 +141,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.72  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.71  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
