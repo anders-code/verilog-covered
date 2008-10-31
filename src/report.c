@@ -920,7 +920,7 @@ void report_save_cdd(
   /* Write the instance database */
   curr_db = 1;
 
-  db_write( filename, FALSE, TRUE );
+  db_write( filename, FALSE, FALSE, TRUE );
 
   /* Restore the database */
   curr_db = 0;
@@ -1239,6 +1239,11 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.127  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.126  2008/09/22 04:19:57  phase1geo
  Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
 
