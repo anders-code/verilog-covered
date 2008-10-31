@@ -45,7 +45,7 @@ void fsm_add_arc(
 void fsm_create_tables( fsm* table );
 
 /*! \brief Outputs contents of specified FSM to CDD file. */
-void fsm_db_write( fsm* table, FILE* file, bool parse_mode );
+void fsm_db_write( fsm* table, FILE* file, bool ids_issued );
 
 /*! \brief Reads in contents of specified FSM. */
 void fsm_db_read( char** line, /*@null@*/func_unit* funit );
@@ -139,6 +139,11 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.36  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.35  2008/09/08 22:15:17  phase1geo
  Regression updates and modifications for new FSM GUI output (this isn't complete
  at this time).  Checkpointing.
