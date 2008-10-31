@@ -1855,7 +1855,7 @@ void command_exclude(
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing CDD file \"%s\"", exclude_cdd );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      db_write( exclude_cdd, FALSE, TRUE );
+      db_write( exclude_cdd, FALSE, FALSE, TRUE );
     }
 
   } Catch_anonymous {}
@@ -1874,6 +1874,11 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.49  2008/10/31 22:01:33  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.48  2008/10/07 22:31:42  phase1geo
  Cleaning up splint warnings.  Cleaning up development documentation.
 

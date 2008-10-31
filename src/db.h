@@ -40,6 +40,7 @@ bool db_check_for_top_module();
 void db_write(
   const char* file,
   bool        parse_mode,
+  bool        issue_ids,
   bool        report_save
 );
 
@@ -223,6 +224,11 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.98  2008/10/31 22:01:33  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.97  2008/10/07 05:24:17  phase1geo
  Adding -dumpvars option.  Need to resolve a few issues before this work is considered
  complete.
