@@ -202,7 +202,7 @@ void parse_design(
     }
 
     /* Write contents to baseline database file. */
-    db_write( output_db, TRUE, FALSE );
+    db_write( output_db, TRUE, TRUE, FALSE );
 
   } Catch_anonymous {
     fsm_var_cleanup();
@@ -293,7 +293,7 @@ void parse_and_score_dumpfile(
     info_suppl.part.scored = 1;
 
     /* Write contents to database file */
-    db_write( db, FALSE, FALSE );
+    db_write( db, FALSE, FALSE, FALSE );
 
   } Catch_anonymous {
     sim_dealloc();
@@ -309,6 +309,11 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.74  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.73  2008/10/07 05:24:18  phase1geo
  Adding -dumpvars option.  Need to resolve a few issues before this work is considered
  complete.
