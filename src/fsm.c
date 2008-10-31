@@ -171,13 +171,13 @@ void fsm_create_tables(
 void fsm_db_write(
   fsm*  table,      /*!< Pointer to FSM structure to output */
   FILE* file,       /*!< Pointer to file output stream to write to */
-  bool  parse_mode  /*!< Set to TRUE when we are writing immediately after parsing */
+  bool  ids_issued  /*!< Set to TRUE if expression IDs were just issued */
 ) { PROFILE(FSM_DB_WRITE);
 
   fprintf( file, "%d %d %d ",
     DB_TYPE_FSM,
-    expression_get_id( table->from_state, parse_mode ),
-    expression_get_id( table->to_state, parse_mode )
+    expression_get_id( table->from_state, ids_issued ),
+    expression_get_id( table->to_state, ids_issued )
   );
 
   /* Print set table */
@@ -1323,6 +1323,11 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.107  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.106  2008/09/08 22:15:17  phase1geo
  Regression updates and modifications for new FSM GUI output (this isn't complete
  at this time).  Checkpointing.
