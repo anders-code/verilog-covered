@@ -36,7 +36,7 @@ statement* statement_create(
 void statement_size_elements( statement* stmt, func_unit* funit );
 
 /*! \brief Writes specified statement to the specified output file. */
-void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode );
+void statement_db_write( statement* stmt, FILE* ofile, bool ids_issued );
 
 /*! \brief Writes specified statement tree to the specified output file. */
 void statement_db_write_tree( statement* stmt, FILE* ofile );
@@ -80,6 +80,11 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.38  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.37  2008/04/06 05:24:17  phase1geo
  Fixing another regression memory problem.  Updated regression files
  accordingly.  Checkpointing.
