@@ -62,7 +62,7 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
 void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool alloc_exprs );
 
 /*! \brief Writes contents of provided functional unit to specified output. */
-void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save );
+void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save, bool ids_issued );
 
 /*! \brief Read contents of current line from specified file, creates functional unit
            and adds to functional unit list. */
@@ -143,6 +143,11 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.40  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.39  2008/10/07 05:24:17  phase1geo
  Adding -dumpvars option.  Need to resolve a few issues before this work is considered
  complete.

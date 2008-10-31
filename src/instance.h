@@ -84,7 +84,14 @@ void instance_resolve( funit_inst* root );
 bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name );
 
 /*! \brief Displays contents of functional unit instance tree to specified file. */
-void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode, bool report_save );
+void instance_db_write(
+  funit_inst* root,
+  FILE*       file,
+  char*       scope,
+  bool        parse_mode,
+  bool        issue_ids,
+  bool        report_save
+);
 
 /*! \brief Removes all unnamed scopes in given instance tree, converging their data into the parent scopes. */
 void instance_flatten( funit_inst* root );
@@ -107,6 +114,11 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.39  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.38  2008/10/07 05:24:18  phase1geo
  Adding -dumpvars option.  Need to resolve a few issues before this work is considered
  complete.
