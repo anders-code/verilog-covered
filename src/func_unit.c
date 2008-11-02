@@ -618,6 +618,13 @@ void funit_db_write(
     }
 #endif
 
+    /* Now print all signals in functional unit */
+    curr_sig = funit->sig_head;
+    while( curr_sig != NULL ) {
+      vsignal_db_write( curr_sig->sig, file );
+      curr_sig = curr_sig->next; 
+    }
+
     /* Now print all parameters in functional unit */
     if( inst != NULL ) {
       curr_parm = inst->param_head;
@@ -625,13 +632,6 @@ void funit_db_write(
         param_db_write( curr_parm, file );
         curr_parm = curr_parm->next;
       }
-    }
-
-    /* Now print all signals in functional unit */
-    curr_sig = funit->sig_head;
-    while( curr_sig != NULL ) {
-      vsignal_db_write( curr_sig->sig, file );
-      curr_sig = curr_sig->next; 
     }
 
 #ifndef VPI_ONLY
@@ -1592,6 +1592,10 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.117  2008/11/02 04:28:58  phase1geo
+ Updates to make initially generated CDD files have the same IDs as merged CDD files.
+ Full IV and Cver regressions pass.
+
  Revision 1.116  2008/10/31 22:01:34  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to
