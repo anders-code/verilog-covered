@@ -93,6 +93,9 @@ void instance_db_write(
   bool        report_save
 );
 
+/*! \brief Reads in and handles an instance-only line from the database */
+void instance_only_db_read( char** line );
+
 /*! \brief Removes all unnamed scopes in given instance tree, converging their data into the parent scopes. */
 void instance_flatten( funit_inst* root );
 
@@ -114,6 +117,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.40  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.39  2008/10/31 22:01:34  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to
