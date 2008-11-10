@@ -858,7 +858,6 @@ void report_read_cdd_and_ready(
   if( (ifile == NULL) || (ifile[0] == '\0') ) {
 
     print_output( "CDD file name was not specified for reading", FATAL, __FILE__, __LINE__ );
-    printf( "report Throw J\n" );
     Throw 0;
 
   } else {
@@ -1128,7 +1127,6 @@ void command_report(
             rv = fclose( ofile );
             assert( rv == 0 );
           }
-          printf( "report Throw M\n" );
           Throw 0;
         }
 
@@ -1171,7 +1169,6 @@ void command_report(
 #ifndef INSTALL_DIR
         if( getenv( "COVERED_HOME" ) == NULL ) {
           print_output( "COVERED_HOME not initialized.  Exiting...", FATAL, __FILE__, __LINE__ );
-          printf( "report Throw P\n" );
           Throw 0;
         }
         covered_home = strdup_safe( getenv( "COVERED_HOME" ) );
@@ -1239,6 +1236,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.129  2008/11/10 05:33:16  phase1geo
+ Cleaning up some unnecessary output.
+
  Revision 1.128  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.
