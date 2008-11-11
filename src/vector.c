@@ -819,18 +819,23 @@ void vector_merge(
   assert( base != NULL );
   assert( base->width == other->width );
 
-  switch( base->suppl.part.data_type ) {
-    case VDATA_UL :
-      for( i=0; i<UL_SIZE(base->width); i++ ) {
-        for( j=2; j<vector_type_sizes[base->suppl.part.type]; j++ ) {
-          base->value.ul[i][j] |= other->value.ul[i][j];
+  if( base->suppl.part.owns_data == 1 ) {
+
+    switch( base->suppl.part.data_type ) {
+      case VDATA_UL :
+        for( i=0; i<UL_SIZE(base->width); i++ ) {
+          for( j=2; j<vector_type_sizes[base->suppl.part.type]; j++ ) {
+            base->value.ul[i][j] |= other->value.ul[i][j];
+          }
         }
-      }
-      break;
-    case VDATA_R64 :
-      /* Nothing to do here */
-      break;
-    default :  assert( 0 );  break;
+        break;
+      case VDATA_R64 :
+      case VDATA_R32 :
+        /* Nothing to do here */
+        break;
+      default :  assert( 0 );  break;
+    }
+
   }
 
   PROFILE_END;
@@ -5156,6 +5161,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.183  2008/11/11 05:36:40  phase1geo
+ Checkpointing merge code.
+
  Revision 1.182  2008/10/29 23:16:48  phase1geo
  Added diagnostics to verify real-real op-and-assign functionality.  Fixed
  bugs associated with these diagnostics.

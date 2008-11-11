@@ -84,7 +84,7 @@ void instance_resolve( funit_inst* root );
 bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name );
 
 /*! \brief Performs complex instance tree merging for two instance trees. */
-void instance_merge_two_trees(
+bool instance_merge_two_trees(
   funit_inst* root1,
   funit_inst* root2
 );
@@ -126,6 +126,9 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.42  2008/11/11 05:36:40  phase1geo
+ Checkpointing merge code.
+
  Revision 1.41  2008/11/11 00:10:19  phase1geo
  Starting to work on instance tree merging algorithm (not complete at this point).
  Checkpointing.
