@@ -88,6 +88,13 @@ void instance_resolve( funit_inst* root );
 /*! \brief Adds new instance to specified instance tree during CDD read. */
 bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name );
 
+/*! \brief Gets the leading hierarchy scope and instance for a particular instance tree */
+void instance_get_leading_hierarchy(
+            funit_inst*  root,
+  /*@out@*/ char*        leading_hierarchy,
+  /*@out@*/ funit_inst** top_inst
+);
+
 /*! \brief Performs complex instance tree merging for two instance trees. */
 bool instance_merge_two_trees(
   funit_inst* root1,
@@ -131,6 +138,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.44  2008/11/12 19:57:07  phase1geo
+ Fixing the rest of the issues from regressions in regards to the merge changes.
+ Updating regression files.  IV and Cver regressions now pass.
+
  Revision 1.43  2008/11/12 00:07:41  phase1geo
  More updates for complex merging algorithm.  Updating regressions per
  these changes.  Checkpointing.
