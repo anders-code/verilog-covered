@@ -1586,7 +1586,7 @@ void expression_db_read(
           vector_db_read( &vec, line );
 
         } Catch_anonymous {
-          expression_dealloc( expr, FALSE );
+          expression_dealloc( expr, TRUE );
           Throw 0;
         }
 
@@ -6142,6 +6142,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.386  2008/11/12 19:57:07  phase1geo
+ Fixing the rest of the issues from regressions in regards to the merge changes.
+ Updating regression files.  IV and Cver regressions now pass.
+
  Revision 1.385  2008/11/07 05:56:45  phase1geo
  Second bug fix for bug 2223054.
 
