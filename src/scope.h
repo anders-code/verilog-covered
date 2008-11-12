@@ -58,19 +58,23 @@ bool scope_find_task_function_namedblock(
 
 /*! \brief  Finds the parent functional unit of the functional unit with the given scope */
 func_unit* scope_get_parent_funit(
-  const funit_inst* root,
-  const char*       scope
+  funit_inst* root,
+  const char* scope
 );
 
 /*! \brief  Finds the parent module of the functional unit with the given scope */
 func_unit* scope_get_parent_module(
-  const funit_inst* root,
-  const char*       scope
+  funit_inst* root,
+  const char* scope
 );
 
 
 /*
  $Log$
+ Revision 1.16  2008/11/12 19:57:07  phase1geo
+ Fixing the rest of the issues from regressions in regards to the merge changes.
+ Updating regression files.  IV and Cver regressions now pass.
+
  Revision 1.15  2008/11/12 00:07:41  phase1geo
  More updates for complex merging algorithm.  Updating regressions per
  these changes.  Checkpointing.

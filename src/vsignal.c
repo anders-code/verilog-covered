@@ -456,9 +456,12 @@ void vsignal_merge(
   assert( base != NULL );
   assert( base->name != NULL );
   assert( scope_compare( base->name, other->name ) );
-  assert( base->id == other->id );
+  //assert( base->id == other->id );
   assert( base->pdim_num == other->pdim_num );
   assert( base->udim_num == other->udim_num );
+
+  /* Merge the exclusion information */
+  base->suppl.part.excluded |= other->suppl.part.excluded;
 
   /* Read in vector information */
   vector_merge( base->value, other->value );
@@ -791,6 +794,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.90  2008/11/12 19:57:07  phase1geo
+ Fixing the rest of the issues from regressions in regards to the merge changes.
+ Updating regression files.  IV and Cver regressions now pass.
+
  Revision 1.89  2008/11/11 05:36:40  phase1geo
  Checkpointing merge code.
 
