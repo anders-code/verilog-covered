@@ -27,7 +27,12 @@
 
 
 /*! \brief Creates a new instance with the given information */
-funit_inst* instance_create( func_unit* funit, char* inst_name, /*@null@*/vector_width* range );
+funit_inst* instance_create(
+             func_unit*    funit,
+             char*         inst_name,
+             bool          name_diff,
+  /*@null@*/ vector_width* range
+);
 
 /*! \brief Displays the current state of the instance tree */
 void instance_display_tree( funit_inst* root );
@@ -126,6 +131,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.43  2008/11/12 00:07:41  phase1geo
+ More updates for complex merging algorithm.  Updating regressions per
+ these changes.  Checkpointing.
+
  Revision 1.42  2008/11/11 05:36:40  phase1geo
  Checkpointing merge code.
 
