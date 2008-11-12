@@ -62,11 +62,24 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
 void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool alloc_exprs );
 
 /*! \brief Writes contents of provided functional unit to specified output. */
-void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save, bool ids_issued );
+void funit_db_write(
+  func_unit*  funit,
+  char*       scope,
+  bool        name_diff,
+  FILE*       file,
+  funit_inst* inst,
+  bool        report_save,
+  bool        ids_issued
+);
 
 /*! \brief Read contents of current line from specified file, creates functional unit
            and adds to functional unit list. */
-void funit_db_read( func_unit* funit, /*@out@*/char* scope, char** line );
+void funit_db_read(
+            func_unit* funit,
+  /*@out@*/ char*      scope,
+  /*@out@*/ bool*      name_diff,
+            char**     line
+);
 
 /*! \brief Reads the functional unit version information from the functional unit line and adds it to the current functional unit */
 void funit_version_db_read(
@@ -143,6 +156,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.41  2008/11/12 00:07:41  phase1geo
+ More updates for complex merging algorithm.  Updating regressions per
+ these changes.  Checkpointing.
+
  Revision 1.40  2008/10/31 22:01:34  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to
