@@ -389,8 +389,10 @@ inst_link* inst_link_add(
 
   tmp = (inst_link*)malloc_safe( sizeof( inst_link ) );
 
-  tmp->inst = inst;
-  tmp->next = NULL;
+  tmp->inst   = inst;
+  tmp->ignore = FALSE;
+  tmp->base   = FALSE;
+  tmp->next   = NULL;
 
   if( *head == NULL ) {
     *head = *tail = tmp;
@@ -1299,6 +1301,10 @@ void inst_link_delete_list(
 
 /*
  $Log$
+ Revision 1.84  2008/11/12 00:07:41  phase1geo
+ More updates for complex merging algorithm.  Updating regressions per
+ these changes.  Checkpointing.
+
  Revision 1.83  2008/09/06 05:59:45  phase1geo
  Adding assertion exclusion reason support and have most code implemented for
  FSM exclusion reason support (still working on debugging this code).  I believe
