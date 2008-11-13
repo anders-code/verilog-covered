@@ -30,18 +30,16 @@ void score_generate_top_dumpvars_module( const char* dumpvars_file );
 /*! \brief Parses the specified define from the command-line */
 void score_parse_define( const char* def );
 
-/*! \brief Adds the given argument(s) from the command-line to the score array such that no arguments are duplicated. */
-void score_add_args(
-             const char* arg1,
-  /*@null@*/ const char* arg2
-);
-
 /*! \brief Parses score command-line and performs score. */
 void command_score( int argc, int last_arg, const char** argv );
 
 
 /*
  $Log$
+ Revision 1.15  2008/11/13 05:08:36  phase1geo
+ Fixing bug found with merge8.5 diagnostic and fixing issues with VPI.  Full
+ regressions now pass.
+
  Revision 1.14  2008/11/12 07:04:01  phase1geo
  Fixing argument merging and updating regressions.  Checkpointing.
 
