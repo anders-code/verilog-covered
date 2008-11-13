@@ -1072,9 +1072,37 @@ bool instance_merge_two_trees(
   /* If the top-level modules are the same, just merge them */
   if( (tinst1->funit != NULL) && (tinst2->funit != NULL) && (strcmp( tinst1->funit->name, tinst2->funit->name ) == 0) ) {
 
-    /* Perform instance tree merge */
-    instance_merge_tree( tinst1, tinst2 );
-    instance_mark_lhier_diffs( tinst1, tinst2 );
+    if( strcmp( lhier1, lhier2 ) == 0 ) {
+
+      instance_merge_tree( tinst1, tinst2 );
+
+    } else {
+      
+      /* Create strings large enough to hold the contents from lhier1 and lhier2 */
+      char* back1 = strdup_safe( lhier1 );
+      char* rest1 = strdup_safe( lhier1 );
+      char* back2 = strdup_safe( lhier2 );
+      char* rest2 = strdup_safe( lhier2 );
+
+      /* Break out the top-level instance name from the parent scope for each leading hierarchy string */
+      scope_extract_back( lhier1, back1, rest1 );
+      scope_extract_back( lhier2, back2, rest2 );
+
+      /* If the leading hierarchies are different, just merge */
+      if( strcmp( rest1, rest2 ) != 0 ) {
+        instance_merge_tree( tinst1, tinst2 );
+        instance_mark_lhier_diffs( tinst1, tinst2 );
+      } else {
+        instance_merge_tree( tinst1->parent, tinst2->parent );
+      }
+
+      /* Deallocate locally malloc'ed memory */
+      free_safe( back1, (strlen( lhier1 ) + 1) );
+      free_safe( rest1, (strlen( lhier1 ) + 1) );
+      free_safe( back2, (strlen( lhier2 ) + 1) );
+      free_safe( rest2, (strlen( lhier2 ) + 1) );
+
+    }
 
   /* If root2 is a branch of root1, merge root2 into root1 */
   } else if( strncmp( lhier1, lhier2, strlen( lhier1 ) ) == 0 ) {
@@ -1710,6 +1738,11 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.116  2008/11/13 22:42:15  phase1geo
+ Adding new merge9 diagnostic which merges to non-overlapping trees that are
+ generated via an instance array.  Added code to instance.c to fix merging hole
+ that was made visible with this diagnostic.  Full regressions pass.
+
  Revision 1.115  2008/11/13 05:08:36  phase1geo
  Fixing bug found with merge8.5 diagnostic and fixing issues with VPI.  Full
  regressions now pass.
