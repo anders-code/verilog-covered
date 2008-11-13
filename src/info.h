@@ -26,6 +26,12 @@
 #include <stdio.h>
 
 
+/*! \brief Adds the given argument(s) from the command-line to the score array such that no arguments are duplicated. */
+void score_add_args(
+             const char* arg1,
+  /*@null@*/ const char* arg2
+);
+
 /*! \brief Writes info line to specified CDD file. */
 void info_db_write( FILE* file );
 
@@ -47,6 +53,10 @@ void info_dealloc();
 
 /*
  $Log$
+ Revision 1.12  2008/11/13 05:08:36  phase1geo
+ Fixing bug found with merge8.5 diagnostic and fixing issues with VPI.  Full
+ regressions now pass.
+
  Revision 1.11  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
