@@ -969,6 +969,7 @@ static void instance_merge_tree(
         }
       } else if( tmp == NULL ) {
         root2->child_tail = last2;
+        last2->next = NULL;
       } else {
         last2->next = tmp;
       }
@@ -1709,6 +1710,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.115  2008/11/13 05:08:36  phase1geo
+ Fixing bug found with merge8.5 diagnostic and fixing issues with VPI.  Full
+ regressions now pass.
+
  Revision 1.114  2008/11/12 19:57:07  phase1geo
  Fixing the rest of the issues from regressions in regards to the merge changes.
  Updating regression files.  IV and Cver regressions now pass.
