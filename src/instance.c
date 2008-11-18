@@ -1076,6 +1076,10 @@ bool instance_merge_two_trees(
 
       instance_merge_tree( tinst1, tinst2 );
 
+    } else if( strcmp( root1->name, root2->name ) == 0 ) {
+
+      instance_merge_tree( root1, root2 );
+
     } else {
       
       /* Create strings large enough to hold the contents from lhier1 and lhier2 */
@@ -1103,6 +1107,11 @@ bool instance_merge_two_trees(
       free_safe( rest2, (strlen( lhier2 ) + 1) );
 
     }
+
+  /* If the two trees share the same root name, merge them */
+  } else if( strcmp( root1->name, root2->name ) == 0 ) {
+
+    instance_merge_tree( root1, root2 );
 
   /* If root2 is a branch of root1, merge root2 into root1 */
   } else if( strncmp( lhier1, lhier2, strlen( lhier1 ) ) == 0 ) {
@@ -1738,6 +1747,9 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.117  2008/11/18 14:22:46  phase1geo
+ Attempting to fix merging issue found with merge10.
+
  Revision 1.116  2008/11/13 22:42:15  phase1geo
  Adding new merge9 diagnostic which merges to non-overlapping trees that are
  generated via an instance array.  Added code to instance.c to fix merging hole
