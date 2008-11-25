@@ -171,8 +171,8 @@ NOSIMLIST     = gen1            gen1.1          gen1.3          gen1.4          
                 gen31.2         gen32.2         gen33.2         gen34.2         gen35.2 \
                 gen36.2         gen37.2         gen38.2         gen39.2         gen40.2
 
-NOSIMERRLIST  = comment1        enum2           err4            err4.1 \
-                expand5         for7            for7.1          func3           func3.1 \
+NOSIMERRLIST  = comment1        enum2           err4            err4.1          expand5 \
+                for7            for7.1          fsm_err1        func3           func3.1 \
                 func3.2         func3.3         func3.4         func3.5         func3.6 \
                 gen1.2          gen2            gen3            gen4            gen5 \
                 gen6            gen7            gen8            gen9            gen10 \
@@ -195,33 +195,31 @@ NOSIMERRLIST  = comment1        enum2           err4            err4.1 \
                 timescale3.6    timescale3.7    timescale3.8    timescale3.9    timescale3.10 \
                 timescale3.11   timescale3.12   timescale3.13   timescale3.14
            
-IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         fsm1 \
-                fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
-                fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
-                fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
-                fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
-                fsm10.2         generate1       hier2           ifdef1.1        implicit2 \
-                real1.1         report4         report4.1       static2         static2.1 \
-                static2.2       unary1
+IVONLYDIAGS1  = always5.1         assign1           assign2.8         example           fsm1 \
+                fsm1.1            fsm1.2            fsm1.3            fsm1.4            fsm6 \
+                fsm7              fsm7.1            fsm7.2            fsm7.3            fsm7.4 \
+                fsm7.5            fsm8              fsm8.1            fsm8.2            fsm8.3 \
+                fsm9              fsm9.1            fsm9.2            fsm10             fsm10.1 \
+                fsm10.2           generate1         hier2             ifdef1.1          implicit2 \
+                profile_err1      real1.1           report4           report4.1         static2 \
+                static2.1         static2.2         unary1
 IVONLYDIAGS2  = 
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
  
-VCSONLYDIAGS1 = afunc1            afunc2            always_comb1      always_comb2      always_ff1        always_latch1 \
-                always_latch2     assert1           atask1            bit1              byte1 \
-                char1             dec1              dec1.1            dec2              dec3 \
-                dec3.1            dly_assign1.1     dly_assign1.2     dly_assign1.3     dly_assign1.4 \
-                dly_assign2       dly_assign2.1     do_while1         do_while1.1       do_while2 \
-                elsif1            elsif1.1          elsif1.2          elsif1.3          elsif1.4 \
-                elsif2            elsif2.1          enum1             enum1.1           enum1.2 \
-                enum1.3           enum2.1           exclude5          exclude5.1        exclude5.2 \
-                exclude5.3        exponent1         final1            for3              for5 \
-                for5.1            for5.2            for5.3            for5.4            for5.5 \
-                for5.6            for5.8            for5.9            for5.10           for6 \
-                gate1.1           generate1.1       generate2         generate3         generate3.1 \
-                generate6         generate7         generate7.1       generate7.2       generate8.1 \
-                generate8.2       generate8.3       generate8.4       generate8.5       generate8.6 \
-                generate8.7       generate8.8       generate9         generate9.1       generate9.2 \
+VCSONLYDIAGS1 = afunc2            always_comb1      always_comb2      always_ff1        always_latch1 \
+                always_latch2     assert1           bit1              byte1             char1 \
+                dec1              dec1.1            dec2              dec3              dec3.1 \
+                dly_assign1.1     dly_assign1.2     dly_assign1.3     dly_assign1.4     dly_assign2 \
+                dly_assign2.1     do_while1         do_while1.1       do_while2         elsif1 \
+                elsif1.1          elsif1.2          elsif1.3          elsif1.4          elsif2 \
+                elsif2.1          enum1             enum1.1           enum1.2           enum1.3 \
+                enum2.1           exclude5          exclude5.1        exclude5.2        exclude5.3 \
+                exponent1         final1            for3              for5              for5.1 \
+                for5.2            for5.3            for5.4            for5.5            for5.6 \
+                for5.8            for5.9            for5.10           for6              gate1.1 \
+                generate2         generate3         generate3.1       generate7         generate7.1 \
+                generate7.2       generate8.1       generate9         generate9.1       generate9.2 \
                 generate9.3       generate11.4      generate13        generate14        hier1.1 \
                 inc1              inc1.1            inc2              inc3              inc3.1 \
                 int1              line1             logic1            longint1          long_sig \
@@ -253,9 +251,11 @@ IVCVERDIAGS2  =
 IVCVERDIAGS3  =
 IVCVERDIAGS4  =
 
-IVVCSDIAGS1   = define3          delay3           exclude7.3       exclude10.5      exclude12.5 \
-                generate2.1      generate4        generate4.1      generate5        generate5.1 \
-                generate5.2      generate5.3      generate8        generate10       generate10.1 \
+IVVCSDIAGS1   = afunc1           atask1           define3          delay3           exclude7.3 \
+                exclude10.5      exclude12.5      generate1.1      generate2.1      generate4 \
+                generate4.1      generate5        generate5.1      generate5.2      generate5.3 \
+                generate6        generate8        generate8.2      generate8.3      generate8.4 \
+                generate8.5      generate8.6      generate8.7      generate8.8      generate10       generate10.1 \
                 generate10.2     generate11       generate11.1     generate11.2     generate11.3 \
                 hier3            localparam1      localparam1.1    localparam1.2    localparam1.3 \
                 localparam2      localparam3      mbit_sel5        mbit_sel5.1      mbit_sel5.2 \
