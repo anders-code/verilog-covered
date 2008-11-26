@@ -23,13 +23,18 @@
  \brief    Contains functions for generating verilog to simulate.
 */
 
-#include <stdio.h>
 
-#include "defines.h"
+/*! \brief Generates Verilog containing coverage instrumentation */
+void generator_output();
 
 
 /*
  $Log$
+ Revision 1.2  2008/11/26 05:34:48  phase1geo
+ More work on Verilog generator file.  We are now able to create the needed
+ directories and output a non-instrumented version of a module to the appropriate
+ directory.  Checkpointing.
+
  Revision 1.1  2008/11/25 23:53:07  phase1geo
  Adding files for Verilog generator functions.
 
