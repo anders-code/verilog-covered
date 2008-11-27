@@ -196,14 +196,11 @@ static void generator_handle_line(
   bool              end_found;
   unsigned int      curr_char = 0;
 
-  printf( "In generator_handle_line, line: %s, line_num: %d, next_funit start: %d\n", line, line_num, fnamel->next_funit->start_line );
-
   do {
     end_found = FALSE;
     if( (line_num >= fnamel->next_funit->start_line) && (line_num <= fnamel->next_funit->end_line) ) {
       if( line_num == fnamel->next_funit->start_line ) {
-        func_iter_init( &fi, fnamel->next_funit, TRUE, FALSE );
-        printf( "func_iter initialized!\n" );
+        func_iter_init( &fi, fnamel->next_funit, TRUE, FALSE, FALSE );
         stmt = func_iter_get_next_statement( &fi );
       }
       while( (stmt != NULL) && (stmt->exp->line == line_num) ) {
@@ -335,6 +332,10 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
 
 /*
  $Log$
+ Revision 1.4  2008/11/27 00:24:44  phase1geo
+ Fixing problems with previous version of generator.  Things work as expected at this point.
+ Checkpointing.
+
  Revision 1.3  2008/11/27 00:01:50  phase1geo
  More work on coverage generator.  Checkpointing.
 
