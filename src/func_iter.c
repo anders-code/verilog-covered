@@ -23,6 +23,7 @@
 #include <assert.h>
 
 #include "defines.h"
+#include "expr.h"
 #include "func_iter.h"
 #include "func_unit.h"
 #include "iter.h"
@@ -43,7 +44,7 @@ void func_iter_display(
   if( fi->sis != NULL ) {
     for( i=0; i<fi->si_num; i++ ) {
       if( fi->sis[i] != NULL ) {
-        printf( "  Line: %d\n", fi->sis[i]->curr->stmt->exp->line );
+        printf( "  Stmt: %s\n", expression_string( fi->sis[i]->curr->stmt->exp ) );
       }
     }
   }
@@ -87,11 +88,13 @@ static void func_iter_sort(
     fi->sis[i] = tmp;
     (fi->si_num)--;
 
-  /* Otherwise, re-sort them based on line number */
+  /* Otherwise, re-sort them based on line number and then column number (if there is a tie). */
   } else {
 
     i = 0;
-    while( (i < (fi->si_num - 1)) && (tmp->curr->stmt->exp->line > fi->sis[i+1]->curr->stmt->exp->line) ) {
+    while( (i < (fi->si_num - 1)) &&
+           ((tmp->curr->stmt->exp->line > fi->sis[i+1]->curr->stmt->exp->line) ||
+            ((tmp->curr->stmt->exp->col & 0xffff) > (fi->sis[i+1]->curr->stmt->exp->col & 0xffff))) ) {
       fi->sis[i] = fi->sis[i+1];
       i++;
     }
@@ -373,6 +376,11 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.15  2008/11/29 04:27:07  phase1geo
+ More work on inlined coverage code insertion.  Net assigns and procedural assigns
+ seem to be working at a most basic level.  Currently, I have an issue that I need
+ to solve where non-head statements are being ignored.  Checkpointing.
+
  Revision 1.14  2008/11/27 00:24:44  phase1geo
  Fixing problems with previous version of generator.  Things work as expected at this point.
  Checkpointing.
