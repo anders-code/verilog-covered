@@ -131,6 +131,14 @@ static_expr* parser_create_unary_se(
   unsigned int last_column
 );
 
+/*! \brief Creates a system call static expression. */
+static_expr* parser_create_syscall_se(
+  exp_op_type  op,
+  unsigned int first_line,
+  unsigned int first_column,
+  unsigned int last_column
+);
+
 /*! \brief Creates a unary expression. */
 expression* parser_create_unary_exp(
   expression*  exp,
@@ -150,9 +158,50 @@ expression* parser_create_binary_exp(
   unsigned int last_column
 );
 
+/*! \brief Creates an op-and-assign expression. */
+expression* parser_create_op_and_assign_exp(
+  char*        name,
+  exp_op_type  op,
+  unsigned int first_line1,
+  unsigned int first_column1,
+  unsigned int last_column1,
+  unsigned int last_column2
+);
+
+/*! \brief Creates an expression for a system call. */
+expression* parser_create_syscall_exp(
+  exp_op_type  op,
+  unsigned int first_line,
+  unsigned int first_column,
+  unsigned int last_column
+);
+
+/*! \brief Creates an expression for a system call with a parameter list. */
+expression* parser_create_syscall_w_params_exp(
+  exp_op_type  op,
+  expression*  plist,
+  unsigned int first_line,
+  unsigned int first_column,
+  unsigned int last_column
+);
+
+/*! \brief Creates an op-and-assign expression. */  
+expression* parser_create_op_and_assign_w_dim_exp(
+  char*        name,
+  exp_op_type  op,
+  expression*  dim_exp,
+  unsigned int first_line,
+  unsigned int first_column,
+  unsigned int last_column
+);
+
 
 /*
  $Log$
+ Revision 1.2  2008/12/02 06:14:09  phase1geo
+ More changes to parser.y to move its code to parser_func.c for cleanup purposes.
+ Regression still passes.  Checkpointing.
+
  Revision 1.1  2008/12/02 00:17:07  phase1geo
  Adding missing files.
 
