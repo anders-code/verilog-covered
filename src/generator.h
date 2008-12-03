@@ -33,9 +33,16 @@ void generator_hold_code(
   unsigned int line_num
 );
 
+/*! \brief Outputs all held code to the output file. */
+void generator_flush_held_code();
+
 
 /*
  $Log$
+ Revision 1.4  2008/12/03 17:15:11  phase1geo
+ Code to output coverage file is now working from an end-to-end perspective.  Checkpointing.
+ We are now ready to start injecting actual coverage information into this file.
+
  Revision 1.3  2008/12/02 23:43:21  phase1geo
  Reimplementing inlined code generation code.  Added this code to Verilog lexer and parser.
  More work to do here.  Checkpointing.
