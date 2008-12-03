@@ -274,11 +274,6 @@ void db_close() { PROFILE(DB_CLOSE);
   /* Deallocate database information */
   info_dealloc();
 
-  /* Deallocate the needed module list */
-  str_link_delete_list( modlist_head );
-  modlist_head = NULL;
-  modlist_tail = NULL;
-    
   /* Free memory associated with current instance scope */
   assert( curr_inst_scope_size == 0 );
 
@@ -3156,6 +3151,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.352  2008/12/03 07:27:01  phase1geo
+ Made initial pass through the parser to add parse_mode.  Things are quite broken
+ in regression at this point and we have conflicts in the resultant parser.
+ Checkpointing.
+
  Revision 1.351  2008/11/12 19:57:07  phase1geo
  Fixing the rest of the issues from regressions in regards to the merge changes.
  Updating regression files.  IV and Cver regressions now pass.
