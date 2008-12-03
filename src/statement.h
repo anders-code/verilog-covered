@@ -65,6 +65,13 @@ statement* statement_find_head_statement( statement* stmt, stmt_link* head );
 /*! \brief Searches for statement with ID in the given statement block */
 statement* statement_find_statement( statement* curr, int id );
 
+/*! \brief Searches for statement with given positional information */
+statement* statement_find_statement_by_position(
+  statement*   curr,
+  unsigned int first_line,
+  unsigned int first_column
+);
+
 /*! \brief Searches the specified statement block for expression that calls the given stmt */
 bool statement_contains_expr_calling_stmt( statement* curr, statement* stmt );
 
@@ -80,6 +87,10 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.39  2008/12/03 23:29:07  phase1geo
+ Finished getting line coverage insertion working.  Starting to work on combinational logic
+ coverage.  Checkpointing.
+
  Revision 1.38  2008/10/31 22:01:34  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to

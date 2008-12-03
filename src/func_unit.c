@@ -194,7 +194,7 @@ func_unit* funit_get_curr_function(
          one exists; otherwise, returns NULL.
 */
 func_unit* funit_get_curr_task(
-  func_unit* funit  /*!< Functional unit that may be nested in a function */
+  func_unit* funit  /*!< Functional unit that may be nested in a task */
 ) { PROFILE(FUNIT_GET_CURR_TASK);
 
   assert( funit != NULL );
@@ -1585,6 +1585,10 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.121  2008/12/03 23:29:07  phase1geo
+ Finished getting line coverage insertion working.  Starting to work on combinational logic
+ coverage.  Checkpointing.
+
  Revision 1.120  2008/11/12 19:57:07  phase1geo
  Fixing the rest of the issues from regressions in regards to the merge changes.
  Updating regression files.  IV and Cver regressions now pass.
