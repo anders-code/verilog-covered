@@ -42,6 +42,11 @@ typedef struct func_iter_s {
 /*! \brief Initializes the values in the given structure */
 void func_iter_init( func_iter* fi, func_unit* funit, bool stmts, bool sigs, bool use_tail );
 
+/*! \brief Resets the functional iterator structure (call after initializing) */
+void func_iter_reset(
+  func_iter* fi  /*!< Pointer to functional unit to reset */
+);
+
 /*! \brief Provides the next statement iterator in the functional unit statement iterator */
 statement* func_iter_get_next_statement( func_iter* fi );
 
@@ -54,6 +59,9 @@ void func_iter_dealloc( func_iter* si );
 
 /*
  $Log$
+ Revision 1.6  2008/12/04 14:19:50  phase1geo
+ Fixing bug in code generator.  Checkpointing.
+
  Revision 1.5  2008/11/27 00:24:44  phase1geo
  Fixing problems with previous version of generator.  Things work as expected at this point.
  Checkpointing.
