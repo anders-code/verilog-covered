@@ -141,7 +141,7 @@ void memory_get_stats(
     func_iter fi;
     vsignal*  sig;
 
-    func_iter_init( &fi, funit, FALSE, TRUE, TRUE );
+    func_iter_init( &fi, funit, FALSE, TRUE, TRUE, FALSE );
    
     while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
 
@@ -421,7 +421,7 @@ void memory_get_coverage(
   exclude_reason* er;
 
   /* Find the signal in the functional unit */
-  func_iter_init( &fi, funit, FALSE, TRUE, TRUE );
+  func_iter_init( &fi, funit, FALSE, TRUE, TRUE, FALSE );
   while( ((sig = func_iter_get_next_signal( &fi )) != NULL) && (strcmp( sig->name, signame ) != 0) );
   func_iter_dealloc( &fi );
   assert( sig != NULL );
@@ -516,7 +516,7 @@ void memory_collect(
   unsigned int excluded  = 0;  /* Number of excluded memory coverage points */
   bool         cov_found;
 
-  func_iter_init( &fi, funit, FALSE, TRUE, TRUE );
+  func_iter_init( &fi, funit, FALSE, TRUE, TRUE, FALSE );
 
   while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
 
@@ -1034,7 +1034,7 @@ static void memory_display_verbose(
     case RPT_TYPE_EXCL :  fprintf( ofile, "    Memories excluded from coverage\n\n" );      break;
   }
 
-  func_iter_init( &fi, funit, FALSE, TRUE, TRUE );
+  func_iter_init( &fi, funit, FALSE, TRUE, TRUE, FALSE );
 
   while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
 
@@ -1320,6 +1320,10 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.47  2008/12/05 00:22:41  phase1geo
+ More work completed on code coverage generator.  Currently working on bug in
+ statement finder.  Checkpointing.
+
  Revision 1.46  2008/11/27 00:24:44  phase1geo
  Fixing problems with previous version of generator.  Things work as expected at this point.
  Checkpointing.

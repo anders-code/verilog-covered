@@ -40,7 +40,14 @@ typedef struct func_iter_s {
 
 
 /*! \brief Initializes the values in the given structure */
-void func_iter_init( func_iter* fi, func_unit* funit, bool stmts, bool sigs, bool use_tail );
+void func_iter_init(
+  /*@out@*/ func_iter* fi,
+            func_unit* funit,
+            bool       stmts,
+            bool       sigs,
+            bool       use_tail,
+            bool       inc_all
+);
 
 /*! \brief Resets the functional iterator structure (call after initializing) */
 void func_iter_reset(
@@ -59,6 +66,10 @@ void func_iter_dealloc( func_iter* si );
 
 /*
  $Log$
+ Revision 1.7  2008/12/05 00:22:41  phase1geo
+ More work completed on code coverage generator.  Currently working on bug in
+ statement finder.  Checkpointing.
+
  Revision 1.6  2008/12/04 14:19:50  phase1geo
  Fixing bug in code generator.  Checkpointing.
 

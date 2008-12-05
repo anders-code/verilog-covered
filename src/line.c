@@ -77,7 +77,7 @@ void line_get_stats(
   if( !funit_is_unnamed( funit ) ) {
 
     /* Initialize the functional unit iterator */
-    func_iter_init( &fi, funit, TRUE, FALSE, TRUE );
+    func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
 
     stmt = func_iter_get_next_statement( &fi );
     while( stmt != NULL ) {
@@ -142,7 +142,7 @@ void line_collect(
   *reasons   = (char**)malloc_safe( sizeof( char* ) * (*line_size) );
 
   /* Initialize the functional unit iterator */
-  func_iter_init( &fi, funit, TRUE, FALSE, TRUE );
+  func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
 
   stmt = func_iter_get_next_statement( &fi );
   while( stmt != NULL ) {
@@ -423,7 +423,7 @@ static void line_display_verbose(
   }
 
   /* Initialize functional unit iterator */
-  func_iter_init( &fi, funit, TRUE, FALSE, TRUE );
+  func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
 
   /* Display current instance missed lines */
   while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
@@ -679,6 +679,10 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.109  2008/12/05 00:22:41  phase1geo
+ More work completed on code coverage generator.  Currently working on bug in
+ statement finder.  Checkpointing.
+
  Revision 1.108  2008/11/27 00:24:44  phase1geo
  Fixing problems with previous version of generator.  Things work as expected at this point.
  Checkpointing.

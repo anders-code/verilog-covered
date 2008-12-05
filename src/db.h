@@ -64,7 +64,8 @@ void db_set_timescale( int unit, int precision );
 
 /*! \brief Searches for and sets the current functional unit. */
 void db_find_and_set_curr_funit(
-  const char* modname
+  const char* name,
+  int         type
 );
 
 /*! \brief Returns a pointer to the current functional unit. */
@@ -232,6 +233,10 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.101  2008/12/05 00:22:41  phase1geo
+ More work completed on code coverage generator.  Currently working on bug in
+ statement finder.  Checkpointing.
+
  Revision 1.100  2008/12/03 23:29:07  phase1geo
  Finished getting line coverage insertion working.  Starting to work on combinational logic
  coverage.  Checkpointing.
