@@ -3004,15 +3004,16 @@ void db_assign_symbol(
 
   if( (curr_instance != NULL) && (curr_instance->funit != NULL) ) {
     
-    if( info_suppl.inlined && (strncmp( name, "\\covered$", 9 ) == 0) ) {
+    if( info_suppl.part.inlined && (strncmp( name, "\\covered$", 9 ) == 0) ) {
 
       char type = name[9];
 
       /* If the type is an x (temporary register) or a y (temporary wire), don't continue on */
       if( (type != 'x') && (type != 'y') ) {
 
-        int          line;
-        int          col;
+        int       line;
+        int       col;
+        exp_link* expl;
         unsigned int rv = sscanf( (name + 10), "%d_%x", &line, &col );
         assert( rv == 2 );
 
@@ -3133,7 +3134,7 @@ bool db_do_timestep(
   bool   final  /*!< Specifies that this is the final timestep */
 ) { PROFILE(DB_DO_TIMESTEP);
 
-  bool            retval;               /* Return value for this function */
+  bool            retval          = TRUE;
   static sim_time curr_time;
   static uint64   last_sim_update = 0;
 
@@ -3166,15 +3167,20 @@ bool db_do_timestep(
     assert( rv == 0 );
   }
 
-  /* Simulate the current timestep */
-  retval = sim_simulate( &curr_time );
+  /* Only perform simulation if we are not scoring an inlined coverage design. */
+  if( !info_suppl.part.inlined ) {
 
-  /* If this is the last timestep, add the final list and do one more simulate */
-  if( final && retval ) {
-    curr_time.lo   = 0xffffffff;
-    curr_time.hi   = 0xffffffff;
-    curr_time.full = 0xffffffffffffffffLL;
+    /* Simulate the current timestep */
     retval = sim_simulate( &curr_time );
+
+    /* If this is the last timestep, add the final list and do one more simulate */
+    if( final && retval ) {
+      curr_time.lo   = 0xffffffff;
+      curr_time.hi   = 0xffffffff;
+      curr_time.full = 0xffffffffffffffffLL;
+      retval = sim_simulate( &curr_time );
+    }
+
   }
 
 #ifdef DEBUG_MODE
@@ -3199,6 +3205,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.356  2008/12/06 06:35:19  phase1geo
+ Adding first crack at handling coverage-related information from dumpfile.
+ This code is untested.
+
  Revision 1.355  2008/12/05 23:05:37  phase1geo
  Working on VCD reading side of the inlined coverage handler.  Things don't
  compile at this point and are in limbo.  Checkpointing.

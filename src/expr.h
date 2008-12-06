@@ -117,6 +117,13 @@ bool expression_operate( expression* expr, thread* thr, const sim_time* time );
 /*! \brief Performs recursive expression operation (parse mode only). */
 void expression_operate_recursively( expression* expr, func_unit* funit, bool sizing );
 
+/*! \brief Assigns a value to an expression's coverage data from a dumpfile */
+void expression_vcd_assign(
+  expression* expr,
+  char        action,
+  const char* value
+);
+
 /*! \brief Returns TRUE if specified expression is found to contain all static leaf expressions. */
 bool expression_is_static_only( expression* expr );
 
@@ -141,6 +148,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.73  2008/12/06 06:35:19  phase1geo
+ Adding first crack at handling coverage-related information from dumpfile.
+ This code is untested.
+
  Revision 1.72  2008/10/31 22:01:34  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to

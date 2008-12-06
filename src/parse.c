@@ -206,7 +206,9 @@ void parse_design(
     }
 
     /* Generate the needed Verilog - TBD - This needs to be optional */
-    generator_output();
+    if( info_suppl.part.inlined ) {
+      generator_output();
+    }
 
     /* Write contents to baseline database file. */
     db_write( output_db, TRUE, TRUE, FALSE );
@@ -319,6 +321,10 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.85  2008/12/06 06:35:20  phase1geo
+ Adding first crack at handling coverage-related information from dumpfile.
+ This code is untested.
+
  Revision 1.84  2008/12/05 05:48:30  phase1geo
  More work on code coverage insertion.  Checkpointing.
 
