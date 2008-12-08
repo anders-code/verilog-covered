@@ -821,7 +821,7 @@ static void rank_gather_comb_cov(
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
             comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->suppl.part.eval_00 << UL_MOD(index);
-          } else {
+          } else if( exp_op_info[exp->op].suppl.is_comb == OTHER_COMB ) {
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
             comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->suppl.part.eval_00 << UL_MOD(index);
@@ -1805,6 +1805,11 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.16  2008/12/08 06:43:45  phase1geo
+ Fixing issues with broken regression.  Updated regression per these changes (some
+ code reduction was performed as well).  IV and Cver regressions now pass.
+ Checkpointing.
+
  Revision 1.15  2008/12/07 07:20:08  phase1geo
  Checkpointing work.  I have an end-to-end run now working with test.v in
  the testsuite.  The results are not accurate at this point but it's progress.
@@ -1858,6 +1863,11 @@ void command_rank(
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.16  2008/12/08 06:43:45  phase1geo
+ Fixing issues with broken regression.  Updated regression per these changes (some
+ code reduction was performed as well).  IV and Cver regressions now pass.
+ Checkpointing.
+
  Revision 1.15  2008/12/07 07:20:08  phase1geo
  Checkpointing work.  I have an end-to-end run now working with test.v in
  the testsuite.  The results are not accurate at this point but it's progress.
