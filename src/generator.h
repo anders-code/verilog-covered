@@ -54,7 +54,8 @@ void generator_flush_all();
 /*! \brief Inserts line coverage information. */
 void generator_insert_line_cov(
   unsigned int first_line,
-  unsigned int first_column
+  unsigned int first_column,
+  unsigned int last_column
 );
 
 /*! \brief Inserts combinational logic coverage information. */
@@ -68,6 +69,11 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.9  2008/12/10 00:19:23  phase1geo
+ Fixing issues with aedge1 diagnostic (still need to handle events but this will
+ be worked on a later time).  Working on sizing temporary subexpression LHS signals.
+ This is not complete and does not compile at this time.  Checkpointing.
+
  Revision 1.8  2008/12/05 00:22:41  phase1geo
  More work completed on code coverage generator.  Currently working on bug in
  statement finder.  Checkpointing.
