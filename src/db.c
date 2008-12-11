@@ -3011,8 +3011,8 @@ void db_assign_symbol(
       /* If the type is an x (temporary register) or a y (temporary wire), don't continue on */
       if( (type != 'x') && (type != 'y') ) {
 
-        func_unit* mod = funit_get_curr_module( curr_instance->funit );
-        exp_link*  expl;
+        func_unit*  mod = funit_get_curr_module( curr_instance->funit );
+        expression* exp;
 
         /* Handle line coverage */
         if( type == 'l' ) {
@@ -3022,6 +3022,7 @@ void db_assign_symbol(
           unsigned int rv;
           char         scope[4096];
           funit_link*  curr_tf;
+          exp_link*    expl;
 
           /* Extract the line, first column and funit scope information from name */
           if( sscanf( (name + 10), "%d_%x$%s", &line, &col, scope ) == 3 ) {
@@ -3052,6 +3053,9 @@ void db_assign_symbol(
 
           }
 
+          assert( expl != NULL );
+          exp = expl->exp;
+
         } else {
 
           int          line;
@@ -3059,6 +3063,7 @@ void db_assign_symbol(
           unsigned int rv;
           char         scope[4096];
           funit_link*  curr_tf;
+          exp_link*    expl;
 
           /* Extract the line and column (and possibly instance) information */
           if( sscanf( (name + 10), "%d_%x$%s", &line, &col, scope ) == 3 ) {
@@ -3089,12 +3094,18 @@ void db_assign_symbol(
 
           }
 
+          assert( expl != NULL );
+          exp = expl->exp;
+
+          /* If the found expression's parent is an AEDGE, use that expression instead */
+          if( (ESUPPL_IS_ROOT( exp->suppl ) == 0) && (exp->parent->expr->op == EXP_OP_AEDGE) ) {
+            exp = exp->parent->expr;
+          }
+
         }
 
-        assert( expl != NULL );
-
         /* Add the expression to the symtable */
-        symtable_add_expression( symbol, expl->exp, type );
+        symtable_add_expression( symbol, exp, type );
 
       }
         
@@ -3274,6 +3285,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.359  2008/12/11 05:53:32  phase1geo
+ Fixing some bugs in the combinational logic code coverage generator.  Checkpointing.
+
  Revision 1.358  2008/12/10 00:19:23  phase1geo
  Fixing issues with aedge1 diagnostic (still need to handle events but this will
  be worked on a later time).  Working on sizing temporary subexpression LHS signals.
