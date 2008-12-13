@@ -35,9 +35,19 @@ void codegen_gen_expr(
             func_unit*    funit
 );
 
+/*! \brief Creates Verilog code string from specified expression tree that is guaranteed to be one line. */
+char* codegen_gen_expr_one_line(
+  expression* expr,
+  func_unit*  funit
+);
+
 
 /*
  $Log$
+ Revision 1.14  2008/12/13 00:17:28  phase1geo
+ Fixing more regression bugs.  Updated some original tests to make them comparable to the inlined method output.
+ Checkpointing.
+
  Revision 1.13  2008/08/18 23:07:25  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
