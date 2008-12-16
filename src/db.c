@@ -3041,7 +3041,6 @@ void db_assign_symbol(
             /* Search the matching expression */
             expl = curr_tf->funit->exp_head;
             while( (expl != NULL) &&
-              printf( "EXAMINING expr: %s\n", expression_string( expl->exp ) ) &&
               ((expl->exp->line != line) || (expl->exp->col != col) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
@@ -3291,6 +3290,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.362  2008/12/16 04:56:39  phase1geo
+ More updates for inlined code generation feature.  Updates to regression per
+ these changes.  Checkpointing.
+
  Revision 1.361  2008/12/16 00:18:08  phase1geo
  Checkpointing work on for2 diagnostic.  Adding initial support for fork..join
  blocks -- more work to do here.  Starting to add support for FOR loop control
