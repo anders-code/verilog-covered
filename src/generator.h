@@ -57,7 +57,8 @@ void generator_prepend_to_work_code(
 
 /*! \brief Adds the given string to the work code buffers */
 void generator_add_to_work_code(
-  const char*  str
+  const char*  str,
+  bool         from_code
 );
 
 /*! \brief Flushes the working code to the hold code */
@@ -92,6 +93,7 @@ void generator_flush_all1(
 /*! \brief Inserts line coverage information. */
 void generator_insert_line_cov(
   unsigned int first_line,
+  unsigned int last_line,
   unsigned int first_column,
   unsigned int last_column,
   bool         semicolon
@@ -114,6 +116,10 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.15  2008/12/17 00:02:57  phase1geo
+ More work on inlined coverage code.  Making good progress through the regression
+ suite.  Checkpointing.
+
  Revision 1.14  2008/12/16 00:18:08  phase1geo
  Checkpointing work on for2 diagnostic.  Adding initial support for fork..join
  blocks -- more work to do here.  Starting to add support for FOR loop control
