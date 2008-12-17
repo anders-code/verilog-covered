@@ -3121,6 +3121,7 @@ void db_assign_symbol(
         }
 
         /* Add the expression to the symtable */
+        printf( "Adding expression to symtable, symbol: %s, exp: %s, type: %c\n", symbol, expression_string( exp ), type );
         symtable_add_expression( symbol, exp, type );
 
       }
@@ -3301,6 +3302,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.364  2008/12/17 18:17:18  phase1geo
+ Checkpointing inlined code coverage work.
+
  Revision 1.363  2008/12/17 00:02:57  phase1geo
  More work on inlined coverage code.  Making good progress through the regression
  suite.  Checkpointing.
