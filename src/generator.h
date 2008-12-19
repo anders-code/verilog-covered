@@ -107,7 +107,7 @@ void generator_insert_comb_cov(
   unsigned int first_column
 );
 
-/*! \brief Inserts code for handling combinational logic coverage for case blocks.
+/*! \brief Inserts code for handling combinational logic coverage for case blocks. */
 void generator_insert_case_comb_cov(
   unsigned int first_line,
   unsigned int first_column
@@ -116,6 +116,9 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.16  2008/12/19 00:04:38  phase1geo
+ VCS regression updates.  Checkpointing.
+
  Revision 1.15  2008/12/17 00:02:57  phase1geo
  More work on inlined coverage code.  Making good progress through the regression
  suite.  Checkpointing.
