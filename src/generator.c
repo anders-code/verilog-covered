@@ -1061,7 +1061,7 @@ static void generator_insert_unary_comb_cov(
   }
 
   /* Prepend the coverage assignment to the working buffer */
-  rv = snprintf( str, 4096, "%s%s = |(%s);", prefix, sig, sigr );
+  rv = snprintf( str, 4096, "%s%s = (%s > 0);", prefix, sig, sigr );
   assert( rv < 4096 );
   str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
 
@@ -1137,7 +1137,7 @@ static void generator_insert_comb_comb_cov(
   }
 
   /* Prepend the coverage assignment to the working buffer */
-  rv = snprintf( str, 4096, "%s%s = {|(%s),|(%s)};", prefix, sig, sigl, sigr );
+  rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s > 0)};", prefix, sig, sigl, sigr );
   assert( rv < 4096 );
   str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
 
@@ -1830,6 +1830,10 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.40  2008/12/20 06:04:25  phase1geo
+ IV regression fixes for inlined code coverage (around 117 tests are still
+ failing at this point).  Checkpointing.
+
  Revision 1.39  2008/12/19 19:07:01  phase1geo
  More regression updates.
 
