@@ -336,6 +336,15 @@ bool vector_vcd_assign(
   int         lsb
 );
 
+/*! \brief Assigns specified VCD value to specified vectors. */
+bool vector_vcd_assign2(
+  vector* vec1,
+  vector* vec2,
+  char*   value,
+  int     msb,
+  int     lsb
+);
+
 /*! \brief Counts toggle01 and toggle10 information from specifed vector. */
 void vector_toggle_count(
             vector*       vec,
@@ -617,6 +626,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.72  2008/12/24 21:19:02  phase1geo
+ Initial work at getting FSM coverage put in (this looks to be working correctly
+ to this point).  Updated regressions per fixes.  Checkpointing.
+
  Revision 1.71  2008/10/27 21:14:02  phase1geo
  First pass at getting the $value$plusargs system function call to work.  More
  work to do here.  Checkpointing.

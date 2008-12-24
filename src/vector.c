@@ -3151,6 +3151,49 @@ bool vector_vcd_assign(
 }
 
 /*!
+ \return Returns TRUE if the value has changed from the previous value.
+
+ Assigns the given vectors the value from the VCD file (bit-extended as necessary).
+*/
+bool vector_vcd_assign2(
+  vector* vec1,   /*!< Vector to fill which occupies the low-order bits */
+  vector* vec2,   /*!< Vector to fill which occupies the high-order bits */
+  char*   value,  /*!< VCD value (in string form) */
+  int     msb,    /*!< Most-significant bit from VCD file */
+  int     lsb     /*!< Least-significant bit from VCD file */
+) { PROFILE(VECTOR_VCD_ASSIGN2);
+
+  bool         retval     = FALSE;
+  unsigned int value_size = strlen( value );
+
+  /* If the value string is greater than the low-order vector, split the string and perform two individual VCD assigns */
+  if( value_size > vec1->width ) {
+
+    char* ptr = value + (value_size - vec1->width);
+
+    retval |= vector_vcd_assign( vec1, ptr, (vec1->width - 1), 0 );
+    *ptr = '\0';
+    retval |= vector_vcd_assign( vec2, value, (vec2->width - 1), 0 );
+
+  /* Otherwise, assign the low-order vector as normal and assign the high-order vector with only the first character of the value string */
+  } else {
+
+    retval |= vector_vcd_assign( vec1, value, (vec1->width - 1), 0 );
+    if( value[0] == '1' ) {
+      value[0] = '0';
+    }
+    value[1] = '\0';
+    retval |= vector_vcd_assign( vec2, value, (vec2->width - 1), 0 );
+
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
  \return Returns TRUE if assigned value differs from original vector value; otherwise,
          returns FALSE.
 
@@ -5161,6 +5204,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.185  2008/12/24 21:19:02  phase1geo
+ Initial work at getting FSM coverage put in (this looks to be working correctly
+ to this point).  Updated regressions per fixes.  Checkpointing.
+
  Revision 1.184  2008/11/19 06:19:17  phase1geo
  Updates for next development release.  Updating configuration files for new
  locations of Icarus Verilog development releases.  Also fixing syntax error

@@ -2657,9 +2657,10 @@ struct sym_exp_s {
 struct symtable_s {
   union {
     sym_sig*   sig;                  /*!< Pointer to signal symtable entry stack */
-    sym_exp*   exp;                  /*!< Pointer to expression symtabl entry */
+    sym_exp*   exp;                  /*!< Pointer to expression symtable entry */
+    fsm*       table;                /*!< Pointer to FSM table symtable entry */
   } entry;
-  char         entry_type;           /*!< Specifies if this entry represents a signal (0) or expression (1) */
+  char         entry_type;           /*!< Specifies if this entry represents a signal (0), expression (1) or fsm (2) */
   char*        value;                /*!< String representation of last current value */
   unsigned int size;                 /*!< Number of bytes allowed storage for value */
   symtable*    table[94];            /*!< Array of symbol tables for next level (only enough for printable characters) */
@@ -3079,6 +3080,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.345  2008/12/24 21:19:01  phase1geo
+ Initial work at getting FSM coverage put in (this looks to be working correctly
+ to this point).  Updated regressions per fixes.  Checkpointing.
+
  Revision 1.344  2008/12/14 06:56:02  phase1geo
  Making some code modifications to set the stage for supporting case statements
  with the new inlined code coverage methodology.  Updating regressions per this
