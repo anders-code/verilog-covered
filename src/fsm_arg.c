@@ -130,9 +130,6 @@ static expression* fsm_arg_parse_state(
             expl = expr;
           }
 
-          /* Add signal name and expression to FSM var binding list */
-          fsm_var_bind_add( sig->name, expr, funit_name );
-
         } Catch_anonymous {
           vsignal_dealloc( sig );
           expression_dealloc( expr, FALSE );
@@ -730,6 +727,9 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.58.4.2  2008/12/27 22:20:03  phase1geo
+ Removing unnecessary FSM binding.
+
  Revision 1.58.4.1  2008/11/25 05:45:03  phase1geo
  Adding fsm_err1, fsm_err1.1 and profile_err1 diagnostics to regression suite.
  Updated run_gcov script to output only percentage information.  Fixed memory
