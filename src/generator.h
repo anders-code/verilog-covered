@@ -111,6 +111,13 @@ statement* generator_insert_line_cov(
   bool         semicolon
 );
 
+/*! \brief Inserts event combinational coverage for a specific expression. */
+void generator_insert_event_comb_cov(
+  expression* exp,
+  func_unit*  funit,
+  bool        reg_needed
+);
+
 /*! \brief Inserts combinational logic coverage information. */
 statement* generator_insert_comb_cov(
   unsigned int first_line,
@@ -142,6 +149,10 @@ void generator_insert_fsm_cov();
 
 /*
  $Log$
+ Revision 1.20  2008/12/28 19:39:17  phase1geo
+ Fixing the handling of wait statements.  Updated regressions as necessary.
+ Checkpointing.
+
  Revision 1.19  2008/12/27 21:05:55  phase1geo
  Updating CDD version and regressions per this change.  Checkpointing.
 
