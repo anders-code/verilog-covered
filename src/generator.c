@@ -856,25 +856,16 @@ static statement* generator_find_case_statement(
   unsigned int first_column  /*!< First column of case expression to find */
 ) { PROFILE(GENERATOR_FIND_CASE_STATEMENT);
 
-//  printf( "In generator_find_case_statement, line: %d, column: %d\n", first_line, first_column );
-
   if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->line < first_line) ||
       ((curr_stmt->exp->left->line == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
 
     /* Attempt to find the expression with the given position */
-    while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) && (curr_stmt->exp->left != NULL) &&
-//           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->left->col >> 16) & 0xffff) ) &&
-           ((curr_stmt->exp->left->line < first_line) ||
+    while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) && 
+           ((curr_stmt->exp->left == NULL) ||
+            (curr_stmt->exp->left->line < first_line) ||
             ((curr_stmt->exp->left->line == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
 
   }
-
-//  if( (curr_stmt != NULL) && (curr_stmt->exp->left != NULL) && (curr_stmt->exp->left->line == first_line) &&
-//      (((curr_stmt->exp->left->col >> 16) & 0xffff) == first_column) ) {
-//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
-//  } else {
-//    printf( "  NOT FOUND!\n" );
-//  }
 
   PROFILE_END;
 
@@ -2004,6 +1995,10 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.46  2008/12/28 04:14:54  phase1geo
+ Fixing support for case statement combinational coverage.  Updating regressions.
+ We are now down to 41 failures in regression.  Checkpointing.
+
  Revision 1.45  2008/12/27 21:05:55  phase1geo
  Updating CDD version and regressions per this change.  Checkpointing.
 
