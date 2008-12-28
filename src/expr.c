@@ -2854,8 +2854,8 @@ bool expression_op_func__time(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__TIME);
 
-  /* Convert the current time to the current vector */
-  bool retval = vector_from_uint64( expr->value, ((thr == NULL) ? time->full : thr->curr_time.full) );
+  uint64 curr_time = (thr == NULL) ? time->full : thr->curr_time.full;
+  bool   retval    = vector_from_uint64( expr->value, (curr_time / thr->funit->timescale) );
 
   PROFILE_END;
 
@@ -6211,6 +6211,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.399  2008/12/28 06:47:59  phase1geo
+ Updating regressions per bug fix.
+
  Revision 1.398  2008/12/19 00:05:12  phase1geo
  IV regression updates.  Checkpointing.
 
