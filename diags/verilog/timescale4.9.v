@@ -32,7 +32,7 @@ end
 
 endmodule
 
-`timescale 1 ns / 1 ns
+`timescale 100 ns / 100 ns
 
 module inner(
   input b
