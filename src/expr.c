@@ -2831,8 +2831,6 @@ bool expression_op_func__time(
   uint64 curr_time = (thr == NULL) ? time->full : thr->curr_time.full;
   bool   retval = vector_from_uint64( expr->value, (curr_time / thr->funit->timescale) );
 
-  printf( "In expression_op_func__time, time: %llu\n", (curr_time / thr->funit->timescale) );
-
   PROFILE_END;
 
   return( retval );
@@ -6144,6 +6142,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.386.2.2  2008/12/28 06:35:02  phase1geo
+ Removing unnecessary output.
+
  Revision 1.386.2.1  2008/12/28 05:16:34  phase1geo
  Fixing bug 2471776.  Updating regressions to test this accurately.  Still need
  to verify the VCS regression passes.
