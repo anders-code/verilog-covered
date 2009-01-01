@@ -1833,6 +1833,7 @@ static void generator_insert_mem_cov(
   char*        idxstr   = codegen_gen_expr_one_line( exp->left, funit );
   char*        value;
   char*        str;
+  expression*  last_exp = expression_get_last_line_expr( exp );
 
   /* Now insert the code to store the index and memory */
   if( write ) {
@@ -1846,7 +1847,11 @@ static void generator_insert_mem_cov(
     str_link*    tmp_tail = NULL;
 
     /* First, create the wire/register to hold the index */
-    rv = snprintf( iname, 4096, " \\covered$%c%d_%d$%s ", (net ? 'i' : 'I'), exp->line, ((exp->col >> 16) & 0xffff), exp->name );
+    if( net || (funit->type == FUNIT_MODULE) ) {
+      rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'i' : 'I'), exp->line, last_exp->line, exp->col, exp->name );
+    } else {
+      rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'i' : 'I'), exp->line, last_exp->line, exp->col, exp->name, funit->name );
+    }
     assert( rv < 4096 );
 
     /* Figure out the size of the dimensional width */
@@ -1887,14 +1892,18 @@ static void generator_insert_mem_cov(
     }
 
     /* Create name */
-    rv = snprintf( name, 4096, " \\covered$%c%d_%d$%s ", (net ? 'w' : 'W'), exp->line, ((exp->col >> 16) & 0xffff), exp->name );
+    if( net || (funit->type == FUNIT_MODULE) ) {
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'w' : 'W'), exp->line, last_exp->line, exp->col, exp->name );
+    } else {
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'w' : 'W'), exp->line, last_exp->line, exp->col, exp->name, funit->name );
+    }
     assert( rv < 4096 );
 
     /* Generate msb */
     msb = generator_gen_msb( exp, funit );
 
     /* Create the range information for the write */
-    rv = snprintf( range, 4096, "[((%s+%d)-1):0]", msb, exp->elem.dim->dim_width );
+    rv = snprintf( range, 4096, "[(%s+%d):0]", msb, exp->elem.dim->dim_width );
     assert( rv < 4096 );
 
     /* Create the value to assign */
@@ -1911,7 +1920,11 @@ static void generator_insert_mem_cov(
   } else {
 
     /* Create name */
-    rv = snprintf( name, 4096, " \\covered$%c%d_%d$%s ", (net ? 'r' : 'R'), exp->line, ((exp->col >> 16) & 0xffff), exp->name );
+    if( net || (funit->type == FUNIT_MODULE) ) {
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name );
+    } else {
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d$%s$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name, funit->name );
+    }
     assert( rv < 4096 );
 
     /* Create the range information for the read */
@@ -2201,6 +2214,10 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.50  2009/01/01 07:24:44  phase1geo
+ Checkpointing work on memory coverage.  Simple testing now works but still need
+ to do some debugging here.
+
  Revision 1.49  2009/01/01 00:19:40  phase1geo
  Adding memory coverage insertion code.  Still need to add memory coverage handling
  code during runtime.  Checkpointing.

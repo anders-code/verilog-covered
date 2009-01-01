@@ -221,9 +221,23 @@ void gen_exclusion_id(
   int   id
 );
 
+/*!     
+ Converts a VCD string value to a legal unsigned 64-bit integer value.
+*/        
+bool convert_str_to_uint64(   
+  const char* str,
+  int         msb,
+  int         lsb,
+  uint64*     value
+);
+
 
 /*
  $Log$
+ Revision 1.49  2009/01/01 07:24:44  phase1geo
+ Checkpointing work on memory coverage.  Simple testing now works but still need
+ to do some debugging here.
+
  Revision 1.48  2008/10/24 15:26:50  phase1geo
  Working on the ability to read real numbers with underscores in them.  Still have some
  work to do here.  Checkpointing.

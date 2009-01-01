@@ -202,6 +202,12 @@ bool vector_set_value_ulong(
   unsigned int width
 );
 
+/*! \brief Sets the memory read bit of the given vector. */
+void vector_set_mem_rd_ulong(
+  vector* vec,
+  int     lsb
+);
+
 /*! \brief Sets specified target vector to bit range of source vector. */
 bool vector_part_select_pull(
   vector* tgt,
@@ -626,6 +632,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.73  2009/01/01 07:24:44  phase1geo
+ Checkpointing work on memory coverage.  Simple testing now works but still need
+ to do some debugging here.
+
  Revision 1.72  2008/12/24 21:19:02  phase1geo
  Initial work at getting FSM coverage put in (this looks to be working correctly
  to this point).  Updated regressions per fixes.  Checkpointing.
