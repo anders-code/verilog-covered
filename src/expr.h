@@ -2,7 +2,7 @@
 #define __EXPR_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -148,6 +148,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.74  2009/01/02 06:00:26  phase1geo
+ More updates for memory coverage (this is still not working however).  Currently
+ segfaults.  Checkpointing.
+
  Revision 1.73  2008/12/06 06:35:19  phase1geo
  Adding first crack at handling coverage-related information from dumpfile.
  This code is untested.

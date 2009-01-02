@@ -2,7 +2,7 @@
 #define __GENERATOR_H__
 
 /*
- Copyright (c) 2006-2008 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -149,6 +149,10 @@ void generator_insert_fsm_cov();
 
 /*
  $Log$
+ Revision 1.21  2009/01/02 06:00:26  phase1geo
+ More updates for memory coverage (this is still not working however).  Currently
+ segfaults.  Checkpointing.
+
  Revision 1.20  2008/12/28 19:39:17  phase1geo
  Fixing the handling of wait statements.  Updated regressions as necessary.
  Checkpointing.

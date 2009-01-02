@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006-2008 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -5606,7 +5606,7 @@ void expression_vcd_assign(
   } else if( (action == 'w') || (action == 'W') ) {
 
     uint64 intval;
- 
+
     convert_str_to_uint64( value, (expr->elem.dim->dim_width - 1), 0, &intval );
 
     intval *= expr->elem.dim->dim_width;
@@ -6227,6 +6227,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.402  2009/01/02 06:00:26  phase1geo
+ More updates for memory coverage (this is still not working however).  Currently
+ segfaults.  Checkpointing.
+
  Revision 1.401  2009/01/01 07:53:32  phase1geo
  Fixing bug in conversion function.  Checkpointing.
 
