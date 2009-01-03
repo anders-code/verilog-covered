@@ -1926,12 +1926,23 @@ bool vector_part_select_pull(
         /* Perform shift operation */
         vector_rshift_ulong( src, vall, valh, lsb, msb );
 
-        /* If the src vector is of type MEM, set the MEM_RD bit in the source's supplemental field */
+        /* If the src vector is of type MEM, set the MEM_RD bits in the source's supplemental field */
         if( set_mem_rd && (src->suppl.part.type == VTYPE_MEM) ) {
-          src->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= ((ulong)1 << UL_MOD(lsb));
+          if( UL_DIV(msb) == UL_DIV(lsb) ) {
+            src->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= UL_HMASK(msb) & UL_LMASK(lsb);
+          } else {
+            int i;
+            src->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= UL_LMASK(lsb);
+            for( i=(UL_DIV(lsb) + 1); i<UL_DIV(msb); i++ ) {
+              src->value.ul[UL_DIV(msb)][VTYPE_INDEX_MEM_RD] = UL_SET;
+            }
+            src->value.ul[UL_DIV(msb)][VTYPE_INDEX_MEM_RD] |= UL_HMASK(msb);
+          } 
         }
 
+        /* Perform value assignment and calculate coverage */
         retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
+
       }
       break;
     default :  assert( 0 );  break;
@@ -5163,6 +5174,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.184.2.2  2009/01/03 00:18:07  phase1geo
+ Fixing bug 2482797.  Added new mem5 diagnostic to verify its correctness.
+
  Revision 1.184.2.1  2008/12/13 06:32:58  phase1geo
  Fixing bug 2423290.  Updating regressions per this change.
 

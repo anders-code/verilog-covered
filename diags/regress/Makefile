@@ -225,7 +225,7 @@ VCSONLYDIAGS1 = afunc2            always_comb1      always_comb2      always_ff1
                 int1              line1             logic1            longint1          long_sig \
                 marray1           marray1.1         marray1.2         marray1.3         marray2 \
                 marray2.1         marray2.2         marray2.3         mbit_sel5.4       mbit_sel6.4 \
-                mem3              op_assign1        param8.2          param12           param12.1 \
+                mem3              mem5              op_assign1        param8.2          param12           param12.1 \
                 real5.11          real5.12          real5.13          real5.14          real5.15 \
                 real5.16          real6.10          real6.11          real6.12          real6.13 \
                 sbit_sel3.2       shortint1         signed4.1         slist3.1          slist3.3 \

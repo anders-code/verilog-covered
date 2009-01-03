@@ -794,9 +794,8 @@ void expression_set_value(
       exp->elem.dim->dim_lsb = sig->dim[edim].msb;
       exp->elem.dim->dim_be  = TRUE;
     }
-    exp->elem.dim->dim_width  = exp_width;
-    exp->elem.dim->set_mem_rd = (sig->value->suppl.part.type == VTYPE_MEM) && ((edim + 1) >= sig->udim_num);
-    exp->elem.dim->last       = expression_is_last_select( exp );
+    exp->elem.dim->dim_width = exp_width;
+    exp->elem.dim->last      = expression_is_last_select( exp );
 
     /* Set the expression width */
     switch( exp->op ) {
@@ -4028,7 +4027,7 @@ bool expression_op_func__sbit(
     if( curr_lsb == -1 ) {
       retval = vector_set_to_x( expr->value );
     } else {
-      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + expr->value->width) - 1), dim->set_mem_rd );
+      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + expr->value->width) - 1), TRUE );
     }
   } else {
     retval = (dim->curr_lsb != curr_lsb);
@@ -4088,7 +4087,7 @@ bool expression_op_func__mbit(
     if( curr_lsb == -1 ) {
       retval = vector_set_to_x( expr->value );
     } else {
-      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + expr->value->width) - 1), dim->set_mem_rd );
+      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + expr->value->width) - 1), TRUE );
     }
   } else {
     retval = (curr_lsb != dim->curr_lsb);
@@ -4944,7 +4943,7 @@ bool expression_op_func__mbit_pos(
     if( curr_lsb == -1 ) {
       retval = vector_set_to_x( expr->value );
     } else {
-      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + vector_to_int( expr->right->value )) - 1), dim->set_mem_rd );
+      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + vector_to_int( expr->right->value )) - 1), TRUE );
     }
   } else {
     retval = (dim->curr_lsb != curr_lsb);
@@ -5012,7 +5011,7 @@ bool expression_op_func__mbit_neg(
     if( curr_lsb == -1 ) {
       retval = vector_set_to_x( expr->value );
     } else { 
-      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + vector_to_int( expr->right->value )) - 1), dim->set_mem_rd );
+      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + vector_to_int( expr->right->value )) - 1), TRUE );
     } 
   } else {
     retval = (dim->curr_lsb != curr_lsb);
@@ -6142,6 +6141,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.386.2.3  2009/01/03 00:18:07  phase1geo
+ Fixing bug 2482797.  Added new mem5 diagnostic to verify its correctness.
+
  Revision 1.386.2.2  2008/12/28 06:35:02  phase1geo
  Removing unnecessary output.
 
