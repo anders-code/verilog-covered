@@ -34,6 +34,13 @@ mod_parm* mod_parm_find(
   mod_parm* parm
 );
 
+/*! \brief Generates a string version of given signal if it exists */
+char* mod_parm_gen_size_code(
+  vsignal*     sig,
+  unsigned int dimension,
+  func_unit*   mod
+);
+
 /*! \brief Creates new module parameter and adds it to the specified list. */
 mod_parm* mod_parm_add(
   char*        scope,
@@ -82,6 +89,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.33  2009/01/03 08:03:53  phase1geo
+ Adding more code to support memory coverage.  Added to code to handle parameterized
+ signal sizing.  Updated regressions.  Checkpointing.
+
  Revision 1.32  2008/03/11 22:06:48  phase1geo
  Finishing first round of exception handling code.
 

@@ -221,9 +221,7 @@ void gen_exclusion_id(
   int   id
 );
 
-/*!     
- Converts a VCD string value to a legal unsigned 64-bit integer value.
-*/        
+/*! \brief Converts a VCD string value to a legal unsigned 64-bit integer value. */        
 bool convert_str_to_uint64(   
   const char* str,
   int         msb,
@@ -231,9 +229,18 @@ bool convert_str_to_uint64(
   uint64*     value
 );
 
+/*! \brief Calculates the number of bits needed to store the given number of values. */
+int calc_num_bits_to_store(
+  int values
+);
+
 
 /*
  $Log$
+ Revision 1.50  2009/01/03 08:03:53  phase1geo
+ Adding more code to support memory coverage.  Added to code to handle parameterized
+ signal sizing.  Updated regressions.  Checkpointing.
+
  Revision 1.49  2009/01/01 07:24:44  phase1geo
  Checkpointing work on memory coverage.  Simple testing now works but still need
  to do some debugging here.

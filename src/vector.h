@@ -205,6 +205,7 @@ bool vector_set_value_ulong(
 /*! \brief Sets the memory read bit of the given vector. */
 void vector_set_mem_rd_ulong(
   vector* vec,
+  int     msb,
   int     lsb
 );
 
@@ -632,6 +633,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.74  2009/01/03 08:03:53  phase1geo
+ Adding more code to support memory coverage.  Added to code to handle parameterized
+ signal sizing.  Updated regressions.  Checkpointing.
+
  Revision 1.73  2009/01/01 07:24:44  phase1geo
  Checkpointing work on memory coverage.  Simple testing now works but still need
  to do some debugging here.

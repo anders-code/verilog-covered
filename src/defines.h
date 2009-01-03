@@ -2284,7 +2284,6 @@ struct exp_dim_s {
   bool dim_be;                       /*!< Dimensional big endianness (static value) */
   int  dim_width;                    /*!< Dimensional width of current expression (static value) */
   bool last;                         /*!< Specifies if this is the dimension that should handle the signal interaction */
-  bool set_mem_rd;                   /*!< Set to TRUE if the MEM_RD bit should be set for this entry */
 };
 
 /*!
@@ -3087,6 +3086,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.348  2009/01/03 08:03:52  phase1geo
+ Adding more code to support memory coverage.  Added to code to handle parameterized
+ signal sizing.  Updated regressions.  Checkpointing.
+
  Revision 1.347  2009/01/01 07:24:43  phase1geo
  Checkpointing work on memory coverage.  Simple testing now works but still need
  to do some debugging here.

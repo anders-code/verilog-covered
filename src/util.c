@@ -1749,9 +1749,30 @@ bool convert_str_to_uint64(
 
 }
 
+/*!
+ \return Returns the number of bits that are required to store the number of values represented.
+*/
+int calc_num_bits_to_store(
+  int values  /*!< Number of values that need to be stored */
+) { PROFILE(CALC_NUM_BITS_TO_STORE);
+
+  int bits = 1;
+
+  while( (1 << bits) < values ) bits++;
+
+  PROFILE_END;
+
+  return( bits );
+
+}
+
 
 /*
  $Log$
+ Revision 1.112  2009/01/03 08:03:53  phase1geo
+ Adding more code to support memory coverage.  Added to code to handle parameterized
+ signal sizing.  Updated regressions.  Checkpointing.
+
  Revision 1.111  2009/01/01 07:53:32  phase1geo
  Fixing bug in conversion function.  Checkpointing.
 
