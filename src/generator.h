@@ -33,9 +33,6 @@
 /*! Shortcut for the generator_flush_all1 function call */
 #define generator_flush_all generator_flush_all1( __FILE__, __LINE__ )
 
-/*! Shortcut for the generator_flush_event_combs1 function call */
-#define generator_flush_event_combs generator_flush_event_combs1( __FILE__, __LINE__ )
-
 
 /*! \brief Outputs the current state of the code generator to standard output for debugging purposes. */
 void generator_display();
@@ -74,12 +71,6 @@ void generator_add_to_hold_code(
 
 /*! \brief Outputs all held code to the output file. */
 void generator_flush_hold_code1(
-  const char*  file,
-  unsigned int line
-);
-
-/*! \brief Outputs all of the event code to the output file. */
-void generator_flush_event_combs1(
   const char*  file,
   unsigned int line
 );
@@ -149,6 +140,9 @@ void generator_insert_fsm_cov();
 
 /*
  $Log$
+ Revision 1.22  2009/01/04 20:11:19  phase1geo
+ Completed initial work on event handling.
+
  Revision 1.21  2009/01/02 06:00:26  phase1geo
  More updates for memory coverage (this is still not working however).  Currently
  segfaults.  Checkpointing.

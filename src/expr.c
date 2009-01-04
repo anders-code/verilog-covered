@@ -5555,7 +5555,7 @@ void expression_vcd_assign(
   const char* value    /*!< Coverage data from dumpfile to assign */
 ) { PROFILE(EXPRESSION_VCD_ASSIGN);
 
-  if( action == 'l' ) {
+  if( action == 'L' ) {
 
     /* If we have seen a value of 1, increment the exec_num to indicate that the line has been hit */
     if( value[0] == '1' ) {
@@ -6228,6 +6228,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.404  2009/01/04 20:11:19  phase1geo
+ Completed initial work on event handling.
+
  Revision 1.403  2009/01/03 08:03:52  phase1geo
  Adding more code to support memory coverage.  Added to code to handle parameterized
  signal sizing.  Updated regressions.  Checkpointing.
