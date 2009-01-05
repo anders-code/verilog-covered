@@ -364,7 +364,7 @@ func_unit* scope_get_parent_funit(
   assert( rest != '\0' );
 
   /* Get functional instance for the rest of the scope */
-  inst = instance_find_scope( root, rest, TRUE );
+  inst = instance_find_scope( root, rest, FALSE );
 
   assert( inst != NULL );
 
@@ -407,7 +407,7 @@ func_unit* scope_get_parent_module(
     scope_extract_back( curr_scope, back, rest );
     assert( rest[0] != '\0' );
     strcpy( curr_scope, rest );
-    inst = instance_find_scope( root, curr_scope, TRUE );
+    inst = instance_find_scope( root, curr_scope, FALSE );
     assert( inst != NULL );
   } while( inst->funit->type != FUNIT_MODULE );
 
@@ -423,6 +423,9 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.56  2009/01/05 06:21:22  phase1geo
+ Fixing more regression bugs with inlined coverage regressions.  Checkpointing.
+
  Revision 1.55  2008/12/20 07:32:27  phase1geo
  More IV regression cleanup as well as some documentation cleanup.  Checkpointing.
 

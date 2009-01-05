@@ -1137,10 +1137,14 @@ bool funit_is_unnamed( func_unit* funit ) { PROFILE(FUNIT_IS_UNNAMED);
   char back[256];       /* Last portion of functional unit name */
   char rest[4096];      /* Rest of functional unit name */
 
-  /* Only begin..end blocks can be unnamed scopes */
-  if( (funit->type == FUNIT_NAMED_BLOCK) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
-    scope_extract_back( funit->name, back, rest );
-    retval = db_is_unnamed_scope( back );
+  if( funit != NULL ) {
+
+    /* Only begin..end blocks can be unnamed scopes */
+    if( (funit->type == FUNIT_NAMED_BLOCK) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
+      scope_extract_back( funit->name, back, rest );
+      retval = db_is_unnamed_scope( back );
+    }
+
   }
 
   PROFILE_END;
@@ -1585,6 +1589,9 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.122  2009/01/05 06:21:22  phase1geo
+ Fixing more regression bugs with inlined coverage regressions.  Checkpointing.
+
  Revision 1.121  2008/12/03 23:29:07  phase1geo
  Finished getting line coverage insertion working.  Starting to work on combinational logic
  coverage.  Checkpointing.
