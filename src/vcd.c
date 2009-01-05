@@ -173,15 +173,6 @@ static void vcd_parse_def_var(
 
       }
 
-#ifdef BUG
-      /* If the signal is output in big endian format, swap the lsb and msb values accordingly */
-      if( lsb > msb ) {
-        tmplsb = lsb;
-        lsb    = msb;
-        msb    = tmplsb;
-      }
-#endif
-
     }
 
     /* For now we will let any type and size slide */
@@ -528,6 +519,9 @@ void vcd_parse(
 
 /*
  $Log$
+ Revision 1.47  2009/01/05 23:48:49  phase1geo
+ Removing obsolete code.
+
  Revision 1.46  2009/01/05 23:46:33  phase1geo
  Fixing endianness issue (bug exists in SourceForge).  Removed unnecessary
  output.  Updating merge_err1 diagnostic.  17 failures currently exist in IV
