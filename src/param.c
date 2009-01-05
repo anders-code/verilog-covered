@@ -161,7 +161,7 @@ char* mod_parm_gen_size_code(
   mod_parm*    mparm   = mod->param_head;
 
   /* First, find the matching LSB module parameter */
-  while( (mparm != NULL) && printf( "type: %d, dimension: %d (%d)\n", mparm->suppl.part.type, mparm->suppl.part.dimension, dimension ) && ((mparm->sig != sig) || (mparm->suppl.part.dimension != dimension)) ) {
+  while( (mparm != NULL) && ((mparm->sig != sig) || (mparm->suppl.part.dimension != dimension)) ) {
     mparm = mparm->next;
   }
 
@@ -1244,6 +1244,11 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.121  2009/01/05 23:46:33  phase1geo
+ Fixing endianness issue (bug exists in SourceForge).  Removed unnecessary
+ output.  Updating merge_err1 diagnostic.  17 failures currently exist in IV
+ regression.  Checkpointing.
+
  Revision 1.120  2009/01/05 20:15:26  phase1geo
  Fixing issue with memory coverage.  Checkpointing (20 diags fail currently).
 

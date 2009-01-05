@@ -315,7 +315,11 @@ void symtable_add_signal(
   curr = symtable_get_table( sym );
 
   if( curr->entry.sig == NULL ) {
-    symtable_init( curr, msb, lsb );
+    if( msb < lsb ) {
+      symtable_init( curr, lsb, msb );
+    } else {
+      symtable_init( curr, msb, lsb );
+    }
   }
 
   symtable_add_sym_sig( curr, sig, msb, lsb );
@@ -562,6 +566,11 @@ void symtable_dealloc(
 
 /*
  $Log$
+ Revision 1.45  2009/01/05 23:46:33  phase1geo
+ Fixing endianness issue (bug exists in SourceForge).  Removed unnecessary
+ output.  Updating merge_err1 diagnostic.  17 failures currently exist in IV
+ regression.  Checkpointing.
+
  Revision 1.44  2009/01/01 07:24:44  phase1geo
  Checkpointing work on memory coverage.  Simple testing now works but still need
  to do some debugging here.
