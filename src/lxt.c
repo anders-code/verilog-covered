@@ -195,7 +195,7 @@ void lxt_parse(
               db_assign_symbol( netname, vcdid( newindx ), 0, 0 );
             }
           } else {
-            db_assign_symbol( netname, vcdid( newindx ), ((g->lsb > g->msb) ? g->lsb : g->msb), ((g->lsb > g->msb) ? g->msb : g->lsb) );
+            db_assign_symbol( netname, vcdid( newindx ), g->msb, g->lsb );
           }
 
         }
@@ -271,6 +271,9 @@ void lxt_parse(
 
 /*
  $Log$
+ Revision 1.31  2009/01/06 07:23:18  phase1geo
+ Updating endian4 from stable branch.  Fixing LXT code to match stable branch.
+
  Revision 1.30  2008/10/21 22:55:25  phase1geo
  More updates to get real values working.  IV and Cver regressions work (except for VPI
  mode of operation).  Checkpointing.
