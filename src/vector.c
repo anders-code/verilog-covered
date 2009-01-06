@@ -3080,16 +3080,17 @@ bool vector_vcd_assign(
 
   bool        retval = FALSE;  /* Return value for this function */
   const char* ptr;             /* Pointer to current character under evaluation */
-  int         i;               /* Loop iterator */
+  int         i      = lsb;    /* Loop iterator */
+
+  /* Make adjustment to MSB if necessary */
+  msb = (msb > 0) ? msb : -msb;
 
   assert( vec != NULL );
   assert( value != NULL );
-  assert( (msb < 0) || ((unsigned int)msb <= vec->width) );
+  assert( msb <= vec->width );
 
   /* Set pointer to LSB */
   ptr = (value + strlen( value )) - 1;
-  i   = (lsb > 0) ? lsb : 0;
-  msb = (lsb > 0) ? msb : msb;
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
@@ -5174,6 +5175,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.184.2.3  2009/01/06 04:20:10  phase1geo
+ Fixing bug 2446877.
+
  Revision 1.184.2.2  2009/01/03 00:18:07  phase1geo
  Fixing bug 2482797.  Added new mem5 diagnostic to verify its correctness.
 
