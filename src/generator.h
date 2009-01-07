@@ -54,6 +54,17 @@ void generator_replace(
   unsigned int last_column
 );
 
+/*! \brief Returns TRUE if the current expression will be calculated via an intermediate assignment. */
+bool generator_expr_name_needed(
+  expression*  exp,   /*!< Pointer to expression to evaluate */
+  unsigned int depth  /*!< Expression depth of the given expression */
+);
+
+/*! \brief Creates an inlined expression name (guanteed to be unique for a given expression) */
+char* generator_create_expr_name(
+  expression* exp
+);
+
 /*! \brief Generates Verilog containing coverage instrumentation */
 void generator_output();
 
@@ -174,6 +185,9 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.26  2009/01/07 23:40:46  phase1geo
+ Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
+
  Revision 1.25  2009/01/06 23:11:00  phase1geo
  Completed and debugged new generator_replace functionality.  Fixed issue with
  event coverage handling.  Added new event2 diagnostic to verify the event

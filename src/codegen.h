@@ -29,21 +29,25 @@
 /*! \brief Creates Verilog code string from specified expression tree. */
 void codegen_gen_expr(
             expression*   expr,
-            exp_op_type   parent_op,
+            func_unit*    funit,
   /*@out@*/ char***       code,
-  /*@out@*/ unsigned int* code_depth,
-            func_unit*    funit
+  /*@out@*/ unsigned int* code_depth
 );
 
 /*! \brief Creates Verilog code string from specified expression tree that is guaranteed to be one line. */
 char* codegen_gen_expr_one_line(
-  expression* expr,
-  func_unit*  funit
+  expression*  expr,
+  func_unit*   funit,
+  bool         inline_exp,
+  unsigned int exp_depth
 );
 
 
 /*
  $Log$
+ Revision 1.15  2009/01/07 23:40:46  phase1geo
+ Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
+
  Revision 1.14  2008/12/13 00:17:28  phase1geo
  Fixing more regression bugs.  Updated some original tests to make them comparable to the inlined method output.
  Checkpointing.

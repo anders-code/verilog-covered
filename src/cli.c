@@ -252,7 +252,7 @@ static void cli_display_current_stmt() {
   assert( curr->curr != NULL );
 
   /* Generate the logic */
-  codegen_gen_expr( curr->curr->exp, curr->curr->exp->op, &code, &code_depth, curr->funit );
+  codegen_gen_expr( curr->curr->exp, curr->funit, &code, &code_depth );
 
   /* Output the full expression */
   for( i=0; i<code_depth; i++ ) {
@@ -359,7 +359,7 @@ static bool cli_display_expression(
     assert( expl->exp != NULL );
 
     /* Output the expression */
-    codegen_gen_expr( expl->exp, expl->exp->op, &code, &code_depth, funit );
+    codegen_gen_expr( expl->exp, funit, &code, &code_depth );
     assert( code_depth > 0 );
     for( i=0; i<code_depth; i++ ) {
       printf( "    %s\n", code[i] );
@@ -894,6 +894,9 @@ void cli_read_hist_file( const char* fname ) {
 
 /*
  $Log$
+ Revision 1.29  2009/01/07 23:40:46  phase1geo
+ Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
+
  Revision 1.28  2008/08/18 23:07:25  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

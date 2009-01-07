@@ -2642,7 +2642,7 @@ static void combination_display_verbose(
       fprintf( ofile, "      =========================================================================================================\n" );
 
       /* Generate line of code that missed combinational coverage */
-      codegen_gen_expr( stmt->exp, stmt->exp->op, &code, &code_depth, funit );
+      codegen_gen_expr( stmt->exp, funit, &code, &code_depth );
 
       /* Output underlining feature for missed expressions */
       combination_underline( ofile, code, code_depth, stmt->exp, funit );
@@ -2942,7 +2942,7 @@ void combination_get_expression(
   assert( expl != NULL );
 
   /* Generate line of code that missed combinational coverage */
-  codegen_gen_expr( expl->exp, expl->exp->op, code, code_size, funit );
+  codegen_gen_expr( expl->exp, funit, code, code_size );
   *uline_groups = (int*)malloc_safe( sizeof( int ) * (*code_size) );
 
   /* Generate exclude information */
@@ -3124,6 +3124,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.224  2009/01/07 23:40:46  phase1geo
+ Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
+
  Revision 1.223  2008/12/13 07:04:12  phase1geo
  Fixing more regression bugs and updating regression per recent changes.
  Checkpointing.

@@ -446,7 +446,7 @@ static void line_display_verbose(
 
         unexec_exp = stmt->exp;
 
-        codegen_gen_expr( unexec_exp, unexec_exp->op, &code, &code_depth, funit );
+        codegen_gen_expr( unexec_exp, funit, &code, &code_depth );
         if( flag_output_exclusion_ids && (rtype != RPT_TYPE_HIT) ) {
           exclude_reason* er;
           fprintf( ofile, "      (%s)  %7d:    %s%s\n",
@@ -679,6 +679,9 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.110  2009/01/07 23:40:46  phase1geo
+ Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
+
  Revision 1.109  2008/12/05 00:22:41  phase1geo
  More work completed on code coverage generator.  Currently working on bug in
  statement finder.  Checkpointing.
