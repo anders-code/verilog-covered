@@ -38,13 +38,16 @@ void codegen_gen_expr(
 char* codegen_gen_expr_one_line(
   expression*  expr,
   func_unit*   funit,
-  bool         inline_exp,
-  unsigned int exp_depth
+  bool         inline_exp
 );
 
 
 /*
  $Log$
+ Revision 1.16  2009/01/08 23:44:08  phase1geo
+ Updating VCS regressions.  Fixing issues in regards to PDEC, PINC, IINC and IDEC
+ operations.  Checkpointing.
+
  Revision 1.15  2009/01/07 23:40:46  phase1geo
  Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
 
