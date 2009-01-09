@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1543,6 +1543,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.122  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.121  2009/01/05 06:21:22  phase1geo
  Fixing more regression bugs with inlined coverage regressions.  Checkpointing.
 

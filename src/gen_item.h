@@ -2,7 +2,7 @@
 #define __GEN_ITEM_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -97,6 +97,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.28  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.27  2008/08/27 23:06:00  phase1geo
  Starting to make updates for supporting command-line exclusions.  Signals now
  have a unique ID associated with them in the CDD file.  Checkpointing.

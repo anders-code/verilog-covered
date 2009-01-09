@@ -2,7 +2,7 @@
 #define __DEFINES_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -57,7 +57,7 @@
 /*!
  This contains the header information specified when executing this tool.
 */
-#define COVERED_HEADER     "\nCovered %s -- Verilog Code Coverage Utility\nWritten by Trevor Williams  (phase1geo@gmail.com)\nFreely distributable under the GPL license\n", COVERED_VERSION
+#define COVERED_HEADER     "\nCovered %s -- Verilog Code Coverage Utility\nWritten by Trevor Williams  (phase1geo@gmail.com)\nCopyright 2006-2009\nFreely distributable under the GPL license\n", COVERED_VERSION
 
 /*!
  Default database filename if not specified on command-line.
@@ -3100,6 +3100,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.350  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.349  2009/01/09 00:19:14  phase1geo
  Updates for generate handling (IP).  Checkpointing.
 

@@ -2,7 +2,7 @@
 #define __EXCLUDE_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -163,6 +163,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.15  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.14  2008/11/12 15:05:22  phase1geo
  More updates for new merging algorithm.  Checkpointing.
 

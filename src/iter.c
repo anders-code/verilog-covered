@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -214,6 +214,10 @@ void stmt_iter_get_line_before(
 
 /*
  $Log$
+ Revision 1.22  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.21  2008/12/27 21:05:56  phase1geo
  Updating CDD version and regressions per this change.  Checkpointing.
 

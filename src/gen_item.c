@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -479,7 +479,6 @@ char* gen_item_calc_signal_name(
   } Catch_anonymous {
     free_safe( new_name, (strlen( new_name ) + 1) );
     free_safe( ptr, (strlen( name ) + 1) );
-    printf( "gen_item Throw A\n" );
     Throw 0;
   }
 
@@ -981,7 +980,6 @@ static void gen_item_resolve(
                            obf_sig( gi->varname ), obf_funit( inst->funit->name ) );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "gen_item Throw B\n" );
             Throw 0;
           }
           rv = snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
@@ -1213,6 +1211,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.76  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.75  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.

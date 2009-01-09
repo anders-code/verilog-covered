@@ -2,7 +2,7 @@
 #define __BINDING_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -54,6 +54,10 @@ void bind_dealloc();
 
 /* 
  $Log$
+ Revision 1.32  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.31  2008/01/10 04:59:03  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

@@ -2,7 +2,7 @@
 #define __COMB_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -104,6 +104,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.30  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.29  2008/09/04 23:08:06  phase1geo
  More work on exclusions via GUI.  Still work to go.  Checkpointing.
 
