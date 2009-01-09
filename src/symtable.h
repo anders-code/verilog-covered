@@ -2,7 +2,7 @@
 #define __SYMTABLE_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -63,6 +63,10 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.25  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.24  2009/01/01 07:24:44  phase1geo
  Checkpointing work on memory coverage.  Simple testing now works but still need
  to do some debugging here.

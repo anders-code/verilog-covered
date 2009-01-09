@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -566,6 +566,10 @@ void symtable_dealloc(
 
 /*
  $Log$
+ Revision 1.46  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.45  2009/01/05 23:46:33  phase1geo
  Fixing endianness issue (bug exists in SourceForge).  Removed unnecessary
  output.  Updating merge_err1 diagnostic.  17 failures currently exist in IV

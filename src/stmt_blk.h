@@ -2,7 +2,7 @@
 #define __STMT_BLK_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -51,6 +51,10 @@ void stmt_blk_specify_removal_reason(
 
 /*
  $Log$
+ Revision 1.5  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.4  2008/10/06 04:05:19  phase1geo
  Adding support for logic block removal warning output.
 

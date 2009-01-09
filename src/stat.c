@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -116,6 +116,10 @@ void statistic_dealloc(
 
 /*
  $Log$
+ Revision 1.19  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.18  2008/09/03 03:46:37  phase1geo
  Updates for memory and assertion exclusion output.  Checkpointing.
 

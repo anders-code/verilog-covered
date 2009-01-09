@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -296,6 +296,10 @@ void tree_dealloc(
 
 /*
  $Log$
+ Revision 1.11  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.10  2008/09/16 13:00:17  phase1geo
  Fixing some memory issues with the obfuscation functionality and minore
  optimizations to this code.  Other insignificant updates.

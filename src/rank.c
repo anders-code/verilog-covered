@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1805,6 +1805,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.17  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.16  2008/12/08 06:43:45  phase1geo
  Fixing issues with broken regression.  Updated regression per these changes (some
  code reduction was performed as well).  IV and Cver regressions now pass.
@@ -1863,6 +1867,10 @@ void command_rank(
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.17  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.16  2008/12/08 06:43:45  phase1geo
  Fixing issues with broken regression.  Updated regression per these changes (some
  code reduction was performed as well).  IV and Cver regressions now pass.

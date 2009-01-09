@@ -2,7 +2,7 @@
 #define __REENTRANT_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -35,6 +35,10 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr );
 
 /*
  $Log$
+ Revision 1.8  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.7  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related

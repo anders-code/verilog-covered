@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1236,6 +1236,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.130  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.129  2008/11/10 05:33:16  phase1geo
  Cleaning up some unnecessary output.
 
