@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -259,6 +259,10 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.40  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.39  2008/09/02 05:20:41  phase1geo
  More updates for exclude command.  Updates to CVER regression.
 

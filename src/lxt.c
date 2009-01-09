@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -271,6 +271,10 @@ void lxt_parse(
 
 /*
  $Log$
+ Revision 1.32  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.31  2009/01/06 07:23:18  phase1geo
  Updating endian4 from stable branch.  Fixing LXT code to match stable branch.
 

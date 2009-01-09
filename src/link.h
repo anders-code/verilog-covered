@@ -2,7 +2,7 @@
 #define __LINK_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -164,6 +164,10 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.36  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.35  2009/01/05 06:21:22  phase1geo
  Fixing more regression bugs with inlined coverage regressions.  Checkpointing.
 
