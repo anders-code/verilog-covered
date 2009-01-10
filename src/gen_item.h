@@ -92,11 +92,22 @@ void generate_resolve( funit_inst* inst );
 /*! \brief Removes the given generate statement from the correct instance */
 bool generate_remove_stmt( statement* stmt );
 
+/*! \brief Searches the generate statements within the given functional unit for a statement that matches the given positional information. */
+statement* generate_find_stmt_by_position(
+  func_unit*   funit,
+  unsigned int first_line,
+  unsigned int first_col
+);
+
 /*! \brief Deallocates all associated memory for the given generate item */
 void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.29  2009/01/10 00:24:10  phase1geo
+ More work on support for generate blocks (the new changes don't quite work yet).
+ Checkpointing.
+
  Revision 1.28  2009/01/09 21:25:00  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.
