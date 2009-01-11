@@ -72,6 +72,7 @@ static void funit_init(
   funit->version    = NULL;
   funit->start_line = 0;
   funit->end_line   = 0;
+  funit->start_col  = 0;
   funit->stat       = NULL;
   funit->sig_head   = NULL;
   funit->sig_tail   = NULL;
@@ -237,6 +238,23 @@ int funit_get_port_count(
   PROFILE_END;
 
   return( port_cnt );
+
+}
+
+/*!
+ \return Returns pointer to found functional unit that exists at the given file position.
+*/
+func_unit* funit_find_by_position( 
+  func_unit*   parent,
+  unsigned int first_line,
+  unsigned int first_column
+) { PROFILE(FUNIT_FIND_BY_POSITION);
+
+  func_unit* funit;
+
+  PROFILE_END;
+
+  return( funit );
 
 }
 
@@ -584,7 +602,7 @@ void funit_db_write(
     }
   
     /*@-duplicatequals -formattype@*/
-    fprintf( file, "%d %d %s \"%s\" %d %s %d %d %llu\n",
+    fprintf( file, "%d %d %s \"%s\" %d %s %u %u %llu\n",
       DB_TYPE_FUNIT,
       funit->type,
       modname,
@@ -715,7 +733,7 @@ void funit_db_read(
   int  params;       /* Number of parameters in string that were parsed */
 
   /*@-duplicatequals -formattype@*/
-  if( (params = sscanf( *line, "%d %s \"%[^\"]\" %d %s %d %d %llu%n", 
+  if( (params = sscanf( *line, "%d %s \"%[^\"]\" %d %s %u %u %llu%n", 
                         &(funit->type), funit->name, scope, name_diff, funit->filename,
                         &(funit->start_line), &(funit->end_line), &(funit->timescale), &chars_read )) == 8 ) {
   /*@=duplicatequals =formattype@*/
@@ -1589,6 +1607,10 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.124  2009/01/11 19:59:35  phase1geo
+ More fixes for support of generate statements.  Getting close but not quite
+ there yet.  Checkpointing.
+
  Revision 1.123  2009/01/09 21:25:00  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

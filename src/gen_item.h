@@ -99,11 +99,22 @@ statement* generate_find_stmt_by_position(
   unsigned int first_col
 );
 
+/*! \brief Searches the generate tasks/functions/named blocks within the given functional unit for a functional unit that matches the given positional information. */
+func_unit* generate_find_tfn_by_position(
+  func_unit*   funit,
+  unsigned int first_line,
+  unsigned int first_col
+);
+
 /*! \brief Deallocates all associated memory for the given generate item */
 void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.30  2009/01/11 19:59:35  phase1geo
+ More fixes for support of generate statements.  Getting close but not quite
+ there yet.  Checkpointing.
+
  Revision 1.29  2009/01/10 00:24:10  phase1geo
  More work on support for generate blocks (the new changes don't quite work yet).
  Checkpointing.
