@@ -81,7 +81,7 @@ void gen_item_db_write( gen_item* gi, uint32 type, FILE* file );
 void gen_item_db_write_expr_tree( gen_item* gi, FILE* file );
 
 /*! \brief Connects a generate item block to a new generate item */
-bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id );
+bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id, bool stop_on_null );
 
 /*! \brief Checks generate item and if it is a bind, adds it to binding pool and returns TRUE */
 void gen_item_bind( gen_item* gi );
@@ -111,6 +111,10 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.31  2009/01/13 07:07:04  phase1geo
+ Applying bug fix for bug 2502095.  Also sync'ing in new generate8.9 and updating
+ it for the development branch.
+
  Revision 1.30  2009/01/11 19:59:35  phase1geo
  More fixes for support of generate statements.  Getting close but not quite
  there yet.  Checkpointing.

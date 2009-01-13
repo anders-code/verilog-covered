@@ -2722,7 +2722,7 @@ void db_gen_item_connect(
 #endif
 
   /* Connect generate items */
-  rv = gen_item_connect( gi1, gi2, gi_conn_id );
+  rv = gen_item_connect( gi1, gi2, gi_conn_id, FALSE );
   assert( rv );
 
   /* Increment gi_conn_id for next connection */
@@ -3407,6 +3407,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.377  2009/01/13 07:07:04  phase1geo
+ Applying bug fix for bug 2502095.  Also sync'ing in new generate8.9 and updating
+ it for the development branch.
+
  Revision 1.376  2009/01/11 19:59:35  phase1geo
  More fixes for support of generate statements.  Getting close but not quite
  there yet.  Checkpointing.
