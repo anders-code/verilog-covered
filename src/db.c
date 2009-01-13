@@ -2636,7 +2636,7 @@ void db_gen_item_connect(
 #endif
 
   /* Connect generate items */
-  rv = gen_item_connect( gi1, gi2, gi_conn_id );
+  rv = gen_item_connect( gi1, gi2, gi_conn_id, FALSE );
   assert( rv );
 
   /* Increment gi_conn_id for next connection */
@@ -3122,6 +3122,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.351.2.2  2009/01/13 06:06:49  phase1geo
+ Fixing bug 2502095.  Added generate8.9 to verify this bug fix.
+
  Revision 1.351.2.1  2008/11/20 15:24:00  phase1geo
  Adding run_gcov and cleaning up db.c.
 
