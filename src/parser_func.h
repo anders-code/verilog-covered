@@ -60,7 +60,8 @@ void parser_create_task_body(
   statement*   stmt,
   unsigned int first_line,
   unsigned int first_column,
-  unsigned int last_column
+  unsigned int last_column,
+  unsigned int ppline
 );
 
 /*! \brief Creates a function declaration (scope). */
@@ -199,6 +200,10 @@ expression* parser_create_op_and_assign_w_dim_exp(
 
 /*
  $Log$
+ Revision 1.5  2009/01/15 06:47:09  phase1geo
+ More work to support assertion coverage.  Updating regressions per these
+ changes.  Checkpointing.
+
  Revision 1.4  2009/01/11 19:59:36  phase1geo
  More fixes for support of generate statements.  Getting close but not quite
  there yet.  Checkpointing.
