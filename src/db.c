@@ -2287,7 +2287,7 @@ statement* db_parallelize_statement(
     Try {
 
       /* Create FORK statement and add the expression */
-      stmt = db_create_statement( exp );
+      stmt = db_create_statement( exp, stmt->ppline );
 
     } Catch_anonymous {
       expression_dealloc( exp, FALSE );
@@ -2315,7 +2315,8 @@ statement* db_parallelize_statement(
  module's statement list.
 */
 statement* db_create_statement(
-  expression* exp  /*!< Pointer to associated "root" expression */
+  expression*  exp,    /*!< Pointer to associated "root" expression */
+  unsigned int ppline  /*!< First line of the statement in the preprocessor file */
 ) { PROFILE(DB_CREATE_STATEMENT);
 
   statement* stmt = NULL;  /* Pointer to newly created statement */
@@ -2332,7 +2333,7 @@ statement* db_create_statement(
 #endif
 
     /* Create the given statement */
-    stmt = statement_create( exp, curr_funit );
+    stmt = statement_create( exp, curr_funit, ppline );
 
     /* If we are in the exclude mode, exclude this statement */
     if( exclude_mode > 0 ) {
@@ -3122,6 +3123,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.351.2.3  2009/01/15 06:47:59  phase1geo
+ Adding support for line order reporting when included files contain coverage
+ information (these were not accurately sorted previously).  Updating regressions
+ per this change.
+
  Revision 1.351.2.2  2009/01/13 06:06:49  phase1geo
  Fixing bug 2502095.  Added generate8.9 to verify this bug fix.
 

@@ -52,7 +52,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        19
+#define CDD_VERSION        20
 
 /*!
  This contains the header information specified when executing this tool.
@@ -2406,6 +2406,7 @@ struct statement_s {
                                           already been added to the functional unit statement list and should not be added again. */
     } part;
   } suppl;                           /*!< Supplemental bits for statements */
+  unsigned int ppline;               /*!< Line number from the preprocessed file */
 };
 
 /*!
@@ -2676,7 +2677,8 @@ struct exp_bind_s {
 struct case_stmt_s {
   expression*     expr;              /*!< Pointer to case equality expression */
   statement*      stmt;              /*!< Pointer to first statement in case statement */
-  int             line;              /*!< Line number of case statement */
+  unsigned int    line;              /*!< Line number of case statement */
+  unsigned int    ppline;            /*!< Preprocessor line */
   case_statement* prev;              /*!< Pointer to previous case statement in list */
 };
 
@@ -3040,6 +3042,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.339.2.2  2009/01/15 06:47:59  phase1geo
+ Adding support for line order reporting when included files contain coverage
+ information (these were not accurately sorted previously).  Updating regressions
+ per this change.
+
  Revision 1.339.2.1  2009/01/03 00:18:07  phase1geo
  Fixing bug 2482797.  Added new mem5 diagnostic to verify its correctness.
 

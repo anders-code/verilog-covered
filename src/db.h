@@ -162,7 +162,7 @@ expression* db_create_sensitivity_list( statement* stmt );
 statement* db_parallelize_statement( statement* stmt );
 
 /*! \brief Creates new statement expression from specified information.  Called by parser. */
-statement* db_create_statement( expression* exp );
+statement* db_create_statement( expression* exp, unsigned int ppline );
 
 /*! \brief Adds specified statement to current functional unit's statement list.  Called by parser. */
 void db_add_statement( statement* stmt, statement* start );
@@ -224,6 +224,11 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.99.2.2  2009/01/15 06:47:59  phase1geo
+ Adding support for line order reporting when included files contain coverage
+ information (these were not accurately sorted previously).  Updating regressions
+ per this change.
+
  Revision 1.99.2.1  2008/11/20 15:24:00  phase1geo
  Adding run_gcov and cleaning up db.c.
 

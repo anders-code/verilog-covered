@@ -64,7 +64,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 gate1           hier1           hier3.1         hier3.2         hier3.3 \
                 hier3.4         hier4           if1             ifdef1          ifdef1.2 \
                 ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         implicit2.1 \
-                include1        include1.1      include2        initial1        instance1 \
+                include1        include1.1      include2        include4        initial1        instance1 \
                 instance1.1     instance1.2     instance2       instance3       instance4 \
                 instance4.1     instance4.2     instance5       instance6       instance6.1 \
                 instance6.2     instance7       long_exp1       long_exp2       long_exp3 \

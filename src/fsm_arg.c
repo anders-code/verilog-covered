@@ -218,7 +218,7 @@ static expression* fsm_arg_parse_state(
 
   /* Create statement for top-level expression, this statement will work like a continuous assignment */
   if( !error ) {
-    stmt = statement_create( expl, NULL );
+    stmt = statement_create( expl, NULL, 0 );
     stmt->suppl.part.head       = 1;
     stmt->suppl.part.stop_true  = 1;
     stmt->suppl.part.stop_false = 1;
@@ -727,6 +727,11 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.58.4.3  2009/01/15 06:47:59  phase1geo
+ Adding support for line order reporting when included files contain coverage
+ information (these were not accurately sorted previously).  Updating regressions
+ per this change.
+
  Revision 1.58.4.2  2008/12/27 22:20:03  phase1geo
  Removing unnecessary FSM binding.
 

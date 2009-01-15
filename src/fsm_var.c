@@ -561,6 +561,7 @@ void fsm_var_cleanup() { PROFILE(FSM_VAR_CLEANUP);
     statement_dealloc( tmp_fvb->stmt );
     free_safe( tmp_fvb, sizeof( fv_bind ) );
   }
+  fsm_var_stmt_head = fsm_var_stmt_tail = NULL;
 
   PROFILE_END;
 
@@ -569,6 +570,11 @@ void fsm_var_cleanup() { PROFILE(FSM_VAR_CLEANUP);
 
 /*
  $Log$
+ Revision 1.51.6.2  2009/01/15 06:47:59  phase1geo
+ Adding support for line order reporting when included files contain coverage
+ information (these were not accurately sorted previously).  Updating regressions
+ per this change.
+
  Revision 1.51.6.1  2008/11/25 05:45:03  phase1geo
  Adding fsm_err1, fsm_err1.1 and profile_err1 diagnostics to regression suite.
  Updated run_gcov script to output only percentage information.  Fixed memory
