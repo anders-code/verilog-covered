@@ -30,7 +30,8 @@
 static_expr* static_expr_gen_unary(
   static_expr* stexp,
   exp_op_type  op,
-  int          line,
+  unsigned int line,
+  unsigned int ppline,
   int          first,
   int          last
 );
@@ -40,7 +41,8 @@ static_expr* static_expr_gen(
   static_expr* right,
   static_expr* left,
   int          op,
-  int          line,
+  unsigned int line,
+  unsigned int ppline,
   int          first,
   int          last,
   char*        func_name
@@ -73,6 +75,11 @@ void static_expr_dealloc(
 
 /*
  $Log$
+ Revision 1.18  2009/01/16 00:03:54  phase1geo
+ Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
+ regressions per needed changes to support this functionality.  Now only
+ VCS regression needs to be updated.
+
  Revision 1.17  2009/01/09 21:25:01  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

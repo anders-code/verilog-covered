@@ -35,7 +35,8 @@ expression* expression_create(
              exp_op_type  op,
              bool         lhs,
              int          id,
-             int          line,
+             unsigned int line,
+             unsigned int ppline,
              unsigned int first,
              unsigned int last,
              bool         data
@@ -148,6 +149,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.75  2009/01/16 00:03:54  phase1geo
+ Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
+ regressions per needed changes to support this functionality.  Now only
+ VCS regression needs to be updated.
+
  Revision 1.74  2009/01/02 06:00:26  phase1geo
  More updates for memory coverage (this is still not working however).  Currently
  segfaults.  Checkpointing.

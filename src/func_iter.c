@@ -98,8 +98,8 @@ static void func_iter_sort(
 
     i = 0;
     while( (i < (fi->si_num - 1)) &&
-           ((tmp->curr->stmt->ppline > fi->sis[i+1]->curr->stmt->ppline) ||
-            ((tmp->curr->stmt->ppline == fi->sis[i+1]->curr->stmt->ppline) &&
+           ((tmp->curr->stmt->exp->ppline > fi->sis[i+1]->curr->stmt->exp->ppline) ||
+            ((tmp->curr->stmt->exp->ppline == fi->sis[i+1]->curr->stmt->exp->ppline) &&
              ((tmp->curr->stmt->exp->col & 0xffff) > (fi->sis[i+1]->curr->stmt->exp->col & 0xffff)))) ) {
       fi->sis[i] = fi->sis[i+1];
       i++;
@@ -422,6 +422,11 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.25  2009/01/16 00:03:54  phase1geo
+ Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
+ regressions per needed changes to support this functionality.  Now only
+ VCS regression needs to be updated.
+
  Revision 1.24  2009/01/15 06:47:09  phase1geo
  More work to support assertion coverage.  Updating regressions per these
  changes.  Checkpointing.
