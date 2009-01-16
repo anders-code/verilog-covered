@@ -1164,8 +1164,6 @@ static statement* generate_find_stmt_by_position_helper(
 
   if( gi != NULL ) {
 
-    printf( "In generate_find_stmt_by_position_helper, " ); gen_item_display( gi );
-
     if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->elem.stmt->exp->line <= first_line) ) {
       stmt = statement_find_statement_by_position( gi->elem.stmt, first_line, first_col );
     }
@@ -1346,6 +1344,11 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.80  2009/01/16 06:18:36  phase1geo
+ Fixing VPI issues with inlined coverage.  Removed unnecessary output in gen_item.c.
+ Removed tests from inlined VPI runs (IV seems to have a bug that keeps these diagnostics
+ from running).  Also added missing Makefile rules to run inlined coverage regressions.
+
  Revision 1.79  2009/01/13 07:07:04  phase1geo
  Applying bug fix for bug 2502095.  Also sync'ing in new generate8.9 and updating
  it for the development branch.
