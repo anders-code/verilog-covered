@@ -5646,7 +5646,7 @@ static bool expression_is_static_only_helper(
           (expr->sig->suppl.part.type == SSUPPL_TYPE_ENUM))) ) {
       retval = TRUE;
       if( one != NULL ) {
-        *one |= vector_is_not_zero( expr->value );
+        *one |= (expr->value->value.ul != NULL) ? vector_is_not_zero( expr->value ) : TRUE;
       }
     } else if( expr->op == EXP_OP_CONCAT ) {
       bool curr_one   = FALSE;
@@ -6232,6 +6232,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.407  2009/01/16 15:02:02  phase1geo
+ Updates for support of problems found in covering real code.  Checkpointing.
+
  Revision 1.406  2009/01/16 00:03:53  phase1geo
  Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
  regressions per needed changes to support this functionality.  Now only

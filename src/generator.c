@@ -1761,7 +1761,7 @@ static char* generator_gen_size(
         if( lexp != NULL ) {
           if( rexp != NULL ) {
             unsigned int slen = (strlen( lexp ) * 2) + (strlen( rexp ) * 2) + 8;
-            size = (char*)malloc_safe( slen );
+            size = (char*)malloc_safe_nolimit( slen );
             rv   = snprintf( size, slen, "((%s>%s)?%s:%s)", lexp, rexp, lexp, rexp );
             assert( rv < slen );
             free_safe( lexp, (strlen( lexp ) + 1) );
@@ -1799,7 +1799,6 @@ static char* generator_create_lhs(
 
   unsigned int rv;
   char*        name = generator_create_expr_name( exp );
-  char         tmp[4096];
   char*        size;
   char*        code;
 
@@ -1808,19 +1807,23 @@ static char* generator_create_lhs(
 
   if( net ) {
 
-    /* Create sized wire string */
-    rv = snprintf( tmp, 4096, "wire [(%s-1):0] %s", ((size != NULL) ? size : "1"), name );
-    assert( rv < 4096 );
+    unsigned int slen = 7 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 1;
 
-    code = strdup_safe( tmp );
+    /* Create sized wire string */
+    code = (char*)malloc_safe_nolimit( slen );
+    rv   = snprintf( code, slen, "wire [(%s-1):0] %s", ((size != NULL) ? size : "1"), name );
+    assert( rv < slen );
 
   } else {
 
     /* Create sized register string */
     if( reg_needed ) {
-      rv = snprintf( tmp, 4096, "reg [(%s-1):0] %s;\n", ((size != NULL) ? size : "1"), name );
-      assert( rv < 4096 );
-      generator_insert_reg( tmp );
+      unsigned int slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
+      char*        str  = (char*)malloc_safe( slen );
+      rv = snprintf( str, slen, "reg [(%s-1):0] %s;\n", ((size != NULL) ? size : "1"), name );
+      assert( rv < slen );
+      generator_insert_reg( str );
+      free_safe( str, (strlen( str ) + 1) );
     }
 
     /* Set the name to the value of code */
@@ -2083,7 +2086,7 @@ static void generator_insert_subexp(
 
   /* Create expression string */
   slen = strlen( lhs_str ) + 3 + strlen( val_str ) + 2;
-  str  = (char*)malloc_safe( slen );
+  str  = (char*)malloc_safe_nolimit( slen );
   rv   = snprintf( str, slen, "%s = %s;", lhs_str, val_str );
   assert( rv < slen );
 
@@ -2768,6 +2771,9 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.78  2009/01/16 15:02:02  phase1geo
+ Updates for support of problems found in covering real code.  Checkpointing.
+
  Revision 1.77  2009/01/16 00:03:54  phase1geo
  Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
  regressions per needed changes to support this functionality.  Now only
