@@ -38,7 +38,8 @@ mod_parm* mod_parm_find(
 char* mod_parm_gen_size_code(
   vsignal*     sig,
   unsigned int dimension,
-  func_unit*   mod
+  func_unit*   mod,
+  int*         number
 );
 
 /*! \brief Creates new module parameter and adds it to the specified list. */
@@ -89,6 +90,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.35  2009/01/17 06:25:47  phase1geo
+ Adding code to reduce reg/wire sizing output.  Fixing unary codegen handling when
+ they are surrounded by parenthesis.  Updating regression output.  Checkpointing.
+
  Revision 1.34  2009/01/09 21:25:01  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

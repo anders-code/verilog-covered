@@ -151,7 +151,8 @@ static void mod_parm_find_expr_and_remove(
 char* mod_parm_gen_size_code(
   vsignal*     sig,        /*!< Specifies the name of the signal that we are searching for */
   unsigned int dimension,  /*!< Specifies the dimension that we are searching for */
-  func_unit*   mod         /*!< Pointer to module containing signal */
+  func_unit*   mod,        /*!< Pointer to module containing signal */
+  int*         number      /*!< Pointer to value that specifies the returned string as a number (if the values are numbers only) */
 ) { PROFILE(MOD_PARM_GEN_SIZE_CODE);
 
   char*        code    = NULL;
@@ -196,7 +197,8 @@ char* mod_parm_gen_size_code(
 
     rv = snprintf( num, 50, "%d", (((msb > lsb) ? (msb - lsb) : (lsb - msb)) + 1) );
     assert( rv < 50 );
-    code = strdup_safe( num );
+    code    = strdup_safe( num );
+    *number = (((msb > lsb) ? (msb - lsb) : (lsb - msb)) + 1);
 
   } else {
 
@@ -225,6 +227,8 @@ char* mod_parm_gen_size_code(
     /* Deallocate temporary strings */
     free_safe( lsb_str, (strlen( lsb_str ) + 1) );
     free_safe( msb_str, (strlen( msb_str ) + 1) );
+
+    *number = -1;
 
   }
 
@@ -1243,6 +1247,10 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.126  2009/01/17 06:25:47  phase1geo
+ Adding code to reduce reg/wire sizing output.  Fixing unary codegen handling when
+ they are surrounded by parenthesis.  Updating regression output.  Checkpointing.
+
  Revision 1.125  2009/01/09 21:25:01  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

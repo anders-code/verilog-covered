@@ -839,35 +839,36 @@ static void codegen_gen_expr1(
                                  right_code, right_code_depth, expr->right, NULL );
             break;
           case EXP_OP_UINV     :
-            codegen_create_expr( code, code_depth, expr->line, "~", right_code, right_code_depth, expr->right, NULL,
+            before = expr->suppl.part.parenthesis ? strdup_safe( "(~" ) : strdup_safe( "~" );
+            codegen_create_expr( code, code_depth, expr->line, (expr->suppl.part.parenthesis ? "(~" : "~"), right_code, right_code_depth, expr->right, after,
                                  NULL, 0, NULL, NULL );
             break;
           case EXP_OP_UAND     :
-            codegen_create_expr( code, code_depth, expr->line, "&", right_code, right_code_depth, expr->right, NULL,
+            codegen_create_expr( code, code_depth, expr->line, (expr->suppl.part.parenthesis ? "(&" : "&"), right_code, right_code_depth, expr->right, after,
                                  NULL, 0, NULL, NULL );
             break;
           case EXP_OP_UNOT     :
-            codegen_create_expr( code, code_depth, expr->line, "!", right_code, right_code_depth, expr->right, NULL,
+            codegen_create_expr( code, code_depth, expr->line, (expr->suppl.part.parenthesis ? "(!" : "!"), right_code, right_code_depth, expr->right, after,
                                  NULL, 0, NULL, NULL );
             break;
           case EXP_OP_UOR      :
-            codegen_create_expr( code, code_depth, expr->line, "|", right_code, right_code_depth, expr->right, NULL,
+            codegen_create_expr( code, code_depth, expr->line, (expr->suppl.part.parenthesis ? "(|" : "|"), right_code, right_code_depth, expr->right, after,
                                  NULL, 0, NULL, NULL );
             break;
           case EXP_OP_UXOR     :
-            codegen_create_expr( code, code_depth, expr->line, "^", right_code, right_code_depth, expr->right, NULL,
+            codegen_create_expr( code, code_depth, expr->line, (expr->suppl.part.parenthesis ? "(^" : "^"), right_code, right_code_depth, expr->right, after,
                                  NULL, 0, NULL, NULL );
             break;
           case EXP_OP_UNAND    :
-            codegen_create_expr( code, code_depth, expr->line, "~&", right_code, right_code_depth, expr->right, NULL,
+            codegen_create_expr( code, code_depth, expr->line, (expr->suppl.part.parenthesis ? "(~&" : "~&"), right_code, right_code_depth, expr->right, after,
                                  NULL, 0, NULL, NULL );
             break;
           case EXP_OP_UNOR     :
-            codegen_create_expr( code, code_depth, expr->line, "~|", right_code, right_code_depth, expr->right, NULL,
+            codegen_create_expr( code, code_depth, expr->line, (expr->suppl.part.parenthesis ? "(~|" : "~|"), right_code, right_code_depth, expr->right, after,
                                  NULL, 0, NULL, NULL );
             break;
           case EXP_OP_UNXOR    :
-            codegen_create_expr( code, code_depth, expr->line, "~^", right_code, right_code_depth, expr->right, NULL,
+            codegen_create_expr( code, code_depth, expr->line, (expr->suppl.part.parenthesis ? "(~^" : "~^"), right_code, right_code_depth, expr->right, after,
                                  NULL, 0, NULL, NULL );
             break;
           case EXP_OP_EXPAND   :
@@ -1177,6 +1178,10 @@ char* codegen_gen_expr_one_line(
 
 /*
  $Log$
+ Revision 1.112  2009/01/17 06:25:47  phase1geo
+ Adding code to reduce reg/wire sizing output.  Fixing unary codegen handling when
+ they are surrounded by parenthesis.  Updating regression output.  Checkpointing.
+
  Revision 1.111  2009/01/09 21:25:00  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.
