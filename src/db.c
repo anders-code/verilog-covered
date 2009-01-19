@@ -3208,7 +3208,7 @@ void db_assign_symbol(
 
       }
         
-    } else {
+    } else if( info_suppl.part.scored_toggle == 1 ) {
 
       sig_link* slink;
 
@@ -3384,6 +3384,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.382  2009/01/19 21:51:33  phase1geo
+ Added -inlined-metrics score command option and hooked up its functionality.  Regressions
+ pass with these changes; however, I have not been able to verify using this option yet.
+ Checkpointing.
+
  Revision 1.381  2009/01/16 00:03:53  phase1geo
  Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
  regressions per needed changes to support this functionality.  Now only
