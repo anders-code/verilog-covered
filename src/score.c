@@ -1176,7 +1176,7 @@ void command_score(
     /* Create a database to start storing the results */
     (void)db_create();
 
-    /* Initialize the "scored" variables within the info_suppl structure */
+    /* Initialize the "scored" bits */
     info_suppl.part.scored_line   = 1;
     info_suppl.part.scored_toggle = 1;
     info_suppl.part.scored_memory = 1;
@@ -1186,6 +1186,16 @@ void command_score(
 
     /* Parse score command-line */
     score_parse_args( argc, last_arg, argv );
+
+    /* If inlining is not being performed, make sure that all "scored" bits are set */
+    if( info_suppl.part.inlined == 0 ) {
+      info_suppl.part.scored_line   = 1;
+      info_suppl.part.scored_toggle = 1;
+      info_suppl.part.scored_memory = 1;
+      info_suppl.part.scored_comb   = 1;
+      info_suppl.part.scored_fsm    = 1;
+      info_suppl.part.scored_assert = 1;
+    }
 
     if( output_db == NULL ) {
       output_db = strdup_safe( DFLT_OUTPUT_CDD );
@@ -1274,6 +1284,10 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.152  2009/01/20 04:37:42  phase1geo
+ Fixing code associated with the addition of the -inline-metrics options.
+ Added new diagnostics to regression suite to verify this new functionality.
+
  Revision 1.151  2009/01/19 21:51:33  phase1geo
  Added -inlined-metrics score command option and hooked up its functionality.  Regressions
  pass with these changes; however, I have not been able to verify using this option yet.
