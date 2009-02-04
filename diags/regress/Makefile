@@ -63,8 +63,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 fstrobe1        func1           func2           func5           fwrite1 \
                 gate1           hier1           hier3.1         hier3.2         hier3.3 \
                 hier3.4         hier4           if1             ifdef1          ifdef1.2 \
-                ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         implicit2.1 \
-                include1        include1.1      include2        include4        initial1        instance1 \
+                ifdef2.1        ifdef2.2        ifdef2.3        ifdef3          ifelse1 \
+                ifndef1         ifndef2         implicit2.1     include1        include1.1 \
+                include2        include4        initial1        instance1 \
                 instance1.1     instance1.2     instance2       instance3       instance4 \
                 instance4.1     instance4.2     instance5       instance6       instance6.1 \
                 instance6.2     instance7       long_exp1       long_exp2       long_exp3 \
@@ -213,7 +214,7 @@ VCSONLYDIAGS1 = afunc2            always_comb1      always_comb2      always_ff1
                 dly_assign1.1     dly_assign1.2     dly_assign1.3     dly_assign1.4     dly_assign2 \
                 dly_assign2.1     do_while1         do_while1.1       do_while2         elsif1 \
                 elsif1.1          elsif1.2          elsif1.3          elsif1.4          elsif2 \
-                elsif2.1          enum1             enum1.1           enum1.2           enum1.3 \
+                elsif2.1          elsif3            enum1             enum1.1           enum1.2           enum1.3 \
                 enum2.1           exclude5          exclude5.1        exclude5.2        exclude5.3 \
                 exponent1         final1            for3              for5              for5.1 \
                 for5.2            for5.3            for5.4            for5.5            for5.6 \
