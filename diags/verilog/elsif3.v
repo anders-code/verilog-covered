@@ -11,7 +11,7 @@ module main;
 reg a;
 
 `ifdef FOOBAR
-`elsif BARFOO initial begin a = 1'b0; #5; a = 1'b1; end
+`elsif RUNTEST initial begin a = 1'b0; #5; a = 1'b1; end
 `endif
 
 initial begin

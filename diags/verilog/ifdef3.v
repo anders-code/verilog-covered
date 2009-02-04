@@ -9,7 +9,7 @@ module main;
 
 reg a;
 
-`ifdef FOOBAR initial begin
+`ifdef RUNTEST initial begin
 	a = 1'b0;
 	#5;
 	a = 1'b1;

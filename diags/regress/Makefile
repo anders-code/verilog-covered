@@ -63,8 +63,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 fstrobe1        func1           func2           func5           fwrite1 \
                 gate1           hier1           hier3.1         hier3.2         hier3.3 \
                 hier3.4         hier4           if1             ifdef1          ifdef1.2 \
-                ifdef2.1        ifdef2.2        ifdef2.3        ifdef3          ifelse1 \
-                ifndef1         ifndef2         implicit2.1     include1        include1.1 \
+                ifdef2.1        ifdef2.2        ifdef2.3        ifelse1 \
+                ifndef1         implicit2.1     include1        include1.1 \
                 include2        include4        initial1        instance1 \
                 instance1.1     instance1.2     instance2       instance3       instance4 \
                 instance4.1     instance4.2     instance5       instance6       instance6.1 \
@@ -212,9 +212,8 @@ VCSONLYDIAGS1 = afunc2            always_comb1      always_comb2      always_ff1
                 always_latch2     assert1           bit1              byte1             char1 \
                 dec1              dec1.1            dec2              dec3              dec3.1 \
                 dly_assign1.1     dly_assign1.2     dly_assign1.3     dly_assign1.4     dly_assign2 \
-                dly_assign2.1     do_while1         do_while1.1       do_while2         elsif1 \
-                elsif1.1          elsif1.2          elsif1.3          elsif1.4          elsif2 \
-                elsif2.1          elsif3            enum1             enum1.1           enum1.2           enum1.3 \
+                dly_assign2.1     do_while1         do_while1.1       do_while2 \
+                enum1             enum1.1           enum1.2           enum1.3 \
                 enum2.1           exclude5          exclude5.1        exclude5.2        exclude5.3 \
                 exponent1         final1            for3              for5              for5.1 \
                 for5.2            for5.3            for5.4            for5.5            for5.6 \
@@ -252,14 +251,16 @@ IVCVERDIAGS2  =
 IVCVERDIAGS3  =
 IVCVERDIAGS4  =
 
-IVVCSDIAGS1   = afunc1           atask1           define3          delay3           exclude7.3 \
+IVVCSDIAGS1   = afunc1           atask1           define3          delay3           elsif1 \
+                elsif1.1         elsif1.2         elsif1.3         elsif1.4         elsif2 \
+                elsif2.1         elsif3           exclude7.3 \
                 exclude10.5      exclude12.5      generate1.1      generate2.1      generate4 \
                 generate4.1      generate5        generate5.1      generate5.2      generate5.3 \
                 generate6        generate8        generate8.2      generate8.3      generate8.4 \
                 generate8.5      generate8.6      generate8.7      generate8.8      generate8.9 \
-                generate10       generate10.1 \
-                generate10.2     generate11       generate11.1     generate11.2     generate11.3 \
-                hier3            localparam1      localparam1.1    localparam1.2    localparam1.3 \
+                generate10       generate10.1     generate10.2     generate11       generate11.1 \
+                generate11.2     generate11.3     hier3            ifdef3           ifndef2 \
+                localparam1      localparam1.1    localparam1.2    localparam1.3 \
                 localparam2      localparam3      mbit_sel5        mbit_sel5.1      mbit_sel5.2 \
                 mbit_sel5.3      mbit_sel6        mbit_sel6.1      mbit_sel6.2      mbit_sel6.3 \
                 mem4             mem4.1           nand1            nor1             ovl1 \
