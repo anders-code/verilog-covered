@@ -43,7 +43,7 @@ void func_iter_display(
   if( fi->sis != NULL ) {
     for( i=0; i<fi->si_num; i++ ) {
       if( fi->sis[i] != NULL ) {
-        printf( "  Line: %d\n", fi->sis[i]->curr->stmt->ppline );
+        printf( "  Line: %u\n", fi->sis[i]->curr->stmt->ppline );
       }
     }
   }
@@ -367,6 +367,10 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.13.6.2  2009/02/04 05:14:35  phase1geo
+ Fixing bug 2562345.  Fixing compiler warning message in func_iter.c and removing
+ unnecessary output in lexer.l.
+
  Revision 1.13.6.1  2009/01/15 06:47:59  phase1geo
  Adding support for line order reporting when included files contain coverage
  information (these were not accurately sorted previously).  Updating regressions

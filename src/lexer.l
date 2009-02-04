@@ -840,7 +840,6 @@ void process_timescale_token(
       if( report ) {
         VLerror( "Illegal timescale directive specified" );
       }
-      printf( "lexer Throw C\n" );
       Throw 0;
     }
   }
@@ -870,7 +869,7 @@ void process_timescale(
 
     /* Remove all spaces */
     for( i=0; i<(strlen( str )+1); i++ ) {
-      if( (str[i] == ' ') || (str[i] == '\t') || (str[i] == '\n') ) {
+      if( (str[i] == ' ') || (str[i] == '\t') || (str[i] == '\n') || (str[i] == '\r') ) {
         num_spaces++;
       } else {
         str[i-num_spaces] = str[i];
@@ -1013,7 +1012,6 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
   } Catch_anonymous {
     rv = fclose( out );
     assert( rv == 0 );
-    printf( "lexer Throw H\n" );
     Throw 0;
   }
   
@@ -1058,7 +1056,6 @@ void reset_lexer(
 
   if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
     print_output( "No verilog files specified", FATAL, __FILE__, __LINE__ );
-    printf( "lexer Throw I\n" );
     Throw 0;
   }
 
@@ -1077,7 +1074,6 @@ void reset_lexer(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "lexer Throw J\n" );
     Throw 0;
   }
   
@@ -1090,7 +1086,6 @@ void reset_lexer(
   } Catch_anonymous {
     rv = fclose( out );
     assert( rv == 0 );
-    printf( "lexer Throw K\n" );
     Throw 0;
   }
   
