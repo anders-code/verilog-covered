@@ -1071,6 +1071,14 @@ static_expr
     {
       $$ = static_expr_gen( $3, $1, EXP_OP_LT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
     }
+  | static_expr K_LAND static_expr
+    {
+      $$ = static_expr_gen( $3, $1, EXP_OP_LAND, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+    }
+  | static_expr K_LOR static_expr
+    {
+      $$ = static_expr_gen( $3, $1, EXP_OP_LOR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+    }
   ;
 
 static_expr_primary
