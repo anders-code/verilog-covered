@@ -263,6 +263,8 @@ static bool expression_op_func__itor( expression*, thread*, const sim_time* );
 static bool expression_op_func__rtoi( expression*, thread*, const sim_time* );
 static bool expression_op_func__test_plusargs( expression*, thread*, const sim_time* );
 static bool expression_op_func__value_plusargs( expression*, thread*, const sim_time* );
+static bool expression_op_func__signed( expression*, thread*, const sim_time* );
+static bool expression_op_func__unsigned( expression*, thread*, const sim_time* );
 
 static void expression_assign( expression*, expression*, int*, thread*, const sim_time*, bool eval_lhs );
 
@@ -389,7 +391,9 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",               
                                            {"SI2R",           "$itor",            expression_op_func__itor,            {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"SR2I",           "$rtoi",            expression_op_func__rtoi,            {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"STESTARGS",      "$test$plusargs",   expression_op_func__test_plusargs,   {0, 1, NOT_COMB,   1, 1, 0, 0, 0, 0} },
-                                           {"SVALARGS",       "$value$plusargs",  expression_op_func__value_plusargs,  {0, 1, NOT_COMB,   1, 1, 0, 0, 0, 0} }
+                                           {"SVALARGS",       "$value$plusargs",  expression_op_func__value_plusargs,  {0, 1, NOT_COMB,   1, 1, 0, 0, 0, 0} },
+                                           {"SSIGNED",        "$signed",          expression_op_func__signed,          {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
+                                           {"SUNSIGNED",      "$unsigned",        expression_op_func__unsigned,        {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} }
  };
 
 
@@ -3423,6 +3427,44 @@ bool expression_op_func__value_plusargs(
 /*!
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
+ Performs a $signed system task call.
+*/
+bool expression_op_func__signed(
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__SIGNED);
+
+  vector_copy( expr->left->value, expr->value );
+
+  PROFILE_END;
+
+  return( TRUE );
+
+}
+
+/*!
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a $unsigned system task call.
+*/
+bool expression_op_func__unsigned(
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__UNSIGNED);
+
+  vector_copy( expr->left->value, expr->value );
+
+  PROFILE_END;
+
+  return( TRUE );
+
+}
+
+/*!
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
  Performs an equality (==) comparison operation.
 */
 bool expression_op_func__eq(
@@ -6141,6 +6183,12 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.386.2.4  2009/02/07 05:44:54  phase1geo
+ Fixing bug 2565347 by adding full support for the $signed/$unsigned system function
+ calls.  Also fixing issue related to any unsupported (user-defined) system function
+ call that would have output the same error message as this bug.  Added signed5 and
+ unsigned1 diagnostics to verify this new functionality works properly.
+
  Revision 1.386.2.3  2009/01/03 00:18:07  phase1geo
  Fixing bug 2482797.  Added new mem5 diagnostic to verify its correctness.
 

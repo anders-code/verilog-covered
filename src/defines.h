@@ -887,6 +887,8 @@ typedef enum exp_op_type_e {
   EXP_OP_SR2I,            /*!< 117:0x75.  Specifies the $rtoi system call */
   EXP_OP_STESTARGS,       /*!< 118:0x76.  Specifies the $test$plusargs system call */
   EXP_OP_SVALARGS,        /*!< 119:0x77.  Specifies the $value$plusargs system call */
+  EXP_OP_SSIGNED,         /*!< 120:0x78.  Specifies the $signed system call */
+  EXP_OP_SUNSIGNED,       /*!< 121:0x79.  Specifies the $unsigned system call */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -3042,6 +3044,12 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.339.2.3  2009/02/07 05:44:54  phase1geo
+ Fixing bug 2565347 by adding full support for the $signed/$unsigned system function
+ calls.  Also fixing issue related to any unsupported (user-defined) system function
+ call that would have output the same error message as this bug.  Added signed5 and
+ unsigned1 diagnostics to verify this new functionality works properly.
+
  Revision 1.339.2.2  2009/01/15 06:47:59  phase1geo
  Adding support for line order reporting when included files contain coverage
  information (these were not accurately sorted previously).  Updating regressions
