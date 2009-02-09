@@ -3505,10 +3505,9 @@ module_item
       parser_copy_range_to_curr_range( $2->urange, FALSE );
     }
     register_variable_list ';'
-  | attribute_list_opt port_type range_opt
+  | attribute_list_opt port_type signed_opt range_opt
     {
       curr_mba     = FALSE;
-      curr_signed  = FALSE;
       curr_handled = TRUE;
       if( generate_top_mode > 0 ) {
         ignore_mode++;
@@ -3563,7 +3562,7 @@ module_item
         ignore_mode--;
       }
     }
-  | attribute_list_opt port_type range_opt error ';'
+  | attribute_list_opt port_type signed_opt range_opt error ';'
     {
       if( generate_top_mode > 0 ) {
         VLerror( "Port declaration not allowed within a generate block" );
