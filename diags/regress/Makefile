@@ -63,9 +63,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 fstrobe1        func1           func2           func5           fwrite1 \
                 gate1           hier1           hier3.1         hier3.2         hier3.3 \
                 hier3.4         hier4           if1             ifdef1          ifdef1.2 \
-                ifdef2.1        ifdef2.2        ifdef2.3        ifelse1 \
-                ifndef1         implicit2.1     include1        include1.1 \
-                include2        include4        initial1        instance1 \
+                ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         ifndef1 \
+                implicit2.1     include1        include1.1      include2        include4 \
+                include5        initial1        instance1 \
                 instance1.1     instance1.2     instance2       instance3       instance4 \
                 instance4.1     instance4.2     instance5       instance6       instance6.1 \
                 instance6.2     instance7       long_exp1       long_exp2       long_exp3 \
@@ -299,8 +299,8 @@ NOLXTDIAGS   := add1            always7         always7.1       always11.2      
                 for1            fsm11           func5           generate1.1     generate2.1 \
                 generate5.1     generate8       generate8.3     generate8.4     generate8.5 \
                 generate8.6     generate8.7     generate8.8     generate10      generate10.1 \
-                generate10.2    hier1           hier2 \
-                hier4           localparam1     localparam1.1   localparam1.2   localparam1.3 \
+                generate10.2    hier1           hier2           hier4           include5 \
+                localparam1     localparam1.1   localparam1.2   localparam1.3 \
                 localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
                 mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
                 mbit_sel4.3     mem1            mem2            merge1          merge2 \
