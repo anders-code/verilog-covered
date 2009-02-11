@@ -77,8 +77,52 @@ void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed 
 /*! \brief Checks the specified generation value to see if it holds in the specified module */
 bool parser_check_generation( unsigned int gen );
 
+/*! \brief Adds the specified case statement item to the statement tree. */
+void parser_handle_case_statement(
+  exp_op_type  case_op,
+  expression*  cs_expr,
+  expression*  c_expr,
+  statement*   cs_stmt,
+  unsigned int line,
+  unsigned int ppline,
+  statement**  last_stmt
+);
+
+/*! \brief Adds each expression within an expression list as a cast statement item. */
+void parser_handle_case_statement_list(
+  exp_op_type  case_op,
+  expression*  cs_expr,
+  expression*  c_expr,
+  statement*   cs_stmt,
+  unsigned int line,
+  unsigned int ppline,
+  statement**  last_stmt
+);
+
+/*! \brief Addes the given expression as a case statement item. */
+void parser_handle_generate_case_statement(
+  expression*  cs_expr,
+  expression*  c_expr,
+  gen_item*    gi,
+  unsigned int line,
+  gen_item**   last_gi
+);
+
+/*! \brief Parses an expression tree list structure, adding each expression within the list as an individual case expression. */
+void parser_handle_generate_case_statement_list(
+  expression*  cs_expr,
+  expression*  c_expr,
+  gen_item*    gi,
+  unsigned int line,
+  gen_item**   last_gi
+);
+
+
 /*
  $Log$
+ Revision 1.16.6.2  2009/02/11 14:32:33  phase1geo
+ Fixing bug 2422415.  Updating regression files per these changes.
+
  Revision 1.16.6.1  2009/01/15 06:47:59  phase1geo
  Adding support for line order reporting when included files contain coverage
  information (these were not accurately sorted previously).  Updating regressions
