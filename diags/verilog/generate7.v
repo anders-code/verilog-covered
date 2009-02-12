@@ -15,9 +15,9 @@ initial begin
         $dumpfile( "generate7.vcd" );
         $dumpvars( 0, main );
 `endif
-//	f.x = 1'b0;
- //       #10;
-//	f.x = 1'b1;
+	f.x = 1'b0;
+        #10;
+	f.x = 1'b1;
 	#10;
         $finish;
 end
