@@ -36,9 +36,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 case1.2         case1.3         case2           case3           case3.1 \
                 case3.2         case3.3         case3.4         case4           case4.1 \
                 case5           case6           casex1          casex1.1        casex1.2        casex1.3 \
-                casex1.4        casex2          casez1          casez1.1        casez1.2 \
+                casex1.4        casex2          casex3          casez1          casez1.1        casez1.2 \
                 casez1.3        casez1.4        casez2          casez3          casez4 \
-                ceq1            cne1            compx1          compx1.1        compx1.2 \
+                casez5          ceq1            cne1            compx1          compx1.1        compx1.2 \
                 compx1.3        concat1         concat2         concat3         concat4.1 \
                 concat4.2       concat5         concat6         concat7         concat8 \
                 cond1           cond2           cond3           cond3.1         cond3.2 \
@@ -418,6 +418,19 @@ all-quick:
 	$(MAKE) all-vcd-quick
 	$(MAKE) all-lxt-quick
 	$(MAKE) all-vpi-quick
+
+all-iv:
+	$(MAKE) iverilog
+	$(MAKE) iverilog LXT=1
+	$(MAKE) iverilog VPI=1
+
+all-cver:
+	$(MAKE) cver
+	$(MAKE) cver VPI=1
+
+all-vcs:
+	$(MAKE) vcs
+	$(MAKE) vcs VPI=1
 
 all all-full:
 	$(MAKE) all-vcd-full

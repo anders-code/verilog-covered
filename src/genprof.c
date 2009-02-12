@@ -162,7 +162,6 @@ profiler profiles[NUM_PROFILES] = {
   {"covered_parse_signals", NULL, 0, 0, 0, TRUE},
   {"covered_parse_instance", NULL, 0, 0, 0, TRUE},
   {"covered_sim_calltf", NULL, 0, 0, 0, TRUE},
-  {"covered_register", NULL, 0, 0, 0, TRUE},
   {"assertion_parse", NULL, 0, 0, 0, TRUE},
   {"assertion_parse_attr", NULL, 0, 0, 0, TRUE},
   {"assertion_get_stats", NULL, 0, 0, 0, TRUE},
