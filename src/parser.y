@@ -3380,7 +3380,7 @@ generate_item
           stmt->elem.expr->suppl.part.owned = 1;
         }
         generate_expr_mode--;
-        $$ = stmt;
+        $$ = last_stmt;
       } else {
         static_expr_dealloc( $4, FALSE );
         while( c_stmt != NULL ) {
