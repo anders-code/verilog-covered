@@ -1064,6 +1064,10 @@ static_expr
     {
       $$ = static_expr_gen( $3, $1, EXP_OP_EQ, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
     }
+  | static_expr K_NE static_expr
+    {
+      $$ = static_expr_gen( $3, $1, EXP_OP_NE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+    }
   | static_expr '>' static_expr
     {
       $$ = static_expr_gen( $3, $1, EXP_OP_GT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );

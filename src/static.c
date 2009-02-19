@@ -213,7 +213,8 @@ static_expr* static_expr_gen(
           (op == EXP_OP_NOR)    || (op == EXP_OP_NAND)     || (op == EXP_OP_NXOR)   || (op == EXP_OP_EXPONENT)  ||
           (op == EXP_OP_LSHIFT) || (op == EXP_OP_RSHIFT)   || (op == EXP_OP_LIST)   || (op == EXP_OP_FUNC_CALL) ||
           (op == EXP_OP_GE)     || (op == EXP_OP_LE)       || (op == EXP_OP_EQ)     || (op == EXP_OP_GT)        ||
-          (op == EXP_OP_LT)     || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_LAND)   || (op == EXP_OP_LOR) );
+          (op == EXP_OP_LT)     || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_LAND)   || (op == EXP_OP_LOR)       ||
+          (op == EXP_OP_NE) );
 
   if( (right != NULL) && (left != NULL) ) {
 
@@ -246,6 +247,7 @@ static_expr* static_expr_gen(
           case EXP_OP_GE       :  right->num = (left->num >= right->num) ? 1 : 0;  break;
           case EXP_OP_LE       :  right->num = (left->num <= right->num) ? 1 : 0;  break;
           case EXP_OP_EQ       :  right->num = (left->num == right->num) ? 1 : 0;  break;
+          case EXP_OP_NE       :  right->num = (left->num != right->num) ? 1 : 0;  break;
           case EXP_OP_GT       :  right->num = (left->num > right->num)  ? 1 : 0;  break;
           case EXP_OP_LT       :  right->num = (left->num < right->num)  ? 1 : 0;  break;
           case EXP_OP_LAND     :  right->num = (left->num && right->num) ? 1 : 0;  break;
@@ -456,6 +458,10 @@ void static_expr_dealloc(
 
 /*
  $Log$
+ Revision 1.41.4.2  2009/02/19 15:22:06  phase1geo
+ Fixing bug 2614516.  Added generate15.4 and generate15.5 diagnostics to verify
+ this bug fix.
+
  Revision 1.41.4.1  2009/02/04 23:09:07  phase1geo
  Fixing bug 2565447.  Added new generate15* diagnostics to regression suite
  to verify bug and bug fix.
