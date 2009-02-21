@@ -86,7 +86,7 @@ char* obfuscate_name(
 
     /* Create obfuscated name */
     rv = snprintf( tname, 30, "%c%04d", prefix, obf_curr_id );
-    assert( rv < slen );
+    assert( rv < 30 );
     obf_curr_id++;
 
     /* Add the obfuscated name to the tree and get the pointer to the new node */
@@ -117,6 +117,9 @@ void obfuscate_dealloc() { PROFILE(OBFUSCATE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.16.4.2  2009/02/21 06:53:16  phase1geo
+ Fixing bug in obfuscation code.
+
  Revision 1.16.4.1  2008/11/25 05:45:03  phase1geo
  Adding fsm_err1, fsm_err1.1 and profile_err1 diagnostics to regression suite.
  Updated run_gcov script to output only percentage information.  Fixed memory
