@@ -357,18 +357,6 @@ void db_write(
         /* Only output the given instance tree if it is not ignored */
         if( !instl->ignore ) {
 
-          str_link* strl;
-
-          /*
-           If the file version information has not been set for this instance's functional unit and a file version
-           has been specified for this functional unit's file, set it now.
-          */
-          if( (instl->inst->funit != NULL) &&
-              (instl->inst->funit->version == NULL) &&
-              ((strl = str_link_find( instl->inst->funit->filename, db_list[curr_db]->fver_head )) != NULL) ) {
-            instl->inst->funit->version = strdup_safe( strl->str2 );
-          }
-
           /* Now write the instance */
           instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, issue_ids, report_save );
 
@@ -960,6 +948,14 @@ void db_add_file_version(
 ) { PROFILE(DB_ADD_FILE_VERSION);
 
   str_link* strl;
+
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_file_version, file: %s, version: %s", obf_file( file ), version );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
 
   /* Add the new file version information */
   strl       = str_link_add( strdup_safe( file ), &(db_list[curr_db]->fver_head), &(db_list[curr_db]->fver_tail) );
@@ -3123,6 +3119,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.351.2.4  2009/02/23 21:21:54  phase1geo
+ Fixes segmentation fault issue in regards to the use of $Id$ in the files.  Associated
+ with bug 2617354.
+
  Revision 1.351.2.3  2009/01/15 06:47:59  phase1geo
  Adding support for line order reporting when included files contain coverage
  information (these were not accurately sorted previously).  Updating regressions
