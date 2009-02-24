@@ -966,8 +966,13 @@ static void gen_item_resolve(
         break;
 
       case GI_TYPE_INST :
-        instance_copy( gi->elem.inst, inst, gi->elem.inst->name, gi->elem.inst->range, FALSE );
-        gen_item_resolve( gi->next_true, inst );
+        {
+          funit_inst* tinst;
+          if( (tinst = instance_copy( gi->elem.inst, inst, gi->elem.inst->name, gi->elem.inst->range, FALSE )) != NULL ) {
+            param_resolve( tinst );
+          }
+          gen_item_resolve( gi->next_true, inst );
+        }
         break;
 
       case GI_TYPE_TFN :
@@ -1212,6 +1217,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.75.2.2  2009/02/24 19:06:29  phase1geo
+ Final fix bug 2617354.  New generate16 now passes so the CDD and report files
+ have been checked in.
+
  Revision 1.75.2.1  2009/01/13 06:06:49  phase1geo
  Fixing bug 2502095.  Added generate8.9 to verify this bug fix.
 
