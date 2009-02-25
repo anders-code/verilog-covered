@@ -1003,6 +1003,9 @@ static void gen_item_resolve(
           rv = snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
           assert( rv < 4096 );
           child = instance_find_scope( inst, inst_name, TRUE );
+          if( child != NULL ) {
+            param_resolve( child );
+          }
         }
         gen_item_resolve( gi->next_true, child );
         gen_item_resolve( gi->next_false, inst );
@@ -1217,6 +1220,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.75.2.3  2009/02/25 00:04:24  phase1geo
+ Fixing another bug related to bug 2617354.  Adding generate16.1 to verify
+ this second issue is fixed properly.
+
  Revision 1.75.2.2  2009/02/24 19:06:29  phase1geo
  Final fix bug 2617354.  New generate16 now passes so the CDD and report files
  have been checked in.
