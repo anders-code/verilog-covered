@@ -141,7 +141,7 @@ MERGE3        = merge2          merge8.4        merge8.5
 
 RACELIST      = race1           race1.1         race1.2         race2.1         race2.2 \
                 race2.3         race2.4         race4           race5           race5.1 \
-                race5.2         race6
+                race5.2         race6           race7           race7.1         race7.2
 
 ERRSCORE      = err1.0          err2.0          err3            err3.1          err5 \
                 err5.1          err6            err6.1          err6.2          err6.3 \

@@ -126,6 +126,16 @@ char* cdd_message = NULL;
 */
 bool flag_conservative = FALSE;
 
+/*!
+ Pointer to head of string list containing the names of modules that should be ignored for race condition checking.
+*/
+str_link* race_ignore_mod_head = NULL;
+
+/*!
+ Pointer to tail of string list containing the names of modules that should be ignored for race condition checking.
+*/
+str_link* race_ignore_mod_tail = NULL;
+
 
 extern int64     largest_malloc_size;
 extern int64     curr_malloc_size;
@@ -204,15 +214,6 @@ static void score_usage() {
   printf( "      -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.\n" );
   printf( "      -ts <number>                 If design is being scored, specifying this option will output\n" );
   printf( "                                     the current timestep (by increments of <number>) to standard output.\n" );
-  printf( "      -r(S|W|E|I|P[=<name>])       Specifies action to take when race condition checking finds problems in design.\n" );
-  printf( "                                     (-rS = Silent.  Do not report condition was found, just handle it.\n" );
-  printf( "                                      -rW = Warning.  Report race condition information, but just handle it.  Default.\n" );
-  printf( "                                      -rE = Error.  Report race condition information and stop scoring.\n" );
-  printf( "                                      -rI = Ignore.  Skip race condition checking completely.)\n" );
-  printf( "                                      -rP = Use pragmas.  Skip race condition checking for all code surrounded by\n" );
-  printf( "                                            // racecheck off/on embedded pragmas.  The \"racecheck\" keyword can be\n" );
-  printf( "                                            changed by specifying =<name> where <name> is the new name for the race\n" );
-  printf( "                                            condition pragma keyword.\n" );
   printf( "      -S                           Outputs simulation performance information after scoring has completed.  This\n" );
   printf( "                                     information is currently only useful for the developers of Covered.\n" );
   printf( "      -g (<module>=)[1|2|3]        Selects generation of Verilog syntax that the parser will handle.  If\n" );
@@ -238,6 +239,21 @@ static void score_usage() {
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
   printf( "                                   Extensions of Verilog files to allow in scoring\n" );
+  printf( "\n" );
+  printf( "   Race Condition Options:\n" );
+  printf( "\n" );
+  printf( "     If race condition checks are violated by one or more blocks in the design, the following options specify to Covered\n" );
+  printf( "     how to handle them.\n" );
+  printf( "\n" );
+  printf( "      -rS                          Silent.  Remove the logic blocks from coverage consideration without reporting the information.\n" );
+  printf( "      -rW                          Warning.  Remove the logic blocks from coverage consideration and report the information.  Default.\n" );
+  printf( "      -rE                          Error.  Report the race condition violations and stop scoring.\n" );
+  printf( "      -rI[=<module name>]          Ignore.  If =<module name> is not specified, do not perform race condition checking for the entire\n" );
+  printf( "                                     design.  If =<module name> is specified, do not perform race condition checking on the specified module\n" );
+  printf( "                                     only.  This option may be specified more than once.\n" );
+  printf( "      -rP[=<name>]                 Use pragmas.  Skip race condition checking for all code surrounded by // racecheck off/on\n" );
+  printf( "                                     embedded pragmas.  The \"racecheck\" keyword can be changed by specifying =<name> where <name>\n" );
+  printf( "                                     is the new name for the race condition pragma keyword.\n" );
   printf( "\n" );
   printf( "   Optimization Options:\n" );
   printf( "      -e <block_name>              Name of module, task, function or named begin/end block to not score.\n" );
@@ -924,7 +940,12 @@ static void score_parse_args(
       switch( argv[i][2] ) {
         case 'E'  :  flag_race_check  = FATAL;    break;
         case 'W'  :  flag_race_check  = WARNING;  break;
-        case 'I'  :  flag_check_races = FALSE;
+        case 'I'  :
+          if( argv[i][3] == '=' ) {
+            str_link_add( strdup_safe( argv[i] + 4 ), &race_ignore_mod_head, &race_ignore_mod_tail );
+          } else { 
+            flag_check_races = FALSE;
+          }
         case 'S'  :
         case '\0' :  flag_race_check  = NORMAL;   break;
         case 'P'  :
@@ -1177,6 +1198,9 @@ void command_score(
   /* Deallocate generation module string list */
   str_link_delete_list( gen_mod_head );
 
+  /* Deallocate race ignore string list */
+  str_link_delete_list( race_ignore_mod_head );
+
   free_safe( output_db, (strlen( output_db ) + 1) );
   free_safe( dump_file, (strlen( dump_file ) + 1) );
   free_safe( vpi_file, (strlen( vpi_file ) + 1) );
@@ -1197,6 +1221,11 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.146.2.2  2009/02/25 23:32:16  phase1geo
+ Allowing the user to ignore race condition checking for a specific module using
+ the -rI=<module name> option to the score command.  Added diagnostics to verify
+ this new functionality.  Full regression passes.
+
  Revision 1.146.2.1  2008/11/25 05:45:03  phase1geo
  Adding fsm_err1, fsm_err1.1 and profile_err1 diagnostics to regression suite.
  Updated run_gcov script to output only percentage information.  Fixed memory
