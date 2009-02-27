@@ -261,7 +261,11 @@ IVVCSDIAGS1   = afunc1           atask1           define3          delay3       
                 generate8.7      generate8.8      generate8.9      generate10       generate10.1 \
                 generate10.2     generate11       generate11.1     generate11.2     generate11.3 \
                 generate15       generate15.1     generate15.2     generate15.3     generate15.4 \
+<<<<<<< Makefile
+                generate15.5     hier3            ifdef3           ifndef2 \
+=======
                 generate15.5     generate16       generate16.1     hier3            ifdef3           ifndef2 \
+>>>>>>> 1.369.2.19
                 localparam1      localparam1.1    localparam1.2    localparam1.3    localparam2 \
                 localparam3      mbit_sel5        mbit_sel5.1      mbit_sel5.2      mbit_sel5.3 \
                 mbit_sel6        mbit_sel6.1      mbit_sel6.2      mbit_sel6.3      mem4 \
