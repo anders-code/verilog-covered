@@ -300,8 +300,8 @@ NOLXTDIAGS   := add1            always7         always7.1       always11.2      
                 for1            fsm11           func5           generate1.1     generate2.1 \
                 generate5.1     generate8       generate8.3     generate8.4     generate8.5 \
                 generate8.6     generate8.7     generate8.8     generate10      generate10.1 \
-                generate10.2    hier1           hier2           hier4           include5 \
-                localparam1     localparam1.1   localparam1.2   localparam1.3 \
+                generate10.2    generate16      hier1           hier2           hier4 \
+                include5        localparam1     localparam1.1   localparam1.2   localparam1.3 \
                 localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
                 mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
                 mbit_sel4.3     mem1            mem2            merge1          merge2 \

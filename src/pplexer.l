@@ -597,12 +597,10 @@ static void do_include() { PROFILE(DO_INCLUDE);
     curr          = inc_paths_head;
 
     while( (curr != NULL) && (standby->file == 0) ) {
-
       rv = snprintf( path, 4096, "%s/%s", curr->str, standby->path );
       assert( rv < 4096 );
       standby->file = fopen(path, "r");
       curr = curr->next;
-
     }
 
     if( (curr == NULL) && (standby->file == 0) ) {
@@ -626,6 +624,9 @@ static void do_include() { PROFILE(DO_INCLUDE);
       free_safe( standby, sizeof( struct include_stack_t ) );
       standby = 0;
       Throw 0;
+    } else {
+      free_safe( standby->path, (strlen( standby->path ) + 1) );
+      standby->path = strdup_safe( path );
     }
 
   }
