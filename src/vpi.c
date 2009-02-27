@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -829,13 +829,6 @@ PLI_INT32 covered_sim_calltf( char* name ) {
 
   /* Add all of the sym_value structures to the simulation core */
   add_sym_values_to_sim();
-
-  /* If we are Cver or VCS, perform an initial 0 timestep since this will not get called */
-//#ifdef NOIV
-//  if( !db_do_timestep( 0, FALSE ) ) {
-//    vpi_control( vpiFinish, EXIT_SUCCESS );
-//  }
-//#endif
 
   PROFILE_END;
 

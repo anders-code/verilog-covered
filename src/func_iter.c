@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -364,71 +364,4 @@ void func_iter_dealloc(
   PROFILE_END;
   
 }
-
-/*
- $Log$
- Revision 1.13.6.2  2009/02/04 05:14:35  phase1geo
- Fixing bug 2562345.  Fixing compiler warning message in func_iter.c and removing
- unnecessary output in lexer.l.
-
- Revision 1.13.6.1  2009/01/15 06:47:59  phase1geo
- Adding support for line order reporting when included files contain coverage
- information (these were not accurately sorted previously).  Updating regressions
- per this change.
-
- Revision 1.13  2008/08/23 20:00:29  phase1geo
- Full fix for bug 2054686.  Also cleaned up Cver regressions.
-
- Revision 1.12  2008/08/22 20:56:35  phase1geo
- Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
- Not complete yet.  Also making updates to documentation.  Checkpointing.
-
- Revision 1.11  2008/08/18 23:07:26  phase1geo
- Integrating changes from development release branch to main development trunk.
- Regression passes.  Still need to update documentation directories and verify
- that the GUI stuff works properly.
-
- Revision 1.7.4.1  2008/07/10 22:43:51  phase1geo
- Merging in rank-devel-branch into this branch.  Added -f options for all commands
- to allow files containing command-line arguments to be added.  A few error diagnostics
- are currently failing due to changes in the rank branch that never got fixed in that
- branch.  Checkpointing.
-
- Revision 1.9  2008/06/27 14:02:00  phase1geo
- Fixing splint and -Wextra warnings.  Also fixing comment formatting.
-
- Revision 1.8  2008/06/19 16:14:55  phase1geo
- leaned up all warnings in source code from -Wall.  This also seems to have cleared
- up a few runtime issues.  Full regression passes.
-
- Revision 1.7  2008/03/17 22:02:31  phase1geo
- Adding new check_mem script and adding output to perform memory checking during
- regression runs.  Completed work on free_safe and added realloc_safe function
- calls.  Regressions are pretty broke at the moment.  Checkpointing.
-
- Revision 1.6  2008/03/17 05:26:16  phase1geo
- Checkpointing.  Things don't compile at the moment.
-
- Revision 1.5  2008/01/10 04:59:04  phase1geo
- More splint updates.  All exportlocal cases are now taken care of.
-
- Revision 1.4  2007/12/11 05:48:25  phase1geo
- Fixing more compile errors with new code changes and adding more profiling.
- Still have a ways to go before we can compile cleanly again (next submission
- should do it).
-
- Revision 1.3  2007/11/20 05:28:58  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.2  2007/04/03 04:15:17  phase1geo
- Fixing bugs in func_iter functionality.  Modified functional unit name
- flattening function (though this does not appear to be working correctly
- at this time).  Added calls to funit_flatten_name in all of the reporting
- files.  Checkpointing.
-
- Revision 1.1  2007/04/02 20:19:36  phase1geo
- Checkpointing more work on use of functional iterators.  Not working correctly
- yet.
-
-*/
 

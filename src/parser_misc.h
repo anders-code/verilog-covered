@@ -2,7 +2,7 @@
 #define __PARSE_MISC_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -116,73 +116,6 @@ void parser_handle_generate_case_statement_list(
   unsigned int line,
   gen_item**   last_gi
 );
-
-
-/*
- $Log$
- Revision 1.16.6.2  2009/02/11 14:32:33  phase1geo
- Fixing bug 2422415.  Updating regression files per these changes.
-
- Revision 1.16.6.1  2009/01/15 06:47:59  phase1geo
- Adding support for line order reporting when included files contain coverage
- information (these were not accurately sorted previously).  Updating regressions
- per this change.
-
- Revision 1.16  2008/08/18 23:07:28  phase1geo
- Integrating changes from development release branch to main development trunk.
- Regression passes.  Still need to update documentation directories and verify
- that the GUI stuff works properly.
-
- Revision 1.13.6.1  2008/07/10 22:43:54  phase1geo
- Merging in rank-devel-branch into this branch.  Added -f options for all commands
- to allow files containing command-line arguments to be added.  A few error diagnostics
- are currently failing due to changes in the rank branch that never got fixed in that
- branch.  Checkpointing.
-
- Revision 1.14  2008/06/27 14:02:04  phase1geo
- Fixing splint and -Wextra warnings.  Also fixing comment formatting.
-
- Revision 1.13  2008/01/10 04:59:04  phase1geo
- More splint updates.  All exportlocal cases are now taken care of.
-
- Revision 1.12  2007/11/20 05:28:59  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.11  2006/09/22 19:56:45  phase1geo
- Final set of fixes and regression updates per recent changes.  Full regression
- now passes.
-
- Revision 1.10  2006/09/20 22:38:09  phase1geo
- Lots of changes to support memories and multi-dimensional arrays.  We still have
- issues with endianness and VCS regressions have not been run, but this is a significant
- amount of work that needs to be checkpointed.
-
- Revision 1.9  2006/08/31 22:32:18  phase1geo
- Things are in a state of flux at the moment.  I have added proper parsing support
- for assertions, properties and sequences.  Also added partial support for the $root
- space (though I need to work on figuring out how to handle it in terms of the
- instance tree) and all that goes along with that.  Add parsing support with an
- error message for multi-dimensional array declarations.  Regressions should not be
- expected to run correctly at the moment.
-
- Revision 1.8  2006/07/15 22:07:14  phase1geo
- Added all code to parser to check generation value to decide if a piece of
- syntax is allowable by the parser or not.  This code compiles and has been
- proven to not break regressions; however, none if it has been tested at this
- point.  Many regression tests to follow...
-
- Revision 1.7  2006/03/28 22:28:27  phase1geo
- Updates to user guide and added copyright information to each source file in the
- src directory.  Added test directory in user documentation directory containing the
- example used in line, toggle, combinational logic and FSM descriptions.
-
- Revision 1.6  2006/02/01 19:58:28  phase1geo
- More updates to allow parsing of various parameter formats.  At this point
- I believe full parameter support is functional.  Regression has been updated
- which now completely passes.  A few new diagnostics have been added to the
- testsuite to verify additional functionality that is supported.
-
-*/
 
 #endif
 
