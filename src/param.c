@@ -356,120 +356,125 @@ static inst_parm* inst_parm_add(
   assert( value != NULL );
   assert( ((msb == NULL) && (lsb == NULL)) || ((msb != NULL) && (lsb != NULL)) );
 
-  /* Create new signal/expression binding */
-  iparm = (inst_parm*)malloc_safe( sizeof( inst_parm ) );
+  /* Only add the instance parameter if it currently does not exist */
+  if( (name == NULL) || (inst_name != NULL) || (inst_parm_find( name, inst->param_head ) == NULL) ) {
 
-  if( inst_name != NULL ) {
-    iparm->inst_name = strdup_safe( inst_name );
-  } else {
-    iparm->inst_name = NULL;
-  }
+    /* Create new signal/expression binding */
+    iparm = (inst_parm*)malloc_safe( sizeof( inst_parm ) );
 
-  Try {
-
-    /* If the MSB/LSB was specified, calculate the LSB and width values */
-    if( msb != NULL ) {
-
-      /* Calculate left value */
-      if( lsb->exp != NULL ) {
-        param_expr_eval( lsb->exp, inst );
-        right_val = vector_to_int( lsb->exp->value );
-      } else {
-        right_val = lsb->num;
-      }
-      assert( right_val >= 0 );
-
-      /* Calculate right value */
-      if( msb->exp != NULL ) {
-        param_expr_eval( msb->exp, inst );
-        left_val = vector_to_int( msb->exp->value );
-      } else {
-        left_val = msb->num;
-      }
-      assert( left_val >= 0 );
-
-      /* Calculate LSB and width information */
-      if( right_val > left_val ) {
-        sig_lsb   = left_val;
-        sig_width = (right_val - left_val) + 1;
-        sig_be    = 1;
-      } else {
-        sig_lsb   = right_val;
-        sig_width = (left_val - right_val) + 1;
-        sig_be    = 0;
-      }
-
+    if( inst_name != NULL ) {
+      iparm->inst_name = strdup_safe( inst_name );
     } else {
-
-      sig_lsb   = 0;
-      sig_width = value->width;
-      sig_be    = 0;
-
+      iparm->inst_name = NULL;
     }
 
-    /* If the parameter is sized too big, panic */
-    assert( (sig_width <= MAX_BIT_WIDTH) && (sig_width >= 0) );
+    Try {
 
-    /* Figure out what type of parameter this signal needs to be */
-    if( (value != NULL) && ((value->suppl.part.data_type == VDATA_R64) || (value->suppl.part.data_type == VDATA_R32)) ) {
-      sig_type = SSUPPL_TYPE_PARAM_REAL;
-    } else {
-      sig_type = SSUPPL_TYPE_PARAM;
-    }
+      /* If the MSB/LSB was specified, calculate the LSB and width values */
+      if( msb != NULL ) {
 
-    /* Create instance parameter signal */
-    iparm->sig = vsignal_create( name, sig_type, sig_width, 0, 0 );
-    iparm->sig->pdim_num   = 1;
-    iparm->sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
-    iparm->sig->dim[0].lsb = right_val;
-    iparm->sig->dim[0].msb = left_val;
-    iparm->sig->suppl.part.big_endian = sig_be;
-
-    /* Store signed attribute for this vector */
-    iparm->sig->value->suppl.part.is_signed = is_signed;
-  
-    /* Copy the contents of the specified vector value to the signal */
-    switch( value->suppl.part.data_type ) {
-      case VDATA_UL :
-        (void)vector_set_value_ulong( iparm->sig->value, value->value.ul, value->width );
-        break;
-      case VDATA_R64 :
-        (void)vector_from_real64( iparm->sig->value, value->value.r64->val );
-        break;
-      case VDATA_R32 :
-        (void)vector_from_real64( iparm->sig->value, (double)value->value.r32->val );
-        break;
-      default :  assert( 0 );  break;
-    }
-
-    iparm->mparm = mparm;
-    iparm->next  = NULL;
-
-    /* Bind the module parameter expression list to this signal */
-    if( mparm != NULL ) {
-      expl = mparm->exp_head;
-      while( expl != NULL ) {
-        expl->exp->sig = iparm->sig;
-        /* Set the expression's vector to this signal's vector if we are part of a generate expression */
-        if( expl->exp->suppl.part.gen_expr == 1 ) {
-          expression_set_value( expl->exp, iparm->sig, inst->funit );
+        /* Calculate left value */
+        if( lsb->exp != NULL ) {
+          param_expr_eval( lsb->exp, inst );
+          right_val = vector_to_int( lsb->exp->value );
+        } else {
+          right_val = lsb->num;
         }
-        exp_link_add( expl->exp, &(iparm->sig->exp_head), &(iparm->sig->exp_tail) );
-        expl = expl->next;
+        assert( right_val >= 0 );
+
+        /* Calculate right value */
+        if( msb->exp != NULL ) {
+          param_expr_eval( msb->exp, inst );
+          left_val = vector_to_int( msb->exp->value );
+        } else {
+          left_val = msb->num;
+        }
+        assert( left_val >= 0 );
+
+        /* Calculate LSB and width information */
+        if( right_val > left_val ) {
+          sig_lsb   = left_val;
+          sig_width = (right_val - left_val) + 1;
+          sig_be    = 1;
+        } else {
+          sig_lsb   = right_val;
+          sig_width = (left_val - right_val) + 1;
+          sig_be    = 0;
+        }
+
+      } else {
+
+        sig_lsb   = 0;
+        sig_width = value->width;
+        sig_be    = 0;
+
       }
+
+      /* If the parameter is sized too big, panic */
+      assert( (sig_width <= MAX_BIT_WIDTH) && (sig_width >= 0) );
+
+      /* Figure out what type of parameter this signal needs to be */
+      if( (value != NULL) && ((value->suppl.part.data_type == VDATA_R64) || (value->suppl.part.data_type == VDATA_R32)) ) {
+        sig_type = SSUPPL_TYPE_PARAM_REAL;
+      } else {
+        sig_type = SSUPPL_TYPE_PARAM;
+      }
+
+      /* Create instance parameter signal */
+      iparm->sig = vsignal_create( name, sig_type, sig_width, 0, 0 );
+      iparm->sig->pdim_num   = 1;
+      iparm->sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
+      iparm->sig->dim[0].lsb = right_val;
+      iparm->sig->dim[0].msb = left_val;
+      iparm->sig->suppl.part.big_endian = sig_be;
+
+      /* Store signed attribute for this vector */
+      iparm->sig->value->suppl.part.is_signed = is_signed;
+  
+      /* Copy the contents of the specified vector value to the signal */
+      switch( value->suppl.part.data_type ) {
+        case VDATA_UL :
+          (void)vector_set_value_ulong( iparm->sig->value, value->value.ul, value->width );
+          break;
+        case VDATA_R64 :
+          (void)vector_from_real64( iparm->sig->value, value->value.r64->val );
+          break;
+        case VDATA_R32 :
+          (void)vector_from_real64( iparm->sig->value, (double)value->value.r32->val );
+          break;
+        default :  assert( 0 );  break;
+      }
+
+      iparm->mparm = mparm;
+      iparm->next  = NULL;
+
+      /* Bind the module parameter expression list to this signal */
+      if( mparm != NULL ) {
+        expl = mparm->exp_head;
+        while( expl != NULL ) {
+          expl->exp->sig = iparm->sig;
+          /* Set the expression's vector to this signal's vector if we are part of a generate expression */
+          if( expl->exp->suppl.part.gen_expr == 1 ) {
+            expression_set_value( expl->exp, iparm->sig, inst->funit );
+          }
+          exp_link_add( expl->exp, &(iparm->sig->exp_head), &(iparm->sig->exp_tail) );
+          expl = expl->next;
+        }
+      }
+
+      /* Now add the parameter to the current expression */
+      if( inst->param_head == NULL ) {
+        inst->param_head = inst->param_tail = iparm;
+      } else {
+        inst->param_tail->next = iparm;
+        inst->param_tail       = iparm;
+      }
+  
+    } Catch_anonymous {
+      inst_parm_dealloc( iparm, FALSE );
+      Throw 0;
     }
 
-    /* Now add the parameter to the current expression */
-    if( inst->param_head == NULL ) {
-      inst->param_head = inst->param_tail = iparm;
-    } else {
-      inst->param_tail->next = iparm;
-      inst->param_tail       = iparm;
-    }
-  
-  } Catch_anonymous {
-    inst_parm_dealloc( iparm, FALSE );
-    Throw 0;
   }
 
   PROFILE_END;
