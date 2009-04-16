@@ -414,9 +414,9 @@ void funit_size_elements(
   }
   
   /* If we need to do another parameter resolution for generate blocks, do it now */
-  // if( resolve ) {
+  if( resolve ) {
     param_resolve( inst );
-  // }
+  }
 
 #ifndef VPI_ONLY
   /*
