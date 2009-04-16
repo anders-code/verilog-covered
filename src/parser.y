@@ -3380,8 +3380,8 @@ generate_item
           c_stmt    = c_stmt->prev;
           free_safe( tc_stmt, sizeof( case_gitem ) );
         }
-        if( stmt != NULL ) {
-          stmt->elem.expr->suppl.part.owned = 1;
+        if( last_stmt != NULL ) {
+          last_stmt->elem.expr->suppl.part.owned = 1;
         }
         generate_expr_mode--;
         $$ = last_stmt;
