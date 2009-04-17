@@ -617,7 +617,7 @@ funit_inst* instance_copy(
     /* Iterate through rest of current child's list of children */
     curr = from_inst->child_head;
     while( curr != NULL ) {
-      instance_copy( curr, new_inst, curr->name, curr->range, resolve );
+      (void)instance_copy( curr, new_inst, curr->name, curr->range, resolve );
       curr = curr->next;
     }
 
@@ -676,7 +676,7 @@ bool instance_parse_add(
 
       ignore = 0;
       while( (ignore >= 0) && ((inst = instance_find_by_funit( *root, parent, &ignore )) != NULL) ) {
-        instance_copy( cinst, inst, inst_name, range, resolve );
+        (void)instance_copy( cinst, inst, inst_name, range, resolve );
         i++;
         ignore = child_gend ? -1 : i;
       }
