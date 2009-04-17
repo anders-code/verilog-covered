@@ -117,6 +117,8 @@ static void merge_usage() {
 }
 
 /*!
+ \return Returns TRUE if the help option was parsed.
+
  \throws anonymous Throw Throw Throw
 
  Parses the merge argument list, placing all parsed values into
@@ -124,7 +126,7 @@ static void merge_usage() {
  for the merge operation, an error message is displayed to the
  user.
 */
-static void merge_parse_args(
+static bool merge_parse_args(
   int          argc,      /*!< Number of arguments in argument list argv */
   int          last_arg,  /*!< Index of last parsed argument from list */
   const char** argv       /*!< Argument list passed to this program */
@@ -136,15 +138,16 @@ static void merge_parse_args(
   str_link* ext_tail     = NULL;
   str_link* dir_head     = NULL;
   str_link* dir_tail     = NULL;
+  bool      help_found   = FALSE;
 
   i = last_arg + 1;
 
-  while( i < argc ) {
+  while( (i < argc) && !help_found ) {
 
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
 
       merge_usage();
-      Throw 0;
+      help_found = TRUE;
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
     
@@ -171,7 +174,7 @@ static void merge_parse_args(
         i++;
         Try {
           read_command_file( argv[i], &arg_list, &arg_num );
-          merge_parse_args( arg_num, -1, (const char**)arg_list );
+          help_found = merge_parse_args( arg_num, -1, (const char**)arg_list );
         } Catch_anonymous {
           for( j=0; j<arg_num; j++ ) {
             free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
@@ -280,49 +283,55 @@ static void merge_parse_args(
 
   }
 
-  Try {
+  if( !help_found ) {
 
-    /* Load any merge files found in specified directories */
-    strl = dir_head;
+    Try {
+
+      /* Load any merge files found in specified directories */
+      strl = dir_head;
+      while( strl != NULL ) {
+        directory_load( strl->str, ext_head, &merge_in_head, &merge_in_tail );
+        strl = strl->next;
+      }
+
+    } Catch_anonymous {
+      str_link_delete_list( ext_head );
+      str_link_delete_list( dir_head );
+      Throw 0;
+    }
+
+    /* Set the last command-line pointer to the current tail */
+    merge_in_cl_last = merge_in_tail;
+
+    /* Make sure that we have at least 2 files to merge */
+    strl = merge_in_head;
     while( strl != NULL ) {
-      directory_load( strl->str, ext_head, &merge_in_head, &merge_in_tail );
+      merge_in_num++;
       strl = strl->next;
     }
 
-    /* Deallocate the temporary lists */
-    str_link_delete_list( ext_head );
-    str_link_delete_list( dir_head );
+    /* Check to make sure that the user specified at least two files to merge */
+    if( merge_in_num < 2 ) {
+      print_output( "Must specify at least two CDD files to merge", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+    }
 
-  } Catch_anonymous {
-    str_link_delete_list( ext_head );
-    str_link_delete_list( dir_head );
-    Throw 0;
+    /*
+     If no -o option was specified and no merge files were specified, don't presume that the first file found in
+     the directory will be that file.
+    */
+    if( merged_file == NULL ) {
+      print_output( "Must specify the -o option or a specific CDD file for containing the merged results", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+    }
+
   }
 
-  /* Set the last command-line pointer to the current tail */
-  merge_in_cl_last = merge_in_tail;
+  /* Deallocate the temporary lists */
+  str_link_delete_list( ext_head );
+  str_link_delete_list( dir_head );
 
-  /* Make sure that we have at least 2 files to merge */
-  strl = merge_in_head;
-  while( strl != NULL ) {
-    merge_in_num++;
-    strl = strl->next;
-  }
-
-  /* Check to make sure that the user specified at least two files to merge */
-  if( merge_in_num < 2 ) {
-    print_output( "Must specify at least two CDD files to merge", FATAL, __FILE__, __LINE__ );
-    Throw 0;
-  }
-
-  /*
-   If no -o option was specified and no merge files were specified, don't presume that the first file found in
-   the directory will be that file.
-  */
-  if( merged_file == NULL ) {
-    print_output( "Must specify the -o option or a specific CDD file for containing the merged results", FATAL, __FILE__, __LINE__ );
-    Throw 0;
-  }
+  return( help_found );
 
 }
 
@@ -337,6 +346,7 @@ void command_merge(
 
   int          i;     /* Loop iterator */
   unsigned int rv;    /* Return value from snprintf calls */
+  bool         error = FALSE;
 
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
@@ -350,51 +360,55 @@ void command_merge(
     int       curr_leading_hier_num = 0;
 
     /* Parse score command-line */
-    merge_parse_args( argc, last_arg, argv );
+    if( !merge_parse_args( argc, last_arg, argv ) ) {
 
-    /* Read in base database */
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in_head->str );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    db_read( merge_in_head->str, READ_MODE_MERGE_NO_MERGE );
-
-    /* If the currently read CDD didn't contain any merged CDDs it is a leaf CDD so mark it as such */
-    if( (db_list[curr_db]->leading_hier_num - curr_leading_hier_num) == 1 ) {
-      merge_in_head->suppl = 1;
-    }
-    curr_leading_hier_num = db_list[curr_db]->leading_hier_num;
-
-    /* Read in databases to merge */
-    strl         = merge_in_head->next;
-    stop_merging = (strl == merge_in_head);
-    while( (strl != NULL) && !stop_merging ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Merging CDD file \"%s\"", strl->str );
+      /* Read in base database */
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in_head->str );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      db_read( strl->str, READ_MODE_MERGE_NO_MERGE );
+      db_read( merge_in_head->str, READ_MODE_MERGE_NO_MERGE );
 
-      /* If we have not merged any CDD files from this CDD, this is a leaf CDD so mark it as such */
+      /* If the currently read CDD didn't contain any merged CDDs it is a leaf CDD so mark it as such */
       if( (db_list[curr_db]->leading_hier_num - curr_leading_hier_num) == 1 ) {
-        strl->suppl = 1;
+        merge_in_head->suppl = 1;
       }
       curr_leading_hier_num = db_list[curr_db]->leading_hier_num;
 
-      stop_merging = (strl == merge_in_cl_last);
-      strl         = strl->next;
+      /* Read in databases to merge */
+      strl         = merge_in_head->next;
+      stop_merging = (strl == merge_in_head);
+      while( (strl != NULL) && !stop_merging ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Merging CDD file \"%s\"", strl->str );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+        db_read( strl->str, READ_MODE_MERGE_NO_MERGE );
+
+        /* If we have not merged any CDD files from this CDD, this is a leaf CDD so mark it as such */
+        if( (db_list[curr_db]->leading_hier_num - curr_leading_hier_num) == 1 ) {
+          strl->suppl = 1;
+        }
+        curr_leading_hier_num = db_list[curr_db]->leading_hier_num;
+
+        stop_merging = (strl == merge_in_cl_last);
+        strl         = strl->next;
+      }
+
+      /* Perform the tree merges */
+      db_merge_instance_trees();
+
+      /* Bind */
+      bind_perform( TRUE, 0 );
+
+      /* Write out new database to output file */
+      db_write( merged_file, FALSE, TRUE, FALSE );
+
+      print_output( "\n***  Merging completed successfully!  ***", NORMAL, __FILE__, __LINE__ );
+
     }
 
-    /* Perform the tree merges */
-    db_merge_instance_trees();
-
-    /* Bind */
-    bind_perform( TRUE, 0 );
-
-    /* Write out new database to output file */
-    db_write( merged_file, FALSE, TRUE, FALSE );
-
-    print_output( "\n***  Merging completed successfully!  ***", NORMAL, __FILE__, __LINE__ );
-
-  } Catch_anonymous {}
+  } Catch_anonymous {
+    error = TRUE;
+  }
 
   /* Close database */
   db_close();
@@ -402,6 +416,10 @@ void command_merge(
   /* Deallocate other memory */
   str_link_delete_list( merge_in_head );
   free_safe( merged_file, (strlen( merged_file ) + 1) );
+
+  if( error ) {
+    Throw 0;
+  }
 
   PROFILE_END;
 

@@ -779,6 +779,8 @@ static void exclude_usage() {
 }
 
 /*!
+ \return Returns TRUE if the help option was parsed.
+
  \throws anonymous Throw Throw Throw
 
  Parses the exclude argument list, placing all parsed values into
@@ -786,22 +788,23 @@ static void exclude_usage() {
  for the score operation, an error message is displayed to the
  user.
 */
-static void exclude_parse_args(
+static bool exclude_parse_args(
   int          argc,      /*!< Number of arguments in argument list argv */
   int          last_arg,  /*!< Index of last parsed argument from list */
   const char** argv       /*!< Argument list passed to this program */
 ) {
 
-  int i;
+  int  i;
+  bool help_found = FALSE;
 
   i = last_arg + 1;
 
-  while( i < argc ) {
+  while( (i < argc) && !help_found ) {
 
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
 
       exclude_usage();
-      Throw 0;
+      help_found = TRUE;
 
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
@@ -812,7 +815,7 @@ static void exclude_parse_args(
         i++;
         Try {
           read_command_file( argv[i], &arg_list, &arg_num );
-          exclude_parse_args( arg_num, -1, (const char**)arg_list );
+          help_found = exclude_parse_args( arg_num, -1, (const char**)arg_list );
         } Catch_anonymous {
           for( j=0; j<arg_num; j++ ) {
             free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
@@ -869,6 +872,8 @@ static void exclude_parse_args(
     i++;
 
   }
+
+  return( help_found );
 
 }
 
@@ -1877,6 +1882,7 @@ void command_exclude(
   unsigned int   rv;
   comp_cdd_cov** comp_cdds    = NULL;
   unsigned int   comp_cdd_num = 0;
+  bool           error        = FALSE;
 
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
@@ -1888,25 +1894,29 @@ void command_exclude(
     unsigned int rv;
 
     /* Parse score command-line */
-    exclude_parse_args( argc, last_arg, argv );
+    if( !exclude_parse_args( argc, last_arg, argv ) ) {
 
-    /* Read in database */
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", exclude_cdd );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-
-    db_read( exclude_cdd, READ_MODE_REPORT_NO_MERGE );
-    bind_perform( TRUE, 0 );
-
-    /* Apply the specified exclusion IDs */
-    if( exclude_apply_exclusions() ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing CDD file \"%s\"", exclude_cdd );
+      /* Read in database */
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", exclude_cdd );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      db_write( exclude_cdd, FALSE, FALSE, TRUE );
+
+      db_read( exclude_cdd, READ_MODE_REPORT_NO_MERGE );
+      bind_perform( TRUE, 0 );
+
+      /* Apply the specified exclusion IDs */
+      if( exclude_apply_exclusions() ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing CDD file \"%s\"", exclude_cdd );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+        db_write( exclude_cdd, FALSE, FALSE, TRUE );
+      }
+
     }
 
-  } Catch_anonymous {}
+  } Catch_anonymous {
+    error = TRUE;
+  }
 
   /* Close down the database */
   db_close();
@@ -1914,6 +1924,10 @@ void command_exclude(
   /* Deallocate other allocated variables */
   str_link_delete_list( excl_ids_head );
   free_safe( exclude_cdd, (strlen( exclude_cdd ) + 1) );
+
+  if( error ) {
+    Throw 0;
+  }
       
   PROFILE_END;
  

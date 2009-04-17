@@ -286,6 +286,8 @@ static void report_parse_metrics(
 }
 
 /*!
+ \return Returns TRUE if the help option was parsed.
+
  \throws anonymous Throw Throw Throw Throw Throw Throw Throw Throw
 
  Parses the argument list for options.  If a legal option is
@@ -293,22 +295,23 @@ static void report_parse_metrics(
  that option.  If an option is found that is not allowed, an error
  message is reported to the user and the program terminates immediately.
 */
-void report_parse_args(
+bool report_parse_args(
   int          argc,      /*!< Number of arguments in argument list argv */
   int          last_arg,  /*!< Index of last parsed argument from list */
   const char** argv       /*!< Argument list passed to this program */
 ) { PROFILE(REPORT_PARSE_ARGS);
 
-  int i;  /* Loop iterator */
+  int  i;  /* Loop iterator */
+  bool help_found = FALSE;
 
   i = last_arg + 1;
 
-  while( i < argc ) {
+  while( (i < argc) && !help_found ) {
 
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
  
       report_usage();
-      Throw 0;
+      help_found = TRUE;
 
     } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
     
@@ -411,7 +414,7 @@ void report_parse_args(
         i++;
         Try {
           read_command_file( argv[i], &arg_list, &arg_num );
-          report_parse_args( arg_num, -1, (const char**)arg_list );
+          help_found = report_parse_args( arg_num, -1, (const char**)arg_list );
         } Catch_anonymous {
           for( j=0; j<arg_num; j++ ) {
             free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
@@ -459,17 +462,23 @@ void report_parse_args(
 
   }
 
-  /*
-   If the user has specified the -x and -c (but not -e), we are not going to be outputting exclusion IDs
-   because covered items cannot be excluded.  So... we will set flag_output_exclusion_ids to false and
-   output a warning message.
-  */
-  if( flag_output_exclusion_ids && report_covered && !report_exclusions ) {
-    flag_output_exclusion_ids = FALSE;
-    print_output( "The -x and -c options were specified.  Covered items cannot be excluded so no exclusion IDs will be output.", WARNING, __FILE__, __LINE__ );
+  if( !help_found ) {
+
+    /*
+     If the user has specified the -x and -c (but not -e), we are not going to be outputting exclusion IDs
+     because covered items cannot be excluded.  So... we will set flag_output_exclusion_ids to false and
+     output a warning message.
+    */
+    if( flag_output_exclusion_ids && report_covered && !report_exclusions ) {
+      flag_output_exclusion_ids = FALSE;
+      print_output( "The -x and -c options were specified.  Covered items cannot be excluded so no exclusion IDs will be output.", WARNING, __FILE__, __LINE__ );
+    }
+
   }
 
   PROFILE_END;
+
+  return( help_found );
 
 }
 
@@ -1080,6 +1089,8 @@ void command_report(
   char*        user_home;               /* HOME environment variable */
 #endif
   unsigned int rv;                      /* Return value from snprintf calls */
+  bool         error           = FALSE;
+  bool         help_found      = FALSE;
 
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
@@ -1089,145 +1100,153 @@ void command_report(
   Try {
 
     /* Parse score command-line */
-    report_parse_args( argc, last_arg, argv );
+    if( !report_parse_args( argc, last_arg, argv ) ) {
 
-    if( !report_gui ) {
+      if( !report_gui ) {
 
-      /* Open database file for reading */
-      if( input_db == NULL ) {
+        /* Open database file for reading */
+        if( input_db == NULL ) {
 
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        Throw 0;
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          Throw 0;
 
-      } else {
+        } else {
 
-        /* Read in CDD file */
-        db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) );
+          /* Read in CDD file */
+          db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) );
 
-        /* Perform binding */
-        bind_perform( TRUE, 0 );
+          /* Perform binding */
+          bind_perform( TRUE, 0 );
 
-        Try {
+          Try {
 
-          /* Open output stream */
-          if( output_file != NULL ) {
-            ofile = fopen( output_file, "w" );
-            assert( ofile != NULL );  /* We should have already verified that the file is writable */
-          } else {
-            ofile = stdout;
+            /* Open output stream */
+            if( output_file != NULL ) {
+              ofile = fopen( output_file, "w" );
+              assert( ofile != NULL );  /* We should have already verified that the file is writable */
+            } else {
+              ofile = stdout;
+            }
+
+            /* Generate report */
+            report_generate( ofile );
+
+          } Catch_anonymous {
+            if( ofile != stdout ) {
+              rv = fclose( ofile );
+              assert( rv == 0 );
+            }
+            Throw 0;
           }
 
-          /* Generate report */
-          report_generate( ofile );
-
-        } Catch_anonymous {
+          /* Close output file */
           if( ofile != stdout ) {
             rv = fclose( ofile );
             assert( rv == 0 );
           }
-          Throw 0;
-        }
 
-        /* Close output file */
-        if( ofile != stdout ) {
-          rv = fclose( ofile );
-          assert( rv == 0 );
         }
-
-      }
 
 #ifdef HAVE_TCLTK
-    } else {
+      } else {
 
-      unsigned int slen;
+        unsigned int slen;
 
-      Try {
+        Try {
 
-        unsigned int rv;
+          unsigned int rv;
 
-        if( input_db != NULL ) {
-          report_read_cdd_and_ready( input_db );
-        }
+          if( input_db != NULL ) {
+            report_read_cdd_and_ready( input_db );
+          }
 
-        /* Initialize the Tcl/Tk interpreter */
-        interp = Tcl_CreateInterp();
-        assert( interp );
+          /* Initialize the Tcl/Tk interpreter */
+          interp = Tcl_CreateInterp();
+          assert( interp );
 
-        if( Tcl_Init( interp ) == TCL_ERROR ) {
-          printf( "ERROR: %s\n", interp->result );
-          Throw 0;
-        }
+          if( Tcl_Init( interp ) == TCL_ERROR ) {
+            printf( "ERROR: %s\n", interp->result );
+            Throw 0;
+          }
 
-        if( Tk_SafeInit( interp ) == TCL_ERROR ) {
-          printf( "ERROR: %s\n", interp->result );
-          Throw 0;
-        }
+          if( Tk_SafeInit( interp ) == TCL_ERROR ) {
+            printf( "ERROR: %s\n", interp->result );
+            Throw 0;
+          }
 
-        /* Get the COVERED_HOME environment variable */
+          /* Get the COVERED_HOME environment variable */
 #ifndef INSTALL_DIR
-        if( getenv( "COVERED_HOME" ) == NULL ) {
-          print_output( "COVERED_HOME not initialized.  Exiting...", FATAL, __FILE__, __LINE__ );
-          Throw 0;
-        }
-        covered_home = strdup_safe( getenv( "COVERED_HOME" ) );
+          if( getenv( "COVERED_HOME" ) == NULL ) {
+            print_output( "COVERED_HOME not initialized.  Exiting...", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
+          covered_home = strdup_safe( getenv( "COVERED_HOME" ) );
 #else
-        covered_home = strdup_safe( INSTALL_DIR );
+          covered_home = strdup_safe( INSTALL_DIR );
 #endif
 
-        /* Get the COVERED_BROWSER environment variable */
+          /* Get the COVERED_BROWSER environment variable */
 #ifndef COVERED_BROWSER
-        covered_browser = strdup_safe( getenv( "COVERED_BROWSER" ) );
+          covered_browser = strdup_safe( getenv( "COVERED_BROWSER" ) );
 #else
-        covered_browser = strdup_safe( COVERED_BROWSER );
+          covered_browser = strdup_safe( COVERED_BROWSER );
 #endif
 
-        covered_version = strdup_safe( VERSION );
-        user_home       = getenv( "HOME" );
+          covered_version = strdup_safe( VERSION );
+          user_home       = getenv( "HOME" );
 
-        /* Initialize TCL */
-        tcl_func_initialize( interp, argv[0], user_home, covered_home, covered_version, covered_browser );
+          /* Initialize TCL */
+          tcl_func_initialize( interp, argv[0], user_home, covered_home, covered_version, covered_browser );
 
-        /* Call the top-level Tcl file */
-        slen      = strlen( covered_home ) + 30;
-        main_file = (char*)malloc_safe( slen );
-        rv        = snprintf( main_file, slen, "%s/scripts/main_view.tcl", covered_home );
-        assert( rv < slen );
-        rv = Tcl_EvalFile( interp, main_file );
-        if( rv != TCL_OK ) {
-          rv = snprintf( user_msg, USER_MSG_LENGTH, "TCL/TK: %s\n", Tcl_ErrnoMsg( Tcl_GetErrno() ) );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          /* Call the top-level Tcl file */
+          slen      = strlen( covered_home ) + 30;
+          main_file = (char*)malloc_safe( slen );
+          rv        = snprintf( main_file, slen, "%s/scripts/main_view.tcl", covered_home );
+          assert( rv < slen );
+          rv = Tcl_EvalFile( interp, main_file );
+          if( rv != TCL_OK ) {
+            rv = snprintf( user_msg, USER_MSG_LENGTH, "TCL/TK: %s\n", Tcl_ErrnoMsg( Tcl_GetErrno() ) );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
+
+          /* Call the main-loop */
+          Tk_MainLoop ();
+
+        } Catch_anonymous {
+          free_safe( covered_home,    (strlen( covered_home ) + 1) );
+          free_safe( main_file,       slen );
+          free_safe( covered_browser, (strlen( covered_browser ) + 1) );
+          free_safe( covered_version, (strlen( covered_version ) + 1) );
           Throw 0;
         }
 
-        /* Call the main-loop */
-        Tk_MainLoop ();
-
-      } Catch_anonymous {
+        /* Clean Up */
         free_safe( covered_home,    (strlen( covered_home ) + 1) );
         free_safe( main_file,       slen );
         free_safe( covered_browser, (strlen( covered_browser ) + 1) );
         free_safe( covered_version, (strlen( covered_version ) + 1) );
-        Throw 0;
-      }
-
-      /* Clean Up */
-      free_safe( covered_home,    (strlen( covered_home ) + 1) );
-      free_safe( main_file,       slen );
-      free_safe( covered_browser, (strlen( covered_browser ) + 1) );
-      free_safe( covered_version, (strlen( covered_version ) + 1) );
 #endif
+
+      }
 
     }
 
-  } Catch_anonymous {}
+  } Catch_anonymous {
+    error = TRUE;
+  }
 
   free_safe( output_file, (strlen( output_file ) + 1) );
   free_safe( input_db, (strlen( input_db ) + 1) );
 
   /* Close the database */
   db_close();
+
+  if( error ) {
+    Throw 0;
+  }
 
   PROFILE_END;
 

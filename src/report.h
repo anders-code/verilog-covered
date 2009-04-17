@@ -42,7 +42,7 @@ void report_print_header(
 );
 
 /*! \brief Parses arguments on report command command-line. */
-void report_parse_args(
+bool report_parse_args(
   int          argc,
   int          last_arg,
   const char** argv

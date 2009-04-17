@@ -502,6 +502,8 @@ void score_parse_define( const char* def ) { PROFILE(SCORE_PARSE_DEFINE);
 }
 
 /*!
+ \return Returns TRUE if the help option was parsed.
+
  \throws anonymous search_add_directory_path Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw
                    Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw score_parse_args ovl_add_assertions_to_no_score_list
                    fsm_arg_parse read_command_file search_add_file defparam_add search_add_extensions search_add_no_score_funit
@@ -509,7 +511,7 @@ void score_parse_define( const char* def ) { PROFILE(SCORE_PARSE_DEFINE);
  Parses score command argument list and performs specified functions based
  on these arguments.
 */
-static void score_parse_args(
+static bool score_parse_args(
   int          argc,      /*!< Number of arguments specified in argv parameter list */
   int          last_arg,  /*!< Index of last parsed argument in list */
   const char** argv       /*!< List of arguments to parse */
@@ -519,13 +521,14 @@ static void score_parse_args(
   int   j;                 /* Loop iterator */
   char* ptr;               /* Pointer to current character in defined value */
   char* rv;                /* Return value from snprintf calls */
+  bool  help_found = FALSE;
 
-  while( i < argc ) {
+  while( (i < argc) && !help_found ) {
 
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
 
       score_usage();
-      Throw 0;
+      help_found = TRUE;
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
@@ -636,7 +639,7 @@ static void score_parse_args(
         i++;
         Try {
           read_command_file( argv[i], &arg_list, &arg_num );
-          score_parse_args( arg_num, -1, (const char**)arg_list );
+          help_found = score_parse_args( arg_num, -1, (const char**)arg_list );
         } Catch_anonymous {
           for( j=0; j<arg_num; j++ ) {
             free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
@@ -1096,12 +1099,18 @@ static void score_parse_args(
 
   }
 
-  /* If the -A option was not specified, add all OVL modules to list of no-score modules */
-  ovl_add_assertions_to_no_score_list( info_suppl.part.assert_ovl );
+  if( !help_found ) {
+
+    /* If the -A option was not specified, add all OVL modules to list of no-score modules */
+    ovl_add_assertions_to_no_score_list( info_suppl.part.assert_ovl );
     
-  /* Get the current directory */
-  rv = getcwd( score_run_path, 4096 );
-  assert( rv != NULL );
+    /* Get the current directory */
+    rv = getcwd( score_run_path, 4096 );
+    assert( rv != NULL );
+
+  }
+
+  return( help_found );
 
 }
 
@@ -1115,6 +1124,7 @@ void command_score(
 ) { PROFILE(COMMAND_SCORE);
 
   unsigned int rv;  /* Return value from snprintf calls */
+  bool         error = FALSE;
 
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
@@ -1127,60 +1137,63 @@ void command_score(
     (void)db_create();
 
     /* Parse score command-line */
-    score_parse_args( argc, last_arg, argv );
+    if( !score_parse_args( argc, last_arg, argv ) ) {
 
-    if( output_db == NULL ) {
-      output_db = strdup_safe( DFLT_OUTPUT_CDD );
-    }
- 
-    /* Parse design */
-    if( use_files_head != NULL ) {
-      print_output( "Reading design...", NORMAL, __FILE__, __LINE__ );
-      search_init();
-      parse_design( top_module, output_db );
-      print_output( "", NORMAL, __FILE__, __LINE__ );
-    }
-
-    /* Generate VPI-based top module */
-    if( vpi_file != NULL ) {
-
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Outputting VPI file %s...", vpi_file );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      score_generate_top_vpi_module( vpi_file, output_db, top_instance );
-      score_generate_pli_tab_file( vpi_file, top_module );
-
-    /* Read dumpfile and score design */
-    } else if( dump_mode != DUMP_FMT_NONE ) {
-
-      switch( dump_mode ) {
-        case DUMP_FMT_VCD :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring VCD dumpfile %s...", dump_file );  break;
-        case DUMP_FMT_LXT :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring LXT dumpfile %s...", dump_file );  break;
+      if( output_db == NULL ) {
+        output_db = strdup_safe( DFLT_OUTPUT_CDD );
       }
+ 
+      /* Parse design */
+      if( use_files_head != NULL ) {
+        print_output( "Reading design...", NORMAL, __FILE__, __LINE__ );
+        search_init();
+        parse_design( top_module, output_db );
+        print_output( "", NORMAL, __FILE__, __LINE__ );
+      }
+
+      /* Generate VPI-based top module */
+      if( vpi_file != NULL ) {
+
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Outputting VPI file %s...", vpi_file );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+        score_generate_top_vpi_module( vpi_file, output_db, top_instance );
+        score_generate_pli_tab_file( vpi_file, top_module );
+
+      /* Read dumpfile and score design */
+      } else if( dump_mode != DUMP_FMT_NONE ) {
+
+        switch( dump_mode ) {
+          case DUMP_FMT_VCD :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring VCD dumpfile %s...", dump_file );  break;
+          case DUMP_FMT_LXT :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring LXT dumpfile %s...", dump_file );  break;
+        }
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+        parse_and_score_dumpfile( output_db, dump_file, dump_mode );
+        print_output( "", NORMAL, __FILE__, __LINE__ );
+
+      }
+
+      if( dump_mode != DUMP_FMT_NONE ) {
+        print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
+      }
+      /*@-duplicatequals -formattype@*/
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
       assert( rv < USER_MSG_LENGTH );
+      /*@=duplicatequals =formattype@*/
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      parse_and_score_dumpfile( output_db, dump_file, dump_mode );
       print_output( "", NORMAL, __FILE__, __LINE__ );
 
-    }
+      /* Display simulation statistics if specified */
+      if( flag_display_sim_stats ) {
+        perf_output_inst_report( stdout );
+      }
 
-    if( dump_mode != DUMP_FMT_NONE ) {
-      print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
-    }
-    /*@-duplicatequals -formattype@*/
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
-    assert( rv < USER_MSG_LENGTH );
-    /*@=duplicatequals =formattype@*/
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    print_output( "", NORMAL, __FILE__, __LINE__ );
-
-    /* Display simulation statistics if specified */
-    if( flag_display_sim_stats ) {
-      perf_output_inst_report( stdout );
     }
 
   } Catch_anonymous {
     fsm_var_cleanup();
+    error = TRUE;
   }
 
   /* Close database */
@@ -1214,6 +1227,10 @@ void command_score(
   free_safe( timescale, (strlen( timescale ) + 1) );
   free_safe( pragma_coverage_name, (strlen( pragma_coverage_name ) + 1) );
   free_safe( pragma_racecheck_name, (strlen( pragma_racecheck_name ) + 1) );
+
+  if( error ) {
+    Throw 0;
+  }
 
   PROFILE_END;
 
