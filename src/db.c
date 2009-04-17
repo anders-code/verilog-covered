@@ -700,7 +700,7 @@ void db_read(
 #endif
 
   /* Check to make sure that the CDD file contained valid information */
-  if( db_size == 0 ) {
+  if( (db_size == 0) || (db_list[0]->inst_head == NULL) ) {
     print_output( "CDD file was found to be empty", FATAL, __FILE__, __LINE__ );
     Throw 0;
   }

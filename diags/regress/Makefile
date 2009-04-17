@@ -147,7 +147,8 @@ ERRSCORE      = err1.0          err2.0          err3            err3.1          
                 err5.1          err6            err6.1          err6.2          err6.3 \
                 err6.4          func4           func4.1         func4.2         func4.3 \
                 func4.4         func4.5         func4.6         score_err1      score_err1.1 \
-                score_err1.2    score_err1.3    score_err1.15   score_help      task5
+                score_err1.2    score_err1.3    score_err1.15   score_err1.31   score_help \
+                task5
 ERRMERGE      = err5.2          err5.3          err5.4          merge_err1      merge_err1.1 \
                 merge_err1.2    merge_err1.3    merge_err2      merge_err2.1    merge_help
 ERRREPORT     = err7            err7.1          err8            err8.1          err8.2 \
