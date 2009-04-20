@@ -215,7 +215,8 @@ static_expr* static_expr_gen(
           (op == EXP_OP_NOR)    || (op == EXP_OP_NAND)     || (op == EXP_OP_NXOR)   || (op == EXP_OP_EXPONENT)  ||
           (op == EXP_OP_LSHIFT) || (op == EXP_OP_RSHIFT)   || (op == EXP_OP_LIST)   || (op == EXP_OP_FUNC_CALL) ||
           (op == EXP_OP_GE)     || (op == EXP_OP_LE)       || (op == EXP_OP_EQ)     || (op == EXP_OP_GT)        ||
-          (op == EXP_OP_LT)     || (op == EXP_OP_SBIT_SEL) );
+          (op == EXP_OP_LT)     || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_LAND)   || (op == EXP_OP_LOR)       ||
+          (op == EXP_OP_NE) );
 
   if( (right != NULL) && (left != NULL) ) {
 
@@ -248,8 +249,11 @@ static_expr* static_expr_gen(
           case EXP_OP_GE       :  right->num = (left->num >= right->num) ? 1 : 0;  break;
           case EXP_OP_LE       :  right->num = (left->num <= right->num) ? 1 : 0;  break;
           case EXP_OP_EQ       :  right->num = (left->num == right->num) ? 1 : 0;  break;
+          case EXP_OP_NE       :  right->num = (left->num != right->num) ? 1 : 0;  break;
           case EXP_OP_GT       :  right->num = (left->num > right->num)  ? 1 : 0;  break;
           case EXP_OP_LT       :  right->num = (left->num < right->num)  ? 1 : 0;  break;
+          case EXP_OP_LAND     :  right->num = (left->num && right->num) ? 1 : 0;  break;
+          case EXP_OP_LOR      :  right->num = (left->num || right->num) ? 1 : 0;  break;
           default              :  break;
         }
 
@@ -456,6 +460,9 @@ void static_expr_dealloc(
 
 /*
  $Log$
+ Revision 1.44  2009/04/20 23:06:26  phase1geo
+ More updates to integrate the stable branch changes into the development branch.
+
  Revision 1.43  2009/01/16 00:03:54  phase1geo
  Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
  regressions per needed changes to support this functionality.  Now only
