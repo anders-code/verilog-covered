@@ -707,7 +707,7 @@ void db_read(
 #endif
 
   /* Check to make sure that the CDD file contained valid information */
-  if( db_size == 0 ) {
+  if( (db_size == 0) || (db_list[0]->inst_head == NULL) ) {
     print_output( "CDD file was found to be empty", FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
@@ -3384,6 +3384,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.383  2009/04/20 04:52:26  phase1geo
+ Working on integrating bug fixes from stable branch into the main development
+ branch.  This work is incomplete with this checkin and the code will not compile
+ currently.  Checkpointing.
+
  Revision 1.382  2009/01/19 21:51:33  phase1geo
  Added -inlined-metrics score command option and hooked up its functionality.  Regressions
  pass with these changes; however, I have not been able to verify using this option yet.
