@@ -50,29 +50,5 @@ void struct_union_dealloc( struct_union* su );
 /*! \brief Deallocates struct/union list from given functional unit */
 void struct_union_dealloc_list( func_unit* funit );
 
-
-/*
- $Log$
- Revision 1.5  2009/01/09 21:25:01  phase1geo
- More generate block fixes.  Updated all copyright information source code files
- for the year 2009.  Checkpointing.
-
- Revision 1.4  2008/01/16 23:10:34  phase1geo
- More splint updates.  Code is now warning/error free with current version
- of run_splint.  Still have regression issues to debug.
-
- Revision 1.3  2007/11/20 05:29:00  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.2  2007/09/14 06:22:12  phase1geo
- Filling in existing functions in struct_union.  Completed parser code for handling
- struct/union declarations.  Code compiles thus far.
-
- Revision 1.1  2007/09/13 22:50:46  phase1geo
- Initial creation of struct_union files.  Added initial parsing ability for
- structs and unions (though I don't believe this is complete at this time).
-
-*/
-
 #endif
 
