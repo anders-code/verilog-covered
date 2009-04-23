@@ -1,0 +1,95 @@
+################################################################################################
+# Copyright (c) 2006-2009 Trevor Williams                                                      #
+#                                                                                              #
+# This program is free software; you can redistribute it and/or modify                         #
+# it under the terms of the GNU General Public License as published by the Free Software       #
+# Foundation; either version 2 of the License, or (at your option) any later version.          #
+#                                                                                              #
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;    #
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    #
+# See the GNU General Public License for more details.                                         #
+#                                                                                              #
+# You should have received a copy of the GNU General Public License along with this program;   #
+# if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
+################################################################################################
+
+# Contains procs for handling help menu windows
+
+proc help_show_about {} {
+
+  global VERSION HOME
+
+  if {[winfo exists .helpabout]} {
+
+    raise .helpabout
+
+  } else {
+
+    # Create window and populate with widgets
+    toplevel .helpabout -background white
+    wm title .helpabout "About Covered"
+
+    button .helpabout.b -text "Close" -command {
+      destroy .helpabout
+    }
+    label .helpabout.i -background white -image [image create photo -file [file join $HOME scripts banner.gif]]
+    label .helpabout.l -background white -justify left -text "Version:      $VERSION\nAuthor:       Trevor Williams\nEmail:         phase1geo@gmail.com\nHomepage:  http://covered.sourceforge.net\n\nFreely distributable under the GPL license"
+
+    pack .helpabout.i -pady 10
+    pack .helpabout.l -padx 10 -pady 10
+    pack .helpabout.b -pady 10
+
+    focus -force .helpabout.b
+
+  } 
+
+}
+
+proc help_show_manual {chapter {section ""}} {
+
+  global HOME BROWSER
+
+  if {[string first "kfmclient" $BROWSER] != -1} {
+
+    set fpath "file:[file join $HOME doc html $chapter].html"
+
+    if {$section != ""} {
+      set fpath $fpath#$section
+    }
+
+    if {[catch {exec $BROWSER exec $fpath} emsg]} {
+      error "Error displaying $fpath in browser\n$emsg"
+    }
+
+  } else {
+
+    set fpath "file://[file join $HOME doc html $chapter].html"
+
+    if {$section != ""} {
+      set fpath $fpath#$section
+    }
+
+    if {[catch {exec $BROWSER -remote "openURL( $fpath )"}]} {
+
+      # perhaps browser doesn't understand -remote flag
+      if {[catch "exec $BROWSER \"$fpath\" &" emsg]} {
+        error "Error displaying $fpath in browser\n$emsg"
+      }
+
+    }
+
+  }
+
+}
+
+proc help_button {w file {section ""}} {
+
+  set help_img [image create bitmap -data "#define help2_width 22\n#define help2_height 22\nstatic unsigned char help2_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3f, 0x00, 0x80, 0x7f, 0x00, 0xc0, 0xe1, 0x00, 0xc0, 0xc0, 0x00, 0xc0, 0xc0, 0x00, 0x00, 0xc0, 0x00, 0x00, 0xc0, 0x00, 0x00, 0xe0, 0x00, 0x00, 0x70, 0x00, 0x00, 0x38, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"]
+
+  button $w -image $help_img -relief flat -command "help_show_manual $file $section"
+  set_balloon $w "Click to display context-sensitive documentation for this window"
+
+  return $w
+
+}
+

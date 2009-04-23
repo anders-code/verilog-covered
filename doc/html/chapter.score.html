@@ -144,29 +144,30 @@
                 -rS
               </td><td>
                 Performs race condition checking and removes any offending logic blocks from coverage consideration without
-                reporting the information.
+                reporting the information.  See <a href="chapter.race.html#section.race.handling" title="4.2. Race Condition Handling">Section 4.2, &#8220;Race Condition Handling&#8221;</a>.
               </td></tr><tr><td>
                 -rW
               </td><td>
                 Performs race condition checking, removes any offending logic blocks from coverage consideration, and displays
-                this information to standard output.  This is the default race condition checking behavior.
+                this information to standard output.  This is the default race condition checking behavior. See
+                <a href="chapter.race.html#section.race.handling" title="4.2. Race Condition Handling">Section 4.2, &#8220;Race Condition Handling&#8221;</a>.
               </td></tr><tr><td>
                 -rE
               </td><td>
                 Performs race condition checking, reports any offending logic and immediately stops scoring.  This option allows
-                Covered to be used as a static race condition checking tool.
+                Covered to be used as a static race condition checking tool. See <a href="chapter.race.html#section.race.handling" title="4.2. Race Condition Handling">Section 4.2, &#8220;Race Condition Handling&#8221;</a>.
               </td></tr><tr><td>
                 -rI[=<span class="emphasis"><em>module name</em></span>]
               </td><td>
                 If =<span class="emphasis"><em>module name</em></span> is not specified, race condition checking is not performed for the entire
                 design.  If =<span class="emphasis"><em>module name</em></span> is specified, race condition checking is not performed on the
-                specified module only.  This option may be specified more than once.
+                specified module only.  This option may be specified more than once.  See <a href="chapter.race.html#section.race.avoiding" title="4.3. Avoiding Race Condition Checking">Section 4.3, &#8220;Avoiding Race Condition Checking&#8221;</a>.
               </td></tr><tr><td>
                 -rP[=<span class="emphasis"><em>name</em></span>]
               </td><td>
                 Skip race condition checking for all code surrounded by "// racecheck off/on" embedded pragmas.  The "racecheck"
                 keyword can be changed by specifying =<span class="emphasis"><em>name</em></span> where <span class="emphasis"><em>name</em></span> is the new name
-                for the race condition pragma keyword.  See <a href="chapter.race.html#section.race.handling" title="4.2. Race Condition Handling">Section 4.2, &#8220;Race Condition Handling&#8221;</a>
+                for the race condition pragma keyword.  See <a href="chapter.race.html#section.race.avoiding" title="4.3. Avoiding Race Condition Checking">Section 4.3, &#8220;Avoiding Race Condition Checking&#8221;</a>.
               </td></tr><tr><td>
                 -S
               </td><td>
@@ -482,7 +483,7 @@
     </p><p>
       </p><div class="orderedlist"><ol type="1"><li><p>$random</p></li><li><p>$urandom</p></li><li><p>$urandom_range</p></li></ol></div><p>
     </p><p>
-      It is currently up to the user to determine to determine whether liberal or conservative coverage accumulation should occur and use
+      It is currently up to the user to determine whether liberal or conservative coverage accumulation should occur and use
       the <span class="bold"><strong>-conservative</strong></span> option to the score command as needed.
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.score.plusargs"></a>9.8. Specifying Plus Arguments When Scoring</h2></div></div></div><p>
       Covered supports the $test$plusargs and $value$plusargs system function calls and, as such, runtime command-line options are allowed to
@@ -491,7 +492,7 @@
       are used for $test$plusargs and $value$plusargs comparisons,
     </p><p>
       Note that specifying plusargs to the score command is only necessary when the score command is given either the -vcd or -lxt options.  If
-      the VPI method of coverage scoring is used, specify the plusargs to the simulation runtime as is required.  Covered will automatically extract
+      the VPI method of coverage scoring is used, specify the plusargs to the simulation runtime as required.  Covered will automatically extract
       the plusargs from the simulator runtime for its purposes.
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.score.other"></a>9.9. Other Notes</h2></div></div></div><p>
       When the Verilog files are parsed, a preprocessor is run on each file that is to be read in by Covered. The preprocessor generates an intermediate
