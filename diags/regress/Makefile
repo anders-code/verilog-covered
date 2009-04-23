@@ -69,7 +69,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 instance1.1     instance1.2     instance2       instance3       instance4 \
                 instance4.1     instance4.2     instance5       instance6       instance6.1 \
                 instance6.2     instance7       long_exp1       long_exp2       long_exp3 \
-                lshift1         lshift1.1       lshift1.2       lshift2         lshift2.1 \
+                long_exp4       lshift1         lshift1.1       lshift1.2       lshift2         lshift2.1 \
                 lshift2.2       lshift2.3       lshift3         lshift3.1       lshift3.2 \
                 lshift3.3       lshift4         lshift4.1       lshift4.2       lshift4.3 \
                 lshift5         mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1 \
