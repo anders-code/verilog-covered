@@ -304,7 +304,7 @@ NOLXTDIAGS   := add1            always7         always7.1       always11.2      
                 generate10.2    generate16      hier1           hier2           hier4 \
                 include5        localparam1     localparam1.1   localparam1.2   localparam1.3 \
                 localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
-                mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
+                long_exp4       mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
                 mbit_sel4.3     mem1            mem2            merge1          merge2 \
                 merge5          merge6          merge6.1        merge7          merge7.1 \
                 merge7.2        merge7.3        merge7.4        merge7.5        merge7.6 \
