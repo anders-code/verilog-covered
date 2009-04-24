@@ -2257,7 +2257,7 @@ static void generator_insert_comb_cov_helper(
  Generates a memory index value for a given memory expression.
 */
 static char* generator_gen_mem_index(
-  expression* exp,       /*!< Pointer to expression accessign memory signal */
+  expression* exp,       /*!< Pointer to expression accessing memory signal */
   func_unit*  funit,     /*!< Pointer to functional unit containing exp */
   int         dimension  /*!< Current memory dimension (should be initially set to expression_get_curr_dimension( exp ) */
 ) { PROFILE(GENERATOR_GEN_MEM_INDEX);
@@ -2900,6 +2900,9 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.86  2009/04/24 18:02:18  phase1geo
+ Fixing underlining for parenthesized expressions.  Updated regressions accordingly.
+
  Revision 1.85  2009/04/20 23:06:26  phase1geo
  More updates to integrate the stable branch changes into the development branch.
 
