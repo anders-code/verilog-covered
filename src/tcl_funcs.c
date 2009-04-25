@@ -2147,7 +2147,6 @@ int tcl_func_preprocess_verilog(
     if( out == NULL ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "tcl_funcs Throw A\n" );
       Throw 0;
     }
 
@@ -2935,7 +2934,6 @@ int tcl_func_generate_report(
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
       Tcl_AddErrorInfo( tcl, user_msg );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "tcl_funcs Throw B\n" );
       Throw 0;
 
     } else {
