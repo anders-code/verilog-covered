@@ -82,6 +82,7 @@ profiler profiles[NUM_PROFILES] = {
   {"combination_funit_summary", NULL, 0, 0, 0, TRUE},
   {"combination_draw_line", NULL, 0, 0, 0, TRUE},
   {"combination_draw_centered_line", NULL, 0, 0, 0, TRUE},
+  {"combination_parenthesize", NULL, 0, 0, 0, TRUE},
   {"combination_underline_tree", NULL, 0, 0, 0, TRUE},
   {"combination_prep_line", NULL, 0, 0, 0, TRUE},
   {"combination_underline", NULL, 0, 0, 0, TRUE},
