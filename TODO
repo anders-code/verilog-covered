@@ -1,0 +1,74 @@
+The following items are known to be problems in the current code that need to be fixed
+or features that are unimplemented/not complete that need to be done.
+
+Legend
+------
+X   = This feature/fix has been completed and tested
+IP  = In Progress
+
+Build process
+-------------
+
+
+Score command
+-------------
+   1.  Add ability for user to specify FSM all possible states/state transitions
+       for a particular FSM on a command-line basis.
+
+   2.  Add ability to automatically extract all possible states/state transitions
+       for a specified FSM.
+
+   3.  Add ability to automatically locate and extract an FSM from the design
+       without user intervention.
+
+   4.  Add more Verilog-2001 constructs to parser.
+	- config command
+
+   5.  Allow Covered to run simulation phases in parallel to increase performance.
+
+   6.  Add feature to cause Covered to omit the simulation phase for toggle and
+       FSM coverage results.
+
+   7.  Add SystemVerilog features/syntax
+IP      - typedef
+IP      - struct
+IP      - union
+IP      - enum
+
+   8.  Have Covered have the ability to generate XML CDD files.
+
+X  9.  Enhance the -rI option to allow the user to ignore certain types of race conditions.
+
+   10. Add a configure option to allow the user to set the size of the vector ulong typedef
+       to their own preference.
+
+
+Merge command
+-------------
+
+
+Report command
+--------------
+
+   1.  Provide additional information in toggle coverage regarding port (interface) coverage.
+
+
+Rank command
+------------
+
+
+GUI
+---
+
+
+Documentation
+-------------
+
+
+Miscellaneous
+-------------
+
+IP 1.  Add regression that produces known, achievable error conditions in the code.
+
+IP 2.  Make all code splint clean.
+
