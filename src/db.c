@@ -191,6 +191,11 @@ uint64 num_timesteps = 0;
 */
 /*@null@*/ static char* exclusion_id = NULL;
 
+/*!
+ Current ID for unnamed scopes.
+*/
+int unnamed_scope_id = 0;
+
 
 /*!
  \return Returns pointer to newly allocated and initialized database structure
@@ -788,15 +793,14 @@ uint64 db_scale_to_precision(
 */
 char* db_create_unnamed_scope() { PROFILE(DB_CREATE_UNNAMED_SCOPE);
 
-  static int   unique_id = 0;
   char         tmpname[30];
   char*        name;
-  unsigned int rv        = snprintf( tmpname, 30, "$u%d", unique_id );
+  unsigned int rv = snprintf( tmpname, 30, "$u%d", unnamed_scope_id );
 
   assert( rv < 30 );
   
   name = strdup_safe( tmpname );
-  unique_id++;
+  unnamed_scope_id++;
 
   PROFILE_END;
 
@@ -1135,6 +1139,9 @@ void db_add_module(
   curr_funit->filename   = strdup_safe( file );
   curr_funit->start_line = start_line;
   curr_funit->ts_unit    = current_timescale_unit;
+
+  /* Clear the unnamed scope ID */
+  unnamed_scope_id = 0;
 
   PROFILE_END;
   
