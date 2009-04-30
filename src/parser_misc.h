@@ -35,7 +35,8 @@ struct vlltype {
   unsigned int first_column;
   unsigned int last_line;
   unsigned int last_column;
-  char*        text;
+  char*        orig_fname;
+  char*        incl_fname;
   unsigned int ppline;
 };
 
@@ -79,6 +80,10 @@ bool parser_check_generation( unsigned int gen );
 
 /*
  $Log$
+ Revision 1.19  2009/04/30 05:41:41  phase1geo
+ Adding include filename in CDD file for scopes that are included into other
+ files.
+
  Revision 1.18  2009/01/15 06:47:09  phase1geo
  More work to support assertion coverage.  Updating regressions per these
  changes.  Checkpointing.
