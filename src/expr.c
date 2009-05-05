@@ -4325,8 +4325,8 @@ bool expression_op_func__aedge(
 
   } else {
 
-    
-    if( thr->suppl.part.exec_first && !vector_ceq_ulong( &(expr->elem.tvecs->vec[0]), expr->right->value ) ) {
+    /* We only need to do full value comparison if the right expression is something other than a signal */ 
+    if( thr->suppl.part.exec_first && ((expr->right->op == EXP_OP_SIG) || !vector_ceq_ulong( &(expr->elem.tvecs->vec[0]), expr->right->value )) ) {
       expr->suppl.part.true   = 1;
       expr->suppl.part.eval_t = 1;
       vector_copy( expr->right->value, &(expr->elem.tvecs->vec[0]) );
