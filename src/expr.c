@@ -4325,9 +4325,11 @@ bool expression_op_func__aedge(
 
   } else {
 
-    if( thr->suppl.part.exec_first ) {
+    
+    if( thr->suppl.part.exec_first && !vector_ceq_ulong( &(expr->elem.tvecs->vec[0]), expr->right->value ) ) {
       expr->suppl.part.true   = 1;
       expr->suppl.part.eval_t = 1;
+      vector_copy( expr->right->value, &(expr->elem.tvecs->vec[0]) );
       retval = TRUE;
     } else {
       expr->suppl.part.eval_t = 0;

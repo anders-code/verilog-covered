@@ -141,13 +141,19 @@ int vector_get_eval_d(
 );
 
 /*! \brief Counts the number of eval_a/b bits set in the given vector */
-int vector_get_eval_ab_count( vector* vec );
+int vector_get_eval_ab_count(
+  vector* vec
+);
 
 /*! \brief Counts the number of eval_a/b/c bits set in the given vector */
-int vector_get_eval_abc_count( vector* vec );
+int vector_get_eval_abc_count(
+  vector* vec
+);
 
 /*! \brief Counts the number of eval_a/b/c/d bits set in the given vector */
-int vector_get_eval_abcd_count( vector* vec );
+int vector_get_eval_abcd_count(
+  vector* vec
+);
 
 /*! \brief Returns string containing toggle 0 -> 1 information in binary format */
 char* vector_get_toggle01_ulong(
@@ -226,7 +232,9 @@ bool vector_part_select_push(
  \brief Sets eval_a/b bits according to unary coverage
  \note  We may want to create a separate VTYPE_EXP_UNARY to handle this in vector_set_coverage_and_assign.
 */
-void vector_set_unary_evals( vector* vec );
+void vector_set_unary_evals(
+  vector* vec
+);
 
 /*!
  \brief Sets eval_a/b/c bits according to AND combinational logic coverage
@@ -265,22 +273,34 @@ bool vector_sign_extend(
 );
 
 /*! \brief Returns TRUE if specified vector has unknown bits set */
-bool vector_is_unknown( const vector* vec );
+bool vector_is_unknown(
+  const vector* vec
+);
 
 /*! \brief Returns TRUE if specified vector is a non-zero value (does not check unknown bit) */
-bool vector_is_not_zero( const vector* vec );
+bool vector_is_not_zero(
+  const vector* vec
+);
 
 /*! \brief Sets entire vector value to a value of X */
-bool vector_set_to_x( vector* vec );
+bool vector_set_to_x(
+  vector* vec
+);
 
 /*! \brief Converts vector into integer value. */
-int vector_to_int( const vector* vec );
+int vector_to_int(
+  const vector* vec
+);
 
 /*! \brief Converts vector into a 64-bit unsigned integer value. */
-uint64 vector_to_uint64( const vector* vec );
+uint64 vector_to_uint64(
+  const vector* vec
+);
 
 /*! \brief Converts vector into a 64-bit real value. */
-real64 vector_to_real64( const vector* vec );
+real64 vector_to_real64(
+  const vector* vec
+);
 
 /*! \brief Converts vector into a sim_time structure. */
 void vector_to_sim_time(
@@ -353,7 +373,11 @@ void vector_mem_rw_count(
 );
 
 /*! \brief Sets all assigned bits in vector bit value array within specified range. */
-bool vector_set_assigned( vector* vec, int msb, int lsb );
+bool vector_set_assigned(
+  vector* vec,
+  int     msb,
+  int     lsb
+);
 
 /*! \brief Set coverage information for given vector and assigns values from scratch arrays to vector. */
 bool vector_set_coverage_and_assign_ulong(
@@ -365,22 +389,46 @@ bool vector_set_coverage_and_assign_ulong(
 );
 
 /*! \brief Performs bitwise AND operation on two source vectors. */
-bool vector_bitwise_and_op( vector* tgt, vector* src1, vector* src2 );
+bool vector_bitwise_and_op(
+  vector* tgt,
+  vector* src1,
+  vector* src2
+);
 
 /*! \brief Performs bitwise NAND operation on two source vectors. */
-bool vector_bitwise_nand_op( vector* tgt, vector* src1, vector* src2 );
+bool vector_bitwise_nand_op(
+  vector* tgt,
+  vector* src1,
+  vector* src2
+);
 
 /*! \brief Performs bitwise OR operation on two source vectors. */
-bool vector_bitwise_or_op( vector* tgt, vector* src1, vector* src2 );
+bool vector_bitwise_or_op(
+  vector* tgt,
+  vector* src1,
+  vector* src2
+);
 
 /*! \brief Performs bitwise NOR operation on two source vectors. */
-bool vector_bitwise_nor_op( vector* tgt, vector* src1, vector* src2 );
+bool vector_bitwise_nor_op(
+  vector* tgt,
+  vector* src1,
+  vector* src2
+);
 
 /*! \brief Performs bitwise XOR operation on two source vectors. */
-bool vector_bitwise_xor_op( vector* tgt, vector* src1, vector* src2 );
+bool vector_bitwise_xor_op(
+  vector* tgt,
+  vector* src1,
+  vector* src2
+);
 
 /*! \brief Performs bitwise NXOR operation on two source vectors. */
-bool vector_bitwise_nxor_op( vector* tgt, vector* src1, vector* src2 );
+bool vector_bitwise_nxor_op(
+  vector* tgt,
+  vector* src1,
+  vector* src2
+);
 
 /*! \brief Performs less-than comparison of two vectors. */
 bool vector_op_lt(
