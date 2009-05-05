@@ -5664,7 +5664,14 @@ static bool expression_is_assigned(
               (expr->op == EXP_OP_MBIT_POS) ||
               (expr->op == EXP_OP_MBIT_NEG)) ) {
 
-    while( (expr != NULL) && (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->op != EXP_OP_BASSIGN) && (expr->op != EXP_OP_RASSIGN) ) {
+    while( (expr != NULL) &&
+           (ESUPPL_IS_ROOT( expr->suppl ) == 0) &&
+           (expr->op != EXP_OP_BASSIGN) &&
+           (expr->op != EXP_OP_RASSIGN) &&
+           (expr->op != EXP_OP_SBIT_SEL) &&
+           (expr->op != EXP_OP_MBIT_SEL) &&
+           (expr->op != EXP_OP_MBIT_POS) &&
+           (expr->op != EXP_OP_MBIT_NEG) ) {
       expr = expr->parent->expr;
     }
 
@@ -5770,7 +5777,13 @@ void expression_set_assigned(
   if( ESUPPL_IS_LHS( expr->suppl ) == 1 ) {
 
     curr = expr;
-    while( (ESUPPL_IS_ROOT( curr->suppl ) == 0) && (curr->op != EXP_OP_BASSIGN) && (curr->op != EXP_OP_RASSIGN) ) {
+    while( (ESUPPL_IS_ROOT( curr->suppl ) == 0) &&
+           (curr->op != EXP_OP_BASSIGN)         &&
+           (curr->op != EXP_OP_RASSIGN)         &&
+           (curr->op != EXP_OP_SBIT_SEL)        &&
+           (curr->op != EXP_OP_MBIT_SEL)        &&
+           (curr->op != EXP_OP_MBIT_POS)        &&
+           (curr->op != EXP_OP_MBIT_NEG) ) {
       curr = curr->parent->expr;
     }
 
@@ -5778,7 +5791,7 @@ void expression_set_assigned(
      If we are on the LHS of a BASSIGN operator, set the assigned bit to indicate that
      this signal will be assigned by Covered and not the dumpfile.
     */
-    if( curr->op == EXP_OP_BASSIGN ) {
+    if( (curr->op == EXP_OP_BASSIGN) || (curr->op == EXP_OP_RASSIGN) ) {
       expr->sig->suppl.part.assigned = 1;
     }
 
