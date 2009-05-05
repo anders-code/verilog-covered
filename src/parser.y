@@ -5793,7 +5793,7 @@ block_item_decl
   | attribute_list_opt K_time
     {
       curr_signed   = FALSE;
-      curr_mba      = TRUE;
+      curr_mba      = FALSE;
       curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 63, 0, TRUE );
