@@ -1,0 +1,82 @@
+                              COVERED
+                   User Installation Instructions
+===================================================================
+
+1.  Supported Systems
+  Covered has been mostly tested on a RedHat Linux 7.2 system.  Limited testing
+  has been done on IRIX-6.5.12.  The intent of this tool is to support any
+  POSIX standard environment.  The Icarus Verilog simulator has been used extensively
+  throughout the development process.  VCS and Cver have also been used in testing.
+
+2.  Required Tools
+  The following is a list of tools that are necessary for building/compiling the
+  Covered executable.
+  - gcc  (Version 2.96)
+  - flex (Version 2.5.4 -- later versions are known to not work yet)
+  - bison (Version 1.85 or higher)
+  - GNU make (Version 3.27.1 or higher)
+  - GNU gperf (Version 2.7.2 or higher)
+  - TCL (Version 8.5 or higher)
+  - TK (Version 8.5 or higher)
+  - tablelist4.11 (9tablelist is a Tk widget that can be found at:
+    //http://www.nemethi.de/)
+
+  If you would like to use LXT2 formatted dumpfiles with Covered, you now may but
+  it will additionally require you to have the following library package:
+  - zlib-devel
+
+  Additionally, the development documentation is built using the doxygen utility
+  which can be found at http://www.doxygen.org
+
+3.  Configure and Make Process
+  To begin with, untar and ungzip the Covered tarball with the following command:
+
+    gzip -dc <Covered tarball name> | tar xvf -
+
+  After this has completed, cd to the Covered directory and perform the following
+  command to build the proper Makefiles and set configuration settings for your system.
+
+    ./configure
+
+  If you are debugging a memory allocation failure and would like to use the mpatrol
+  library to accomplish this (please see development documentation for more information),
+  you will need to remove the "dnl" comment in the configure.in file, run aclocal and
+  autoconf, and finally use the following configure command instead.  Once these steps have
+  been completed and the source code is compiled and run, an mpatrol.log file will be 
+  generated in the run directory.  This log file is used to understand memory usage for 
+  the program.
+
+    ./configure --with-mpatrol
+
+  If you would like to see the built-in debugging information that Covered can produce
+  while it runs a command or use the score command CLI, you will need to specify the
+  following configuration command:
+
+    ./configure --enable-debug
+
+  If you would like to use the built-in profiling facility (-P global option), you will need
+  to specify the following configuration command:
+
+    ./configure --enable-profiling
+
+  After configure has been called and 'make' run, you can get the Covered debug information
+  generated to standard output by specifying the global '-D' option (see 'covered -h' for more
+  information) with any command.
+
+  After the configuration process has completed, a Makefile will be created in the
+  Covered directory.  To build and compile all source code for the tool, simply type:
+
+    make
+
+  This will create the "covered" executable file in the ./src directory.  This is the
+  only program that will be needed since there is no run-time linking or underlying
+  libraries supporting the program.  To install the executable, simply type:
+
+    make install
+
+  This will install the Covered executable into the /usr/local/bin directory.  To place
+  this executable in a different location, please use the --prefix=<directory> option
+  when calling the ./configure script.
+
+If there are any problems with installing Covered, please let me know by either submitting
+a bug report or sending me an e-mail at phase1geo@gmail.com
