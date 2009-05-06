@@ -1,264 +1,247 @@
-2009-04-25 15:52  phase1geo
+2009-05-06 14:34  phase1geo
 
-	Removing unnecessary output statements.
+	First attempt to fix release.in script.
 
-2009-04-25 14:53  phase1geo
+2009-05-06 14:13  phase1geo
 
-	Fixing bug 2781023.  Updated regressions (VCS regression still
-	needs to be run).
+	Updating release number from 0.7 to 0.7.1.  Updated README and
+	INSTALL files.
 
-2009-04-24 18:07  phase1geo
+2009-05-06 12:05  phase1geo
 
-	Fixing bug 2779785.  Also adding support for maintaining
-	parenthesis information for expressions.  Updated regressions per
-	these changes.	Full regressions pass.
+	Updating release.in to set the permissions of the install-sh file
+	to 755.  Also fixing development documentation creation (check for
+	the existence of the Doxygen executable in the filesystem rather
+	than in the current directory).
 
-2009-04-23 17:39  phase1geo
+2009-05-05 18:03  phase1geo
 
-	Adding long_exp4 diagnostic to regression suite which reproduces
-	bug 2779785 in the codegen.c source code.  Still need to fix the
-	bug.  Checkpointing.
+	Fixing regression issue where CDD files were not being properly
+	removed for LXT/VPI runs.  Fixed remaining issue with expression
+	assigned calculations.	Added the time variable type to have its
+	MBA bit set to 0 (instead of 1) since time information is contained
+	within dumpfiles.  Updated regressions per these changes.  Full
+	regression now passes.
 
-2009-04-23 11:56  phase1geo
+2009-05-05 07:41  phase1geo
 
-	Updating copyright years in user documentation.
+	Enhancing performance of the aedge operator per recent change to
+	this code.  IV and Cver regressions pass with the change.
 
-2009-04-23 11:49  phase1geo
+2009-05-05 01:35  phase1geo
 
-	Fixed a few more user documentation issues and updated the
-	copyright dates in all source code files.
+	First attempt to fix the coverage issue for bug 2776081.  Updated
+	regressions per this change (IV and Cver only).
 
-2009-04-23 11:03  phase1geo
+2009-05-04 22:50  phase1geo
 
-	Updating user documentation for the changes to the -rX option
-	descriptions.
+	Updates for VCS regressions.
 
-2009-04-17 11:10  phase1geo
+2009-05-04 21:52  phase1geo
 
-	Fixing bug 1899674.  Added new score_err1.31 diagnostic to verify
-	bug fix.
+	Updating VCS regression per recent change.  Also fixing bug
+	2786986.  Added always15 to verify the bug fix.
 
-2009-04-17 00:30  phase1geo
+2009-05-04 21:52  phase1geo
 
-	Fixing bug 2722062.
+	file always15.v was initially added on branch stable-0_7-branch.
 
-2009-04-16 21:59  phase1geo
+2009-05-04 21:52  phase1geo
 
-	Fixing splint warnings.
+	file always15.rptM was initially added on branch stable-0_7-branch.
 
-2009-04-16 21:53  phase1geo
+2009-05-04 21:52  phase1geo
 
-	Updating Covered version to 0.7.
+	file always15.cfg was initially added on branch stable-0_7-branch.
 
-2009-04-16 16:54  phase1geo
+2009-05-04 21:52  phase1geo
 
-	Fixing 32-/64-bit CDD file comparison algorith in cdd_diff script.
+	file always15.rptI was initially added on branch stable-0_7-branch.
 
-2009-04-16 01:42  phase1geo
+2009-05-04 21:52  phase1geo
 
-	Fixing another code issue and cleaning up regression per the
-	change.  Full regression now passes again.
+	file always15.cdd was initially added on branch stable-0_7-branch.
 
-2009-04-15 21:38  phase1geo
+2009-05-02 00:36  phase1geo
 
-	Fixed bug in generate case statement handling.	Updating VCS
-	regression files.
+	file generate17.cfg was initially added on branch
+	stable-0_7-branch.
 
-2009-04-14 00:07  phase1geo
+2009-05-02 00:36  phase1geo
 
-	Fixing regression failures.  Full IV and Cver regressions pass.
+	file generate17.rptI was initially added on branch
+	stable-0_7-branch.
 
-2009-02-27 00:35  phase1geo
+2009-05-02 00:36  phase1geo
 
-	Updating man page for upcoming 0.7 stable release.
+	file generate17.v was initially added on branch stable-0_7-branch.
 
-2009-02-27 00:16  phase1geo
+2009-05-02 00:36  phase1geo
 
-	Updating genprof files.
+	file generate17.rptM was initially added on branch
+	stable-0_7-branch.
 
-2009-02-27 00:10  phase1geo
+2009-05-02 00:36  phase1geo
 
-	Updated copyright dates and removed log history in all files.
+	file generate17.cdd was initially added on branch
+	stable-0_7-branch.
 
-2009-02-26 23:06  phase1geo
+2009-05-02 00:36  phase1geo
 
-	Fixing second issue related to bug 2565259.  Fixed VPI mode of
-	operation and changed the generate16 diagnostic to not get run when
-	performing LXT verification.
+	Fixing bug 2785453.  Added generate17 to verify this fix.  Moved
+	generate16 from IVVCS to VCSONLY.
 
-2009-02-25 17:31  phase1geo
+2009-05-01 00:15  phase1geo
 
-	Allowing the user to ignore race condition checking for a specific
-	module using the -rI=<module name> option to the score command. 
-	Added diagnostics to verify this new functionality.  Full
+	Updating regression files per changes to Icarus Verilog's error
+	checking.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11b.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file dut_and_proc.v was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11a.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11b.v was initially added on branch stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11a.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11a.v was initially added on branch stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11b.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11b.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11b.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11a.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11a.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11.cdd was initially added on branch stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	Fixing second issue with bug 2782473.  Needed to reset unnamed
+	scope identifier whenever a new module is being parsed.  Updated
+	regressions per this change and added new merge8.11 diagnostics to
+	verify the fix.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10b.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10a.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10b.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10b.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	Fix for bug 2782473.  Added merge8.10 diagnostic to verify.  Full
 	regression passes.
 
-2009-02-24 18:04  phase1geo
+2009-04-27 18:07  phase1geo
 
-	Fixing another bug related to bug 2617354.  Adding generate16.1 to
-	verify this second issue is fixed properly.
+	file merge8.10b.v was initially added on branch stable-0_7-branch.
 
-2009-02-24 13:06  phase1geo
+2009-04-27 18:07  phase1geo
 
-	Final fix bug 2617354.	New generate16 now passes so the CDD and
-	report files have been checked in.
+	file merge8.10.rptI was initially added on branch
+	stable-0_7-branch.
 
-2009-02-23 18:14  phase1geo
+2009-04-27 18:07  phase1geo
 
-	Adding generate16 diagnostic which reproduces a bug in parameter
-	handling for generated modules.  This diagnostic is currently
-	broken.  Checkpointing.
+	file merge8.10a.rptI was initially added on branch
+	stable-0_7-branch.
 
-2009-02-23 15:21  phase1geo
+2009-04-27 18:07  phase1geo
 
-	Fixes segmentation fault issue in regards to the use of $Id$ in the
-	files.	Associated with bug 2617354.
+	file merge8.10a.v was initially added on branch stable-0_7-branch.
 
-2009-02-23 14:40  phase1geo
+2009-04-27 18:07  phase1geo
 
-	Adding version2.v diagnostic to the regression suite.
+	file merge8.10.rptM was initially added on branch
+	stable-0_7-branch.
 
-2009-02-21 00:53  phase1geo
+2009-04-27 18:07  phase1geo
 
-	Fixing bug in obfuscation code.
+	file merge8.10.cdd was initially added on branch stable-0_7-branch.
 
-2009-02-19 09:20  phase1geo
+2009-04-27 18:07  phase1geo
 
-	Fixing bug 2614516.  Added generate15.4 and generate15.5
-	diagnostics to verify this bug fix.
+	file merge8.10a.rptM was initially added on branch
+	stable-0_7-branch.
 
-2009-02-13 00:30  phase1geo
+2009-04-27 18:07  phase1geo
 
-	Fixing generate case connectivity.
+	file merge8.10b.cdd was initially added on branch
+	stable-0_7-branch.
 
-2009-02-12 00:00  phase1geo
+2009-04-27 18:07  phase1geo
 
-	Reverting diagnostic changes.
+	file merge8.10a.cfg was initially added on branch
+	stable-0_7-branch.
 
-2009-02-11 23:58  phase1geo
+2009-04-26 00:05  phase1geo
 
-	Fixing VPI problem.  Added casex3 and casez5 diagnostics to the
-	regression suite.
+	Updating TODO.
 
-2009-02-11 08:29  phase1geo
+2009-04-26 00:04  phase1geo
 
-	Fixing bug 2422415.  Updating regression files per these changes.
-
-2009-02-09 22:47  phase1geo
-
-	Adding case6 diagnostic to prove that comma-separated case items
-	don't currently work.
-
-2009-02-09 00:21  phase1geo
-
-	Fixing bug 2565405.  Added new signed6 diagnostic to verify this
-	bug fix.
-
-2009-02-08 23:46  phase1geo
-
-	Fixing bug 2565259.  Updating regression files per this change and
-	added new include5 diagnostic to verify bug fix.
-
-2009-02-06 23:44  phase1geo
-
-	Fixing bug 2565347 by adding full support for the $signed/$unsigned
-	system function calls.	Also fixing issue related to any
-	unsupported (user-defined) system function call that would have
-	output the same error message as this bug.  Added signed5 and
-	unsigned1 diagnostics to verify this new functionality works
-	properly.
-
-2009-02-04 17:09  phase1geo
-
-	Fixing bug 2565447.  Added new generate15* diagnostics to
-	regression suite to verify bug and bug fix.
-
-2009-02-04 01:09  phase1geo
-
-	Fixing diagnostics in regression and moving elsif* diagnostics from
-	VCS-only to IV/VCS regression list (IV seems to support elsif now).
-
-2009-02-04 00:03  phase1geo
-
-	Fixing issue where text follows an `ifdef, `ifndef and `elsif is
-	parsed correctly.
-
-2009-02-03 23:14  phase1geo
-
-	Fixing bug 2562345.  Fixing compiler warning message in func_iter.c
-	and removing unnecessary output in lexer.l.
-
-2009-01-15 00:47  phase1geo
-
-	Adding support for line order reporting when included files contain
-	coverage information (these were not accurately sorted previously).
-	 Updating regressions per this change.
-
-2009-01-13 00:06  phase1geo
-
-	Fixing bug 2502095.  Added generate8.9 to verify this bug fix.
-
-2009-01-06 01:07  phase1geo
-
-	Adding endian4 diagnostic to regression suite and fixing LXT
-	dumpfile handling of big endian signals.
-
-2009-01-05 22:20  phase1geo
-
-	Fixing bug 2446877.
-
-2009-01-05 10:03  phase1geo
-
-	Updating regressions.
-
-2009-01-02 18:21  phase1geo
-
-	Updating file that fails with latest checkin.
-
-2009-01-02 18:18  phase1geo
-
-	Fixing bug 2482797.  Added new mem5 diagnostic to verify its
-	correctness.
-
-2008-12-28 00:35  phase1geo
-
-	Removing unnecessary output.
-
-2008-12-28 00:23  phase1geo
-
-	Updating VCS regressions per latest change.
-
-2008-12-27 23:16  phase1geo
-
-	Fixing bug 2471776.  Updating regressions to test this accurately. 
-	Still need to verify the VCS regression passes.
-
-2008-12-27 16:20  phase1geo
-
-	Removing unnecessary FSM binding.
-
-2008-12-13 00:32  phase1geo
-
-	Fixing bug 2423290.  Updating regressions per this change.
-
-2008-11-25 00:31  phase1geo
-
-	Removing diagnostics from LXT regression run.
-
-2008-11-24 23:45  phase1geo
-
-	Adding fsm_err1, fsm_err1.1 and profile_err1 diagnostics to
-	regression suite.  Updated run_gcov script to output only
-	percentage information.  Fixed memory leak issue when the profiling
-	output file is found to be unwritable.	Other various coding
-	updates.
-
-2008-11-20 09:24  phase1geo
-
-	Adding run_gcov and cleaning up db.c.
-
-2008-11-20 00:36  phase1geo
-
-	Adding diagnostics and related files for coverage testing. 
-	Cleaning up development documentation in scope.c.
+	Updating ChangeLog and NEWS files.
 
