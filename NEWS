@@ -1,6 +1,21 @@
 Covered-Related NEWS
 ====================
 
+    * 5/7/2009
+
+Stable release covered-0.7.1 made.  This is a bug fix release only.  Here are the details:
+
+  - Fixed bug 2782473.  CDD files being merged from different testbenches but with similar leading hierarchy 
+    (but different top-level modules) which would lead to internal assertion errors.
+  - Fixed bug 2785453.  Wires declared in generated named scopes were not handled correctly by Covered in VPI mode of operation,
+    leading to inaccurate coverage information.
+  - Fixed bug 2786986.  An always block with a part select in the sensitivity list was triggering on the entire signal change
+    rather than the specific part select, leading to a potential degradation in performance and inaccuracy in coverage information.
+  - Allow time variable types to be included for coverage.
+  - Fixing permission issue with the install-sh script that some people would get after first downloading and installing.
+  - Updated README and INSTALL files to be more accurate.
+  - Fixed coverage accuracy issue for code that uses variable part selects in LHS of expressions. 
+
     * 4/26/2009
 
 Stable release covered-0.7 made.  This description contains only the changes made between the 11/19/2008 and this release.
