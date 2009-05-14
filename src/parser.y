@@ -194,6 +194,12 @@ gitem_link* save_gi_head = NULL;
 */
 gitem_link* save_gi_tail = NULL;
 
+/*!
+ Macro to free a text variable type.  Sets the pointer to NULL so that the pointer is re-deallocated.
+ x = pointer to the variable.
+*/
+#define FREE_TEXT(x)  free_safe( x, (strlen( x ) + 1) );  x = NULL;
+
 #define YYERROR_VERBOSE 1
 
 /* Uncomment these lines to turn debugging on */
@@ -353,7 +359,7 @@ int yydebug = 1;
 %nonassoc K_else
 
 /* Make sure that string elements are deallocated if parser errors occur */
-%destructor { free_safe( $$, (strlen( $$ ) + 1) ); } IDENTIFIER PATHPULSE_IDENTIFIER identifier begin_end_id
+%destructor { FREE_TEXT( $$ ); } IDENTIFIER PATHPULSE_IDENTIFIER DEC_NUMBER BASE_NUMBER identifier begin_end_id 
 
 %%
 
@@ -420,7 +426,7 @@ attribute
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | IDENTIFIER '=' {attr_mode++;} expression {attr_mode--;}
     {
@@ -431,7 +437,7 @@ attribute
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   ;
 
@@ -445,7 +451,7 @@ description
   | udp_primitive
   | KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')'
     {
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
       vector_dealloc( $5.vec );
       vector_dealloc( $7.vec );
     }
@@ -522,7 +528,7 @@ description
           ignore_mode++;
         }
       }
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
     }
     task_item_list_opt statement_or_null
     {
@@ -557,7 +563,7 @@ description
           error_count++;
           ignore_mode++;
         }
-        free_safe( $5, (strlen( $5 ) + 1) );
+        FREE_TEXT( $5 );
       }
     }
     function_item_list statement
@@ -600,7 +606,7 @@ module
   : attribute_list_opt module_start IDENTIFIER 
     {
       db_add_module( $3, @2.text, @2.first_line );
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
     }
     module_parameter_port_list_opt
     module_port_list_opt ';'
@@ -679,7 +685,7 @@ list_of_port_declarations
       if( $1 != NULL ) {
         db_add_signal( $3, $1->type, $1->prange, $1->urange, curr_signed, curr_mba, @3.first_line, @3.first_column, TRUE );
       }
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
       $$ = $1;
     }
   ;
@@ -691,7 +697,7 @@ port_declaration
       port_info* pi;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
-        free_safe( $4, (strlen( $4 ) + 1) );
+        FREE_TEXT( $4 );
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
@@ -701,7 +707,7 @@ port_declaration
           pi->is_signed = curr_signed;
           pi->prange    = parser_copy_curr_range( TRUE );
           pi->urange    = parser_copy_curr_range( FALSE );
-          free_safe( $4, (strlen( $4 ) + 1) );
+          FREE_TEXT( $4 );
           $$ = pi;
         } else {
           $$ = NULL;
@@ -713,7 +719,7 @@ port_declaration
       port_info* pi;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
-        free_safe( $6, (strlen( $6 ) + 1) );
+        FREE_TEXT( $6 );
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
@@ -723,7 +729,7 @@ port_declaration
           pi->is_signed = curr_signed;
           pi->prange    = parser_copy_curr_range( TRUE );
           pi->urange    = parser_copy_curr_range( FALSE );
-          free_safe( $6, (strlen( $6 ) + 1) );
+          FREE_TEXT( $6 );
           $$ = pi;
         } else {
           $$ = NULL;
@@ -736,7 +742,7 @@ port_declaration
       port_info* pi;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
-        free_safe( $6, (strlen( $6 ) + 1) );
+        FREE_TEXT( $6 );
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
@@ -746,7 +752,7 @@ port_declaration
           pi->is_signed  = curr_signed;
           pi->prange     = parser_copy_curr_range( TRUE );
           pi->urange     = parser_copy_curr_range( FALSE );
-          free_safe( $6, (strlen( $6 ) + 1) );
+          FREE_TEXT( $6 );
           $$ = pi;
         } else {
           $$ = NULL;
@@ -790,31 +796,31 @@ port
   : port_reference
   | '.' IDENTIFIER '(' port_reference ')'
     {
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | '{' port_reference_list '}'
   | '.' IDENTIFIER '(' '{' port_reference_list '}' ')'
     {
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   ;
 
 port_reference
   : IDENTIFIER
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | IDENTIFIER '[' ignore_more static_expr ':' static_expr ignore_less ']'
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | IDENTIFIER '[' ignore_more static_expr ignore_less ']'
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | IDENTIFIER '[' error ']'
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   ;
 
@@ -828,13 +834,13 @@ number
     {
       char* num = $1;
       vector_from_string( &num, FALSE, &($$.vec), &($$.base) );
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | BASE_NUMBER
     { 
       char* num = $1;
       vector_from_string( &num, FALSE, &($$.vec), &($$.base) );
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | DEC_NUMBER BASE_NUMBER
     {
@@ -844,8 +850,8 @@ number
       unsigned int rv       = snprintf( num, slen, "%s%s", $1, $2 );
       assert( rv < slen );
       vector_from_string( &num, FALSE, &($$.vec), &($$.base) );
-      free_safe( $1, (strlen( $1 ) + 1) );
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $1 );
+      FREE_TEXT( $2 );
       free_safe( combined, slen );
     }
   ;
@@ -1145,7 +1151,7 @@ static_expr_primary
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | '(' static_expr ')'
     {
@@ -1159,7 +1165,7 @@ static_expr_primary
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | IDENTIFIER '[' static_expr ']'
     {
@@ -1169,7 +1175,7 @@ static_expr_primary
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | S_ignore
     {
@@ -1891,7 +1897,7 @@ expr_primary
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | identifier K_INC
     {
@@ -1906,7 +1912,7 @@ expr_primary
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | identifier K_DEC
     {
@@ -1921,7 +1927,7 @@ expr_primary
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | K_INC identifier
     {
@@ -1936,7 +1942,7 @@ expr_primary
       } else {
         $$ = NULL;
       }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | K_DEC identifier
     {
@@ -1951,7 +1957,7 @@ expr_primary
       } else {
         $$ = NULL;
       }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | S_ignore
     {
@@ -2021,7 +2027,7 @@ expr_primary
         expression_dealloc( $2, FALSE );
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | identifier index_expr K_INC
     {
@@ -2039,7 +2045,7 @@ expr_primary
         expression_dealloc( $2, FALSE );
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | identifier index_expr K_DEC
     {
@@ -2057,7 +2063,7 @@ expr_primary
         expression_dealloc( $2, FALSE );
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | K_INC identifier index_expr
     {
@@ -2075,7 +2081,7 @@ expr_primary
         expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | K_DEC identifier index_expr
     {
@@ -2093,7 +2099,7 @@ expr_primary
         expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | identifier '(' expression_port_list ')'
     {
@@ -2108,7 +2114,7 @@ expr_primary
         expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | S_ignore '(' ignore_more expression_port_list ignore_less ')'
     {
@@ -2543,7 +2549,7 @@ begin_end_id
       if( ignore_mode == 0 ) {
         $$ = $2;
       } else {
-        free_safe( $2, (strlen( $2 ) + 1) );
+        FREE_TEXT( $2 );
         $$ = NULL;
       }
     }
@@ -2556,7 +2562,7 @@ identifier
       if( ignore_mode == 0 ) {
         $$ = $1;
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         $$ = NULL;
       }
     }
@@ -2571,8 +2577,8 @@ identifier
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $1 );
+      FREE_TEXT( $3 );
     }
   ;
 
@@ -2582,7 +2588,7 @@ list_of_variables
       if( ignore_mode == 0 ) {
         db_add_signal( $1, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @1.first_line, @1.first_column, curr_handled );
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | IDENTIFIER { curr_packed = FALSE; } range
     {
@@ -2594,14 +2600,14 @@ list_of_variables
           db_add_signal( $1, curr_sig_type, &curr_prange, &curr_urange, curr_signed, curr_mba, @1.first_line, @1.first_column, curr_handled );
         }
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | list_of_variables ',' IDENTIFIER
     {
       if( ignore_mode == 0 ) {
         db_add_signal( $3, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @3.first_line, @3.first_column, curr_handled );
       }
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
     }
   | list_of_variables ',' IDENTIFIER range
     {
@@ -2612,7 +2618,7 @@ list_of_variables
           db_add_signal( $3, curr_sig_type, &curr_prange, &curr_urange, curr_signed, curr_mba, @3.first_line, @3.first_column, curr_handled );
         }
       }
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
     }
   ;
 
@@ -2630,7 +2636,7 @@ udp_primitive
         db_add_module( $2, @1.text, @1.first_line );
         db_end_module( @10.first_line );
       }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | K_primitive IGNORE K_endprimitive
   ;
@@ -2638,11 +2644,11 @@ udp_primitive
 udp_port_list
   : IDENTIFIER
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | udp_port_list ',' IDENTIFIER
     {
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
     }
   ;
 
@@ -2655,11 +2661,11 @@ udp_port_decl
   : K_input ignore_more list_of_variables ignore_less ';'
   | K_output IDENTIFIER ';'
     {
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | K_reg IDENTIFIER ';'
     {
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   ;
 
@@ -2671,7 +2677,7 @@ udp_init_opt
 udp_initial
   : K_initial IDENTIFIER '=' number ';'
     {
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
       vector_dealloc( $4.vec );
     }
   ;
@@ -2757,18 +2763,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -2786,18 +2792,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -2815,18 +2821,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -2844,18 +2850,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -2873,18 +2879,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -2902,18 +2908,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -2931,18 +2937,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -2960,18 +2966,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -2989,18 +2995,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -3018,18 +3024,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -3047,18 +3053,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -3076,18 +3082,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -3105,18 +3111,18 @@ generate_passign
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
-              free_safe( $1, (strlen( $1 ) + 1) );
+              FREE_TEXT( $1 );
             }
           } Catch_anonymous {
             error_count++;
           }
           $$ = expr;
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         static_expr_dealloc( $3, TRUE );
         $$ = NULL;
       }
@@ -3131,14 +3137,14 @@ generate_passign
           if( generate_varname == NULL ) {
             generate_varname = $1;
           } else {
-            free_safe( $1, (strlen( $1 ) + 1) );
+            FREE_TEXT( $1 );
           }
         } Catch_anonymous {
           error_count++;
         }
         $$ = expr;
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         $$ = NULL;
       }
     }
@@ -3152,14 +3158,14 @@ generate_passign
           if( generate_varname == NULL ) {
             generate_varname = $1;
           } else {
-            free_safe( $1, (strlen( $1 ) + 1) );
+            FREE_TEXT( $1 );
           }
         } Catch_anonymous {
           error_count++;
         }
         $$ = expr;
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         $$ = NULL;
       }
     }
@@ -3223,7 +3229,7 @@ generate_item
         }
       }
       generate_expr_mode--;
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
     }
     generate_item_list_opt K_end
     {
@@ -3260,7 +3266,7 @@ generate_item
         }
       }
       generate_expr_mode--;
-      free_safe( $12, (strlen( $12 ) + 1) );
+      FREE_TEXT( $12 );
     }
     generate_item_list_opt K_end
     {
@@ -3661,9 +3667,9 @@ module_item
         str_link_delete_list( tmp );
         param_oride_head = NULL;
         param_oride_tail = NULL;
-        free_safe( $2, (strlen( $2 ) + 1) );
+        FREE_TEXT( $2 );
       } else {
-        free_safe( $2, (strlen( $2 ) + 1) );
+        FREE_TEXT( $2 );
       }
     }
   | attribute_list_opt
@@ -3829,7 +3835,7 @@ module_item
           ignore_mode++;
         }
       }
-      free_safe( $4, (strlen( $4 ) + 1) );
+      FREE_TEXT( $4 );
       generate_top_mode--;
     }
     task_item_list_opt statement_or_null
@@ -3875,7 +3881,7 @@ module_item
         }
       }
       generate_top_mode--;
-      free_safe( $6, (strlen( $6 ) + 1) );
+      FREE_TEXT( $6 );
     }
     function_item_list statement
     {
@@ -4001,7 +4007,7 @@ module_item
   | attribute_list_opt
     IDENTIFIER ':' K_assert ';'
     {
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   /* SystemVerilog property - we don't currently support these but crudely parse them */
   | attribute_list_opt
@@ -4015,7 +4021,7 @@ module_item
     K_program K_endprogram
   | KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')' ';'
     {
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
       vector_dealloc( $5.vec );
       vector_dealloc( $7.vec );
     } 
@@ -4189,7 +4195,7 @@ expression_assignment_list
         expression_dealloc( $4, FALSE );
         $$ = NULL;
       }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | expression_assignment_list ',' data_type_opt IDENTIFIER '=' expression
     {
@@ -4218,7 +4224,7 @@ expression_assignment_list
       } else {
         expression_dealloc( $6, FALSE );
       }
-      free_safe( $4, (strlen( $4 ) + 1) );
+      FREE_TEXT( $4 );
       $$ = $1;
     }
   ;
@@ -4655,9 +4661,9 @@ statement
           error_count++;
         }
         $$ = db_create_statement( exp, @1.ppline );
-        free_safe( $2, (strlen( $2 ) + 1) );
+        FREE_TEXT( $2 );
       } else {
-        free_safe( $2, (strlen( $2 ) + 1) );
+        FREE_TEXT( $2 );
         $$ = NULL;
       } 
     }
@@ -4674,7 +4680,7 @@ statement
       } else {
         $$ = NULL;
       }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | K_forever inc_block_depth statement dec_block_depth
     {
@@ -5375,11 +5381,10 @@ statement
           error_count++;
           $$ = NULL;
         }
-        free_safe( $1, (strlen( $1 ) + 1) );
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
+      FREE_TEXT( $1 );
     }
   | identifier ';'
     {
@@ -5391,11 +5396,10 @@ statement
           error_count++;
           $$ = NULL;
         }
-        free_safe( $1, (strlen( $1 ) + 1) );
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
+      FREE_TEXT( $1 );
     }
    /* Immediate SystemVerilog assertions are parsed but not performed -- we will not exclude a block that contains one */
   | K_assert ';'
@@ -5422,7 +5426,7 @@ statement
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | error ';'
     {
@@ -5476,14 +5480,13 @@ fork_statement
         } else {
           $$ = NULL;
         }
-        free_safe( $1, (strlen( $1 ) + 1) );
       } else {
         if( $3 && db_is_unnamed_scope( $1 ) ) {
           ignore_mode--;
         }
-        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
+      FREE_TEXT( $1 );
     }
   |
     {
@@ -5530,12 +5533,12 @@ begin_end_block
         }
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
       generate_top_mode++;
     }
   | begin_end_id
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
       ignore_mode++;
       $$ = NULL;
     }
@@ -5624,7 +5627,7 @@ lpvalue
       } else {
         $$  = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | identifier start_lhs index_expr end_lhs
     {
@@ -5632,13 +5635,12 @@ lpvalue
         db_bind_expr_tree( $3, $1 );
         $3->line = @1.first_line;
         $3->col  = ((@1.first_column & 0xffff) << 16) | ($3->col & 0xffff);
-        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = $3;
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
         expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
+      FREE_TEXT( $1 );
     }
   | '{' start_lhs expression_list end_lhs '}'
     {
@@ -5672,7 +5674,7 @@ lavalue
       } else {
         $$  = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | identifier start_lhs index_expr end_lhs
     {
@@ -5680,13 +5682,12 @@ lavalue
         db_bind_expr_tree( $3, $1 );
         $3->line = @1.first_line;
         $3->col  = ((@1.first_column & 0xffff) << 16) | ($3->col & 0xffff);
-        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = $3;
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
         expression_dealloc( $3, FALSE );
         $$  = NULL;
       }
+      FREE_TEXT( $1 );
     }
   | '{' start_lhs expression_list end_lhs '}'
     {
@@ -6205,7 +6206,7 @@ delay_value_simple
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | REALTIME
     {
@@ -6236,7 +6237,7 @@ delay_value_simple
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   ;
 
@@ -6353,7 +6354,7 @@ register_variable
       if( ignore_mode == 0 ) {
         db_add_signal( $1, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @1.first_line, @1.first_column, TRUE );
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | IDENTIFIER '=' expression
     {
@@ -6381,7 +6382,7 @@ register_variable
           }
         }
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | IDENTIFIER { curr_packed = FALSE; } range
     {
@@ -6390,7 +6391,7 @@ register_variable
         curr_packed = TRUE;
         db_add_signal( $1, SSUPPL_TYPE_MEM, &curr_prange, &curr_urange, curr_signed, TRUE, @1.first_line, @1.first_column, TRUE );
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   ;
 
@@ -6647,7 +6648,7 @@ net_decl_assign
       } else {
         expression_dealloc( $3, FALSE );
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | delay1 IDENTIFIER '=' expression
     {
@@ -6679,7 +6680,7 @@ net_decl_assign
         expression_dealloc( $4, FALSE );
       }
       expression_dealloc( $1, FALSE );
-      free_safe( $2, (sizeof( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   ;
 
@@ -6724,7 +6725,7 @@ event_control
       } else {
         $$ = NULL;
       }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | '@' '(' event_expression_list ')'
     {
@@ -6853,7 +6854,7 @@ defparam_assign
   : identifier '=' expression
     {
       expression_dealloc( $3, FALSE );
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   ;
 
@@ -6868,7 +6869,7 @@ parameter_value_opt
   | '#' '(' parameter_value_byname_list ')'
   | '#' DEC_NUMBER
     {
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | '#' error
     {
@@ -6889,7 +6890,7 @@ parameter_value_byname
       if( ignore_mode == 0 ) {
         if( !parser_check_generation( GENERATION_2001 ) ) {
           VLerror( "Explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax" );
-          free_safe( $2, (strlen( $2 ) + 1) );
+          FREE_TEXT( $2 );
           expression_dealloc( $4, FALSE );
         } else {
           po = (param_oride*)malloc_safe( sizeof( param_oride ) );
@@ -6904,7 +6905,7 @@ parameter_value_byname
           }
         }
       } else {
-        free_safe( $2, (strlen( $2 ) + 1) );
+        FREE_TEXT( $2 );
       }
     }
   | '.' IDENTIFIER '(' ')'
@@ -6914,7 +6915,7 @@ parameter_value_byname
           VLerror( "Explicit in-line parameter passing syntax found in block that is specified to not allow Verilog-2001 syntax" );
         }
       }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   ;
 
@@ -6952,7 +6953,7 @@ gate_instance
         tmp->next  = NULL;
         $$ = tmp;
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         $$ = NULL;
       }
     }
@@ -6964,7 +6965,7 @@ gate_instance
         str_link* tmp;
         if( !parser_check_generation( GENERATION_2001 ) ) {
           VLerror( "Arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax" );
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         } else {
           tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
@@ -6975,7 +6976,7 @@ gate_instance
           $$ = tmp;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         $$ = NULL;
       }
     }
@@ -6990,7 +6991,7 @@ gate_instance
         tmp->next  = NULL;
         $$ = tmp;
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         $$ = NULL;
       }
     }
@@ -7002,7 +7003,7 @@ gate_instance
         str_link* tmp;
         if( !parser_check_generation( GENERATION_2001 ) ) {
           VLerror( "Arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax" );
-          free_safe( $1, (strlen( $1 ) + 1) );
+          FREE_TEXT( $1 );
           $$ = NULL;
         } else {
           tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
@@ -7013,7 +7014,7 @@ gate_instance
           $$ = tmp;
         }
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         $$ = NULL;
       }
     }
@@ -7092,7 +7093,7 @@ parameter_assign
           curr_prange.exp_dealloc = FALSE;
         }
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   ;
 
@@ -7118,7 +7119,7 @@ localparam_assign
           curr_prange.exp_dealloc = FALSE;
         }
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   ;
 
@@ -7130,22 +7131,22 @@ port_name_list
 port_name
   : '.' IDENTIFIER '(' ignore_more expression ignore_less ')'
     {
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | '.' IDENTIFIER '(' error ')'
     {
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | '.' IDENTIFIER '(' ')'
     {
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | '.' IDENTIFIER
     {
       if( (ignore_mode == 0) && !parser_check_generation( GENERATION_SV ) ) {
         VLerror( "Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax" );
       }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | K_PS
     {
@@ -7183,19 +7184,19 @@ specparam_list
 specparam
   : IDENTIFIER '=' expression
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | IDENTIFIER '=' expression ':' expression ':' expression
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | PATHPULSE_IDENTIFIER '=' expression
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | PATHPULSE_IDENTIFIER '=' '(' expression ',' expression ')'
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   ;
   
@@ -7214,19 +7215,19 @@ specify_simple_path
 specify_path_identifiers
   : IDENTIFIER
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | IDENTIFIER '[' expr_primary ']'
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | specify_path_identifiers ',' IDENTIFIER
     {
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
     }
   | specify_path_identifiers ',' IDENTIFIER '[' expr_primary ']'
     {
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
     }
   ;
 
@@ -7261,16 +7262,16 @@ spec_notifier
   : ','
   | ','  identifier
     {
-      free_safe( $2, (strlen( $2 ) + 1) );
+      FREE_TEXT( $2 );
     }
   | spec_notifier ',' 
   | spec_notifier ',' identifier
     {
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
     }
   | IDENTIFIER
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   ;
 
@@ -7282,22 +7283,22 @@ specify_edge_path_decl
 specify_edge_path
   : '(' K_posedge specify_path_identifiers spec_polarity K_EG IDENTIFIER ')'
     {
-      free_safe( $6, (strlen( $6 ) + 1) );
+      FREE_TEXT( $6 );
     }
   | '(' K_posedge specify_path_identifiers spec_polarity K_EG '(' expr_primary polarity_operator expression ')' ')'
   | '(' K_posedge specify_path_identifiers spec_polarity K_SG IDENTIFIER ')'
     {
-      free_safe( $6, (strlen( $6 ) + 1) );
+      FREE_TEXT( $6 );
     }
   | '(' K_posedge specify_path_identifiers spec_polarity K_SG '(' expr_primary polarity_operator expression ')' ')'
   | '(' K_negedge specify_path_identifiers spec_polarity K_EG IDENTIFIER ')'
     {
-      free_safe( $6, (strlen( $6 ) + 1) );
+      FREE_TEXT( $6 );
     }
   | '(' K_negedge specify_path_identifiers spec_polarity K_EG '(' expr_primary polarity_operator expression ')' ')'
   | '(' K_negedge specify_path_identifiers spec_polarity K_SG IDENTIFIER ')'
     {
-      free_safe( $6, (strlen( $6 ) + 1) );
+      FREE_TEXT( $6 );
     }
   | '(' K_negedge specify_path_identifiers spec_polarity K_SG '(' expr_primary polarity_operator expression ')' ')'
   ;
@@ -7392,7 +7393,7 @@ enum_variable
           error_count++;
         }
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   | IDENTIFIER '=' static_expr
     {
@@ -7404,7 +7405,7 @@ enum_variable
           error_count++;
         }
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      FREE_TEXT( $1 );
     }
   ;
 
@@ -7425,7 +7426,7 @@ list_of_names
         strl->next   = NULL;
         $$ = strl;
       } else {
-        free_safe( $1, (strlen( $1 ) + 1) );
+        FREE_TEXT( $1 );
         $$ = NULL;
       }
     }
@@ -7444,7 +7445,7 @@ list_of_names
         $$ = $1; 
       } else {
         str_link_delete_list( $1 );
-        free_safe( $3, (strlen( $3 ) + 1) );
+        FREE_TEXT( $3 );
         $$ = NULL;
       }
     }
@@ -7458,7 +7459,7 @@ typedef_decl
         assert( curr_prange.dim != NULL );
         db_add_typedef( $3, curr_signed, curr_handled, TRUE, parser_copy_curr_range( TRUE ), parser_copy_curr_range( FALSE ) );
       }
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
     }
   | K_typedef net_type_sign_range_opt IDENTIFIER ';'
     {
@@ -7466,7 +7467,7 @@ typedef_decl
         assert( curr_prange.dim != NULL );
         db_add_typedef( $3, curr_signed, curr_handled, TRUE, parser_copy_curr_range( TRUE ), parser_copy_curr_range( FALSE ) );
       }
-      free_safe( $3, (strlen( $3 ) + 1) );
+      FREE_TEXT( $3 );
     }
   ;
 
