@@ -224,7 +224,7 @@ VCSONLYDIAGS1 = afunc2            always_comb1      always_comb2      always_ff1
                 generate2         generate3         generate3.1       generate7         generate7.1 \
                 generate7.2       generate8.1       generate9         generate9.1       generate9.2 \
                 generate9.3       generate11.4      generate13        generate14        generate16 \
-                hier1.1 \
+                generate18        hier1.1 \
                 inc1              inc1.1            inc2              inc3              inc3.1 \
                 int1              line1             logic1            longint1          long_sig \
                 marray1           marray1.1         marray1.2         marray1.3         marray2 \
