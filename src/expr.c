@@ -1491,14 +1491,13 @@ void expression_db_write_tree(
   if( root != NULL ) {
 
     /* Print children first */
-    expression_db_write_tree( root->left, ofile );
+    if( EXPR_LEFT_DEALLOCABLE( root ) ) {
+      expression_db_write_tree( root->left, ofile );
+    }
     expression_db_write_tree( root->right, ofile );
 
     /* Now write ourselves */
-    if( root->suppl.part.exp_added == 0 ) {
-      expression_db_write( root, ofile, TRUE, TRUE );
-      root->suppl.part.exp_added = 1;
-    }
+    expression_db_write( root, ofile, TRUE, TRUE );
 
   }
 
