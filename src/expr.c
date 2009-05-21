@@ -1495,7 +1495,10 @@ void expression_db_write_tree(
     expression_db_write_tree( root->right, ofile );
 
     /* Now write ourselves */
-    expression_db_write( root, ofile, TRUE, TRUE );
+    if( root->suppl.part.exp_added == 0 ) {
+      expression_db_write( root, ofile, TRUE, TRUE );
+      root->suppl.part.exp_added = 1;
+    }
 
   }
 

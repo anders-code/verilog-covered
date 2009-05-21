@@ -11,19 +11,16 @@ reg clock;
 reg b;
 
 generate
-  genvar i, j;
-  for( i=0; i<4; i++ ) begin : vc
-    for( j=0; j<12; j++ ) begin : dir
-      reg  a;
-      wire c;
-      always @(posedge clock)
-        casex( {b, c} )
-          2'b01  :  a <= 1'b1;
-          2'b10  :  a <= 1'b0;
-          default:  a <= a;
-        endcase
-      assign c = ~a;
-    end
+  genvar i;
+  for( i=0; i<2; i++ ) begin : u
+    reg  a;
+    always @(posedge clock)
+      casex( b )
+        2'b01  :  a <= 1'b1;
+        2'b10  :  a <= 1'b0;
+        default:  a <= a;
+      endcase
+    wire c = ~a;
   end
 endgenerate
 
