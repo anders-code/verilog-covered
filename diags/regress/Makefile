@@ -32,7 +32,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 always15        ashift1         ashift2         ashift3         ashift4         assign2 \
                 assign2.1       assign2.2       assign2.3       assign2.4       assign2.5 \
                 assign2.6       assign2.7       assign2.9       assign3.2A      bassign1 \
-                bassign2        bassign3        block1          case1           case1.1 \
+                bassign2        bassign3        block1          bug2794588      case1           case1.1 \
                 case1.2         case1.3         case2           case3           case3.1 \
                 case3.2         case3.3         case3.4         case4           case4.1 \
                 case5           case6           casex1          casex1.1        casex1.2        casex1.3 \
