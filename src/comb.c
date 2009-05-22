@@ -2857,7 +2857,7 @@ static void combination_get_exclude_list(
         *excludes     = (int*)realloc_safe( *excludes, (sizeof( int ) * exp->ulid), (sizeof( int ) * (exp->ulid + 1)) );
         *reasons      = (char**)realloc_safe( *reasons, (sizeof( int ) * exp->ulid), (sizeof( int ) * (exp->ulid + 1)) );
         for( i=*exclude_size; i<exp->ulid; i++ ) {
-          (*excludes)[i] = NULL;
+          (*excludes)[i] = 0;
           (*reasons)[i]  = NULL;
         }
         *exclude_size = exp->ulid + 1;
