@@ -31,18 +31,19 @@ proc create_wizard {} {
 
     # Create buttons
     button .wizwin.f.new   -text "Generate New CDD File" -relief flat -command {
-      create_new_cdd
       destroy .wizwin
+      create_new_cdd
     }
     button .wizwin.f.open  -text "Open/Merge CDD File(s)" -relief flat -command {
-      .menubar.file invoke 0
       destroy .wizwin
+      .menubar.file invoke 0
     }
     button .wizwin.f.grade -text "Rank CDD Coverage" -relief flat -command {
-      create_rank_cdds
       destroy .wizwin
+      create_rank_cdds
     }
     button .wizwin.f.help  -text "View Help Manual" -relief flat -command {
+      destroy .wizwin
       help_show_manual part.gui 
     }
 
