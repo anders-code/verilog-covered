@@ -12,7 +12,7 @@ reg [1:0] b;
 
 generate
   genvar i;
-  for( i=0; i<2; i++ ) begin : u
+  for( i=0; i<2; i=i+1 ) begin : u
     reg  a;
     always @(posedge clock)
       casex( b )
