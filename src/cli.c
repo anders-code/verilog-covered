@@ -455,7 +455,7 @@ static bool cli_parse_input(
 
   /* Store this command in the history buffer if we are not in replay mode */
   if( !replaying ) {
-    history[history_index] = line;
+    history[history_index] = strdup_safe( line );
   }
 
   /* Parse first string */
@@ -469,13 +469,13 @@ static bool cli_parse_input(
       line++;
       if( arg[1] == '!' ) {
         free_safe( history[history_index], (strlen( history[history_index] ) + 1) );
-        (bool)cli_parse_input( strdup_safe( history[history_index-1] ), perform, replaying, time );
+        (bool)cli_parse_input( history[history_index-1], perform, replaying, time );
         history_index--;
         cli_replay_index--;
       } else if( sscanf( line, "%d", &num ) == 1 ) {
         if( num < (history_index + 1) ) {
           free_safe( history[history_index], (strlen( history[history_index] ) + 1) );
-          cli_parse_input( strdup_safe( history[num-1] ), perform, replaying, time );
+          cli_parse_input( history[num-1], perform, replaying, time );
           history_index--;
           cli_replay_index--;
         } else {
@@ -680,7 +680,7 @@ static bool cli_parse_input(
     } else {
 
       cli_print_error( "Unknown command", perform );
-      valid_cmd = FALSE; 
+      
 
     }
 
