@@ -823,12 +823,15 @@ void cli_execute(
     /* Otherwise, potentially display a status bar */
     } else {
 
-      if( stmts_left > 0 ) {
-        cli_draw_status_bar( ((stmts_specified - stmts_left) * 100) / stmts_specified );
-      } else if ( timesteps_left > 0 ) {
-        cli_draw_status_bar( ((timesteps_specified - timesteps_left) * 100) / timesteps_specified );
-      } else if ( TIME_CMP_GT(goto_timestep, *time) ) {
-        cli_draw_status_bar( 100 - (((goto_timestep.full - time->full) * 100) / goto_timestep.full) );
+      /* Only draw the status bar if we are not in debug mode */
+      if( !cli_debug_mode ) {
+        if( stmts_left > 0 ) {
+          cli_draw_status_bar( ((stmts_specified - stmts_left) * 100) / stmts_specified );
+        } else if ( timesteps_left > 0 ) {
+          cli_draw_status_bar( ((timesteps_specified - timesteps_left) * 100) / timesteps_specified );
+        } else if ( TIME_CMP_GT(goto_timestep, *time) ) {
+          cli_draw_status_bar( 100 - (((goto_timestep.full - time->full) * 100) / goto_timestep.full) );
+        }
       }
 
     }
