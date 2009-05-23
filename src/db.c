@@ -2944,8 +2944,6 @@ void db_assign_symbol(
   int         lsb      /*!< Least significant bit of symbol to set */
 ) { PROFILE(DB_ASSIGN_SYMBOL);
 
-  sig_link* slink;  /* Pointer to signal containing this symbol */
-
 #ifdef DEBUG_MODE
   if( debug_mode ) {
     char*        scope = db_gen_curr_inst_scope();
@@ -2960,21 +2958,24 @@ void db_assign_symbol(
   assert( name != NULL );
 
   if( (curr_instance != NULL) && (curr_instance->funit != NULL) ) {
+
+    vsignal*   sig;
+    func_unit* found_funit;
     
     /* Find the signal that matches the specified signal name */
-    if( (slink = sig_link_find( name, curr_instance->funit->sig_head )) != NULL ) {
+    if( scope_find_signal( name, curr_instance->funit, &sig, &found_funit, 0 ) ) {
 
       /* Only add the symbol if we are not going to generate this value ourselves */
-      if( (slink->sig->suppl.part.assigned == 0)                  &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_GENVAR)     &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
+      if( (sig->suppl.part.assigned == 0)                  &&
+          (sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+          (sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
+          (sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
+          (sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
+          (sig->suppl.part.type != SSUPPL_TYPE_GENVAR)     &&
+          (sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
 
         /* Add this signal */
-        symtable_add( symbol, slink->sig, msb, lsb );
+        symtable_add( symbol, sig, msb, lsb );
 
       }
 
