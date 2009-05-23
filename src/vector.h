@@ -657,10 +657,14 @@ bool vector_op_list(
 );
 
 /*! \brief Deallocates the value structure for the given vector. */
-void vector_dealloc_value( vector* vec );
+void vector_dealloc_value(
+  vector* vec
+);
 
 /*! \brief Deallocates all memory allocated for vector */
-void vector_dealloc( vector* vec );
+void vector_dealloc(
+  vector* vec
+);
 
 #endif
 
