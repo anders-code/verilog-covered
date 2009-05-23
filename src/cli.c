@@ -620,13 +620,12 @@ static bool cli_parse_input(
           cli_print_error( "Unknown debug command parameter", perform );
           valid_cmd = FALSE; 
         }
-      } else {
-        if( perform ) {
-          if( cli_debug_mode ) {
-            printf( "Current debug mode is on.\n" );
-          } else {
-            printf( "Current debug mode is off.\n" );
-          }
+      }
+      if( perform ) {
+        if( cli_debug_mode ) {
+          printf( "Current debug mode is on.\n" );
+        } else {
+          printf( "Current debug mode is off.\n" );
         }
       }
 
