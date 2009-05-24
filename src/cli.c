@@ -726,7 +726,7 @@ static bool cli_parse_input(
     } else if( strncmp( "time", arg, 4 ) == 0 ) {
 
       if( perform ) {
-        printf( "    TIME: %lld\n", time->full );
+        printf( "    TIME: %llu\n", time->full );
       }
 
     } else if( strncmp( "signal", arg, 6 ) == 0 ) {
@@ -970,6 +970,7 @@ void cli_execute(
 ) {
 
   static sim_time last_timestep = {0,0,0,FALSE};
+  bool            new_timestep  = FALSE;
 
   if( flag_use_command_line_debug || force ) {
 
@@ -986,13 +987,19 @@ void cli_execute(
     /* If the given time is not 0, possibly decrement the number of timesteps left */
     if( (time->hi!=0) || (time->lo!=0) ) {
 
-      /* Decrement timesteps_left it is set and the last timestep differs from the current simulation time */
-      if( (timesteps_left > 0) && TIME_CMP_NE(last_timestep, *time) ) {
-        timesteps_left--;
-      }
+      if( TIME_CMP_NE(last_timestep, *time) ) {
 
-      /* Record the last timestep seen */
-      last_timestep = *time;
+        new_timestep = TRUE;
+
+        /* Decrement timesteps_left it is set and the last timestep differs from the current simulation time */
+        if( timesteps_left > 0 ) {
+          timesteps_left--;
+        }
+
+        /* Record the last timestep seen */
+        last_timestep = *time;
+
+      }
 
     }
 
@@ -1045,6 +1052,9 @@ void cli_execute(
       /* Only draw the status bar if we are not in debug mode */
       if( cli_debug_mode ) {
         if( !debug_mode && (cli_replay_index == history_index) ) {
+          if( new_timestep ) {
+            printf( "  TIME: %llu\n", time->full );
+          }
           cli_display_current_stmt( curr_stmt );
         }
       } else {
