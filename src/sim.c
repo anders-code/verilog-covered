@@ -1006,7 +1006,7 @@ void sim_thread(
 
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY
-    cli_execute( time, force_stop );
+    cli_execute( time, force_stop, stmt );
     force_stop = FALSE;
 #endif
 #endif
