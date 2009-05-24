@@ -39,5 +39,10 @@ void cli_read_hist_file(
   const char* fname
 );
 
+/*! \brief Signal handler for Ctrl-C event */
+void cli_ctrl_c(
+  int sig
+);
+
 #endif
 

@@ -923,6 +923,23 @@ void cli_reset(
 }
 
 /*!
+ Signal handler for Ctrl-C event.
+*/
+void cli_ctrl_c(
+  int sig  /*!< Signal that was received */
+) {
+
+  thread* curr_thr = sim_current_thread();
+
+  /* Display a message to the user */
+  printf( "\nCtrl-C interrupt encountered.  Stopping current command.\n" );
+
+  /* Reset the CLI - this will cause the CLI prompt to be displayed ASAP */
+  cli_reset( &curr_thr->curr_time );
+
+}
+
+/*!
  \param time   Pointer to current simulation time.
  \param force  Forces us to provide a CLI prompt.
 
