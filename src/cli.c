@@ -50,6 +50,7 @@ extern db**         db_list;
 extern unsigned int curr_db;
 extern char         user_msg[USER_MSG_LENGTH];
 extern bool         flag_use_command_line_debug;
+extern bool         debug_mode;
 
 
 /*!
@@ -181,9 +182,10 @@ static void cli_usage() {
   printf( "      Displays the current value of the given net/variable.\n\n" );
   printf( "  expr <num>\n" );
   printf( "      Displays the given expression and its current value where <num> is the ID of the expression to output.\n\n" );
-  printf( "  debug [on | off]\n" );
-  printf( "      Turns verbose debug output from simulator on or off.  If 'on' or 'off' is not specified, displays the\n" );
-  printf( "      current debug mode.\n\n" );
+  printf( "  debug [less | more | off]\n" );
+  printf( "      Turns verbose debug output from simulator on or off.  If 'less' is specified, only the executed expression\n" );
+  printf( "      is output.  If 'more' is specified, the full debug information from internal debug statements in Covered is\n" );
+  printf( "      is output.  If 'less', 'more' or 'off' is not specified, displays the current debug mode.\n\n" );
   printf( "  list [<num>]\n" );
   printf( "      Lists the contents of the file where the current statement is to be executed.  If <num> is specified,\n" );
   printf( "      outputs the given number of lines; otherwise, outputs 10 lines.\n\n" );
@@ -347,13 +349,13 @@ static void cli_display_current(
 }
 
 /*!
- \param name  Name of signal to display
-
  \return Returns TRUE if signal was found; otherwise, returns FALSE.
 
  Outputs the given signal value to standard output.
 */
-static bool cli_display_signal( char* name ) {
+static bool cli_display_signal(
+  char* name  /*!< Name of signal to display */
+) {
 
   bool       retval = TRUE;  /* Return value for this function */
   thread*    curr;           /* Pointer to current thread in simulator */
@@ -652,11 +654,18 @@ static bool cli_parse_input(
           }
         } else if( strncmp( "line", arg, 4 ) == 0 ) {
           if( perform ) {
-            if( sscanf( line, "%[^:]:%d", arg, &cli_goto_linenum ) == 2 ) {
-              cli_goto_filename = strdup_safe( arg );
-            } else if( sscanf( line, "%d", &cli_goto_linenum ) == 1 ) {
+            if( sscanf( line, "%d", &cli_goto_linenum ) == 1 ) {
               curr_thr = sim_current_thread();
               cli_goto_filename = strdup_safe( curr_thr->funit->filename );
+            } else if( sscanf( line, "%s", arg ) == 1 ) {
+              char targ[4096];
+              strcpy( targ, arg );
+              if( sscanf( targ, "%[^:]:%d", arg, &cli_goto_linenum ) == 2 ) {
+                cli_goto_filename = strdup_safe( arg );
+              } else {
+                cli_print_error( "Illegal line number specified", perform );
+                valid_cmd = FALSE;
+              }
             } else {
               cli_print_error( "Illegal line number specified", perform );
               valid_cmd = FALSE;
@@ -753,7 +762,12 @@ static bool cli_parse_input(
     } else if( strncmp( "debug", arg, 5 ) == 0 ) {
 
       if( sscanf( line, "%s", arg ) == 1 ) {
-        if( strncmp( "on", arg, 2 ) == 0 ) {
+        if( strncmp( "less", arg, 4 ) == 0 ) {
+          if( perform ) {
+            cli_debug_mode = TRUE;
+            set_debug( FALSE );
+          }
+        } else if( strncmp( "more", arg, 4 ) == 0 ) {
           if( perform ) {
             cli_debug_mode = TRUE;
             set_debug( TRUE );
@@ -769,9 +783,13 @@ static bool cli_parse_input(
       }
       if( perform ) {
         if( cli_debug_mode ) {
-          printf( "Current debug mode is on.\n" );
+          if( debug_mode ) { 
+            printf( "Current debug mode is 'more'.\n" );
+          } else {
+            printf( "Current debug mode is 'less'.\n" );
+          }
         } else {
-          printf( "Current debug mode is off.\n" );
+          printf( "Current debug mode is 'off'.\n" );
         }
       }
 
@@ -1025,7 +1043,11 @@ void cli_execute(
     } else {
 
       /* Only draw the status bar if we are not in debug mode */
-      if( !cli_debug_mode ) {
+      if( cli_debug_mode ) {
+        if( !debug_mode && (cli_replay_index == history_index) ) {
+          cli_display_current_stmt( curr_stmt );
+        }
+      } else {
         if( stmts_left > 0 ) {
           cli_draw_status_bar( ((stmts_specified - stmts_left) * 100) / stmts_specified );
         } else if ( timesteps_left > 0 ) {
