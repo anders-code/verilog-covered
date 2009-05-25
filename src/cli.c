@@ -161,7 +161,7 @@ static void cli_usage() {
   printf( "  goto line [<filename>:]<num>\n" );
   printf( "      Simulates until the given line number is about to be executed.  If <filename> is specified, the\n" );
   printf( "      specified filename is used for searching; otherwise, the currently executing filename is used.\n\n" );
-  printf( "  goto expr (<name>|<num>) (!=|==|<|>|<=|>=) <num>\n" );
+  printf( "  goto expr (<name>|<num>) (!=|!==|==|===|<|>|<=|>=) <num>\n" );
   printf( "      Simulates to the point where the given signal (<name>) or expression <num> evaluates to be true\n" );
   printf( "      with the given value and operation.\n\n" );
   printf( "  run\n" );
@@ -617,8 +617,12 @@ static bool cli_parse_input(
                 line += chars_read;
                 if( strcmp( "==", arg ) == 0 ) {
                   cli_goto_op = EXP_OP_EQ;
+                } else if( strcmp( "===", arg ) == 0 ) {
+                  cli_goto_op = EXP_OP_CEQ;
                 } else if( strcmp( "!=", arg ) == 0 ) {
                   cli_goto_op = EXP_OP_NE;
+                } else if( strcmp( "!==", arg ) == 0 ) {
+                  cli_goto_op = EXP_OP_CNE;
                 } else if( strcmp( "<=", arg ) == 0 ) {
                   cli_goto_op = EXP_OP_LE;
                 } else if( strcmp( "<",  arg ) == 0 ) {
@@ -1007,12 +1011,14 @@ void cli_execute(
     if( cli_goto_vec != NULL ) {
       vector tgt;
       switch( cli_goto_op ) {
-        case EXP_OP_EQ :  vector_op_eq( cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
-        case EXP_OP_NE :  vector_op_ne( cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
-        case EXP_OP_LE :  vector_op_le( cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
-        case EXP_OP_LT :  vector_op_lt( cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
-        case EXP_OP_GE :  vector_op_ge( cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
-        case EXP_OP_GT :  vector_op_gt( cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_EQ  :  vector_op_eq(  cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_CEQ :  vector_op_ceq( cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_NE  :  vector_op_ne(  cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_CNE :  vector_op_cne( cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_LE  :  vector_op_le(  cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_LT  :  vector_op_lt(  cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_GE  :  vector_op_ge(  cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_GT  :  vector_op_gt(  cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
       }
       if( !vector_is_unknown( cli_goto_vec ) && vector_is_not_zero( cli_goto_vec ) ) {
         vector_dealloc( cli_goto_vec2 );  cli_goto_vec2 = NULL;
