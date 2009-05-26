@@ -162,6 +162,7 @@ extern int          generate_expr_mode;
 extern int          curr_expr_id;
 extern bool         flag_use_command_line_debug;
 extern bool         cli_debug_mode;
+extern int          nba_queue_size;
 
 static bool expression_op_func__xor( expression*, thread*, const sim_time* );
 static bool expression_op_func__multiply( expression*, thread*, const sim_time* );
@@ -329,7 +330,7 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",               
                                            {"ASSIGN",         "",                 expression_op_func__null,            {0, 0, NOT_COMB,   1, 0, 0, 0, 0, 0} },
                                            {"DASSIGN",        "",                 expression_op_func__null,            {0, 0, NOT_COMB,   1, 0, 0, 0, 0, 0} },
                                            {"BASSIGN",        "",                 expression_op_func__assign,          {0, 0, NOT_COMB,   1, 0, 0, 0, 0, 0} },
-                                           {"NASSIGN",        "",                 expression_op_func__null,            {0, 0, NOT_COMB,   1, 0, 0, 0, 0, 0} },
+                                           {"NASSIGN",        "",                 expression_op_func__assign,          {0, 0, NOT_COMB,   1, 0, 0, 0, 0, 0} },
                                            {"IF",             "",                 expression_op_func__null,            {0, 0, NOT_COMB,   1, 0, 0, 0, 0, 0} },
                                            {"FUNC_CALL",      "",                 expression_op_func__func_call,       {0, 0, NOT_COMB,   1, 1, 0, 0, 0, 0} },
                                            {"TASK_CALL",      "",                 expression_op_func__task_call,       {0, 0, NOT_COMB,   1, 0, 1, 0, 0, 0} },
@@ -478,6 +479,63 @@ static void expression_create_tmp_vecs(
   }
 
   PROFILE_END;
+
+}
+
+/*!
+ Allocates a non-blocking assignment structure to the given expression and initializes it.
+*/
+void expression_create_nba(
+  expression* expr,     /*!< Pointer to expression to add non-blocking assignment structure to */
+  vsignal*    lhs_sig,  /*!< Pointer to left-hand-side signal */
+  vector*     rhs_vec   /*!< Pointer to right-hand-side vector */
+) { PROFILE(EXPRESSION_CREATE_NBA);
+
+  exp_dim* dim = expr->elem.dim;
+
+  /* Allocate memory */
+  nonblock_assign* nba = (nonblock_assign*)malloc_safe( sizeof( nonblock_assign ) );
+
+  /* Initialize the structure */
+  nba->lhs_sig         = lhs_sig;
+  nba->rhs_vec         = rhs_vec;
+  nba->suppl.is_signed = (expr->op == EXP_OP_SIG) ? rhs_vec->suppl.part.is_signed : FALSE;
+
+  /* Now change the elem pointer from a dim to a dim_nba */
+  expr->elem.dim_nba      = (dim_and_nba*)malloc_safe( sizeof( dim_and_nba ) );
+  expr->elem.dim_nba->dim = dim;
+  expr->elem.dim_nba->nba = nba;
+
+  /* Set the nba supplemental bit */
+  expr->suppl.part.nba = 1;
+
+  /* Increment the number of nba structures */
+  nba_queue_size++;
+
+  PROFILE_END;
+
+}
+
+/*!
+ \return Returns a pointer to the non-blocking assignment if this expression is a child of the LHS
+         that will be assigned via a non-blocking assignment; otherwise, returns a value of NULL.
+*/
+expression* expression_is_nba_lhs(
+  expression* exp  /*!< Pointer to child expression to check */
+) { PROFILE(EXPRESSION_IS_NBA_LHS);
+
+  while( (exp->op != EXP_OP_NASSIGN)                &&
+         (ESUPPL_IS_ROOT( exp->suppl ) == 0)        &&
+         (exp->parent->expr->op != EXP_OP_SBIT_SEL) &&
+         (exp->parent->expr->op != EXP_OP_MBIT_SEL) &&
+         (exp->parent->expr->op != EXP_OP_MBIT_POS) &&
+         (exp->parent->expr->op != EXP_OP_MBIT_NEG) ) {
+    exp = exp->parent->expr;
+  }
+
+  PROFILE_END;
+
+  return( (exp->op == EXP_OP_NASSIGN) ? exp : NULL );
 
 }
 
@@ -784,23 +842,29 @@ void expression_set_value(
   /* Otherwise, create our own vector to store the part select */
   } else {
 
-    unsigned int edim = expression_get_curr_dimension( exp );
-    int exp_width     = vsignal_calc_width_for_expr( exp, sig );
+    unsigned int edim      = expression_get_curr_dimension( exp );
+    int          exp_width = vsignal_calc_width_for_expr( exp, sig );
+    exp_dim*     dim;
 
     /* Allocate dimensional structure (if needed) and populate it with static information */
     if( exp->elem.dim == NULL ) {
-      exp->elem.dim = (exp_dim*)malloc_safe( sizeof( exp_dim ) );
-    }
-    exp->elem.dim->curr_lsb = -1;
-    if( sig->dim[edim].lsb < sig->dim[edim].msb ) {
-      exp->elem.dim->dim_lsb = sig->dim[edim].lsb;
-      exp->elem.dim->dim_be  = FALSE;
+      exp->elem.dim = dim = (exp_dim*)malloc_safe( sizeof( exp_dim ) );
+    } else if( exp->suppl.part.nba == 1 ) {
+      dim = exp->elem.dim_nba->dim;
     } else {
-      exp->elem.dim->dim_lsb = sig->dim[edim].msb;
-      exp->elem.dim->dim_be  = TRUE;
+      dim = exp->elem.dim;
     }
-    exp->elem.dim->dim_width = exp_width;
-    exp->elem.dim->last      = expression_is_last_select( exp );
+      
+    dim->curr_lsb = -1;
+    if( sig->dim[edim].lsb < sig->dim[edim].msb ) {
+      dim->dim_lsb = sig->dim[edim].lsb;
+      dim->dim_be  = FALSE;
+    } else {
+      dim->dim_lsb = sig->dim[edim].msb;
+      dim->dim_be  = TRUE;
+    }
+    dim->dim_width = exp_width;
+    dim->last      = expression_is_last_select( exp );
 
     /* Set the expression width */
     switch( exp->op ) {
@@ -4030,8 +4094,8 @@ bool expression_op_func__sbit(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SBIT);
 
-  bool     retval;                   /* Return value for this function */
-  exp_dim* dim    = expr->elem.dim;  /* Pointer to current dimension information */
+  bool     retval;                                                                        /* Return value for this function */
+  exp_dim* dim = (expr->suppl.part.nba == 0) ? expr->elem.dim : expr->elem.dim_nba->dim;  /* Pointer to current dimension information */
   int      curr_lsb;
 
   /* If the part select is known, calculate the vector */
@@ -4106,7 +4170,7 @@ bool expression_op_func__mbit(
   int      vwidth;          /* Width of vector to use */
   int      prev_lsb;
   int      curr_lsb;
-  exp_dim* dim    = expr->elem.dim;
+  exp_dim* dim    = (expr->suppl.part.nba == 0) ? expr->elem.dim : expr->elem.dim_nba->dim;
 
   /* Calculate starting bit position */
   if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
@@ -4966,7 +5030,7 @@ bool expression_op_func__mbit_pos(
 ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_POS);
 
   bool     retval   = FALSE;  /* Return value for this function */
-  exp_dim* dim      = expr->elem.dim;
+  exp_dim* dim      = (expr->suppl.part.nba == 0) ? expr->elem.dim : expr->elem.dim_nba->dim;
   int      curr_lsb = 0;
 
   /* If the left expression is known, perform the part selection */
@@ -5030,7 +5094,7 @@ bool expression_op_func__mbit_neg(
 ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_NEG);
 
   bool     retval = FALSE;  /* Return value for this function */
-  exp_dim* dim    = expr->elem.dim;
+  exp_dim* dim    = (expr->suppl.part.nba == 0) ? expr->elem.dim : expr->elem.dim_nba->dim;
   int      curr_lsb;
 
   /* If the left expression is known, perform the part selection */
@@ -5857,7 +5921,7 @@ void expression_assign(
 
   if( lhs != NULL ) {
 
-    exp_dim* dim      = lhs->elem.dim;
+    exp_dim* dim      = (lhs->suppl.part.nba == 0) ? lhs->elem.dim : lhs->elem.dim_nba->dim;
     int      vwidth   = 0;
     int      prev_lsb = 0;
 
@@ -5887,7 +5951,9 @@ void expression_assign(
       case EXP_OP_SIG      :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( nb ) {
-            /* TBD - Handle non-blocking assignment */
+            if( lhs->suppl.part.nba == 1 ) {
+              sim_add_nonblock_assign( lhs->elem.dim_nba->nba, 0, (lhs->value->width - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
+            }
           } else {
             bool changed = vector_part_select_push( lhs->sig->value, 0, (lhs->value->width - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), rhs->value->suppl.part.is_signed );
             lhs->sig->value->suppl.part.set = 1;
@@ -5923,7 +5989,9 @@ void expression_assign(
           }
           if( dim->last && (dim->curr_lsb != -1) ) {
             if( nb ) {
-              /* TBD - Handle non-blocking assignment */
+              if( lhs->suppl.part.nba == 1 ) {
+                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
+              }
             } else {
               changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE );
               lhs->sig->value->suppl.part.set = 1;
@@ -5956,7 +6024,9 @@ void expression_assign(
           }
           if( dim->last && (dim->curr_lsb != -1) ) {
             if( nb ) {
-              /* TBD - Handle non-blocking assignment */
+              if( lhs->suppl.part.nba == 1 ) {
+                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
+              }
             } else {
               changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE );
               lhs->sig->value->suppl.part.set = 1;
@@ -5990,7 +6060,9 @@ void expression_assign(
           }
           if( assign ) {
             if( nb ) {
-              /* TBD - Handle non-blocking assignments */
+              if( lhs->suppl.part.nba == 1 ) {
+                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
+              }
             } else {
               bool changed = vector_set_value( lhs->value, rhs->value->value.ul, intval2, *lsb, 0 );
               lhs->sig->value->suppl.part.set = 1;
@@ -6023,7 +6095,9 @@ void expression_assign(
           }
           if( assign ) {
             if( nb ) {
-              /* TBD - Handle non-blocking assignments */
+              if( lhs->suppl.part.nba == 1 ) {
+                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
+              }
             } else {
               bool changed = vector_set_value( lhs->value, rhs->value->value.ul, intval2, *lsb, 0 );
               lhs->sig->value->suppl.part.set = 1;
@@ -6211,7 +6285,13 @@ void expression_dealloc(
 
     /* If we have expression dimensional information, deallocate it now */
     if( (expr->elem.dim != NULL) && EXPR_OP_HAS_DIM( expr->op ) ) {
-      free_safe( expr->elem.dim, sizeof( exp_dim ) );
+      if( expr->suppl.part.nba == 1 ) {
+        free_safe( expr->elem.dim_nba->dim, sizeof( exp_dim ) );
+        free_safe( expr->elem.dim_nba->nba, sizeof( nonblock_assign ) );
+        free_safe( expr->elem.dim_nba, sizeof( dim_and_nba ) );
+      } else {
+        free_safe( expr->elem.dim, sizeof( exp_dim ) );
+      }
     }
 
     /* Free up memory for the parent pointer */

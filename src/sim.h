@@ -47,16 +47,29 @@ void sim_display_all_list();
 thread* sim_current_thread();
 
 /*! \brief Inserts the given thread into the delay queue at the given time slot */
-void sim_thread_insert_into_delay_queue( thread* thr, const sim_time* time );
+void sim_thread_insert_into_delay_queue(
+  thread*         thr,
+  const sim_time* time
+);
 
 /*! \brief Adds specified expression's statement to pre-simulation statement queue. */
-void sim_expr_changed( expression* expr, const sim_time* time );
+void sim_expr_changed(
+  expression*     expr,
+  const sim_time* time
+);
 
 /*! \brief Creates a thread for the given statement and adds it to the thread simulation queue. */
-thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const sim_time* time );
+thread* sim_add_thread(
+  thread*         parent,
+  statement*      stmt,
+  func_unit*      funit,
+  const sim_time* time
+);
 
 /*! \brief Deallocates thread and removes it from parent and thread queue lists for specified functional unit */
-void sim_kill_thread_with_funit( func_unit* funit );
+void sim_kill_thread_with_funit(
+  func_unit* funit
+);
 
 /*! \brief Pushes given thread onto the active queue */
 void sim_thread_push(
@@ -73,10 +86,15 @@ bool sim_expression(
 );
 
 /*! \brief Simulates one thread until it has either completed or enters a context switch */
-void sim_thread( thread* thr, const sim_time* time );
+void sim_thread(
+  thread*         thr,
+  const sim_time* time
+);
 
 /*! \brief Simulates current timestep. */
-bool sim_simulate( const sim_time* time );
+bool sim_simulate(
+  const sim_time* time
+);
 
 /*! \brief Initializes the simulator */
 void sim_initialize();
@@ -86,6 +104,20 @@ void sim_stop();
 
 /*! \brief Causes simulator to finish gracefully */
 void sim_finish();
+
+/*! \brief Updates the given non-blocking assign structure and adds it to the non-blocking assignment queue. */
+void sim_add_nonblock_assign(
+  nonblock_assign* nba,
+  int              lhs_lsb,
+  int              lhs_msb,
+  int              rhs_lsb,
+  int              rhs_msb
+);
+
+/*! \brief Performs non-blocking assignment for currently queued assignment items for the current timestep. */
+void sim_perform_nba(
+  const sim_time* time
+);
 
 /*! \brief Deallocates all memory for simulator */
 void sim_dealloc();

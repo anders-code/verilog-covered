@@ -3116,6 +3116,9 @@ bool db_do_timestep(
     /* Assign all stored values in current post-timestep to stored signals */
     symtable_assign( &curr_time );
 
+    /* Perform non-blocking assignment */
+    sim_perform_nba( &curr_time );
+
   }
 
   PROFILE_END;
@@ -3124,37 +3127,3 @@ bool db_do_timestep(
 
 }
 
-void db_create_nonblock_assign_list(
-  unsigned int size
-) { PROFILE(DB_CREATE_NONBLOCK_ASSIGN_LIST);
-
-  PROFILE_END;
-
-}
-
-nonblock_assign* db_add_nonblock_assign(
-  vsignal* lhs_sig,
-  int      lhs_lsb,
-  int      lhs_msb,
-  vector*  rhs_vec,
-  int      rhs_lsb,
-  int      rhs_msb
-) { PROFILE(DB_ADD_NONBLOCK_ASSIGN);
-
-  nonblock_assign* nba;
-
-  /* Allocate and initialize the non-blocking assignment structure */
-  nba = (nonblock_assign*)malloc_safe( sizeof( nonblock_assign ) );
-
-  nba->lhs_sig = lhs_sig;
-  nba->lhs_lsb = lhs_lsb;
-  nba->lhs_msb = lhs_msb;
-  nba->rhs_vec = rhs_vec;
-  nba->rhs_lsb = rhs_lsb;
-  nba->rhs_msb = rhs_msb;
-
-  PROFILE_END;
-
-  return( nba );
-
-}

@@ -1620,6 +1620,8 @@ union esuppl_u {
                                     expression (since these cause a context switch to occur. */
     uint32 for_cntrl      :1;  /*!< Bit 29.  Mask bit = 0.  Temporary value used by the score command which sets to true
                                     if this expression exists within the control portion of a for loop. */
+    uint32 nba            :1;  /*!< Bit 30.  Mask bit = 0.  Specifies that this expression is on the left-hand-side of a non-blocking
+                                    assignment. */
   } part;
 };
 
@@ -3071,7 +3073,7 @@ struct nonblock_assign_s {
   int             rhs_msb;              /*!< Right-hand-side MSB to assign */
   struct {
     uint8         is_signed : 1;        /*!< Specifies if value is signed */
-    uint8         eval      : 1;        /*!< Set to 1 if this nonblocking assignment needs to be evaluated */
+    uint8         added     : 1;        /*!< Set to 1 if this nonblocking assignment has been added to the simulation queue */
   } suppl;                              /*!< Supplemental field */
 };
 

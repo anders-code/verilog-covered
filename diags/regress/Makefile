@@ -75,7 +75,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 lshift5         mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1 \
                 mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel7 \
                 mbit_sel9       mbit_sel9.1     mbit_sel9.2     mem1            mem2 \
-                mod1            monitor1        monitor1.1      msg1            mult1 \
+                mem6            mod1            monitor1        monitor1.1      msg1            mult1 \
                 mult2           multi_exp1      multi_exp1.1    multi_exp1.2    multi_exp1.3 \
                 multi_exp1.4    multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8 \
                 multi_exp1.9    multi_exp1.10   multi_exp1.11   multi_exp1.12   multi_exp1.13 \
@@ -308,7 +308,7 @@ NOLXTDIAGS   := add1            always7         always7.1       always11.2      
                 include5        localparam1     localparam1.1   localparam1.2   localparam1.3 \
                 localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
                 long_exp4       mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
-                mbit_sel4.3     mem1            mem2            merge1          merge2 \
+                mbit_sel4.3     mem1            mem2            mem6            merge1          merge2 \
                 merge5          merge6          merge6.1        merge7          merge7.1 \
                 merge7.2        merge7.3        merge7.4        merge7.5        merge7.6 \
                 merge7.7        merge7.8        multi_exp1      multi_exp1.1    multi_exp1.2 \
