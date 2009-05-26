@@ -1,360 +1,379 @@
+2009-05-24 21:37  phase1geo
+
+	* ChangeLog (1.71.2.3): Updating ChangeLog.
+
 2009-05-24 21:28  phase1geo
 
-	* src/cli.c: Adding support for === and !== operators in "goto
-	expr" command.
+	* src/cli.c (1.28.6.11): Adding support for === and !== operators
+	in "goto expr" command.
 
 2009-05-24 00:19  phase1geo
 
-	* src/cli.c: Adding current simulation time to debug output.
+	* src/cli.c (1.28.6.10): Adding current simulation time to debug
+	output.
 
 2009-05-23 23:21  phase1geo
 
-	* src/cli.c: Fixing issues with goto line when filename:line is
-	specified.  Also changing debug command to supply three values: 
-	off, less and more.  The more option is equivalent to the old 'on'
-	option, while the new 'less' option outputs all statements executed
-	(not just the last).
+	* src/cli.c (1.28.6.9): Fixing issues with goto line when
+	filename:line is specified.  Also changing debug command to supply
+	three values:  off, less and more.  The more option is equivalent
+	to the old 'on' option, while the new 'less' option outputs all
+	statements executed (not just the last).
 
 2009-05-23 22:43  phase1geo
 
-	* src/: cli.c, cli.h, sim.c: Adding support for Ctrl-C processing
-	when -cli score option is specified.  This handles the last CLI
-	support request at the moment.
+	* src/: cli.c (1.28.6.8), cli.h (1.7.14.3), sim.c (1.136.4.3):
+	Adding support for Ctrl-C processing when -cli score option is
+	specified.  This handles the last CLI support request at the
+	moment.
 
 2009-05-23 22:07  phase1geo
 
-	* src/: cli.c, cli.h, sim.c: Adding support to goto a line. 
-	Changing goto command to support time, line and expression.  This
-	takes care of another support request to enhance the CLI.
+	* src/: cli.c (1.28.6.7), cli.h (1.7.14.2), sim.c (1.136.4.2):
+	Adding support to goto a line.	Changing goto command to support
+	time, line and expression.  This takes care of another support
+	request to enhance the CLI.
 
 2009-05-23 15:53  phase1geo
 
-	* src/: cli.c, vector.h: Adding support for a CLI find command
-	which simulates until a given expression is true.  Limited testing
-	has been performed.
+	* src/: cli.c (1.28.6.6), vector.h (1.71.4.3): Adding support for a
+	CLI find command which simulates until a given expression is true. 
+	Limited testing has been performed.
 
 2009-05-23 08:43  phase1geo
 
-	* src/cli.c: Attempting to fix bug 2795215.  No status bar is drawn
-	if we are in debug mode.
+	* src/cli.c (1.28.6.5): Attempting to fix bug 2795215.	No status
+	bar is drawn if we are in debug mode.
 
 2009-05-23 08:37  phase1geo
 
-	* src/cli.c: Fixing bug 2795209.
+	* src/cli.c (1.28.6.4): Fixing bug 2795209.
 
 2009-05-23 08:21  phase1geo
 
-	* src/db.c: Attempting to fix bug 2795640.  IV and Cver regressions
-	pass with this change, but running under VCS will be required to
-	verify that the bug fix is complete.
+	* src/db.c (1.351.2.8): Attempting to fix bug 2795640.	IV and Cver
+	regressions pass with this change, but running under VCS will be
+	required to verify that the bug fix is complete.
 
 2009-05-23 08:07  phase1geo
 
-	* src/cli.c: Moving code to display current debug mode to display
-	regardless of the current debug mode.
+	* src/cli.c (1.28.6.3): Moving code to display current debug mode
+	to display regardless of the current debug mode.
 
 2009-05-22 18:05  phase1geo
 
-	* diags/rpt/generate18.rptI: file generate18.rptI was initially
+	* diags/rpt/generate18.rptI (1.1): file generate18.rptI was
+	initially added on branch stable-0_7-branch.
+
+2009-05-22 18:05  phase1geo
+
+	* diags/rpt/generate18.rptM (1.1): file generate18.rptM was
+	initially added on branch stable-0_7-branch.
+
+2009-05-22 18:05  phase1geo
+
+	* diags/cdd/generate18.cdd (1.1): file generate18.cdd was initially
 	added on branch stable-0_7-branch.
 
 2009-05-22 18:05  phase1geo
 
-	* diags/rpt/generate18.rptM: file generate18.rptM was initially
-	added on branch stable-0_7-branch.
-
-2009-05-22 18:05  phase1geo
-
-	* diags/cdd/generate18.cdd: file generate18.cdd was initially added
-	on branch stable-0_7-branch.
-
-2009-05-22 18:05  phase1geo
-
-	* diags/: cdd/generate18.cdd, rpt/generate18.rptI,
-	rpt/generate18.rptM, verilog/generate18.v: Adding generate18 files
-	from IV run (which works).  The VCS run will not work at this time,
-	however, due to bug 2795640.
+	* diags/: cdd/generate18.cdd (1.1.2.1), rpt/generate18.rptI
+	(1.1.2.1), rpt/generate18.rptM (1.1.2.1), verilog/generate18.v
+	(1.1.2.4): Adding generate18 files from IV run (which works).  The
+	VCS run will not work at this time, however, due to bug 2795640.
 
 2009-05-22 17:52  phase1geo
 
-	* diags/regress/generate16.2.cfg: file generate16.2.cfg was
+	* diags/regress/generate16.2.cfg (1.1): file generate16.2.cfg was
 	initially added on branch stable-0_7-branch.
 
 2009-05-22 17:52  phase1geo
 
-	* diags/rpt/generate16.2.rptM: file generate16.2.rptM was initially
-	added on branch stable-0_7-branch.
-
-2009-05-22 17:52  phase1geo
-
-	* diags/rpt/generate16.3.rptM: file generate16.3.rptM was initially
-	added on branch stable-0_7-branch.
-
-2009-05-22 17:52  phase1geo
-
-	* diags/rpt/generate16.2.rptI: file generate16.2.rptI was initially
-	added on branch stable-0_7-branch.
-
-2009-05-22 17:52  phase1geo
-
-	* diags/verilog/generate16.2.v: file generate16.2.v was initially
-	added on branch stable-0_7-branch.
-
-2009-05-22 17:52  phase1geo
-
-	* diags/verilog/generate16.3.v: file generate16.3.v was initially
-	added on branch stable-0_7-branch.
-
-2009-05-22 17:52  phase1geo
-
-	* diags/rpt/generate16.3.rptI: file generate16.3.rptI was initially
-	added on branch stable-0_7-branch.
-
-2009-05-22 17:52  phase1geo
-
-	* diags/regress/generate16.3.cfg: file generate16.3.cfg was
+	* diags/rpt/generate16.2.rptM (1.1): file generate16.2.rptM was
 	initially added on branch stable-0_7-branch.
 
 2009-05-22 17:52  phase1geo
 
-	* diags/cdd/generate16.2.cdd: file generate16.2.cdd was initially
-	added on branch stable-0_7-branch.
+	* diags/rpt/generate16.3.rptM (1.1): file generate16.3.rptM was
+	initially added on branch stable-0_7-branch.
 
 2009-05-22 17:52  phase1geo
 
-	* diags/cdd/afunc2.cdd, diags/cdd/generate16.2.cdd,
-	diags/cdd/generate16.3.cdd, diags/regress/Makefile,
-	diags/regress/generate16.2.cfg, diags/regress/generate16.3.cfg,
-	diags/rpt/generate16.2.rptI, diags/rpt/generate16.2.rptM,
-	diags/rpt/generate16.3.rptI, diags/rpt/generate16.3.rptM,
-	diags/verilog/generate16.2.v, diags/verilog/generate16.3.v,
-	diags/verilog/generate18.v, src/gen_item.c, src/param.c: Fixing bug
-	2795583.  Added generate16.2 and generate16.3 diagnostics to
-	regression suite to verify the fix.
+	* diags/rpt/generate16.2.rptI (1.1): file generate16.2.rptI was
+	initially added on branch stable-0_7-branch.
 
 2009-05-22 17:52  phase1geo
 
-	* diags/cdd/generate16.3.cdd: file generate16.3.cdd was initially
-	added on branch stable-0_7-branch.
+	* diags/verilog/generate16.2.v (1.1): file generate16.2.v was
+	initially added on branch stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	* diags/verilog/generate16.3.v (1.1): file generate16.3.v was
+	initially added on branch stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	* diags/rpt/generate16.3.rptI (1.1): file generate16.3.rptI was
+	initially added on branch stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	* diags/regress/generate16.3.cfg (1.1): file generate16.3.cfg was
+	initially added on branch stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	* diags/cdd/generate16.2.cdd (1.1): file generate16.2.cdd was
+	initially added on branch stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	* diags/cdd/afunc2.cdd (1.2.2.3), diags/cdd/generate16.2.cdd
+	(1.1.2.1), diags/cdd/generate16.3.cdd (1.1.2.1),
+	diags/regress/Makefile (1.369.2.34), diags/regress/generate16.2.cfg
+	(1.1.2.1), diags/regress/generate16.3.cfg (1.1.2.1),
+	diags/rpt/generate16.2.rptI (1.1.2.1), diags/rpt/generate16.2.rptM
+	(1.1.2.1), diags/rpt/generate16.3.rptI (1.1.2.1),
+	diags/rpt/generate16.3.rptM (1.1.2.1), diags/verilog/generate16.2.v
+	(1.1.2.1), diags/verilog/generate16.3.v (1.1.2.1),
+	diags/verilog/generate18.v (1.1.2.3), src/gen_item.c (1.75.2.5),
+	src/param.c (1.118.2.3): Fixing bug 2795583.  Added generate16.2
+	and generate16.3 diagnostics to regression suite to verify the fix.
+
+2009-05-22 17:52  phase1geo
+
+	* diags/cdd/generate16.3.cdd (1.1): file generate16.3.cdd was
+	initially added on branch stable-0_7-branch.
 
 2009-05-22 14:59  phase1geo
 
-	* src/comb.c: Fixing compile warning.
+	* src/comb.c (1.219.2.6): Fixing compile warning.
 
 2009-05-21 22:34  phase1geo
 
-	* src/comb.c: First attempt to fix bug 2795089.  Initializing
-	allocated arrays when they are resized beyond 1 greater than the
-	current size.
+	* src/comb.c (1.219.2.5): First attempt to fix bug 2795089. 
+	Initializing allocated arrays when they are resized beyond 1
+	greater than the current size.
 
 2009-05-21 22:17  phase1geo
 
-	* scripts/preferences.tcl: Fixing bug 2795086.
+	* scripts/preferences.tcl (1.28.4.2): Fixing bug 2795086.
 
 2009-05-21 21:51  phase1geo
 
-	* scripts/wizard.tcl: Fixing bug 2795088.  Wizard window is now
-	destroyed prior to triggering the specified action.
+	* scripts/wizard.tcl (1.3.6.2): Fixing bug 2795088.  Wizard window
+	is now destroyed prior to triggering the specified action.
 
 2009-05-21 01:00  phase1geo
 
-	* diags/cdd/bug2794588.cdd, diags/regress/Makefile,
-	diags/regress/bug2794588.cfg, diags/regress/generate18.cfg,
-	diags/rpt/bug2794588.rptI, diags/rpt/bug2794588.rptM,
-	diags/verilog/bug2794588.v, diags/verilog/generate18.v,
-	diags/verilog/lib/top.v, src/expr.c, src/search.c: Integrating bug
-	fixes from stable branch.
+	* diags/cdd/bug2794588.cdd (1.2), diags/regress/Makefile (1.405),
+	diags/regress/bug2794588.cfg (1.2), diags/regress/generate18.cfg
+	(1.2), diags/rpt/bug2794588.rptI (1.2), diags/rpt/bug2794588.rptM
+	(1.2), diags/verilog/bug2794588.v (1.2), diags/verilog/generate18.v
+	(1.2), diags/verilog/lib/top.v (1.2), src/expr.c (1.415),
+	src/search.c (1.56): Integrating bug fixes from stable branch.
 
 2009-05-21 00:30  phase1geo
 
-	* diags/regress/bug2794588.cfg: file bug2794588.cfg was initially
-	added on branch stable-0_7-branch.
+	* diags/regress/bug2794588.cfg (1.1): file bug2794588.cfg was
+	initially added on branch stable-0_7-branch.
 
 2009-05-21 00:30  phase1geo
 
-	* diags/regress/bug2794588.cfg: Adding missing file.
+	* diags/regress/bug2794588.cfg (1.1.2.1): Adding missing file.
 
 2009-05-21 00:27  phase1geo
 
-	* src/expr.c: Second attempt to fix bug 2794684.
+	* src/expr.c (1.386.2.11): Second attempt to fix bug 2794684.
 
 2009-05-20 22:59  phase1geo
 
-	* diags/verilog/generate18.v, src/expr.c: Fixing bug 2794684.
+	* diags/verilog/generate18.v (1.1.2.2), src/expr.c (1.386.2.10):
+	Fixing bug 2794684.
 
 2009-05-20 21:54  phase1geo
 
-	* diags/rpt/bug2794588.rptI: file bug2794588.rptI was initially
+	* diags/rpt/bug2794588.rptI (1.1): file bug2794588.rptI was
+	initially added on branch stable-0_7-branch.
+
+2009-05-20 21:54  phase1geo
+
+	* diags/verilog/bug2794588.v (1.1): file bug2794588.v was initially
 	added on branch stable-0_7-branch.
 
 2009-05-20 21:54  phase1geo
 
-	* diags/verilog/bug2794588.v: file bug2794588.v was initially added
-	on branch stable-0_7-branch.
+	* diags/rpt/bug2794588.rptM (1.1): file bug2794588.rptM was
+	initially added on branch stable-0_7-branch.
 
 2009-05-20 21:54  phase1geo
 
-	* diags/rpt/bug2794588.rptM: file bug2794588.rptM was initially
-	added on branch stable-0_7-branch.
+	* diags/verilog/lib/top.v (1.1): file top.v was initially added on
+	branch stable-0_7-branch.
 
 2009-05-20 21:54  phase1geo
 
-	* diags/verilog/lib/top.v: file top.v was initially added on branch
-	stable-0_7-branch.
+	* diags/cdd/bug2794588.cdd (1.1.2.1), diags/regress/Makefile
+	(1.369.2.33), diags/rpt/bug2794588.rptI (1.1.2.1),
+	diags/rpt/bug2794588.rptM (1.1.2.1), diags/verilog/bug2794588.v
+	(1.1.2.1), diags/verilog/lib/top.v (1.1.2.1), src/search.c
+	(1.51.2.2): Fixing bug 2794588.
 
 2009-05-20 21:54  phase1geo
 
-	* diags/cdd/bug2794588.cdd, diags/regress/Makefile,
-	diags/rpt/bug2794588.rptI, diags/rpt/bug2794588.rptM,
-	diags/verilog/bug2794588.v, diags/verilog/lib/top.v, src/search.c:
-	Fixing bug 2794588.
-
-2009-05-20 21:54  phase1geo
-
-	* diags/cdd/bug2794588.cdd: file bug2794588.cdd was initially added
-	on branch stable-0_7-branch.
-
-2009-05-20 17:26  phase1geo
-
-	* diags/regress/generate18.cfg: file generate18.cfg was initially
+	* diags/cdd/bug2794588.cdd (1.1): file bug2794588.cdd was initially
 	added on branch stable-0_7-branch.
 
 2009-05-20 17:26  phase1geo
 
-	* diags/verilog/generate18.v: file generate18.v was initially added
-	on branch stable-0_7-branch.
+	* diags/regress/generate18.cfg (1.1): file generate18.cfg was
+	initially added on branch stable-0_7-branch.
 
 2009-05-20 17:26  phase1geo
 
-	* diags/: regress/Makefile, regress/generate18.cfg,
-	verilog/generate18.v: Adding generate18 which reproduces a bug in
-	Covered's generate statement handler.
+	* diags/verilog/generate18.v (1.1): file generate18.v was initially
+	added on branch stable-0_7-branch.
+
+2009-05-20 17:26  phase1geo
+
+	* diags/: regress/Makefile (1.369.2.32), regress/generate18.cfg
+	(1.1.2.1), verilog/generate18.v (1.1.2.1): Adding generate18 which
+	reproduces a bug in Covered's generate statement handler.
 
 2009-05-18 17:39  phase1geo
 
-	* diags/: regress/Makefile, verilog/Makefile: Adding support for
-	vcomp to regression Makefiles even though vcomp itself isn't
-	behaving well.
+	* diags/: regress/Makefile (1.404), verilog/Makefile (1.210):
+	Adding support for vcomp to regression Makefiles even though vcomp
+	itself isn't behaving well.
 
 2009-05-18 00:07  phase1geo
 
-	* diags/regress/: Makefile, report2.pl, report3.1.pl, report3.pl,
-	report4.1.pl, report4.2.pl, report4.pl, report5.pl, report6.pl,
-	report7.1.pl, report7.pl, report8.pl: Completing Veriwell
+	* diags/regress/: Makefile (1.403), report2.pl (1.3), report3.1.pl
+	(1.3), report3.pl (1.3), report4.1.pl (1.3), report4.2.pl (1.3),
+	report4.pl (1.3), report5.pl (1.3), report6.pl (1.3), report7.1.pl
+	(1.3), report7.pl (1.3), report8.pl (1.3): Completing Veriwell
 	integration work.
 
 2009-05-16 23:17  phase1geo
 
-	* diags/regress/: Makefile, exclude10.1.pl, exclude10.2.pl,
-	exclude10.3.1.pl, exclude10.3.2.pl, exclude10.3.3.pl,
-	exclude10.3.pl, exclude10.4.pl, exclude10.5.pl, exclude10.pl,
-	exclude11.pl, exclude12.1.pl, exclude12.2.pl, exclude12.3.pl,
-	exclude12.4.pl, exclude12.5.pl, exclude12.6.pl, exclude12.pl,
-	exclude13.pl, exclude14.pl: Updating regression Makefile to add
-	Veriwell support.  Modified diagnostic adding approach.
+	* diags/regress/: Makefile (1.402), exclude10.1.pl (1.3),
+	exclude10.2.pl (1.3), exclude10.3.1.pl (1.2), exclude10.3.2.pl
+	(1.2), exclude10.3.3.pl (1.2), exclude10.3.pl (1.4), exclude10.4.pl
+	(1.3), exclude10.5.pl (1.3), exclude10.pl (1.3), exclude11.pl
+	(1.2), exclude12.1.pl (1.2), exclude12.2.pl (1.2), exclude12.3.pl
+	(1.2), exclude12.4.pl (1.2), exclude12.5.pl (1.2), exclude12.6.pl
+	(1.2), exclude12.pl (1.2), exclude13.pl (1.2), exclude14.pl (1.2):
+	Updating regression Makefile to add Veriwell support.  Modified
+	diagnostic adding approach.
 
 2009-05-14 17:56  phase1geo
 
-	* diags/regress/Makefile: Reworking the Makefile to make it easier
-	to add support for different simulators and for ease in maintaining
-	the diagnostic list.  This is a work in progress.  Checkpointing.
+	* diags/regress/Makefile (1.401): Reworking the Makefile to make it
+	easier to add support for different simulators and for ease in
+	maintaining the diagnostic list.  This is a work in progress. 
+	Checkpointing.
 
 2009-05-14 17:38  phase1geo
 
-	* diags/: regress/Makefile, verilog/Makefile: Fixing support for
-	running Veriwell in regressions.
+	* diags/: regress/Makefile (1.400), verilog/Makefile (1.209):
+	Fixing support for running Veriwell in regressions.
 
 2009-05-14 17:26  phase1geo
 
-	* diags/cdd/line1.cdd, diags/err/bug2791651.err,
-	diags/regress/Makefile, diags/regress/bug2791651.cfg,
-	diags/verilog/bug2791651.v, diags/verilog/line1.v,
-	diags/verilog/test.v, src/lexer.l, src/parser.y: Integrating bug
-	fixes from stable branch.
+	* diags/cdd/line1.cdd (1.29), diags/err/bug2791651.err (1.2),
+	diags/regress/Makefile (1.399), diags/regress/bug2791651.cfg (1.2),
+	diags/verilog/bug2791651.v (1.2), diags/verilog/line1.v (1.6),
+	diags/verilog/test.v (1.9), src/lexer.l (1.143), src/parser.y
+	(1.376): Integrating bug fixes from stable branch.
 
 2009-05-14 16:42  phase1geo
 
-	* diags/cdd/line1.cdd, diags/verilog/line1.v, src/lexer.l: Fixing
-	bug 2791599.
+	* diags/cdd/line1.cdd (1.24.2.2), diags/verilog/line1.v (1.5.16.1),
+	src/lexer.l (1.121.4.5): Fixing bug 2791599.
 
 2009-05-14 13:46  phase1geo
 
-	* diags/verilog/bug2791651.v: file bug2791651.v was initially added
-	on branch stable-0_7-branch.
-
-2009-05-14 13:46  phase1geo
-
-	* diags/err/bug2791651.err: file bug2791651.err was initially added
-	on branch stable-0_7-branch.
-
-2009-05-14 13:46  phase1geo
-
-	* diags/err/bug2791651.err, diags/regress/Makefile,
-	diags/regress/bug2791651.cfg, diags/verilog/bug2791651.v,
-	src/parser.y: Fixing bug 2791651.  Added bug2791651 diagnostic to
-	verify the fix.  This bug can rear up in a LOT of scenarios.  We
-	may need to eventually add tests to verify that all cases are
-	fixed.
-
-2009-05-14 13:46  phase1geo
-
-	* diags/regress/bug2791651.cfg: file bug2791651.cfg was initially
+	* diags/verilog/bug2791651.v (1.1): file bug2791651.v was initially
 	added on branch stable-0_7-branch.
+
+2009-05-14 13:46  phase1geo
+
+	* diags/err/bug2791651.err (1.1): file bug2791651.err was initially
+	added on branch stable-0_7-branch.
+
+2009-05-14 13:46  phase1geo
+
+	* diags/err/bug2791651.err (1.1.2.1), diags/regress/Makefile
+	(1.369.2.31), diags/regress/bug2791651.cfg (1.1.2.1),
+	diags/verilog/bug2791651.v (1.1.2.1), src/parser.y (1.310.4.12):
+	Fixing bug 2791651.  Added bug2791651 diagnostic to verify the fix.
+	 This bug can rear up in a LOT of scenarios.  We may need to
+	eventually add tests to verify that all cases are fixed.
+
+2009-05-14 13:46  phase1geo
+
+	* diags/regress/bug2791651.cfg (1.1): file bug2791651.cfg was
+	initially added on branch stable-0_7-branch.
 
 2009-05-14 08:42  phase1geo
 
-	* Makefile.in, aclocal.m4, configure, configure.in,
-	doc/Makefile.in, doc/docbook/Makefile.in, lib/Makefile.in,
-	scripts/Makefile.in, src/Makefile.in: Updating build files and
-	bumping up version number to 0.7.2.
+	* Makefile.in (1.108.2.3), aclocal.m4 (1.99.2.3), configure
+	(1.157.2.4), configure.in (1.94.2.4), doc/Makefile.in (1.93.2.3),
+	doc/docbook/Makefile.in (1.16.2.3), lib/Makefile.in (1.73.2.3),
+	scripts/Makefile.in (1.94.2.3), src/Makefile.in (1.137.2.3):
+	Updating build files and bumping up version number to 0.7.2.
 
 2009-05-14 00:06  phase1geo
 
-	* src/parser.y: More fixes to the inlined code generator to allow
-	the generator to be Verilator compatible.  This is still a work in
-	progress.  Checkpointing.
+	* src/parser.y (1.375): More fixes to the inlined code generator to
+	allow the generator to be Verilator compatible.  This is still a
+	work in progress.  Checkpointing.
 
 2009-05-13 21:42  phase1geo
 
-	* diags/cdd/always15.cdd, diags/cdd/always_comb1.cdd,
-	diags/cdd/always_comb2.cdd, diags/cdd/always_ff1.cdd,
-	diags/cdd/always_latch1.cdd, diags/cdd/always_latch2.cdd,
-	diags/cdd/assert1.cdd, diags/cdd/bit1.cdd, diags/cdd/byte1.cdd,
-	diags/cdd/char1.cdd, diags/cdd/generate16.cdd,
-	diags/cdd/generate17.cdd, diags/cdd/implicit2.cdd,
-	diags/cdd/int1.cdd, diags/cdd/logic1.cdd, diags/cdd/longint1.cdd,
-	diags/cdd/rassign2.cdd, diags/cdd/shortint1.cdd,
-	diags/cdd/time1.1.cdd, diags/cdd/time1.cdd, diags/regress/Makefile,
-	diags/regress/always15.cfg, diags/rpt/always15.rptI,
-	diags/rpt/always15.rptM, diags/rpt/implicit2.rptI,
-	diags/rpt/implicit2.rptM, diags/rpt/time1.1.rptI,
-	diags/rpt/time1.1.rptM, diags/rpt/time1.rptI, diags/rpt/time1.rptM,
-	diags/verilog/always15.v, diags/verilog/regress_subs.pl,
-	src/expr.c, src/generator.c, src/parser.y: Integrating changes from
-	stable branch.	Also starting to work on inlined code coverage
-	generation compatibility with simulators like Verilator which only
-	support synthesizable Verilog.	Still have work to do here. 
-	Checkpointing.
+	* diags/cdd/always15.cdd (1.2), diags/cdd/always_comb1.cdd (1.29),
+	diags/cdd/always_comb2.cdd (1.9), diags/cdd/always_ff1.cdd (1.30),
+	diags/cdd/always_latch1.cdd (1.29), diags/cdd/always_latch2.cdd
+	(1.9), diags/cdd/assert1.cdd (1.27), diags/cdd/bit1.cdd (1.24),
+	diags/cdd/byte1.cdd (1.24), diags/cdd/char1.cdd (1.24),
+	diags/cdd/generate16.cdd (1.5), diags/cdd/generate17.cdd (1.3),
+	diags/cdd/implicit2.cdd (1.49), diags/cdd/int1.cdd (1.24),
+	diags/cdd/logic1.cdd (1.23), diags/cdd/longint1.cdd (1.24),
+	diags/cdd/rassign2.cdd (1.10), diags/cdd/shortint1.cdd (1.24),
+	diags/cdd/time1.1.cdd (1.16), diags/cdd/time1.cdd (1.15),
+	diags/regress/Makefile (1.398), diags/regress/always15.cfg (1.2),
+	diags/rpt/always15.rptI (1.2), diags/rpt/always15.rptM (1.2),
+	diags/rpt/implicit2.rptI (1.19), diags/rpt/implicit2.rptM (1.18),
+	diags/rpt/time1.1.rptI (1.4), diags/rpt/time1.1.rptM (1.4),
+	diags/rpt/time1.rptI (1.2), diags/rpt/time1.rptM (1.2),
+	diags/verilog/always15.v (1.2), diags/verilog/regress_subs.pl
+	(1.20), src/expr.c (1.414), src/generator.c (1.93), src/parser.y
+	(1.374): Integrating changes from stable branch.  Also starting to
+	work on inlined code coverage generation compatibility with
+	simulators like Verilator which only support synthesizable Verilog.
+	 Still have work to do here.  Checkpointing.
 
 2009-05-10 22:21  phase1geo
 
-	* NEWS: Updating NEWS.
+	* NEWS (1.56): Updating NEWS.
 
 2009-05-10 22:20  phase1geo
 
-	* covered.spec, doc/Makefile.am: Updating from stable branch.
+	* covered.spec (1.12), doc/Makefile.am (1.11): Updating from stable
+	branch.
 
 2009-05-10 22:18  phase1geo
 
-	* covered.spec, doc/Makefile.am: Updating covered.spec and
-	documentation Makefile.am for rpmbuild changes.
+	* covered.spec (1.11.2.2), doc/Makefile.am (1.10.4.1): Updating
+	covered.spec and documentation Makefile.am for rpmbuild changes.
 
 2009-05-10 21:32  phase1geo
 
-	* covered.spec: Changing Copyright keyword to License in
+	* covered.spec (1.11.2.1): Changing Copyright keyword to License in
 	covered.spec file.
 
 2009-05-07 10:47  phase1geo
 
-	* NEWS: Updating NEWS for 0.7.1 stable release.
+	* NEWS (1.55.2.2): Updating NEWS for 0.7.1 stable release.
 

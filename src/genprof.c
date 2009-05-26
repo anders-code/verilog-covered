@@ -165,6 +165,8 @@ profiler profiles[NUM_PROFILES] = {
   {"db_set_symbol_char", NULL, 0, 0, 0, TRUE},
   {"db_set_symbol_string", NULL, 0, 0, 0, TRUE},
   {"db_do_timestep", NULL, 0, 0, 0, TRUE},
+  {"db_create_nonblock_assign_list", NULL, 0, 0, 0, TRUE},
+  {"db_add_nonblock_assign", NULL, 0, 0, 0, TRUE},
   {"enumerate_add_item", NULL, 0, 0, 0, TRUE},
   {"enumerate_end_list", NULL, 0, 0, 0, TRUE},
   {"enumerate_resolve", NULL, 0, 0, 0, TRUE},

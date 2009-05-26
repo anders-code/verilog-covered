@@ -221,5 +221,15 @@ void db_set_symbol_string( const char* sym, const char* value );
 /*! \brief Performs a timestep for all signal changes during this timestep. */
 bool db_do_timestep( uint64 time, bool final ); 
 
+/*! \brief Creates a non-blocking assignment structure and adds it to the list. */
+nonblock_assign* db_add_nonblock_assign(
+  vsignal* lhs_sig,
+  int      lhs_lsb,
+  int      lhs_msb,
+  vector*  rhs_vec,
+  int      rhs_lsb,
+  int      rhs_msb
+);
+
 #endif
 
