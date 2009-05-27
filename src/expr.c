@@ -500,6 +500,7 @@ void expression_create_nba(
   nba->lhs_sig         = lhs_sig;
   nba->rhs_vec         = rhs_vec;
   nba->suppl.is_signed = (expr->op == EXP_OP_SIG) ? rhs_vec->suppl.part.is_signed : FALSE;
+  nba->suppl.added     = 0;
 
   /* Now change the elem pointer from a dim to a dim_nba */
   expr->elem.dim_nba      = (dim_and_nba*)malloc_safe( sizeof( dim_and_nba ) );

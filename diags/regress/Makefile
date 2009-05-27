@@ -29,16 +29,17 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 always3         always3.1.11A   always4         always5         always6 \
                 always7         always7.1       always8         always9         always10 \
                 always11        always11.1      always11.2      always12        always13 \
-                always15        ashift1         ashift2         ashift3         ashift4         assign2 \
-                assign2.1       assign2.2       assign2.3       assign2.4       assign2.5 \
-                assign2.6       assign2.7       assign2.9       assign3.2A      bassign1 \
-                bassign2        bassign3        block1          bug2794588      case1           case1.1 \
-                case1.2         case1.3         case2           case3           case3.1 \
-                case3.2         case3.3         case3.4         case4           case4.1 \
-                case5           case6           casex1          casex1.1        casex1.2        casex1.3 \
-                casex1.4        casex2          casex3          casez1          casez1.1        casez1.2 \
-                casez1.3        casez1.4        casez2          casez3          casez4 \
-                casez5          ceq1            cne1            compx1          compx1.1        compx1.2 \
+                always15        ashift1         ashift2         ashift3         ashift4 \
+                assign2         assign2.1       assign2.2       assign2.3       assign2.4 \
+                assign2.5       assign2.6       assign2.7       assign2.9       assign3.2A \
+                bassign1        bassign2        bassign3        block1          bug2794588 \
+                case1           case1.1         case1.2         case1.3         case2 \
+                case3           case3.1         case3.2         case3.3         case3.4 \
+                case4           case4.1         case5           case6           casex1 \
+                casex1.1        casex1.2        casex1.3        casex1.4        casex2 \
+                casex3          casez1          casez1.1        casez1.2        casez1.3 \
+                casez1.4        casez2          casez3          casez4          casez5 \
+                ceq1            cne1            compx1          compx1.1        compx1.2 \
                 compx1.3        concat1         concat2         concat3         concat4.1 \
                 concat4.2       concat5         concat6         concat7         concat8 \
                 cond1           cond2           cond3           cond3.1         cond3.2 \
@@ -47,71 +48,70 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 define6         define6.1       disable1        disable1.1      disable2 \
                 disable2.1      disable3        display1        div1            dly_assign1 \
                 endian1         endian2         endian3         endian4         event1 \
-                event1.1        exclude1 \
-                exclude2        exclude3        exclude4        exclude6        exclude6.1 \
-                exclude7        exclude7.1      exclude7.2      exclude8        exclude8.1 \
-                exclude9        exclude9.1      exclude9.2      exclude9.3      exclude9.4 \
-                exclude9.5      exclude9.6      exclude9.7      exclude9.8      exclude9.9 \
-                exclude10       exclude10.1     exclude10.2     exclude10.3     exclude10.3.1 \
-                exclude10.3.2   exclude10.3.3   exclude10.4     exclude11       exclude12 \
-                exclude12.1     exclude12.2     exclude12.3     exclude12.4     exclude12.6 \
-                exclude13       exclude14       expand1         expand2         expand3 \
-                expand4         expand4.1       expand4.2       expand4.3       expand4.4 \
-                fdisplay1       finish1         for1            for2            forever1 \
-                fork1           fork2           fsm3            fsm4            fsm4.1 \
-                fsm5            fsm5.1          fsm5.2          fsm5.3          fsm11 \
-                fstrobe1        func1           func2           func5           fwrite1 \
-                gate1           hier1           hier3.1         hier3.2         hier3.3 \
-                hier3.4         hier4           if1             ifdef1          ifdef1.2 \
-                ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         ifndef1 \
-                implicit2.1     include1        include1.1      include2        include4 \
-                include5        initial1        instance1 \
+                event1.1        exclude1        exclude2        exclude3        exclude4 \
+                exclude6        exclude6.1      exclude7        exclude7.1      exclude7.2 \
+                exclude8        exclude8.1      exclude9        exclude9.1      exclude9.2 \
+                exclude9.3      exclude9.4      exclude9.5      exclude9.6      exclude9.7 \
+                exclude9.8      exclude9.9      exclude10       exclude10.1     exclude10.2 \
+                exclude10.3     exclude10.3.1   exclude10.3.2   exclude10.3.3   exclude10.4 \
+                exclude11       exclude12       exclude12.1     exclude12.2     exclude12.3 \
+                exclude12.4     exclude12.6     exclude13       exclude14       expand1 \
+                expand2         expand3         expand4         expand4.1       expand4.2 \
+                expand4.3       expand4.4       fdisplay1       finish1         for1 \
+                for2            forever1        fork1           fork2           fsm3 \
+                fsm4            fsm4.1          fsm5            fsm5.1          fsm5.2 \
+                fsm5.3          fsm11           fstrobe1        func1           func2 \
+                func5           fwrite1         gate1           hier1           hier3.1 \
+                hier3.2         hier3.3         hier3.4         hier4           if1 \
+                ifdef1          ifdef1.2        ifdef2.1        ifdef2.2        ifdef2.3 \
+                ifelse1         ifndef1         implicit2.1     include1        include1.1 \
+                include2        include4        include5        initial1        instance1 \
                 instance1.1     instance1.2     instance2       instance3       instance4 \
                 instance4.1     instance4.2     instance5       instance6       instance6.1 \
                 instance6.2     instance7       long_exp1       long_exp2       long_exp3 \
-                long_exp4       lshift1         lshift1.1       lshift1.2       lshift2         lshift2.1 \
-                lshift2.2       lshift2.3       lshift3         lshift3.1       lshift3.2 \
-                lshift3.3       lshift4         lshift4.1       lshift4.2       lshift4.3 \
-                lshift5         mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1 \
-                mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel7 \
-                mbit_sel9       mbit_sel9.1     mbit_sel9.2     mem1            mem2 \
-                mem6            mod1            monitor1        monitor1.1      msg1            mult1 \
-                mult2           multi_exp1      multi_exp1.1    multi_exp1.2    multi_exp1.3 \
-                multi_exp1.4    multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8 \
-                multi_exp1.9    multi_exp1.10   multi_exp1.11   multi_exp1.12   multi_exp1.13 \
-                multi_exp1.14   multi_exp1.15   multi_exp2      multi_exp2.1    multi_exp3 \
-                multi_exp4      named_block1    named_block2    named_block3    named_block4 \
-                negate1         negate2         nedge1          nested_block1   nested_block2 \
-                nested_block2.1 nested_block3   not1            null_stmt1      null_stmt1.1 \
-                null_stmt1.2    null_stmt1.3    null_stmt1.5    null_stmt1.6    null_stmt1.7 \
-                null_stmt1.8    null_stmt1.9    null_stmt1.10   param1          param1.1 \
-                param1.2        param1.3        param3          param3.1        param3.2 \
-                param3.3        param3.4        param3.5        param4          param4.1 \
-                param5          param6          param6.1        param7          param8 \
-                param8.1        param9          param9.1        param9.2        param10 \
-                param10.2       param10.3       param10.4       param11         param13 \
-                param13.1       param14         param15         param16         param17 \
-                param17.1       pedge1          port1           port3           printtimescale1 \
-                pulldown1       pullup1         random1         random1.1       random2 \
-                random2.1       random3         random3.1       rassign1        rassign2 \
-                real1           real2           real2.1         real3           real3.1 \
-                real3.2         real3.3         real3.4         real3.5         real3.6 \
-                real3.7         real3.8         real5           real5.1         real5.2 \
-                real5.3         real5.4         real5.5         real5.6         real5.7 \
-                real5.8         real5.9         real5.10        real6           real6.1 \
-                real6.2         real6.3         real6.4         real6.5         real6.6 \
-                real6.7         real6.8         real6.9         real7           repeat1 \
-                repeat2         repeat3         report1         report2         report3 \
-                report3.1       report4.2       report5         report6         report7 \
-                report7.1       report8         rshift1         rshift1.1       rshift1.2 \
-                rshift1.3       rshift2         rshift2.1       rshift2.2       rshift2.3 \
-                rshift3         rshift3.1       rshift4         rshift4.1       rshift4.2 \
-                rshift5         sbit_sel1       sbit_sel1.1     sbit_sel2       sbit_sel3 \
-                sbit_sel3.1     sbit_sel4       sbit_sel4.1     sbit_sel4.2     sbit_sel4.3 \
-                score_env1      score_ts1       signed1         signed3         signed3.1 \
-                signed3.2       signed3.3       signed3.4       signed3.5       signed3.6 \
-                signed4         signed4.2       signed5         signed6         slist1 \
-                slist1.1        slist1.2 \
+                long_exp4       lshift1         lshift1.1       lshift1.2       lshift2 \
+                lshift2.1       lshift2.2       lshift2.3       lshift3         lshift3.1 \
+                lshift3.2       lshift3.3       lshift4         lshift4.1       lshift4.2 \
+                lshift4.3       lshift5         mbit_sel1       mbit_sel2       mbit_sel3 \
+                mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3 \
+                mbit_sel7       mbit_sel9       mbit_sel9.1     mbit_sel9.2     mem1 \
+                mem2            mem6            mem6.1          mod1            monitor1 \
+                monitor1.1      msg1            mult1           mult2           multi_exp1 \
+                multi_exp1.1    multi_exp1.2    multi_exp1.3    multi_exp1.4    multi_exp1.5 \
+                multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp1.9    multi_exp1.10 \
+                multi_exp1.11   multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15 \
+                multi_exp2      multi_exp2.1    multi_exp3      multi_exp4      named_block1 \
+                named_block2    named_block3    named_block4    negate1         negate2 \
+                nedge1          nested_block1   nested_block2   nested_block2.1 nested_block3 \
+                not1            null_stmt1      null_stmt1.1    null_stmt1.2    null_stmt1.3 \
+                null_stmt1.5    null_stmt1.6    null_stmt1.7    null_stmt1.8    null_stmt1.9 \
+                null_stmt1.10   param1          param1.1        param1.2        param1.3 \
+                param3          param3.1        param3.2        param3.3        param3.4 \
+                param3.5        param4          param4.1        param5          param6 \
+                param6.1        param7          param8          param8.1        param9 \
+                param9.1        param9.2        param10         param10.2       param10.3 \
+                param10.4       param11         param13         param13.1       param14 \
+                param15         param16         param17         param17.1       pedge1 \
+                port1           port3           printtimescale1 pulldown1       pullup1 \
+                random1         random1.1       random2         random2.1       random3 \
+                random3.1       rassign1        rassign2        real1           real2 \
+                real2.1         real3           real3.1         real3.2         real3.3 \
+                real3.4         real3.5         real3.6         real3.7         real3.8 \
+                real5           real5.1         real5.2         real5.3         real5.4 \
+                real5.5         real5.6         real5.7         real5.8         real5.9 \
+                real5.10        real6           real6.1         real6.2         real6.3 \
+                real6.4         real6.5         real6.6         real6.7         real6.8 \
+                real6.9         real7           repeat1         repeat2         repeat3 \
+                report1         report2         report3         report3.1       report4.2 \
+                report5         report6         report7         report7.1       report8 \
+                rshift1         rshift1.1       rshift1.2       rshift1.3       rshift2 \
+                rshift2.1       rshift2.2       rshift2.3       rshift3         rshift3.1 \
+                rshift4         rshift4.1       rshift4.2       rshift5         sbit_sel1 \
+                sbit_sel1.1     sbit_sel2       sbit_sel3       sbit_sel3.1     sbit_sel4 \
+                sbit_sel4.1     sbit_sel4.2     sbit_sel4.3     score_env1      score_ts1 \
+                signed1         signed3         signed3.1       signed3.2       signed3.3 \
+                signed3.4       signed3.5       signed3.6       signed4         signed4.2 \
+                signed5         signed6         slist1          slist1.1        slist1.2 \
                 slist1.3        slist2          slist3          slist3.2        slist4 \
                 static1         string1         string2         string2.1       strobe1 \
                 supply0         supply1         task1           task1.1         task2 \
@@ -123,8 +123,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 timescale2.5    timescale2.8    toggle          toggle2         toggle2.1 \
                 toggle2.2       toggle2.3       tri             tri0            tri1 \
                 triand          trigger1        trior           unary2          unary3 \
-                unsigned1       version1        version1.1      wait1           wait1.1         wait2 \
-                wand            while1          while1.1        wor             write1
+                unsigned1       version1        version1.1      wait1           wait1.1 \
+                wait2           wand            while1          while1.1        wor \
+                write1
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
@@ -331,6 +332,14 @@ endif
 # List of diagnostics that should not be run if we are using VPI
 ifdef VPI
 NOVPIDIAGS   := err5.2          err5.3          err5.4          score_err1.14   score_err1.16
+
+ifeq ($(MAKECMDGOALS),cver)
+else
+ifeq ($(MAKECMDGOALS),vcs)
+else
+NOVPIDIAGS   += generate16.2    generate16.3
+endif
+endif
 endif
                  
 # Remove filtered diagnostics
