@@ -2959,11 +2959,18 @@ void db_assign_symbol(
 
   if( (curr_instance != NULL) && (curr_instance->funit != NULL) ) {
 
+    sig_link*  sigl;
     vsignal*   sig;
     func_unit* found_funit;
     
     /* Find the signal that matches the specified signal name */
-    if( scope_find_signal( name, curr_instance->funit, &sig, &found_funit, 0 ) ) {
+    if( ((sigl = sig_link_find( name, curr_instance->funit->sig_head )) != NULL) ||
+        scope_find_signal( name, curr_instance->funit, &sig, &found_funit, 0 ) ) {
+
+      /* If the signal exists in the current scope, assign the signal pointer to our temporary pointer */
+      if( sigl != NULL ) {
+        sig = sigl->sig;
+      }
 
       /* Only add the symbol if we are not going to generate this value ourselves */
       if( (sig->suppl.part.assigned == 0)                  &&

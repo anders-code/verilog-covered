@@ -424,18 +424,25 @@ void covered_create_value_change_cb(
 
   p_cb_data   cb;
   sig_link*   vsigl;
+  vsignal*    vsig;
+  func_unit*  found_funit;
   char*       symbol;
   s_vpi_value value;
 
   /* Only add the signal if it is in our database and needs to be assigned from the simulator */
-//  if( (vsigl = sig_link_find( vpi_get_str( vpiName, sig ), curr_instance->funit->sig_head )) != NULL ) {
   if( (curr_instance->funit != NULL) &&
-      ((vsigl = sig_link_find( vpi_get_str( vpiName, sig ), curr_instance->funit->sig_head )) != NULL) &&
-      (vsigl->sig->suppl.part.assigned == 0) ) {
+      (((vsigl = sig_link_find( vpi_get_str( vpiName, sig ), curr_instance->funit->sig_head )) != NULL) ||
+       scope_find_signal( vpi_get_str( vpiName, sig ), curr_instance->funit, &vsig, &found_funit )) &&
+      (((vsigl != NULL) && (vsigl->sig->suppl.part.assigned == 0)) ||
+       ((vsig  != NULL) && (vsig->suppl.part.assigned == 0))) ) {
+
+    if( vsigl != NULL ) {
+      vsig = vsigl->sig;
+    }
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Adding callback for signal: %s", obf_sig( vsigl->sig->name ) );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Adding callback for signal: %s", obf_sig( vsig->name ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
@@ -449,7 +456,7 @@ void covered_create_value_change_cb(
     }
 
     /* Add signal/symbol to symtab database */
-    db_assign_symbol( vsigl->sig->name, symbol, ((vsigl->sig->value->width + vsigl->sig->dim[0].lsb) - 1), vsigl->sig->dim[0].lsb ); 
+    db_assign_symbol( vpi_get_str( vpiName, sig ), symbol, ((vsig->value->width + vsig->dim[0].lsb) - 1), vsig->dim[0].lsb ); 
 
     /* Get initial value of this signal and store it for later retrieval */
     if( vpi_get( vpiType, sig ) == vpiRealVar ) {
