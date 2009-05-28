@@ -423,8 +423,8 @@ void covered_create_value_change_cb(
 ) { PROFILE(COVERED_CREATE_VALUE_CHANGE_CB);
 
   p_cb_data   cb;
-  sig_link*   vsigl;
-  vsignal*    vsig;
+  sig_link*   vsigl = NULL;
+  vsignal*    vsig  = NULL;
   func_unit*  found_funit;
   char*       symbol;
   s_vpi_value value;
