@@ -1,6 +1,45 @@
 Covered-Related NEWS
 ====================
 
+    * 5/29/2009
+
+Stable release covered-0.7.2 made.  This is primarily a bug fix release with a few new features added to the CLI.  Here
+are the details of the changes.
+
+  - Fixed bug 2791651.  Memory deallocation errors occurred when syntax errors were being reported by the parser.
+  - Fixed bug 2791599.  Whitespace prior to a `line or #line directive were not being handled properly.
+  - Fixed bug 2794588.  If a module was specified in a -v option after its directory was specified by the -y option
+    to the score command, the module was not found for parsing.
+  - Fixed bug 2794684.  If a normal (not generate) case statement within a generate block will output the case expression
+    to be output to the CDD more than once, leading to internal assertion errors when the CDD file is read.
+  - Fixed bug 2795088.  When a CDD file is opened from the wizard GUI window, the open file window can be placed behind the
+    wizard window.  Instead the wizard window should disappear once a selection button has been clicked.
+  - Fixed bug 2795086.  If the user clicked on the global exclusion reason listbox when it is empty, a Tcl/Tk error message
+    box was raised.
+  - Fixed bug 2795089.  If the GUI detailed combinational logic window is used to view several expressions one after the
+    other, Covered can segfault.
+  - Fixed bug 2795583.  Score command segfaults when a module is instantiated within a generate block and overrides a
+    parameter value within the module.
+  - Fixed bug 2795640.  Variables instantiated within a generate block caused issues with Covered when simulated with VCS.
+  - Fixed bug where memory elements being assigned via non-blocking assignments were not being evaluated, leading to
+    incorrect coverage output.
+  - CLI updates/fixes:
+      - When the 'debug on' command is specified, a line specifying that the debug mode is now on is output (previously
+        nothing was output (because the debug mode was off).
+      - Changed the 'debug on' command to 'debug less' and 'debug more' where the prior only outputs the executed statements
+        and timestep information during simulation while the latter outputs what 'debug on' used to output (extremely verbose).
+      - Fixed bug 2795209.  When an unknown CLI command was specified, a memory error occurred.
+      - Fixed bug 2795215.  Status bar was attempting to be output during simulation when debug mode was turned on.  This
+        created some unreadable/messy output.
+      - Changed the 'goto <num>' command to 'goto time <num>'.
+      - Added 'goto line [<filename>:]<num>' command which simulates until the specified line number is about to be simulated.
+      - Added 'goto expr <signal> <bool_op> <value>' command which simulates until the given expression evaluates to
+        a value of true.
+      - Added support for handling the Ctrl-C interrupt when the score command is simulating with the -cli option specified.
+        In this case, simulation will immediately stop and return a CLI prompt which will allow the user to continue interacting
+        with the simulation.
+  - Updated user guide documentation to include the changes made to the CLI.
+
     * 5/7/2009
 
 Stable release covered-0.7.1 made.  This is a bug fix release only.  Here are the details:

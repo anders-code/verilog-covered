@@ -46,6 +46,10 @@
         will halt until the user has specified otherwise via command-line options. After entering a command-line option, simply press 
         return to invoke that command. In the event that the command was a step, next or continue option, resimulation will resume 
         until it reaches the next stop point.
+      </p><p>
+        During resimulation, if the -cli option is specified to the score command, the user may stop simulation at any time by hitting
+        <span class="bold"><strong>Ctrl-C</strong></span>.  This will stop the simulation and display a CLI prompt where the user may continue
+        to interact with the simulation.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.cli.commands"></a>CLI commands</h3></div></div></div><p>
         The following is a list of all of the CLI options available to the user:
       </p><div class="table"><a name="table.cli.commands"></a><p class="title"><b>Table 15.1. CLI Command-line Options</b></p><div class="table-contents"><table summary="CLI Command-line Options" border="1"><colgroup><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Option</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">
@@ -59,10 +63,22 @@
                 Advances to the next timestep if <span class="emphasis"><em>num</em></span> is not specified; otherwise, advances <span class="emphasis"><em>num</em></span> 
                 timesteps before returning to the CLI prompt.
               </td></tr><tr><td align="left">
-                goto <span class="emphasis"><em>num</em></span>
+                goto time <span class="emphasis"><em>num</em></span>
               </td><td align="left">
-                Advances to the given timestep (or the next timestep after the given value if the timestep is not executed) specified by 
+                Simulates to the given timestep (or the next timestep after the given value if the timestep is not executed) specified by 
               <span class="emphasis"><em>num</em></span>.
+              </td></tr><tr><td align="left">
+                goto line [<span class="emphasis"><em>filename</em></span>:]<span class="emphasis"><em>num</em></span>
+              </td><td align="left">
+                Simulates until the specified line is the next line to be executed.  If <span class="emphasis"><em>filename</em></span> is specified,
+                the line specified by <span class="emphasis"><em>num</em></span> within that file is the line to stop on.  If <span class="emphasis"><em>filename</em></span>
+                if not specified, the current filename is used.
+              </td></tr><tr><td align="left">
+                goto expr <span class="emphasis"><em>name bool_op value</em></span>
+              </td><td align="left">
+                Simulates until the given expression is evaluated to true where <span class="emphasis"><em>name</em></span> is the name of a signal in the
+                design to evaluate, <span class="emphasis"><em>bool_op</em></span> is a boolean operation (i.e., ==, !=, ===, !==, &lt;, &lt;=, &gt;, &gt;=), and
+                <span class="emphasis"><em>value</em></span> is a legal Verilog value (i.e., 30, 4'h0, etc.).
               </td></tr><tr><td align="left">
                 run
               </td><td align="left">
@@ -107,9 +123,12 @@
               </td><td align="left">
                 Displays the given expression and its current value where <span class="emphasis"><em>num</em></span> is the ID of the expression to output.
               </td></tr><tr><td align="left">
-                debug [on | off]
+                debug [less | more | off]
               </td><td align="left">
-                Turns verbose debug output from the simulator on or off. If 'on' or 'off' is not specified, displays the current debug mode.
+                Specifies the amount of debug information that is output during simulation.  The value of 'less' only outputs the current
+                statement that is being executed (along with line number).  The value of 'more' outputs verbose output that is really
+                only useful for the developer's of Covered.  The value of 'off' turns off all debug output during simulation.  If
+                'less', 'more', or 'off' is not specified, displays the current debug mode.
               </td></tr><tr><td align="left">
                 list [<span class="emphasis"><em>num</em></span>]
               </td><td align="left">
