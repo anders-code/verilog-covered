@@ -418,8 +418,7 @@
  </ul>
  
  \par
- Each nibble in the value array is split up into several fields.  Please refer to the description
- of a \ref nibble for more information on the bit breakout of this element.  For more information
+ Each nibble in the value array is split up into several fields.  For more information
  on the vector structure and their usage, please refer to vector.c.
  
  \par Section 5.1.2.  Signals
@@ -446,8 +445,7 @@
  to the expression's child expressions.  An expression also contains a pointer to a vector
  (which stores the expression's coverage information and current value), a pointer to a vsignal
  (if the expression is a signal type), an opcode, and a 32-bit control element called the supplemental
- field (see \ref control for bit-breakout of the supplemental field).  The expression's
- state/descriptor bits are stored in the supplemental field (for more information on
+ field.  The expression's state/descriptor bits are stored in the supplemental field (for more information on
  the supplemental field bit breakout, please refer to expr.c).  Expressions are used to calculate
  line, combinational logic and FSM coverage.
  

@@ -1,4 +1,4 @@
-%define version 0.7.2
+%define version 0.7.3
 
 Summary: Verilog code coverage analyzer
 Name: covered
@@ -10,8 +10,8 @@ Source: covered-%{version}.tar.gz
 BuildRoot: /tmp/%{name}-buildroot
 URL: http://covered.sourceforge.net
 Provides: covered
-Requires: tcl >= 8.4
-Requires: tk >= 8.4
+Requires: tcl >= 8.5
+Requires: tk >= 8.5
 
 %description
 Covered is a Verilog code-coverage utility using VCD/LXT style dumpfiles and the
