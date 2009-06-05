@@ -1,6 +1,12 @@
 Covered-Related NEWS
 ====================
 
+    * 6/4/2009
+
+Stable release covered-0.7.3 made.  This primarily fixes a few bugs in the compile of Covered "out of the box".  It
+seems that even with the regression testbench, things can still slip through the cracks :(  Anyhow, please use this
+release instead of the 0.7.2 release.
+
     * 5/29/2009
 
 Stable release covered-0.7.2 made.  This is primarily a bug fix release with a few new features added to the CLI.  Here
