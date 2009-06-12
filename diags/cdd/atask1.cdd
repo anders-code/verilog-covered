@@ -1,9 +1,9 @@
 5 14 101 4 *
-8 /home/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (atask1.vcd) 2 -o (atask1.cdd) 2 -v (atask1.v) 2 -D (DUMP)
+8 /Users/trevorw/projects/stable/covered/diags/verilog 2 -t (main) 2 -vcd (atask1.vcd) 2 -o (atask1.cdd) 2 -v (atask1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 atask1.v 8 36 1
 2 1 12 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
-1 bar 1 10 1070004 1 0 0 0 1 17 0 1 0 0 1 0
+1 bar 1 10 1070004 1 0 0 0 1 17 0 1 0 1 1 0
 4 1 1 0 0 12
 3 1 main.$u0 "main.$u0" 0 atask1.v 0 16 1
 2 2 13 7000a 1 0 21008 0 0 1 16 1 0
@@ -27,7 +27,7 @@
 2 12 30 30009 2 39 e 11 0
 2 13 32 90009 2 1 100c 0 0 1 1 a
 2 14 32 30005 0 1 1410 0 0 1 1 bar
-2 15 32 30009 2 37 e 13 14
+2 15 32 30009 2 37 1e 13 14
 2 16 31 b000b 1 1 1008 0 0 1 1 a
 2 17 31 a000a 1 1b 1004 16 0 1 18 0 1 1 0 0 0
 2 18 31 a000b 1 47 4 17 0 foo.a
