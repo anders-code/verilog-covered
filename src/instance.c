@@ -611,7 +611,7 @@ static funit_inst* instance_copy_helper(
   vector_width* range,      /*!< For arrays of instances, indicates the array range */
   bool          resolve,    /*!< Set to TRUE if newly added instance should be immediately resolved */
   bool          is_root     /*!< Set to TRUE if the from_inst is the root instance */
-) { PROFILE(INSTANCE_COPY);
+) { PROFILE(INSTANCE_COPY_HELPER);
 
   funit_inst* curr;      /* Pointer to current functional unit instance to copy */
   funit_inst* new_inst;  /* Pointer to newly created functional unit instance */
