@@ -556,7 +556,7 @@ void db_read(
                   /* Attempt to add it to the last instance tree */
                   if( (db_list[curr_db]->inst_tail == NULL) ||
                       !instance_read_add( &(db_list[curr_db]->inst_tail->inst), parent_scope, curr_funit, back ) ) {
-                    (void)inst_link_add( instance_create( curr_funit, funit_scope, inst_name_diff, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+                    (void)inst_link_add( instance_create( curr_funit, funit_scope, inst_name_diff, FALSE, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
                   }
 
                 }
@@ -682,7 +682,7 @@ void db_read(
       /* Attempt to add it to the last instance tree */
       if( (db_list[curr_db]->inst_tail == NULL) ||
           !instance_read_add( &(db_list[curr_db]->inst_tail->inst), parent_scope, curr_funit, back ) ) {
-        (void)inst_link_add( instance_create( curr_funit, funit_scope, inst_name_diff, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+        (void)inst_link_add( instance_create( curr_funit, funit_scope, inst_name_diff, FALSE, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
 
     }
@@ -1049,23 +1049,14 @@ func_unit* db_add_instance(
       Throw 0;
     }
 
-    /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
-    if( generate_top_mode > 0 ) {
-      last_gi = gen_item_create_inst( instance_create( found_funit_link->funit, scope, FALSE, range ) );
-      if( curr_gi_block != NULL ) {
-        db_gen_item_connect( curr_gi_block, last_gi );
-      } else {
-        curr_gi_block = last_gi;
+    if( (last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST) ||
+        !instance_parse_add( &last_gi->elem.inst, curr_funit, found_funit_link->funit, scope, range, FALSE, TRUE, FALSE, FALSE ) ) {
+      inst_link* instl = db_list[curr_db]->inst_head;
+      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, found_funit_link->funit, scope, range, FALSE, FALSE, FALSE, FALSE ) ) {
+        instl = instl->next;
       }
-    } else {
-      if( (last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST) || !instance_parse_add( &last_gi->elem.inst, curr_funit, found_funit_link->funit, scope, range, FALSE, TRUE ) ) {
-        inst_link* instl = db_list[curr_db]->inst_head;
-        while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, found_funit_link->funit, scope, range, FALSE, FALSE ) ) {
-          instl = instl->next;
-        }
-        if( instl == NULL ) {
-          (void)inst_link_add( instance_create( found_funit_link->funit, scope, FALSE, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
-        }
+      if( instl == NULL ) {
+        (void)inst_link_add( instance_create( found_funit_link->funit, scope, FALSE, FALSE, FALSE, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
     }
 
@@ -1078,21 +1069,22 @@ func_unit* db_add_instance(
 
     /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
     if( generate_top_mode > 0 ) {
-      last_gi = gen_item_create_inst( instance_create( funit, scope, FALSE, range ) );
+      last_gi = gen_item_create_inst( instance_create( funit, scope, FALSE, FALSE, FALSE, range ) );
       if( curr_gi_block != NULL ) {
         db_gen_item_connect( curr_gi_block, last_gi );
       } else {
         curr_gi_block = last_gi;
       }
-    } else {
-      if( (last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST) || !instance_parse_add( &last_gi->elem.inst, curr_funit, funit, scope, range, FALSE, TRUE ) ) {
-        inst_link* instl = db_list[curr_db]->inst_head;
-        while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, funit, scope, range, FALSE, FALSE ) ) {
-          instl = instl->next;
-        }
-        if( instl == NULL ) {
-          (void)inst_link_add( instance_create( funit, scope, FALSE, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
-        }
+    }
+
+    /* Add the instance to the instance tree in the proper place */
+    {
+      inst_link* instl = db_list[curr_db]->inst_head;
+      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, funit, scope, range, FALSE, FALSE, (generate_top_mode > 0), (generate_expr_mode > 0) ) ) {
+        instl = instl->next;
+      }
+      if( instl == NULL ) {
+        (void)inst_link_add( instance_create( funit, scope, FALSE, (generate_top_mode > 0), (generate_expr_mode > 0), range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
     }
 

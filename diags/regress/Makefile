@@ -337,7 +337,7 @@ ifeq ($(MAKECMDGOALS),cver)
 else
 ifeq ($(MAKECMDGOALS),vcs)
 else
-NOVPIDIAGS   += generate16.2    generate16.3
+NOVPIDIAGS   += generate16.2    generate16.3    generate19      generate19.1    generate19.2
 endif
 endif
 endif

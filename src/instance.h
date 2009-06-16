@@ -31,17 +31,29 @@ funit_inst* instance_create(
              func_unit*    funit,
              char*         inst_name,
              bool          name_diff,
+             bool          ignore,
+             bool          gend_scope,
   /*@null@*/ vector_width* range
 );
 
 /*! \brief Displays the current state of the instance tree */
-void instance_display_tree( funit_inst* root );
+void instance_display_tree(
+  funit_inst* root
+);
 
 /*! \brief Builds full hierarchy from leaf node to root. */
-void instance_gen_scope( char* scope, funit_inst* leaf, bool flatten );
+void instance_gen_scope(
+  char*       scope,
+  funit_inst* leaf,
+  bool        flatten
+);
 
 /*! \brief Finds specified scope in functional unit instance tree. */
-funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed );
+funit_inst* instance_find_scope(
+  funit_inst* root,
+  char*       scope,
+  bool        rm_unnamed
+);
 
 /*! \brief Returns instance that points to specified functional unit for each instance. */
 funit_inst* instance_find_by_funit(
@@ -82,14 +94,30 @@ funit_inst* instance_copy(
 );
 
 /*! \brief Adds new instance to specified instance tree during parse. */
-bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range,
-                         bool resolve, bool child_gend );
+bool instance_parse_add(
+  funit_inst**  root,
+  func_unit*    parent,
+  func_unit*    child,
+  char*         inst_name,
+  vector_width* range,
+  bool          resolve,
+  bool          child_gend,
+  bool          ignore_child,
+  bool          gend_scope
+);
 
 /*! \brief Resolves all instance arrays. */
-void instance_resolve( funit_inst* root );
+void instance_resolve(
+  funit_inst* root
+);
 
 /*! \brief Adds new instance to specified instance tree during CDD read. */
-bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name );
+bool instance_read_add(
+  funit_inst** root,
+  char*        parent,
+  func_unit*   child,
+  char*        inst_name
+);
 
 /*! \brief Gets the leading hierarchy scope and instance for a particular instance tree */
 void instance_get_leading_hierarchy(
@@ -115,25 +143,43 @@ void instance_db_write(
 );
 
 /*! \brief Reads in and handles an instance-only line from the database */
-void instance_only_db_read( char** line );
+void instance_only_db_read(
+  char** line
+);
 
 /*! \brief Reads in and merges an instance-only line from the database */
-void instance_only_db_merge( char** line );
+void instance_only_db_merge(
+  char** line
+);
 
 /*! \brief Removes all statement blocks that contain expressions that call the given statement */
-void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt );
+void instance_remove_stmt_blks_calling_stmt(
+  funit_inst* root,
+  statement*  stmt
+);
 
 /*! \brief Removes expressions from instance parameters within the given instance that match the given expression */
-void instance_remove_parms_with_expr( funit_inst* root, statement* stmt );
+void instance_remove_parms_with_expr(
+  funit_inst* root,
+  statement*  stmt
+);
 
 /*! \brief Outputs dumpvars to the given file for the given instance */
-void instance_output_dumpvars( FILE* vfile, funit_inst* root );
+void instance_output_dumpvars(
+  FILE*       vfile,
+  funit_inst* root
+);
 
 /*! \brief Recursively deallocates all memory for the associated instance tree */
-void instance_dealloc_tree( funit_inst* root );
+void instance_dealloc_tree(
+  funit_inst* root
+);
 
 /*! \brief Removes specified instance from tree. */
-void instance_dealloc( funit_inst* root, char* scope );
+void instance_dealloc(
+  funit_inst* root,
+  char*       scope
+);
 
 #endif
 
