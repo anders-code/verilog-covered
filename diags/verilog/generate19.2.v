@@ -1,8 +1,8 @@
 /*
- Name:        generate19.v
+ Name:        generate19.2.v
  Author:      Trevor Williams  (phase1geo@gmail.com)
  Date:        06/15/2009
- Purpose:     Verify that generated module instances with their
+ Purpose:     Verify that embedded generated module instances with their
               own subscopes are generated correctly.
 */
 
@@ -15,13 +15,13 @@ reg        clock;
 
 generate
   for( i=0; i<2; i=i+1 ) begin : U
-    foo f( clock, a[i], b[i] );
+    bar b( clock, a[i], b[i] );
   end
 endgenerate
 
 initial begin
 `ifdef DUMP
-        $dumpfile( "generate19.vcd" );
+        $dumpfile( "generate19.2.vcd" );
         $dumpvars( 0, main );
 `endif
 	a = 2'b01;
@@ -35,6 +35,28 @@ initial begin
 	clock = 1'b0;
 	forever #(2) clock = ~clock;
 end
+
+endmodule
+
+//-------------------------------------------------
+
+module bar(
+  input  wire clock,
+  input  wire a,
+  output wire b
+);
+
+genvar     i;
+wire [1:0] a1 = {2{a}} ^ 2'b10;
+wire [1:0] b1;
+
+assign b = b1[0];
+
+generate
+  for( i=0; i<2; i=i+1 ) begin : U
+    foo f( clock, a1[i], b1[i] );
+  end
+endgenerate
 
 endmodule
 

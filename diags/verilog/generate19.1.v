@@ -1,17 +1,17 @@
 /*
- Name:        generate19.v
+ Name:        generate19.1.v
  Author:      Trevor Williams  (phase1geo@gmail.com)
  Date:        06/15/2009
- Purpose:     Verify that generated module instances with their
-              own subscopes are generated correctly.
+ Purpose:     Verify that a module instantiated within both a generate block and
+              outside of a generate block are handled properly.
 */
 
 module main;
 
-genvar     i;
-reg  [1:0] a;
-wire [1:0] b;
+reg  [2:0] a;
+wire [2:0] b;
 reg        clock;
+genvar     i;
 
 generate
   for( i=0; i<2; i=i+1 ) begin : U
@@ -19,15 +19,17 @@ generate
   end
 endgenerate
 
+foo f( clock, a[2], b[2] );
+
 initial begin
 `ifdef DUMP
-        $dumpfile( "generate19.vcd" );
+        $dumpfile( "generate19.1.vcd" );
         $dumpvars( 0, main );
 `endif
-	a = 2'b01;
+	a = 3'b101;
 	#5;
-	a = 2'b10;
-        #10;
+	a = 3'b010;
+        #5;
         $finish;
 end
 
@@ -38,7 +40,7 @@ end
 
 endmodule
 
-//-------------------------------------------------
+//--------------------------------------
 
 module foo(
   input  wire clock,
@@ -46,8 +48,7 @@ module foo(
   output reg  b
 );
 
-always @(posedge clock) begin
+always @(posedge clock)
   b <= ~a;
-end
 
 endmodule
