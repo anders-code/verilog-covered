@@ -1,6 +1,18 @@
 Covered-Related NEWS
 ====================
 
+    * 6/17/2009
+
+Stable release covered-0.7.4 made.  This is a bug fix release only.
+
+  - Updated regression files for the new 2.4 version of the OVL.
+  - Fixed bug 2804585.  Memory reads in LHS part selects were not being marked for memory coverage.
+  - Fixed issue with VPI usage in a VCS simulation with generate statements.
+  - Fixed bug 2805191.  Automatic tasks/functions that manipulate variables outside of the task/function
+    can cause incorrect toggle coverage for those signals.
+  - Fixed bug 2806855.  Generate blocks generating module instantiations could lead to score command
+    errors (segfaults, internal assertion errors, etc.)
+
     * 6/4/2009
 
 Stable release covered-0.7.3 made.  This primarily fixes a few bugs in the compile of Covered "out of the box".  It

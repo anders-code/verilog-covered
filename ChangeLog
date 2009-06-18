@@ -1,11 +1,134 @@
-2009-06-03 01:20  phase1geo
+2009-06-16 17:37  phase1geo
 
-	Fixing some compile issues that occur when the --enable-debug and
-	--enable-profiling options are not specified.  Updating various
-	files for the upcoming 0.7.3 stable release.  Also fixing some
-	Doxygen errors.
+	Updating profiling defines.
 
-2009-05-29 21:18  phase1geo
+2009-06-16 17:12  phase1geo
 
-	Updating covered.spec file for 0.7.2 stable release.
+	Fixing bug 2806855.  Updated regression files per this change.
+
+2009-06-16 08:19  phase1geo
+
+	file generate19.2.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-06-16 08:19  phase1geo
+
+	file generate19.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-06-16 08:19  phase1geo
+
+	file generate19.2.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-06-16 08:19  phase1geo
+
+	file generate19.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-06-16 08:18  phase1geo
+
+	file generate19.2.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-06-16 08:18  phase1geo
+
+	file generate19.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-06-16 08:18  phase1geo
+
+	Regression updates per recent changes.
+
+2009-06-15 21:57  phase1geo
+
+	file generate19.2.v was initially added on branch
+	stable-0_7-branch.
+
+2009-06-15 21:57  phase1geo
+
+	file generate19.1.v was initially added on branch
+	stable-0_7-branch.
+
+2009-06-15 21:57  phase1geo
+
+	file generate19.2.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-06-15 21:57  phase1geo
+
+	file generate19.1.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-06-15 21:57  phase1geo
+
+	file generate19.1.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-06-15 21:57  phase1geo
+
+	file generate19.1.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-06-15 21:57  phase1geo
+
+	file generate19.1.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-06-15 21:57  phase1geo
+
+	Adding generate19.1 and generate19.2 diagnostics to test other
+	cases like generate19.
+
+2009-06-15 17:28  phase1geo
+
+	file generate19.v was initially added on branch stable-0_7-branch.
+
+2009-06-15 17:28  phase1geo
+
+	file generate19.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-06-15 17:28  phase1geo
+
+	Adding generate19 diagnostic to regression suite to hit bug
+	2806855.
+
+2009-06-11 21:31  phase1geo
+
+	Updating atask1 regression files.
+
+2009-06-11 21:08  phase1geo
+
+	Checking in fix for bug 2805191.
+
+2009-06-11 13:04  phase1geo
+
+	Missed a file from the last checkin.
+
+2009-06-11 13:03  phase1geo
+
+	Incrementing 0.7.3 release to 0.7.4 in preparation for the next
+	stable release.  Updated the INSTALL file to bring it up to date.
+
+2009-06-11 12:34  phase1geo
+
+	Updating regression files.
+
+2009-06-11 00:28  phase1geo
+
+	Fixing issue with scope_find_signal call within VPI usage.
+
+2009-06-10 23:55  phase1geo
+
+	Updating regression files for bug fix 2804585.
+
+2009-06-10 23:55  phase1geo
+
+	Fixing bug 2804585.
+
+2009-06-06 15:36  phase1geo
+
+	Updating a few regression files that fail with older versions of
+	the OVL (previous to the 2.4 release).
 
