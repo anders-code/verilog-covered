@@ -477,6 +477,18 @@ bool bind_signal(
         retval = FALSE;
       }
 
+      /*
+       If the expression is a generate expression on the LHS and the found signal is not a generate variable, emit an error message
+       and exit immediately.
+      */
+      if( (exp != NULL) && (exp->suppl.part.gen_expr == 1) && (ESUPPL_IS_LHS( exp->suppl ) == 1) && (found_sig->suppl.part.type != SSUPPL_TYPE_GENVAR) ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Attempting to bind an generate expression to a signal that is not a genvar, file %s, line %d",
+                       obf_file( funit_exp->filename ), exp_line );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      }
+
     }
 
     if( retval ) {
