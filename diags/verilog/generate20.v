@@ -14,13 +14,4 @@ generate
   end
 endgenerate
 
-initial begin
-`ifdef DUMP
-        $dumpfile( "generate20.vcd" );
-        $dumpvars( 0, main );
-`endif
-        #10;
-        $finish;
-end
-
 endmodule
