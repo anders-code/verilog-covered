@@ -8,10 +8,7 @@
 
 module main;
 
-reg i;
-
 generate
-  genvar i;
   for( i=0; i<16; i=i+1 ) begin : U
     reg a;
   end

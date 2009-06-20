@@ -189,7 +189,7 @@ NOSIMERRLIST  = bug2791651      comment1        enum2           err4            
                 gen33           gen33.1         gen34           gen34.1         gen35 \
                 gen35.1         gen36           gen36.1         gen37           gen37.1 \
                 gen38           gen38.1         gen39           gen39.1         gen40 \
-                gen40.1         include_err     score_env2      score_err1.4    score_err1.5 \
+                gen40.1         generate20      include_err     score_env2      score_err1.4    score_err1.5 \
                 score_err1.6    score_err1.7    score_err1.8    score_err1.9    score_err1.10 \
                 score_err1.11   score_err1.12   score_err1.13   score_err1.14   score_err1.16 \
                 score_err1.17   score_err1.18   score_err1.19   score_err1.20   score_err1.21 \
@@ -266,8 +266,7 @@ IVVCSDIAGS1   = afunc1           atask1           define3          delay3       
                 generate10.2     generate11       generate11.1     generate11.2     generate11.3 \
                 generate15       generate15.1     generate15.2     generate15.3     generate15.4 \
                 generate15.5     generate16.1     generate16.2     generate16.3     generate17 \
-                generate19       generate19.1     generate19.2     generate20       hier3 \
-                ifdef3           ifndef2 \
+                generate19       generate19.1     generate19.2     hier3            ifdef3           ifndef2 \
                 localparam1      localparam1.1    localparam1.2    localparam1.3    localparam2 \
                 localparam3      mbit_sel5        mbit_sel5.1      mbit_sel5.2      mbit_sel5.3 \
                 mbit_sel6        mbit_sel6.1      mbit_sel6.2      mbit_sel6.3      mem4 \

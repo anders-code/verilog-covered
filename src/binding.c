@@ -441,9 +441,16 @@ bool bind_signal(
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
 
+      /* If the expression is within a generate expression, emit an error message */
+      } else if( (exp != NULL) && (exp->suppl.part.gen_expr == 1) ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Generate expression could not find variable (%s), file %s, line %d",
+                       obf_sig( name ), obf_file( funit_exp->filename ), exp_line );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
+
       /* Otherwise, implicitly create the signal and bind to it if the signal exists on the LHS of the equation */
       } else if( ESUPPL_IS_LHS( exp->suppl ) == 1 ) {
-        assert( exp != NULL );
         rv = snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", obf_sig( name ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING, __FILE__, __LINE__ );
