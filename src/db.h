@@ -221,5 +221,9 @@ void db_set_symbol_string( const char* sym, const char* value );
 /*! \brief Performs a timestep for all signal changes during this timestep. */
 bool db_do_timestep( uint64 time, bool final ); 
 
+/*! \brief Called after all signals are parsed from dumpfile.  Checks to see if dumpfile results were
+           correct for the covered design. */
+void db_check_dumpfile_scopes();
+
 #endif
 
