@@ -1069,7 +1069,7 @@ void gen_item_bind(
 */
 void generate_resolve_inst(
   funit_inst* inst  /*!< Pointer to current instance in instance tree to resolve for */
-) { PROFILE(GENERATE_RESOLVE);
+) { PROFILE(GENERATE_RESOLVE_INST);
 
   if( inst != NULL ) {
 

@@ -493,7 +493,6 @@ void inst_parm_add_genvar(
 ) { PROFILE(INST_PARM_ADD_GENVAR);
 
   inst_parm* iparm;  /* Pointer to the newly allocated instance parameter */
-  exp_link*  curr_exp;
 
   assert( inst != NULL );
 
