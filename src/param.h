@@ -68,6 +68,9 @@ void param_set_sig_size( vsignal* sig, inst_parm* icurr );
 void param_expr_eval( expression* expr, funit_inst* inst );
 
 /*! \brief Resolves all parameters for the specified instance. */
+void param_resolve_inst( funit_inst* inst );
+
+/*! \brief Resolves all parameters for the specified instance tree. */
 void param_resolve( funit_inst* inst );
 
 /*! \brief Outputs specified instance parameter to specified output stream. */

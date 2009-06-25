@@ -31,69 +31,128 @@
 
 /*@-exportlocal@*/
 /*! \brief Displays the specified generate item to standard output */
-void gen_item_display( gen_item* gi );
+void gen_item_display(
+  gen_item* gi
+);
 /*@=exportlocal@*/
 
 /*! \brief Displays an entire generate block */
-void gen_item_display_block( gen_item* root );
+void gen_item_display_block(
+  gen_item* root
+);
 
 /*! \brief Searches for a generate item in the generate block of root that matches gi */
-gen_item* gen_item_find( gen_item* root, gen_item* gi );
+gen_item* gen_item_find(
+  gen_item* root,
+  gen_item* gi
+);
 
 /*! \brief Searches for an expression in the generate list that calls the given statement */
-void gen_item_remove_if_contains_expr_calling_stmt( gen_item* gi, statement* stmt );
+void gen_item_remove_if_contains_expr_calling_stmt(
+  gen_item*  gi,
+  statement* stmt
+);
 
 /*! \brief Returns TRUE if the specified variable name contains a generate variable within it */
-bool gen_item_varname_contains_genvar( char* name );
+bool gen_item_varname_contains_genvar(
+  char* name
+);
 
-/*! \brief Returns the actual signal name specified by the given signal name which references a
-           generated hierarchy */
-char* gen_item_calc_signal_name( const char* name, func_unit* funit, int line, bool no_genvars );
+/*!
+ \brief Returns the actual signal name specified by the given signal name which references a
+        generated hierarchy
+*/
+char* gen_item_calc_signal_name(
+  const char* name,
+  func_unit*  funit,
+  int         line,
+  bool        no_genvars
+);
 
 /*! \brief Creates a generate item for an expression */
-gen_item* gen_item_create_expr( expression* expr );
+gen_item* gen_item_create_expr(
+  expression* expr
+);
 
 /*! \brief Creates a generate item for a signal */
-gen_item* gen_item_create_sig( vsignal* sig );
+gen_item* gen_item_create_sig(
+  vsignal* sig
+);
 
 /*! \brief Creates a generate item for a statement */
-gen_item* gen_item_create_stmt( statement* stmt );
+gen_item* gen_item_create_stmt(
+  statement* stmt
+);
 
 /*! \brief Creates a generate item for an instance */
-gen_item* gen_item_create_inst( funit_inst* inst );
+gen_item* gen_item_create_inst(
+  funit_inst* inst
+);
 
 /*! \brief Creates a generate item for a namespace */
-gen_item* gen_item_create_tfn( funit_inst* inst );
+gen_item* gen_item_create_tfn(
+  funit_inst* inst
+);
 
 /*! \brief Creates a generate item for a binding */
-gen_item* gen_item_create_bind( const char* name, expression* expr );
+gen_item* gen_item_create_bind(
+  const char* name,
+  expression* expr
+);
 
 /*! \brief Resizes all statements and signals in the given generate item block */
-void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit );
+void gen_item_resize_stmts_and_sigs(
+  gen_item*  gi,
+  func_unit* funit
+);
 
 /*! \brief Assigns unique signal ID or expression IDs to all expressions for specified statement block */
-void gen_item_assign_ids( gen_item* gi, func_unit* funit );
+void gen_item_assign_ids(
+  gen_item*  gi,
+  func_unit* funit
+);
 
 /*! \brief Outputs the current generate item to the given output file if it matches the type specified */
-void gen_item_db_write( gen_item* gi, uint32 type, FILE* file );
+void gen_item_db_write(
+  gen_item* gi,
+  uint32    type,
+  FILE*     file
+);
 
 /*! \brief Outputs the entire expression tree from the given generate statement */
-void gen_item_db_write_expr_tree( gen_item* gi, FILE* file );
+void gen_item_db_write_expr_tree(
+  gen_item* gi,
+  FILE*     file
+);
 
 /*! \brief Connects a generate item block to a new generate item */
-bool gen_item_connect( gen_item* gi1, gen_item* gi2, int conn_id, bool stop_on_null );
+bool gen_item_connect(
+  gen_item* gi1,
+  gen_item* gi2,
+  int       conn_id,
+  bool      stop_on_null
+);
 
 /*! \brief Checks generate item and if it is a bind, adds it to binding pool and returns TRUE */
-void gen_item_bind( gen_item* gi );
+void gen_item_bind(
+  gen_item* gi
+);
 
 /*! \brief Resolves all generate items in the design */
-void generate_resolve( funit_inst* inst );
+void generate_resolve_inst(
+  funit_inst* inst
+);
 
 /*! \brief Removes the given generate statement from the correct instance */
-bool generate_remove_stmt( statement* stmt );
+bool generate_remove_stmt(
+  statement* stmt
+);
 
 /*! \brief Deallocates all associated memory for the given generate item */
-void gen_item_dealloc( gen_item* gi, bool rm_elem );
+void gen_item_dealloc(
+  gen_item* gi,
+  bool      rm_elem
+);
 
 #endif
 
