@@ -33,19 +33,30 @@ void score_add_args(
 );
 
 /*! \brief Writes info line to specified CDD file. */
-void info_db_write( FILE* file );
+void info_db_write(
+  FILE* file
+);
 
 /*! \brief Reads info line from specified line and stores information. */
-void info_db_read( char** line );
+bool info_db_read(
+  char** line,
+  int    read_mode
+);
 
 /*! \brief Reads score args line from specified line and stores information. */
-void args_db_read( char** line );
+void args_db_read(
+  char** line
+);
 
 /*! \brief Reads user-specified message from specified line and stores information. */
-void message_db_read( char** line );
+void message_db_read(
+  char** line
+);
 
 /*! \brief Reads merged CDD information from specified line and stores information. */
-void merged_cdd_db_read( char** line );
+void merged_cdd_db_read(
+  char** line
+);
 
 /*! \brief Deallocates all memory associated with the information section of a database file. */
 void info_dealloc();
