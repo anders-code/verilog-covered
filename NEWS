@@ -1,6 +1,18 @@
 Covered-Related NEWS
 ====================
 
+    * 8/2/2009
+
+Stable release covered-0.7.5 made.  This is a bug fix release only.
+
+  - Fixed bug 2808818.  If a generate variable name collided with a reg/wire name, Covered was not emitting an error.
+  - Fixed bug 2808820.  If no signal was used from the dumpfile and at least one signal needs information from the
+    dumpfile, Covered needed to signal a user error.
+  - Fixed bug 2812321.  Parameterized/generated modules could get incorrect coverage calculated for them.
+  - Fixed bug 2812495.  Fixed a crash issue.  There is another part to this bug report that is not fixed, however.
+  - Fixed bug 2813405.  A design run with the -g score option caused the GUI to freeze when viewed.
+  - Fixed bug 2813948.  Fixed assertion issue with merging scored and unscored CDD files.
+
     * 6/17/2009
 
 Stable release covered-0.7.4 made.  This is a bug fix release only.
