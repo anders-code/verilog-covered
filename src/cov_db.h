@@ -52,8 +52,8 @@ void cov_db_write(
         the read information into the given coverage database structure.
 */
 void cov_db_read(
-  FILE*   ifile,
-  cov_db* cdb
+  const char* fname,
+  cov_db*     cdb
 );
 
 #endif

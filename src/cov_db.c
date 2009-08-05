@@ -192,42 +192,60 @@ static int cov_db_get_token1(
  Reads in a coverage database from the given file and allocates and populates supplied coverage database structure.
 */
 void cov_db_read(
-  FILE*   ifile,  /*!< Pointer to file to input file to read */
-  cov_db* cdb     /*!< Pointer to coverage database structure to populate */
+  const char* fname  /*!< Filename of coverage database to read */
 ) { PROFILE(COV_DB_READ);
 
-  unsigned int i;
-  char*        token;
+  FILE* ifile;
 
-  /* Allocate memory for read buffer */
-  cov_db_rdbuf_start = cov_db_rdbuf_end = cov_db_rdbuf_cur = (char*)malloc_safe( COV_DB_BUFSIZE );
+  if( (ifile = fopen( fname, "r" )) != NULL ) {
 
-  /* Allocate memory for vcd_yytext */
-  cov_db_yytext = (char*)malloc_safe( (cov_db_yytext_size = 1024) );
+    unsigned int i;
+    char*        token;
+    cov_db*      this_cov_db = (cov_db*)malloc_safe( sizeof( cov_db ) );
 
-  Try {
+    /* Allocate memory for read buffer */
+    cov_db_rdbuf_start = cov_db_rdbuf_end = cov_db_rdbuf_cur = (char*)malloc_safe( COV_DB_BUFSIZE );
 
-    /* Read in unsigned long values */
-    assert( cov_db_get_token( ifile ) == T_STRING );
-    cdb->ul_num = atoi( cov_db_yytext );
-    cdb->ul     = (ulong*)malloc_safe( sizeof( ulong ) * cdb->ul_num );
-    for( i=0; i<cdb->ul_num; i++ ) {
+    /* Allocate memory for vcd_yytext */
+    cov_db_yytext = (char*)malloc_safe( (cov_db_yytext_size = 1024) );
+
+    Try {
+
+      /* Read in unsigned long values */
       assert( cov_db_get_token( ifile ) == T_STRING );
-      cdb->ul[i] = strtoul( cov_db_yytext, NULL, 16 );
+      cdb->ul_num = atoi( cov_db_yytext );
+      cdb->ul     = (ulong*)malloc_safe( sizeof( ulong ) * cdb->ul_num );
+      for( i=0; i<cdb->ul_num; i++ ) {
+        assert( cov_db_get_token( ifile ) == T_STRING );
+        cdb->ul[i] = strtoul( cov_db_yytext, NULL, 16 );
+      }
+
+    } Catch_anonymous {
+
+      print_output( "Reading coverage database that is improperly formattted", FATAL, __FILE__, __LINE__ );
+      free_safe( cov_db_rdbuf_start, COV_DB_BUFSIZE );
+      free_safe( cov_db_yytext, cov_db_yytext_size );
+      free_safe( this_cov_db, sizeof( cov_db ) );
+      Throw 0;
+
     }
 
-  } Catch_anonymous {
-
-    print_output( "Reading coverage database that is improperly formattted", FATAL, __FILE__, __LINE__ );
+    /* Deallocate memory */
     free_safe( cov_db_rdbuf_start, COV_DB_BUFSIZE );
     free_safe( cov_db_yytext, cov_db_yytext_size );
+
+    /* Allocate memory for the coverage database in coverage database list and add*/
+    cov_db_list                = (cov_db**)realloc_safe( cov_db_list, (sizeof( cov_db ) * curr_cov_db), (sizeof( cov_db ) * (curr_cov_db + 1)) );
+    cov_db_list[curr_cov_db++] = this_cov_db;
+
+  } else {
+
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read coverage database file \"%s\"", fname );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
 
   }
-
-  /* Deallocate memory */
-  free_safe( cov_db_rdbuf_start, COV_DB_BUFSIZE );
-  free_safe( cov_db_yytext, cov_db_yytext_size );
 
   PROFILE_END;
 
