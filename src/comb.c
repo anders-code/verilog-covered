@@ -81,8 +81,6 @@
 
 extern unsigned int   report_comb_depth;
 extern bool           report_bitwise;
-extern int            line_width;
-extern bool           report_exclusions;
 extern bool           flag_output_exclusion_ids;
 extern unsigned int   inline_comb_depth;
 

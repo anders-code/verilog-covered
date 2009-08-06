@@ -44,6 +44,7 @@
 #include "instance.h"
 #include "line.h"
 #include "memory.h"
+#include "merge.h"
 #include "ovl.h"
 #include "race.h"
 #include "report.h"
@@ -54,8 +55,6 @@
 
 
 extern unsigned int db_size;
-extern str_link*    merge_in_head;
-extern str_link*    merge_in_tail;
 extern char*        cdd_message;
 
 /*!

@@ -44,7 +44,6 @@
 #include "vector.h"
 
 
-extern bool         report_exclusions;
 extern bool         flag_output_exclusion_ids;
 
 

@@ -34,6 +34,7 @@
 #include "instance.h"
 #include "link.h"
 #include "scope.h"
+#include "score.h"
 #include "sim.h"
 #include "util.h"
 #include "vector.h"
@@ -45,9 +46,6 @@
  should not exceed 100!)
 */
 #define CLI_NUM_DASHES 50
-
-
-extern bool flag_use_command_line_debug;
 
 
 /*!

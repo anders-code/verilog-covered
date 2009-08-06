@@ -39,7 +39,6 @@
 #include "util.h"
 
 
-extern bool         report_exclusions;
 extern unsigned int exclusion_id_size;
 extern bool         flag_output_exclusion_ids; 
 

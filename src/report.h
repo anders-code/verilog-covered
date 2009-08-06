@@ -26,6 +26,9 @@
 
 extern bool report_covered;
 extern bool report_instance;
+extern bool report_exclusions;
+extern bool flag_use_line_width;
+extern int  line_width;
 
 
 /*! \brief Parses command-line for report command and performs report functionality. */

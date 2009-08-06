@@ -50,7 +50,6 @@
 extern unsigned int report_comb_depth;
 extern bool         flag_suppress_empty_funits;
 extern bool         flag_output_exclusion_ids;
-extern bool         report_exclusions;
 
 
 /*!

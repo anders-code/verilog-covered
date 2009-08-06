@@ -92,6 +92,7 @@
 #include "instance.h"
 #include "link.h"
 #include "reentrant.h"
+#include "score.h"
 #include "sim.h"
 #include "util.h"
 #include "vector.h"
@@ -99,7 +100,6 @@
 
 
 extern /*@null@*/inst_link*  inst_head;
-extern bool                  flag_use_command_line_debug;
 
 
 /*!

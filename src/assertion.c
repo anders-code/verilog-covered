@@ -36,9 +36,6 @@
 #include "util.h"
 
 
-extern bool report_exclusions;
-
-
 /*!
  \param arg  Command-line argument specified in -A option to score command to parse
 

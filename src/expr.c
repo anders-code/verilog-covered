@@ -145,6 +145,7 @@
 #include "instance.h"
 #include "link.h"
 #include "reentrant.h"
+#include "score.h"
 #include "sim.h"
 #include "stmt_blk.h"
 #include "sys_tasks.h"
@@ -157,7 +158,6 @@ extern exp_link*    static_expr_head;
 extern exp_link*    static_expr_tail;
 extern int          generate_expr_mode;
 extern int          curr_expr_id;
-extern bool         flag_use_command_line_debug;
 extern int          nba_queue_size;
 
 static bool expression_op_func__xor( expression*, thread*, const sim_time* );

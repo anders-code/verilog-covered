@@ -44,6 +44,7 @@
 #include "line.h"
 #include "link.h"
 #include "memory.h"
+#include "merge.h"
 #include "ovl.h"
 #include "race.h"
 #include "report.h"
@@ -60,9 +61,6 @@ extern str_link*    score_args_head;
 extern str_link*    score_args_tail;
 extern void         reset_pplexer( const char* filename, FILE* out );
 extern int          PPVLlex( void );
-extern str_link*    merge_in_head;
-extern str_link*    merge_in_tail;
-extern int          merge_in_num;
 extern char*        output_file;
 extern int          report_comb_depth; 
 extern bool         report_line;

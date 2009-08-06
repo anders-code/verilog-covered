@@ -56,7 +56,6 @@
 
 
 extern unsigned int report_comb_depth;
-extern bool         report_exclusions;
 extern bool         flag_output_exclusion_ids;
 
 

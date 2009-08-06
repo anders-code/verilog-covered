@@ -34,13 +34,11 @@
 #include "defines.h"
 #include "info.h"
 #include "link.h"
+#include "merge.h"
 #include "score.h"
 #include "util.h"
 
 
-extern str_link*    merge_in_head;
-extern str_link*    merge_in_tail;
-extern int          merge_in_num;
 extern char*        merged_file;
 extern uint64       num_timesteps;
 extern char*        cdd_message;

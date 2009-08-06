@@ -47,16 +47,13 @@
 
 #include "defines.h"
 #include "codegen.h"
-#include "util.h"
-#include "vector.h"
-#include "func_unit.h"
 #include "expr.h"
+#include "func_unit.h"
 #include "generator.h"
 #include "obfuscate.h"
-
-
-extern bool           flag_use_line_width;
-extern int            line_width;
+#include "report.h"
+#include "util.h"
+#include "vector.h"
 
 
 /*!

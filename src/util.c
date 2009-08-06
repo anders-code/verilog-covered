@@ -51,10 +51,10 @@
 #include "link.h"
 #include "obfuscate.h"
 #include "profiler.h"
+#include "score.h"
 #include "vpi.h"
 
 extern bool        report_gui;
-extern bool        flag_use_command_line_debug;
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
 extern Tcl_Interp* interp;
