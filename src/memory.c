@@ -40,7 +40,6 @@
 
 
 extern unsigned int exclusion_id_size;
-extern bool         flag_output_exclusion_ids; 
 
 
 /*!

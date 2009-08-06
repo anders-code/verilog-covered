@@ -55,10 +55,6 @@
 #include "vector.h"
 
 
-extern unsigned int report_comb_depth;
-extern bool         flag_output_exclusion_ids;
-
-
 /*!
  \return Returns a pointer to the newly allocated FSM structure.
 

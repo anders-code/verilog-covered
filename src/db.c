@@ -45,8 +45,11 @@
 #include "obfuscate.h"
 #include "ovl.h"
 #include "param.h"
+#include "parser_misc.h"
 #include "race.h"
 #include "scope.h"
+#include "score.h"
+#include "search.h"
 #include "sim.h"
 #include "stat.h"
 #include "statement.h"
@@ -58,10 +61,6 @@
 #include "vsignal.h"
 
 
-extern char*       top_module;
-extern str_link*   no_score_head;
-extern uint64      timestep_update;
-extern int*        fork_block_depth;
 extern int         fork_depth;
 extern int         block_depth;
 /*@null@*/extern tnode*      def_table;

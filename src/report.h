@@ -24,11 +24,14 @@
 */
 
 
-extern bool report_covered;
-extern bool report_instance;
-extern bool report_exclusions;
-extern bool flag_use_line_width;
-extern int  line_width;
+extern bool         report_covered;
+extern bool         report_instance;
+extern bool         report_exclusions;
+extern bool         flag_use_line_width;
+extern int          line_width;
+extern unsigned int report_comb_depth;
+extern bool         report_bitwise;
+extern bool         flag_output_exclusion_ids;
 
 
 /*! \brief Parses command-line for report command and performs report functionality. */

@@ -32,6 +32,7 @@
 #include "ovl.h"
 #include "param.h"
 #include "profiler.h"
+#include "score.h"
 #include "util.h"
 
 
@@ -44,7 +45,6 @@ extern int VLparse();
 extern str_link*      modlist_head;
 extern str_link*      modlist_tail;
 extern int            generate_mode;
-extern unsigned int   inline_comb_depth;
 
 
 struct fname_link_s;

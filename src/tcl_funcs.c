@@ -62,7 +62,6 @@ extern str_link*    score_args_tail;
 extern void         reset_pplexer( const char* filename, FILE* out );
 extern int          PPVLlex( void );
 extern char*        output_file;
-extern int          report_comb_depth; 
 extern bool         report_line;
 extern bool         report_toggle;
 extern bool         report_memory;

@@ -44,9 +44,6 @@
 #include "vector.h"
 
 
-extern bool         flag_output_exclusion_ids;
-
-
 /*!
  Searches specified expression list and signal list, gathering information 
  about toggled bits.  For each bit that is found in the design, the total

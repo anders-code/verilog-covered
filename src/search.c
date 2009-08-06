@@ -32,11 +32,12 @@
 
 #include "db.h"
 #include "defines.h"
-#include "search.h"
-#include "link.h"
 #include "func_unit.h"
-#include "util.h"
 #include "instance.h"
+#include "link.h"
+#include "score.h"
+#include "search.h"
+#include "util.h"
 
 
 /*@null@*/        str_link* inc_paths_head  = NULL;   /*!< Pointer to head element of include paths list */
@@ -52,7 +53,6 @@
 /*@null@*/ static str_link* extensions_tail = NULL;   /*!< Pointer to tail element of extensions list */
 
 extern unsigned int db_size;
-extern char*        top_module;
 extern char*        top_instance;
 extern func_unit*   global_funit;
 extern unsigned int flag_global_generation;

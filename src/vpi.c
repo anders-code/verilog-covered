@@ -63,7 +63,7 @@ sym_value* sv_tail       = NULL;   /*!< Pointer to tail of sym_value list */
 
 /* These are needed for compile purposes only */
 bool         report_gui          = FALSE;
-int          timestep_update     = 0;
+uint64       timestep_update     = 0;
 bool         report_covered      = FALSE;
 bool         flag_use_line_width = FALSE;
 int          line_width          = DEFAULT_LINE_WIDTH;

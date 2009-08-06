@@ -52,7 +52,6 @@
 
 
 extern bool         flag_check_ovl_assertions;
-extern bool         flag_output_exclusion_ids;
 
 
 /*!

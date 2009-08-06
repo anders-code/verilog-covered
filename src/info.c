@@ -42,7 +42,6 @@
 extern char*        merged_file;
 extern uint64       num_timesteps;
 extern char*        cdd_message;
-extern unsigned int inline_comb_depth;
 
 
 /*!

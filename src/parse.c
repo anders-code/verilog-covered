@@ -51,7 +51,6 @@ extern bool      flag_check_races;
 extern sig_range curr_prange;
 extern sig_range curr_urange;
 extern bool      instance_specified;
-extern char*     top_module;
 extern char*     ppfilename;
 extern char*     dumpvars_file;
 

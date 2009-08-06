@@ -75,14 +75,9 @@
 #include "obfuscate.h"
 #include "ovl.h"
 #include "report.h"
+#include "score.h"
 #include "util.h"
 #include "vector.h"
-
-
-extern unsigned int   report_comb_depth;
-extern bool           report_bitwise;
-extern bool           flag_output_exclusion_ids;
-extern unsigned int   inline_comb_depth;
 
 
 /*!
