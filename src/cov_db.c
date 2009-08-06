@@ -26,6 +26,7 @@
 #include "cov_db.h"
 #include "defines.h"
 #include "profiler.h"
+#include "util.h"
 
 
 /*!
@@ -52,6 +53,18 @@
  Adds a token to the existing yytext.
 */
 #define cov_db_append_token(cdb, new_start) cov_db_get_token1( cdb, (new_start = (cov_db_yylen + 1)) )
+
+
+/*!
+ Main list containing the coverage databases associated with the loaded design database.
+*/
+cov_db** cov_db_list = NULL;
+
+/*!
+ Pointer to the current coverage database index.
+*/
+unsigned int curr_cov_db = 0;
+
 
 /*!
  Pointer to start of coverage database read buffer.
@@ -83,6 +96,24 @@ static int cov_db_yytext_size = 0;
 */
 static int cov_db_yylen = 0;
 
+
+/*!
+ \return Returns pointer to allocated/initialized coverage database.
+*/
+cov_db* cov_db_create() { PROFILE(COV_DB_CREATE);
+
+  cov_db* cdb;
+
+  /* Allocate and initialize the coverage database */
+  cdb         = (cov_db*)malloc_safe( sizeof( cov_db ) );
+  cdb->ul_num = 0;
+  cdb->ul     = NULL;
+
+  PROFILE_END;
+
+  return( cdb );
+
+}
 
 /*!
  Writes coverage database file to the specified coverage file.
@@ -195,13 +226,19 @@ void cov_db_read(
   const char* fname  /*!< Filename of coverage database to read */
 ) { PROFILE(COV_DB_READ);
 
-  FILE* ifile;
+  FILE*        ifile;
+  char         cdd_name[4096];
+  unsigned int rv;
 
-  if( (ifile = fopen( fname, "r" )) != NULL ) {
+  /* Create relative pathname */
+  rv = snprintf( cdd_name, 4096, "covered/cdb/%s", fname );
+  assert( rv < 4096 );
+
+  if( (ifile = fopen( cdd_name, "r" )) != NULL ) {
 
     unsigned int i;
     char*        token;
-    cov_db*      this_cov_db = (cov_db*)malloc_safe( sizeof( cov_db ) );
+    cov_db*      cdb = (cov_db*)malloc_safe( sizeof( cov_db ) );
 
     /* Allocate memory for read buffer */
     cov_db_rdbuf_start = cov_db_rdbuf_end = cov_db_rdbuf_cur = (char*)malloc_safe( COV_DB_BUFSIZE );
@@ -222,10 +259,14 @@ void cov_db_read(
 
     } Catch_anonymous {
 
-      print_output( "Reading coverage database that is improperly formattted", FATAL, __FILE__, __LINE__ );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading coverage database \"%s\" that is improperly formattted", cdd_name );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+
       free_safe( cov_db_rdbuf_start, COV_DB_BUFSIZE );
       free_safe( cov_db_yytext, cov_db_yytext_size );
-      free_safe( this_cov_db, sizeof( cov_db ) );
+      cov_db_dealloc( cdb );
+
       Throw 0;
 
     }
@@ -236,11 +277,11 @@ void cov_db_read(
 
     /* Allocate memory for the coverage database in coverage database list and add*/
     cov_db_list                = (cov_db**)realloc_safe( cov_db_list, (sizeof( cov_db ) * curr_cov_db), (sizeof( cov_db ) * (curr_cov_db + 1)) );
-    cov_db_list[curr_cov_db++] = this_cov_db;
+    cov_db_list[curr_cov_db++] = cdb;
 
   } else {
 
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read coverage database file \"%s\"", fname );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read coverage database file \"%s\"", fname );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -250,4 +291,26 @@ void cov_db_read(
   PROFILE_END;
 
 }
+
+/*!
+ Deallocates the given coverage database.
+*/
+void cov_db_dealloc(
+  cov_db* cdb  /*!< Pointer to coverage database to deallocate */
+) { PROFILE(COV_DB_DEALLOC);
+
+  if( cdb != NULL ) {
+
+    /* Deallocate unsigned long array */
+    free_safe( cdb->ul, (sizeof( ulong ) * cdb->ul_num) );
+
+    /* Deallocate coverage database */
+    free_safe( cdb, sizeof( cov_db ) );
+
+  }
+
+  PROFILE_END;
+
+}
+
 

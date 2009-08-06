@@ -20,13 +20,16 @@
  \file     cov_db.h
  \author   Trevor Williams  (phase1geo@gmail.com)
  \date     8/5/2009
- \brief    Contains functions for writing and reading contents of
-           coverage database file.
+ \brief    Contains functions for handling the coverage database files.
 */
 
 #include <stdio.h>
 
 #include "defines.h"
+
+
+extern cov_db**     cov_db_list;
+extern unsigned int curr_cov_db;
 
 
 /*!
@@ -39,9 +42,10 @@ enum cov_db_tokens {
 };
 
 
-/*!
- \brief Writes the contents of the given coverage database.
-*/
+/*! \brief Allocates and initializes a coverage database. */
+cov_db* cov_db_create();
+
+/*! \brief Writes the contents of the given coverage database. */
 void cov_db_write(
   FILE*   ofile,
   cov_db* cdb
@@ -52,8 +56,12 @@ void cov_db_write(
         the read information into the given coverage database structure.
 */
 void cov_db_read(
-  const char* fname,
-  cov_db*     cdb
+  const char* fname
+);
+
+/*! \brief Deallocates the given coverage database. */
+void cov_db_dealloc(
+  cov_db* cdb
 );
 
 #endif
