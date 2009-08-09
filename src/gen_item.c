@@ -940,7 +940,7 @@ static void gen_item_resolve(
   
       case GI_TYPE_EXPR :
         /* Recursively resize the expression tree if we have not already done this */
-        if( gi->elem.expr->exec_num == 0 ) {
+        if( gi->elem.expr->cov.part.execd == 0 ) {
           expression_resize( gi->elem.expr, inst->funit, TRUE, FALSE );
         }
         expression_operate_recursively( gi->elem.expr, inst->funit, FALSE );

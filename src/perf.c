@@ -56,7 +56,7 @@ static perf_stat* perf_gen_stats(
   expl = funit->exp_head;
   while( expl != NULL ) {
     pstat->op_cnt[expl->exp->op]      += 1;
-    pstat->op_exec_cnt[expl->exp->op] += expl->exp->exec_num;
+    pstat->op_exec_cnt[expl->exp->op] += expl->exp->cov.part.execd;
     expl = expl->next;
   }
 

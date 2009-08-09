@@ -3373,7 +3373,7 @@ module_item
           if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head = 1;
             if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
-              stmt->exp->exec_num = 1;
+              stmt->exp->cov.part.execd = 1;
             }
             db_add_statement( stmt, stmt );
           } else {
@@ -3426,7 +3426,7 @@ module_item
                 if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
                   stmt->suppl.part.head = 1;
                   if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
-                    stmt->exp->exec_num = 1;
+                    stmt->exp->cov.part.execd = 1;
                   }
                   db_add_statement( stmt, stmt );
                 } else {
@@ -3484,7 +3484,7 @@ module_item
                 if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
                   stmt->suppl.part.head = 1;
                   if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
-                    stmt->exp->exec_num = 1;
+                    stmt->exp->cov.part.execd = 1;
                   }
                   db_add_statement( stmt, stmt );
                 } else {
@@ -3528,7 +3528,7 @@ module_item
             if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
               stmt->suppl.part.head = 1;
               if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
-                stmt->exp->exec_num = 1;
+                stmt->exp->cov.part.execd = 1;
               }
               db_add_statement( stmt, stmt );
             } else {
@@ -3558,7 +3558,7 @@ module_item
           if( (info_suppl.part.excl_init == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head = 1;
             if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
-              stmt->exp->exec_num = 1;
+              stmt->exp->cov.part.execd = 1;
             }
             db_add_statement( stmt, stmt );
           } else {
@@ -3586,7 +3586,7 @@ module_item
             stmt->suppl.part.head  = 1;
             stmt->suppl.part.final = 1;
             if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
-              stmt->exp->exec_num = 1;
+              stmt->exp->cov.part.execd = 1;
             }
             db_add_statement( stmt, stmt );
           } else {

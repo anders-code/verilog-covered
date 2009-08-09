@@ -44,11 +44,6 @@
 #include "vector.h"
 
 
-/*!
- Returns the number of unsigned long elements are required to store a vector with a bit width of width.
-*/
-#define UL_SIZE(width)      (UL_DIV((width) - 1) + 1)
-
 /*! Lower mask */
 #define UL_LMASK(lsb)       (UL_SET << UL_MOD(lsb))
 
@@ -57,7 +52,7 @@
 
 
 /*! Contains the structure sizes for the various vector types (vector "type" supplemental field is the index to this array */
-static const unsigned int vector_type_sizes[4] = {VTYPE_INDEX_VAL_NUM, VTYPE_INDEX_SIG_NUM, VTYPE_INDEX_EXP_NUM, VTYPE_INDEX_MEM_NUM};
+const unsigned int vector_type_sizes[4] = {VTYPE_INDEX_VAL_NUM, VTYPE_INDEX_SIG_NUM, VTYPE_INDEX_EXP_NUM, VTYPE_INDEX_MEM_NUM};
 
 
 /*!
@@ -405,26 +400,15 @@ void vector_db_write(
           ulong        dflt_h = (vec->suppl.part.is_2state == 1) ? 0x0 : UL_SET;
           unsigned int i, j;
           ulong        hmask  = UL_HMASK( vec->width - 1 );
+          if( vec->suppl.part.type != VTYPE_VAL ) {
+            fprintf( file, " %lx", cov_db_get_ul_index( &(vec->value.ul[0][0]) ) );
+          }
           for( i=0; i<(UL_SIZE(vec->width) - 1); i++ ) {
             fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l );
             fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h );
-            for( j=2; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
-              if( ((mask >> j) & 0x1) == 1 ) {
-                fprintf( file, " %lx", (vec->value.ul != NULL) ? vec->value.ul[i][j] : 0 );
-              } else {
-                fprintf( file, " 0" );
-              }
-            }
           }
           fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l) & hmask );
           fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h) & hmask );
-          for( j=2; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
-            if( ((mask >> j) & 0x1) == 1 ) {
-              fprintf( file, " %lx", (vec->value.ul != NULL) ? (vec->value.ul[i][j] & hmask) : 0 );
-            } else {
-              fprintf( file, " 0" );
-            }
-          }
         }
         break;
       case VDATA_R64 :

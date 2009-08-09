@@ -209,7 +209,7 @@ void ovl_get_funit_stats(
           /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
           if( ovl_is_coverage_point( stmt->exp ) ) {
             *total = *total + 1;
-            if( (stmt->exp->exec_num > 0) || (ESUPPL_EXCLUDED( stmt->exp->suppl ) == 1) ) {
+            if( stmt->exp->cov.part.execd || (ESUPPL_EXCLUDED( stmt->exp->suppl ) == 1) ) {
               (*hit)++;
               if( ESUPPL_EXCLUDED( stmt->exp->suppl ) == 1 ) {
                 (*excluded)++;
@@ -316,7 +316,7 @@ void ovl_display_verbose(
 
       while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
-        if( ((((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered) && (stmt->exp->suppl.part.excluded == 0) && (rtype != RPT_TYPE_EXCL)) ||
+        if( ((stmt->exp->cov.part.execd == report_covered) && (stmt->exp->suppl.part.excluded == 0) && (rtype != RPT_TYPE_EXCL)) ||
             ((stmt->exp->suppl.part.excluded == 1) && (rtype == RPT_TYPE_EXCL)) ) {
 
           /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
@@ -326,7 +326,7 @@ void ovl_display_verbose(
             cov_point = ovl_get_coverage_point( stmt );
 
             /* Output the coverage verbose results to the specified output file */
-            if( (stmt->exp->exec_num == 0) && (rtype != RPT_TYPE_HIT) ) {
+            if( (stmt->exp->cov.part.execd == 0) && (rtype != RPT_TYPE_HIT) ) {
               if( flag_output_exclusion_ids ) {
                 exclude_reason* er;
                 fprintf( ofile, "      (%s)  %-26s  %-22s  \"%-38s\"\n", db_gen_exclusion_id( 'A', stmt->exp->id ),
@@ -342,9 +342,9 @@ void ovl_display_verbose(
                   report_output_exclusion_reason( ofile, (8 + (db_get_exclusion_id_size() - 1)), er->reason, TRUE );
                 }
               }
-            } else if( (stmt->exp->exec_num > 0) && (rtype == RPT_TYPE_HIT) ) {
+            } else if( stmt->exp->cov.part.execd && (rtype == RPT_TYPE_HIT) ) {
               fprintf( ofile, "      %-26s  %-22s  \"%-38s\"  %9u\n",
-                       obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point, stmt->exp->exec_num );
+                       obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point, stmt->exp->cov.part.execd );
             }
 
             /* Deallocate the coverage point */
@@ -415,7 +415,7 @@ void ovl_collect(
         /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
         if( ovl_is_coverage_point( stmt->exp ) ) {
           total = total + 1;
-          if( (stmt->exp->exec_num > 0) || (ESUPPL_EXCLUDED( stmt->exp->suppl ) == 1) ) {
+          if( stmt->exp->cov.part.execd || (ESUPPL_EXCLUDED( stmt->exp->suppl ) == 1) ) {
             hit++;
             exclude_found |= ESUPPL_EXCLUDED( stmt->exp->suppl );
           }
@@ -509,7 +509,7 @@ void ovl_get_coverage(
 
       /* Store the coverage point string and execution count */
       (void)str_link_add( ovl_get_coverage_point( stmt ), cp_head, cp_tail );
-      (*cp_tail)->suppl  = stmt->exp->exec_num;
+      (*cp_tail)->suppl  = stmt->exp->cov.part.execd;
       (*cp_tail)->suppl2 = stmt->exp->id;
       (*cp_tail)->suppl3 = ESUPPL_EXCLUDED( stmt->exp->suppl );
 

@@ -27,6 +27,7 @@
 #include "defines.h"
 #include "profiler.h"
 #include "util.h"
+#include "vector.h"
 
 
 /*!
@@ -108,10 +109,84 @@ cov_db* cov_db_create() { PROFILE(COV_DB_CREATE);
   cdb         = (cov_db*)malloc_safe( sizeof( cov_db ) );
   cdb->ul_num = 0;
   cdb->ul     = NULL;
+  cdb->u8_num = 0;
+  cdb->u8     = NULL;
 
   PROFILE_END;
 
   return( cdb );
+
+}
+
+/*!
+ \return Returns the index of the specified element in the ul array.
+*/
+ulong cov_db_get_ul_index(
+  ulong* addr  /*!< Address of the ul entry in the ul array */
+) { PROFILE(COV_DB_GET_INDEX);
+
+  PROFILE_END;
+
+  return( (ulong)(addr - cov_db_list[0]->ul) );
+
+} 
+
+/*!
+ Adds coverage data to the coverage database for the specified vector.
+*/
+void cov_db_add_vector(
+  vector* vec  /*!< Pointer to vector to add coverage information for */
+) { PROFILE(COV_DB_ADD_VECTOR);
+
+  if( vec->suppl.part.data_type == VDATA_UL ) {
+    cov_db_list[0]->ul_num += UL_SIZE( vec->width ) * vector_type_sizes[vec->suppl.part.type];
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Adds coverage data to the coverage database for the specified FSM.
+*/
+void cov_db_add_fsm(
+  fsm* table  /*!< Pointer to FSM structure to parse */
+) { PROFILE(COV_DB_ADD_FSM);
+
+  /* TBD */
+
+  PROFILE_END;
+
+}
+
+/*!
+ Adds coverage data to the coverage database for the specified expression.
+*/
+void cov_db_add_expr(
+  expression* expr  /*!< Pointer to expression to add coverage for */
+) { PROFILE(COV_DB_ADD_EXPR);
+
+  /* Update the coverage and set the current expression's ID */
+  expr->id = cov_db_list[0]->u8_num++;
+
+  if( EXPR_OWNS_VEC( expr->op ) ) {
+    cov_db_add_vector( expr->value );
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Adds coverage data to the coverage database for the specified signal.
+*/
+void cov_db_add_sig(
+  vsignal* sig  /*!< Pointer to signal to add coverage for */
+) { PROFILE(COV_DB_ADD_SIG);
+
+  cov_db_add_vector( sig->value );
+
+  PROFILE_END;
 
 }
 
@@ -129,6 +204,12 @@ void cov_db_write(
 
   for( i=0; i<cdb->ul_num; i++ ) {
     fprintf( ofile, " %lx", cdb->ul[i] );
+  }
+
+  fprintf( ofile, "\n%u", cdb->u8_num );
+
+  for( i=0; i<cdb->u8_num; i++ ) {
+    fprintf( ofile, " %lx", cdb->u8[i] );
   }
 
   fprintf( ofile, "\n" );
@@ -257,6 +338,15 @@ void cov_db_read(
         cdb->ul[i] = strtoul( cov_db_yytext, NULL, 16 );
       }
 
+      /* Read in uint8 values */
+      assert( cov_db_get_token( ifile ) == T_STRING );
+      cdb->u8_num = atoi( cov_db_yytext );
+      cdb->u8     = (uint8*)malloc_safe( sizeof( uint8 ) * cdb->u8_num );
+      for( i=0; i<cdb->u8_num; i++ ) {
+        assert( cov_db_get_token( ifile ) == T_STRING );
+        cdb->u8[i] = (uint8)strtoul( cov_db_yytext, NULL, 16 );
+      }
+
     } Catch_anonymous {
 
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading coverage database \"%s\" that is improperly formattted", cdd_name );
@@ -303,6 +393,9 @@ void cov_db_dealloc(
 
     /* Deallocate unsigned long array */
     free_safe( cdb->ul, (sizeof( ulong ) * cdb->ul_num) );
+
+    /* Deallocate unisgned int8 array */
+    free_safe( cdb->u8, (sizeof( uint8 ) * cdb->u8_num) );
 
     /* Deallocate coverage database */
     free_safe( cdb, sizeof( cov_db ) );

@@ -87,7 +87,7 @@ void line_get_stats(
           (stmt->exp->op != EXP_OP_RASSIGN) &&
           (stmt->exp->line != 0) ) {
         *total = *total + 1;
-        if( (stmt->exp->exec_num > 0) || (stmt->suppl.part.excluded == 1) ) {
+        if( stmt->exp->cov.part.execd || stmt->suppl.part.excluded ) {
           (*hit)++;
           if( stmt->suppl.part.excluded == 1 ) {
             (*excluded)++;
@@ -152,7 +152,7 @@ void line_collect(
         (stmt->exp->op != EXP_OP_RASSIGN) &&
         (stmt->exp->line != 0) ) {
 
-      if( ((stmt->exp->exec_num > 0) ? 1 : 0) == cov ) {
+      if( stmt->exp->cov.part.execd == cov ) {
 
         last_line = expression_get_last_line_expr( stmt->exp )->line;
         for( i=stmt->exp->line; i<=last_line; i++ ) {
@@ -433,7 +433,7 @@ static void line_display_verbose(
         (stmt->exp->op != EXP_OP_RASSIGN) &&
         (stmt->exp->line != 0) ) {
 
-      if( ((((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered) && (stmt->suppl.part.excluded == 0) && (rtype != RPT_TYPE_EXCL)) ||
+      if( ((stmt->exp->cov.part.execd == report_covered) && (stmt->suppl.part.excluded == 0) && (rtype != RPT_TYPE_EXCL)) ||
           ((stmt->suppl.part.excluded == 1) && (rtype == RPT_TYPE_EXCL)) ) {
 
         unexec_exp = stmt->exp;

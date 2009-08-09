@@ -810,48 +810,48 @@ static void rank_gather_comb_cov(
           if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)(exp->suppl.part.eval_00 | exp->suppl.part.eval_01) << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)(exp->cov.part.eval_00 | exp->cov.part.eval_01) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)(exp->suppl.part.eval_00 | exp->suppl.part.eval_10) << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)(exp->cov.part.eval_00 | exp->cov.part.eval_10) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->suppl.part.eval_11 << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->cov.part.eval_11 << UL_MOD(index);
           } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)(exp->suppl.part.eval_11 | exp->suppl.part.eval_10) << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)(exp->cov.part.eval_11 | exp->cov.part.eval_10) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)(exp->suppl.part.eval_11 | exp->suppl.part.eval_01) << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)(exp->cov.part.eval_11 | exp->cov.part.eval_01) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->suppl.part.eval_00 << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->cov.part.eval_00 << UL_MOD(index);
           } else if( exp_op_info[exp->op].suppl.is_comb == OTHER_COMB ) {
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->suppl.part.eval_00 << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->cov.part.eval_00 << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->suppl.part.eval_01 << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->cov.part.eval_01 << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->suppl.part.eval_10 << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->cov.part.eval_10 << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->suppl.part.eval_11 << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->cov.part.eval_11 << UL_MOD(index);
           }
         } else if( EXPR_IS_EVENT( exp ) == 1 ) {
           index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
           rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-          comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)ESUPPL_WAS_TRUE( exp->suppl ) << UL_MOD(index);
+          comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->cov.part.true << UL_MOD(index);
         } else {
           index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
           rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-          comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)ESUPPL_WAS_TRUE( exp->suppl ) << UL_MOD(index);
+          comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->cov.part.true << UL_MOD(index);
           index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
           rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-          comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)ESUPPL_WAS_FALSE( exp->suppl ) << UL_MOD(index);
+          comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->cov.part.false << UL_MOD(index);
         }
   
       }
@@ -891,7 +891,7 @@ static void rank_gather_expression_cov(
       (exp->line != 0) ) {
     uint64 index = comp_cov->cps_index[CP_TYPE_LINE]++;
     rank_check_index( CP_TYPE_LINE, index, __LINE__ );
-    if( (exp->exec_num > 0) || exclude ) {
+    if( exp->cov.part.execd || exclude ) {
       comp_cov->cps[CP_TYPE_LINE][UL_DIV(index)] |= (ulong)0x1 << UL_MOD(index);
     }
   }

@@ -119,7 +119,7 @@ static void exclude_expr_assign_and_recalc(
           (expr->op != EXP_OP_JOIN)    &&
           (expr->op != EXP_OP_NOOP)    &&
           (expr->line != 0) &&
-          (expr->exec_num == 0) ) {
+          (expr->cov.part.execd == 0) ) {
         if( excluded ) {
           stat->line_hit++;
           stat->line_excluded++;
@@ -147,7 +147,7 @@ static void exclude_expr_assign_and_recalc(
 
     /* If the expression is a coverage point, recalculate the assertion coverage */
     if( ovl_is_assertion_module( funit ) && ovl_is_coverage_point( expr ) ) {
-      if( expr->exec_num == 0 ) {
+      if( expr->cov.part.execd == 0 ) {
         if( excluded ) {
           stat->assert_hit++;
           stat->assert_excluded++;

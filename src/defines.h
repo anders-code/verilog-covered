@@ -404,7 +404,7 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  See esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0xffffff
+#define ESUPPL_MERGE_MASK            0x3ffff
 
 /*!
  Specifies the number of bits to store for a given expression for reentrant purposes.
@@ -442,18 +442,6 @@
  who was just evaluated to FALSE.
 */
 #define ESUPPL_IS_FALSE(x)           x.part.eval_f
-
-/*!
- Returns a value of 1 if the specified supplemental belongs to an expression
- that has evaluated to a value of TRUE (1) during simulation.
-*/
-#define ESUPPL_WAS_TRUE(x)           x.part.true
-
-/*!
- Returns a value of 1 if the specified supplemental belongs to an expression
- that has evaluated to a value of FALSE (0) during simulation.
-*/
-#define ESUPPL_WAS_FALSE(x)          x.part.false
 
 /*!
  Returns a value of 1 if the left child expression was changed during this
@@ -1552,6 +1540,9 @@ typedef unsigned long ulong;
 /*! Mods a bit position by an unsigned long */
 #define UL_MOD(x)  (((unsigned int)x) &  UL_MOD_VAL)
 
+/*!  Returns the number of unsigned long elements are required to store the given bit width */
+#define UL_SIZE(width) (UL_DIV((width) - 1) + 1)
+
 /*------------------------------------------------------------------------------*/
 
 union esuppl_u;
@@ -1575,64 +1566,52 @@ union esuppl_u {
                                     when displaying them in. */
     uint32 root           :1;  /*!< Bit 1.  Indicates that this expression is a root expression.
                                     Traversing to the parent pointer will take you to a statement type. */
-    uint32 false          :1;  /*!< Bit 2.  Indicates that this expression has evaluated to a value
-                                    of FALSE during the lifetime of the simulation. */
-    uint32 true           :1;  /*!< Bit 3.  Indicates that this expression has evaluated to a value
-                                    of TRUE during the lifetime of the simulation. */
-    uint32 left_changed   :1;  /*!< Bit 4.  Indicates that this expression has its left child
+    uint32 left_changed   :1;  /*!< Bit 2.  Indicates that this expression has its left child
                                     expression in a changed state during this timestamp. */
-    uint32 right_changed  :1;  /*!< Bit 5.  Indicates that this expression has its right child
+    uint32 right_changed  :1;  /*!< Bit 3.  Indicates that this expression has its right child
                                     expression in a changed state during this timestamp. */
-    uint32 eval_00        :1;  /*!< Bit 6.  Indicates that the value of the left child expression
-                                    evaluated to FALSE and the right child expression evaluated to FALSE. */
-    uint32 eval_01        :1;  /*!< Bit 7.  Indicates that the value of the left child expression
-                                    evaluated to FALSE and the right child expression evaluated to TRUE. */
-    uint32 eval_10        :1;  /*!< Bit 8.  Indicates that the value of the left child expression
-                                    evaluated to TRUE and the right child expression evaluated to FALSE. */
-    uint32 eval_11        :1;  /*!< Bit 9.  Indicates that the value of the left child expression
-                                    evaluated to TRUE and the right child expression evaluated to TRUE. */
-    uint32 lhs            :1;  /*!< Bit 10.  Indicates that this expression exists on the left-hand
+    uint32 lhs            :1;  /*!< Bit 4.  Indicates that this expression exists on the left-hand
                                     side of an assignment operation. */
-    uint32 in_func        :1;  /*!< Bit 11.  Indicates that this expression exists in a function */
-    uint32 owns_vec       :1;  /*!< Bit 12.  Indicates that this expression either owns its vector
+    uint32 in_func        :1;  /*!< Bit 5.  Indicates that this expression exists in a function */
+    uint32 owns_vec       :1;  /*!< Bit 6.  Indicates that this expression either owns its vector
                                     structure or shares it with someone else. */
-    uint32 excluded       :1;  /*!< Bit 13.  Indicates that this expression should be excluded from
+    uint32 excluded       :1;  /*!< Bit 7.  Indicates that this expression should be excluded from
                                     coverage results.  If a parent expression has been excluded, all children expressions
                                     within its tree are also considered excluded (even if their excluded bits are not
                                     set. */
-    uint32 type           :3;  /*!< Bits 16:14.  Indicates how the pointer element should be treated as */
-    uint32 base           :3;  /*!< Bits 19:17.  When the expression op is a STATIC, specifies the base
+    uint32 type           :3;  /*!< Bits 10:8.  Indicates how the pointer element should be treated as */
+    uint32 base           :3;  /*!< Bits 13:11.  When the expression op is a STATIC, specifies the base
                                     type of the value (DECIMAL, HEXIDECIMAL, OCTAL, BINARY, QSTRING). */
-    uint32 clear_changed  :1;  /*!< Bit 20.  Specifies the value of the left/right changed bits after
+    uint32 clear_changed  :1;  /*!< Bit 14.  Specifies the value of the left/right changed bits after
                                     the left/right subexpression has been performed.  This value should be set to 1 if
                                     a child expression needs to be re-evaluated each time the current expression is
                                     evaluated; otherwise, it should be set to 0. */
-    uint32 parenthesis    :1;  /*!< Bit 21.  Specifies that the expression was surrounded by parenthesis
+    uint32 parenthesis    :1;  /*!< Bit 15.  Specifies that the expression was surrounded by parenthesis
                                     in the original Verilog. */
-    uint32 for_cntrl      :2;  /*!< Bit 23:22.  Specifies whether this expression represents a control within a FOR loop
+    uint32 for_cntrl      :2;  /*!< Bit 17:16.  Specifies whether this expression represents a control within a FOR loop
                                     and, if so, what part of the FOR loop this expression represents.  0=Not within a for
                                     loop, 1=FOR loop initializer, 2=FOR loop condition, 3=FOR loop iterator. */
  
     /* UNMASKED BITS */
-    uint32 eval_t         :1;  /*!< Bit 24.  Indicates that the value of the current expression is
+    uint32 eval_t         :1;  /*!< Bit 18.  Indicates that the value of the current expression is
                                     currently set to TRUE (temporary value). */
-    uint32 eval_f         :1;  /*!< Bit 25.  Indicates that the value of the current expression is
+    uint32 eval_f         :1;  /*!< Bit 19.  Indicates that the value of the current expression is
                                     currently set to FALSE (temporary value). */
-    uint32 comb_cntd      :1;  /*!< Bit 26.  Indicates that the current expression has been previously
+    uint32 comb_cntd      :1;  /*!< Bit 20.  Indicates that the current expression has been previously
                                     counted for combinational coverage.  Only set by report command (therefore this bit
                                     will always be a zero when written to CDD file. */
-    uint32 exp_added      :1;  /*!< Bit 27.  Temporary bit value used by the score command but not
+    uint32 exp_added      :1;  /*!< Bit 21.  Temporary bit value used by the score command but not
                                     displayed to the CDD file.  When this bit is set to a one, it indicates to the
                                     db_add_expression function that this expression and all children expressions have
                                     already been added to the functional unit expression list and should not be added again. */
-    uint32 owned          :1;  /*!< Bit 28.  Temporary value used by the score command to indicate
+    uint32 owned          :1;  /*!< Bit 22.  Temporary value used by the score command to indicate
                                     if this expression is already owned by a mod_parm structure. */
-    uint32 gen_expr       :1;  /*!< Bit 29.  Temporary value used by the score command to indicate
+    uint32 gen_expr       :1;  /*!< Bit 23.  Temporary value used by the score command to indicate
                                     that this expression is a part of a generate expression. */
-    uint32 prev_called    :1;  /*!< Bit 30.  Temporary value used by named block and task expression
+    uint32 prev_called    :1;  /*!< Bit 24.  Temporary value used by named block and task expression
                                     functions to indicate if we are in the middle of executing a named block or task
                                     expression (since these cause a context switch to occur. */
-    uint32 nba            :1;  /*!< Bit 31.  Specifies that this expression is on the left-hand-side of a non-blocking
+    uint32 nba            :1;  /*!< Bit 25.  Specifies that this expression is on the left-hand-side of a non-blocking
                                     assignment. */
   } part;
 };
@@ -2379,36 +2358,53 @@ union expr_stmt_u {
  run-time information for its expression.
 */
 struct expression_s {
-  vector*      value;              /*!< Current value and toggle information of this expression */
-  exp_op_type  op;                 /*!< Expression operation type */
-  esuppl       suppl;              /*!< Supplemental information for the expression */
-  int          id;                 /*!< Specifies unique ID for this expression in the parent */
-  int          ulid;               /*!< Specifies underline ID for reporting purposes */
-  unsigned int line;               /*!< Specified first line in file that this expression is found on */
-  unsigned int ppfline;            /*!< Specifies the first line number in the preprocessed file */
-  unsigned int pplline;            /*!< Specifies the last line number in the preprocessed file */
-  uint32       exec_num;           /*!< Specifies the number of times this expression was executed during simulation */
+  vector*      value;                /*!< Current value and toggle information of this expression */
+  exp_op_type  op;                   /*!< Expression operation type */
+  esuppl       suppl;                /*!< Supplemental information for the expression */
+  union {
+    uint8 all;
+    struct {
+      uint8 false   : 1;             /*!< Bit 0.  Indicates that this expression has evaluated to a value
+                                          of FALSE during the lifetime of the simulation. */
+      uint8 true    : 1;             /*!< Bit 1.  Indicates that this expression has evaluated to a value
+                                          of TRUE during the lifetime of the simulation. */
+      uint8 eval_00 : 1;             /*!< Bit 2.  Indicates that the value of the left child expression
+                                          evaluated to FALSE and the right child expression evaluated to FALSE. */
+      uint8 eval_01 : 1;             /*!< Bit 3.  Indicates that the value of the left child expression
+                                          evaluated to FALSE and the right child expression evaluated to TRUE. */
+      uint8 eval_10 : 1;             /*!< Bit 4.  Indicates that the value of the left child expression
+                                          evaluated to TRUE and the right child expression evaluated to FALSE. */
+      uint8 eval_11 : 1;             /*!< Bit 5.  Indicates that the value of the left child expression
+                                          evaluated to TRUE and the right child expression evaluated to TRUE. */
+      uint8 execd   : 1;             /*!< Bit 6.  Indicates that the expression was executed during simulation. */
+    } part;
+  } cov;                             /*!< Coverage vector */
+  int          id;                   /*!< Specifies unique ID for this expression in the parent */
+  int          ulid;                 /*!< Specifies underline ID for reporting purposes */
+  unsigned int line;                 /*!< Specified first line in file that this expression is found on */
+  unsigned int ppfline;              /*!< Specifies the first line number in the preprocessed file */
+  unsigned int pplline;              /*!< Specifies the last line number in the preprocessed file */
   union {
     uint32 all;
     struct {
-      uint32 last  : 16;           /*!< Column position of the end of the expression */
-      uint32 first : 16;           /*!< Column position of the beginning of the expression */
+      uint32 last  : 16;             /*!< Column position of the end of the expression */
+      uint32 first : 16;             /*!< Column position of the beginning of the expression */
     } part;
-  } col;                           /*!< Specifies column location of beginning/ending of expression */
-  vsignal*     sig;                /*!< Pointer to signal.  If NULL then no signal is attached */
-  char*        name;               /*!< Name of signal/function/task for output purposes (only valid if we are binding
-                                        to a signal, task or function */
-  expr_stmt*   parent;             /*!< Parent expression/statement */
-  expression*  right;              /*!< Pointer to expression on right */
-  expression*  left;               /*!< Pointer to expression on left */
-  fsm*         table;              /*!< Pointer to FSM table associated with this expression */
+  } col;                             /*!< Specifies column location of beginning/ending of expression */
+  vsignal*     sig;                  /*!< Pointer to signal.  If NULL then no signal is attached */
+  char*        name;                 /*!< Name of signal/function/task for output purposes (only valid if we are binding
+                                          to a signal, task or function */
+  expr_stmt*   parent;               /*!< Parent expression/statement */
+  expression*  right;                /*!< Pointer to expression on right */
+  expression*  left;                 /*!< Pointer to expression on left */
+  fsm*         table;                /*!< Pointer to FSM table associated with this expression */
   union {
-    func_unit*   funit;            /*!< Pointer to task/function to be called by this expression */
-    thread*      thr;              /*!< Pointer to next thread to be called */
-    uint64*      scale;            /*!< Pointer to parent functional unit's timescale value */
-    vecblk*      tvecs;            /*!< Temporary vectors that are sized to match value */
-    exp_dim*     dim;              /*!< Current dimensional LSB of this expression (valid for DIM, SBIT_SEL, MBIT_SEL, MBIT_NEG and MBIT_POS) */
-    dim_and_nba* dim_nba;          /*!< Dimension and non-blocking assignment information */
+    func_unit*   funit;              /*!< Pointer to task/function to be called by this expression */
+    thread*      thr;                /*!< Pointer to next thread to be called */
+    uint64*      scale;              /*!< Pointer to parent functional unit's timescale value */
+    vecblk*      tvecs;              /*!< Temporary vectors that are sized to match value */
+    exp_dim*     dim;                /*!< Current dimensional LSB of this expression (valid for DIM, SBIT_SEL, MBIT_SEL, MBIT_NEG and MBIT_POS) */
+    dim_and_nba* dim_nba;            /*!< Dimension and non-blocking assignment information */
   } elem;
 };
 
@@ -3130,6 +3126,8 @@ struct profiler_s {
 struct cov_db_s {
   unsigned int ul_num;               /*!< Number of unsigned long values in the array */
   ulong*       ul;                   /*!< Unsigned long coverage array */
+  unsigned int u8_num;               /*!< Number of unsigned int8 values in the array */
+  uint8*       u8;                   /*!< Unsigned int8 coverage array */
 };
 
 /*!

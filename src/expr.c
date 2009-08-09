@@ -649,7 +649,7 @@ expression* expression_create(
   new_expr->pplline             = pplline;
   new_expr->col.part.first      = first;
   new_expr->col.part.last       = last;
-  new_expr->exec_num            = 0;
+  new_expr->cov.all             = 0;
   new_expr->sig                 = NULL;
   new_expr->parent              = (expr_stmt*)malloc_safe( sizeof( expr_stmt ) );
   new_expr->parent->expr        = NULL;
@@ -1507,14 +1507,16 @@ void expression_db_write(
 
   assert( expr != NULL );
 
-  fprintf( file, "%d %d %u %u %u %x %x %x %x %d %d",
+  // TBD - We need to make sure that the DASSIGN/ASSIGN execd is retained.
+  //  ((expr->op == EXP_OP_DASSIGN) || (expr->op == EXP_OP_ASSIGN) || (expr->cov.part.execd == 1)) ? 1
+
+  fprintf( file, "%d %d %u %u %u %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
     expression_get_id( expr, ids_issued ),
     expr->line,
     expr->ppfline,
     expr->pplline,
     expr->col.all,
-    ((((expr->op == EXP_OP_DASSIGN) || (expr->op == EXP_OP_ASSIGN)) && (expr->exec_num == 0)) ? (uint32)1 : expr->exec_num),
     expr->op,
     (expr->suppl.all & ESUPPL_MERGE_MASK),
     ((expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right, ids_issued )),
@@ -1586,7 +1588,6 @@ void expression_db_read(
   unsigned int ppfline;
   unsigned int pplline;
   unsigned int column;      /* Holder of column alignment information */
-  uint32       exec_num;    /* Holder of expression's execution number */
   uint32       op;          /* Holder of expression operation */
   esuppl       suppl;       /* Holder of supplemental value of this expression */
   int          right_id;    /* Holder of expression ID to the right */
@@ -1597,7 +1598,7 @@ void expression_db_read(
   vector*      vec;         /* Holders vector value of this expression */
   exp_link*    expl;        /* Pointer to found expression in functional unit */
 
-  if( sscanf( *line, "%d %u %u %u %x %x %x %x %d %d%n", &curr_expr_id, &linenum, &ppfline, &pplline, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 10 ) {
+  if( sscanf( *line, "%d %u %u %u %x %x %x %d %d%n", &curr_expr_id, &linenum, &ppfline, &pplline, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 9 ) {
 
     *line = *line + chars_read;
 
@@ -1640,7 +1641,6 @@ void expression_db_read(
                                 ((column >> 16) & 0xffff), (column & 0xffff), ESUPPL_OWNS_VEC( suppl ) );
 
       expr->suppl.all = suppl.all;
-      expr->exec_num  = exec_num;
 
       if( op == EXP_OP_DELAY ) {
         expr->suppl.part.type = ETYPE_DELAY;
@@ -1741,7 +1741,6 @@ void expression_db_merge(
   unsigned int ppfline;
   unsigned int pplline;
   unsigned int column;         /* Column information */
-  uint32       exec_num;       /* Execution number */
   uint32       op;             /* Expression operation */
   esuppl       suppl;          /* Supplemental field */
   int          right_id;       /* ID of right child */
@@ -1750,7 +1749,7 @@ void expression_db_merge(
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %u %u %u %x %x %x %x %d %d%n", &id, &linenum, &ppfline, &pplline, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 10 ) {
+  if( sscanf( *line, "%d %u %u %u %x %x %x %d %d%n", &id, &linenum, &ppfline, &pplline, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 9 ) {
 
     *line = *line + chars_read;
 
@@ -1764,11 +1763,6 @@ void expression_db_merge(
 
       /* Merge expression supplemental fields */
       base->suppl.all = (base->suppl.all & ESUPPL_MERGE_MASK) | (suppl.all & ESUPPL_MERGE_MASK);
-
-      /* Merge execution number information */
-      if( base->exec_num < exec_num ) {
-        base->exec_num = exec_num;
-      }
 
       if( ESUPPL_OWNS_VEC( suppl ) ) {
 
@@ -1806,11 +1800,6 @@ void expression_merge(
 
   /* Merge expression supplemental fields */
   base->suppl.all = (base->suppl.all & ESUPPL_MERGE_MASK) | (other->suppl.all & ESUPPL_MERGE_MASK);
-
-  /* Merge execution number information */
-  if( base->exec_num < other->exec_num ) {
-    base->exec_num = other->exec_num;
-  }
 
   if( ESUPPL_OWNS_VEC( base->suppl ) ) {
     vector_merge( base->value, other->value );
@@ -1878,7 +1867,7 @@ void expression_display(
     right_id = expr->right->id;
   }
 
-  printf( "  Expression (%p) =>  id: %d, op: %s, line: %u, ppfline: %u, pplline: %u, col: %x, suppl: %x, exec_num: %u, left: %d, right: %d, ", 
+  printf( "  Expression (%p) =>  id: %d, op: %s, line: %u, ppfline: %u, pplline: %u, col: %x, suppl: %x, cov: %x, left: %d, right: %d, ", 
           expr,
           expr->id,
           expression_string_op( expr->op ),
@@ -1887,7 +1876,7 @@ void expression_display(
           expr->pplline,
 	  expr->col.all,
           expr->suppl.all,
-          expr->exec_num,
+          expr->cov.all,
           left_id, 
           right_id );
 
@@ -1938,10 +1927,10 @@ inline static void expression_set_tf_preclear(
     /* Set TRUE/FALSE bits to indicate value */
     if( !vector_is_unknown( expr->value ) ) {
       if( vector_is_not_zero( expr->value ) ) {
-        expr->suppl.part.true   = 1;
+        expr->cov.part.true     = 1;
         expr->suppl.part.eval_t = 1;
       } else {
-        expr->suppl.part.false  = 1;
+        expr->cov.part.false    = 1;
         expr->suppl.part.eval_f = 1;
       }
     }
@@ -1969,10 +1958,10 @@ inline static void expression_set_tf(
     /* Set TRUE/FALSE bits to indicate value */
     if( !vector_is_unknown( expr->value ) ) {
       if( vector_is_not_zero( expr->value ) ) {
-        expr->suppl.part.true   = 1; 
+        expr->cov.part.true     = 1; 
         expr->suppl.part.eval_t = 1;
       } else {
-        expr->suppl.part.false  = 1;
+        expr->cov.part.false    = 1;
         expr->suppl.part.eval_f = 1;
       }
     }
@@ -1998,9 +1987,9 @@ inline static void expression_set_and_eval_NN(
   uint32 rf = ESUPPL_IS_FALSE( expr->right->suppl );
   uint32 rt = ESUPPL_IS_TRUE(  expr->right->suppl );
 
-  expr->suppl.part.eval_01 |= lf;
-  expr->suppl.part.eval_10 |= rf;
-  expr->suppl.part.eval_11 |= lt & rt;
+  expr->cov.part.eval_01 |= lf;
+  expr->cov.part.eval_10 |= rf;
+  expr->cov.part.eval_11 |= lt & rt;
 
 }
 
@@ -2018,9 +2007,9 @@ inline static void expression_set_or_eval_NN(
   uint32 rf = ESUPPL_IS_FALSE( expr->right->suppl );
   uint32 rt = ESUPPL_IS_TRUE(  expr->right->suppl );
 
-  expr->suppl.part.eval_00 |= lf & rf;
-  expr->suppl.part.eval_01 |= rt;
-  expr->suppl.part.eval_10 |= lt;
+  expr->cov.part.eval_00 |= lf & rf;
+  expr->cov.part.eval_01 |= rt;
+  expr->cov.part.eval_10 |= lt;
 
 }
 
@@ -2038,10 +2027,10 @@ inline static void expression_set_other_eval_NN(
   uint32 rf = ESUPPL_IS_FALSE( expr->right->suppl );
   uint32 rt = ESUPPL_IS_TRUE(  expr->right->suppl );
 
-  expr->suppl.part.eval_00 |= lf & rf;
-  expr->suppl.part.eval_01 |= lf & rt;
-  expr->suppl.part.eval_10 |= lt & rf;
-  expr->suppl.part.eval_11 |= lt & rt;
+  expr->cov.part.eval_00 |= lf & rf;
+  expr->cov.part.eval_01 |= lf & rt;
+  expr->cov.part.eval_10 |= lt & rf;
+  expr->cov.part.eval_11 |= lt & rt;
 
 }
 
@@ -3405,7 +3394,7 @@ bool expression_op_func__test_plusargs(
   bool retval = FALSE;
 
   /* Only evaluate this expression if it has not been evaluated yet */
-  if( expr->exec_num == 0 ) {
+  if( expr->cov.part.execd == 0 ) {
 
     expression* left     = expr->left;
     uint64      u64;
@@ -3459,7 +3448,7 @@ bool expression_op_func__value_plusargs(
   bool retval = FALSE;
 
   /* Only evaluate this expression if it has not been evaluated yet */
-  if( expr->exec_num == 0 ) {
+  if( expr->cov.part.execd == 0 ) {
 
     expression* left     = expr->left;
     uint64      u64;
@@ -4326,7 +4315,7 @@ bool expression_op_func__pedge(
   ulong* ovalh = &(expr->elem.tvecs->vec[0].value.ul[0][VTYPE_INDEX_EXP_VALH]);
 
   if( ((*ovalh | ~(*ovall)) & (~nvalh & nvall)) && thr->suppl.part.exec_first ) {
-    expr->suppl.part.true   = 1;
+    expr->cov.part.true     = 1;
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
   } else {
@@ -4362,7 +4351,7 @@ bool expression_op_func__nedge(
   ulong* ovalh = &(expr->elem.tvecs->vec[0].value.ul[0][VTYPE_INDEX_EXP_VALH]);
 
   if( ((*ovalh | *ovall) & (~nvalh & ~nvall)) && thr->suppl.part.exec_first ) {
-    expr->suppl.part.true   = 1;
+    expr->cov.part.true     = 1;
     expr->suppl.part.eval_t = 1;
     retval = TRUE;
   } else {
@@ -4398,7 +4387,7 @@ bool expression_op_func__aedge(
 
     if( expr->right->suppl.part.eval_t == 1 ) {
       if( thr->suppl.part.exec_first ) {
-        expr->suppl.part.true   = 1;
+        expr->cov.part.true     = 1;
         expr->suppl.part.eval_t = 1;
         retval = TRUE;
       } else {
@@ -4413,7 +4402,7 @@ bool expression_op_func__aedge(
 
     /* We only need to do full value comparison if the right expression is something other than a signal */ 
     if( thr->suppl.part.exec_first && ((expr->right->op == EXP_OP_SIG) || !vector_ceq_ulong( &(expr->elem.tvecs->vec[0]), expr->right->value )) ) {
-      expr->suppl.part.true   = 1;
+      expr->cov.part.true     = 1;
       expr->suppl.part.eval_t = 1;
       vector_copy( expr->right->value, &(expr->elem.tvecs->vec[0]) );
       retval = TRUE;
@@ -4446,7 +4435,7 @@ bool expression_op_func__eor(
   if( (ESUPPL_IS_TRUE( expr->left->suppl ) == 1) || (ESUPPL_IS_TRUE( expr->right->suppl ) == 1) ) {
 
     expr->suppl.part.eval_t = 1;
-    expr->suppl.part.true   = 1;
+    expr->cov.part.true     = 1;
     retval = TRUE;
 
     /* Clear eval_t bits in left and right expressions */
@@ -4482,7 +4471,7 @@ bool expression_op_func__slist(
   if( ESUPPL_IS_TRUE( expr->right->suppl ) == 1 ) {
 
     expr->suppl.part.eval_t = 1;
-    expr->suppl.part.true   = 1;
+    expr->cov.part.true     = 1;
     retval = TRUE;
 
     /* Clear eval_t bit in right expression */
@@ -4522,7 +4511,7 @@ bool expression_op_func__delay(
 
     if( TIME_CMP_LE( thr->curr_time, *time ) || time->final ) {
       expr->suppl.part.eval_t = 1;
-      expr->suppl.part.true   = 1;
+      expr->cov.part.true     = 1;
       retval = TRUE;
     }
 
@@ -5513,7 +5502,7 @@ bool expression_op_func__wait(
   /* If the right expression evaluates to TRUE, continue; otherwise, do a context switch */
   if( vector_is_not_zero( expr->right->value ) ) {
     expr->suppl.part.eval_t = 1;
-    expr->suppl.part.true   = 1;
+    expr->cov.part.true     = 1;
     retval                  = TRUE;
   } else {
     expr->suppl.part.eval_t = 0;
@@ -5605,7 +5594,7 @@ bool expression_operate(
     }
 
     /* Specify that we have executed this expression */
-    (expr->exec_num)++;
+    expr->cov.part.execd = 1;
 
   }
 
@@ -5661,7 +5650,7 @@ void expression_operate_recursively(
     if( sizing ) {
 
       /* Clear out the execution number value since we aren't really simulating this */
-      expr->exec_num = 0;
+      expr->cov.part.execd = 0;
 
     }
     
@@ -5692,17 +5681,17 @@ void expression_vcd_assign(
 
   if( action == 'L' ) {
 
-    /* If we have seen a value of 1, increment the exec_num to indicate that the line has been hit */
+    /* If we have seen a value of 1, set the execd bit to indicate that the line has been hit */
     if( value[0] == '1' ) {
-      expr->exec_num++;
+      expr->cov.part.execd = 1;
     }
 
   } else if( (action == 'e') || (action == 'E') ) {
-    expr->suppl.part.true |= (value[0] == '1');
+    expr->cov.part.true |= (value[0] == '1');
 
   } else if( (action == 'u') || (action == 'U') ) {
-    expr->suppl.part.true  |= (value[0] == '1');
-    expr->suppl.part.false |= (value[0] == '0');
+    expr->cov.part.true  |= (value[0] == '1');
+    expr->cov.part.false |= (value[0] == '0');
              
   } else if( (action == 'c') || (action == 'C') ) {
 
@@ -5713,20 +5702,20 @@ void expression_vcd_assign(
     uint32 rf = (value[1] != '\0') ? (value[1] == '0') : (value[0] == '0');
 
     if( exp_op_info[expr->op].suppl.is_comb == AND_COMB ) {
-      expr->suppl.part.eval_10 |= rf;
-      expr->suppl.part.eval_01 |= lf;
-      expr->suppl.part.eval_11 |= (lt & rt);
+      expr->cov.part.eval_10 |= rf;
+      expr->cov.part.eval_01 |= lf;
+      expr->cov.part.eval_11 |= (lt & rt);
 
     } else if( exp_op_info[expr->op].suppl.is_comb == OR_COMB ) {
-      expr->suppl.part.eval_01 |= rt;
-      expr->suppl.part.eval_10 |= lt;
-      expr->suppl.part.eval_00 |= (lf & rf);
+      expr->cov.part.eval_01 |= rt;
+      expr->cov.part.eval_10 |= lt;
+      expr->cov.part.eval_00 |= (lf & rf);
 
     } else if( exp_op_info[expr->op].suppl.is_comb == OTHER_COMB ) {
-      expr->suppl.part.eval_00 |= (lf & rf);
-      expr->suppl.part.eval_01 |= (lf & rt);
-      expr->suppl.part.eval_10 |= (lt & rf);
-      expr->suppl.part.eval_11 |= (lt & rt);
+      expr->cov.part.eval_00 |= (lf & rf);
+      expr->cov.part.eval_01 |= (lf & rt);
+      expr->cov.part.eval_10 |= (lt & rf);
+      expr->cov.part.eval_11 |= (lt & rt);
 
     }
 

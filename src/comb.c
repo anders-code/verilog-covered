@@ -29,13 +29,13 @@
  \par
  Every expression contains two possible expression values during simulation:  0 and 1.
  If an expression evaluated to some unknown value, this is not recorded by Covered.
- If an expression has evaluated to 0, the WAS_FALSE bit of the expression's supplemental
+ If an expression has evaluated to 0, the false bit of the expression's coverage
  field will be set.  If the expression has evaluated to 1 or a value greater than 1, the
- WAS_TRUE bit of the expression's supplemental field will be set.  If both the WAS_FALSE and
- the WAS_TRUE bits are set after scoring, the expression is considered to be fully covered.
+ true bit of the expression's coverage field will be set.  If both the false and
+ the true bits are set after scoring, the expression is considered to be fully covered.
 
  \par
- If the expression is an event type, only the WAS_TRUE bit is examined.  It it was set during
+ If the expression is an event type, only the true bit is examined.  It it was set during
  simulation, the event is completely covered; otherwise, the event was not covered during simulation.
 
  \par
@@ -151,9 +151,9 @@ static bool combination_does_multi_exp_need_ul(
 
     /* Decide if our expression requires that this sequence gets underlined */
     if( and_op ) {
-      ul = (exp->suppl.part.eval_11 == 0) || (exp->suppl.part.eval_01 == 0) || (exp->suppl.part.eval_10 == 0);
+      ul = (exp->cov.part.eval_11 == 0) || (exp->cov.part.eval_01 == 0) || (exp->cov.part.eval_10 == 0);
     } else {
-      ul = (exp->suppl.part.eval_00 == 0) || (exp->suppl.part.eval_10 == 0) || (exp->suppl.part.eval_01 == 0);
+      ul = (exp->cov.part.eval_00 == 0) || (exp->cov.part.eval_10 == 0) || (exp->cov.part.eval_01 == 0);
     }
 
     /* If we did not require underlining, check our left child */
@@ -209,9 +209,9 @@ static void combination_multi_expr_calc(
         (*excludes)++;
       } else {
         if( and_op ) {
-          *hit += exp->suppl.part.eval_01;
+          *hit += exp->cov.part.eval_01;
         } else {
-          *hit += exp->suppl.part.eval_10;
+          *hit += exp->cov.part.eval_10;
         }
       }
       if( (exp->left->ulid == -1) && ul ) { 
@@ -229,9 +229,9 @@ static void combination_multi_expr_calc(
         (*excludes)++;
       } else {
         if( and_op ) {
-          *hit += exp->suppl.part.eval_10;
+          *hit += exp->cov.part.eval_10;
         } else {
-          *hit += exp->suppl.part.eval_01;
+          *hit += exp->cov.part.eval_01;
         }
       }
       if( (exp->right->ulid == -1) && ul ) {
@@ -249,9 +249,9 @@ static void combination_multi_expr_calc(
         (*excludes)++;
       } else {
         if( and_op ) {
-          *hit += exp->suppl.part.eval_11;
+          *hit += exp->cov.part.eval_11;
         } else {
-          *hit += exp->suppl.part.eval_00;
+          *hit += exp->cov.part.eval_00;
         }
       }
       if( (exp->ulid == -1) && ul ) {
@@ -369,9 +369,9 @@ void combination_get_tree_stats(
                       num_hit = vector_get_eval_abc_count( exp->value );
                     } else {
                       tot_num = 3;
-                      num_hit = exp->suppl.part.eval_01 +
-                                exp->suppl.part.eval_10 +
-                                exp->suppl.part.eval_11;
+                      num_hit = exp->cov.part.eval_01 +
+                                exp->cov.part.eval_10 +
+                                exp->cov.part.eval_11;
                     }
                   } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
                     if( report_bitwise ) {
@@ -379,9 +379,9 @@ void combination_get_tree_stats(
                       num_hit = vector_get_eval_abc_count( exp->value );
                     } else {
                       tot_num = 3;
-                      num_hit = exp->suppl.part.eval_10 +
-                                exp->suppl.part.eval_01 +
-                                exp->suppl.part.eval_00;
+                      num_hit = exp->cov.part.eval_10 +
+                                exp->cov.part.eval_01 +
+                                exp->cov.part.eval_00;
                     }
                   } else {
                     if( report_bitwise ) {
@@ -389,10 +389,10 @@ void combination_get_tree_stats(
                       num_hit = vector_get_eval_abcd_count( exp->value );
                     } else {
                       tot_num = 4;
-                      num_hit = exp->suppl.part.eval_00 +
-                                exp->suppl.part.eval_01 +
-                                exp->suppl.part.eval_10 +
-                                exp->suppl.part.eval_11;
+                      num_hit = exp->cov.part.eval_00 +
+                                exp->cov.part.eval_01 +
+                                exp->cov.part.eval_10 +
+                                exp->cov.part.eval_11;
                     }
                   }
                   *total += tot_num;
@@ -410,7 +410,7 @@ void combination_get_tree_stats(
               } else if( EXPR_IS_EVENT( exp ) == 1 ) {
                 if( info_suppl.part.scored_events == 1 ) {
                   (*total)++;
-                  num_hit = ESUPPL_WAS_TRUE( exp->suppl );
+                  num_hit = exp->cov.part.true;
                   if( excluded ) {
                     (*hit)++;
                     (*excludes)++;
@@ -429,7 +429,7 @@ void combination_get_tree_stats(
                     num_hit = vector_get_eval_ab_count( exp->value );
                   } else {
                     *total  = *total + 2;
-                    num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
+                    num_hit = exp->cov.part.true + exp->cov.part.false;
                   }
                   if( excluded ) {
                     *hit      += 2;
@@ -1578,7 +1578,7 @@ static void combination_unary(
   } else {
     lines = 1;
     tot   = 2;
-    hit   = ESUPPL_WAS_FALSE( exp->suppl ) + ESUPPL_WAS_TRUE( exp->suppl );
+    hit   = exp->cov.part.false + exp->cov.part.true;
   }
 
   if( (hit != tot) || (exp->suppl.part.excluded && show_excluded) ) {
@@ -1632,8 +1632,8 @@ static void combination_unary(
       length = 22 + strlen( spaces );
       (*info)[4] = (char*)malloc_safe( length );
       rv = snprintf( (*info)[4], length, "%s          All | %c   %c", spaces,
-                     ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
-                     ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
+                     (exp->cov.part.false ? ' ' : '*'),
+                     (exp->cov.part.true  ? ' ' : '*') );
       assert( rv < length );
       for( i=0; i<exp->value->width; i++ ) {
         (*info)[i+6] = (char*)malloc_safe( length );
@@ -1652,8 +1652,8 @@ static void combination_unary(
       length = 15 + strlen( spaces );
       (*info)[4] = (char*)malloc_safe( length );
       rv = snprintf( (*info)[4], length, "%s         %c   %c", spaces,
-                     ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
-                     ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
+                     (exp->cov.part.false ? ' ' : '*'),
+                     (exp->cov.part.true  ? ' ' : '*') );
       assert( rv < length );
 
     }
@@ -1681,7 +1681,7 @@ static void combination_event(
 
   assert( exp != NULL );
 
-  if( !ESUPPL_WAS_TRUE( exp->suppl ) || (exp->suppl.part.excluded && show_excluded) ) {
+  if( !exp->cov.part.true || (exp->suppl.part.excluded && show_excluded) ) {
 
     char         spaces[30];
     unsigned int rv;
@@ -1760,9 +1760,9 @@ static void combination_two_vars(
     } else {
       lines = 1;
       total = 3;
-      hit   = exp->suppl.part.eval_01 +
-              exp->suppl.part.eval_10 +
-              exp->suppl.part.eval_11;
+      hit   = exp->cov.part.eval_01 +
+              exp->cov.part.eval_10 +
+              exp->cov.part.eval_11;
     }
   } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
     if( report_bitwise && (exp->value->width > 1) ) {
@@ -1772,9 +1772,9 @@ static void combination_two_vars(
     } else {
       lines = 1;
       total = 3;
-      hit   = exp->suppl.part.eval_10 +
-              exp->suppl.part.eval_01 +
-              exp->suppl.part.eval_00;
+      hit   = exp->cov.part.eval_10 +
+              exp->cov.part.eval_01 +
+              exp->cov.part.eval_00;
     }
   } else {
     if( report_bitwise && (exp->value->width > 1) ) {
@@ -1784,10 +1784,10 @@ static void combination_two_vars(
     } else {
       lines = 1;
       total = 4;
-      hit   = exp->suppl.part.eval_00 +
-              exp->suppl.part.eval_01 +
-              exp->suppl.part.eval_10 +
-              exp->suppl.part.eval_11;
+      hit   = exp->cov.part.eval_00 +
+              exp->cov.part.eval_01 +
+              exp->cov.part.eval_10 +
+              exp->cov.part.eval_11;
     }
   }
 
@@ -1844,9 +1844,9 @@ static void combination_two_vars(
         length = 28 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[4], length, "%s          All | %c    %c    %c", spaces,
-                       (exp->suppl.part.eval_01 ? ' ' : '*'),
-                       (exp->suppl.part.eval_10 ? ' ' : '*'),
-                       (exp->suppl.part.eval_11 ? ' ' : '*') );
+                       (exp->cov.part.eval_01 ? ' ' : '*'),
+                       (exp->cov.part.eval_10 ? ' ' : '*'),
+                       (exp->cov.part.eval_11 ? ' ' : '*') );
         assert( rv < length );
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
@@ -1866,9 +1866,9 @@ static void combination_two_vars(
         length = 21 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[4], length, "%s         %c    %c    %c", spaces,
-                       (exp->suppl.part.eval_01 ? ' ' : '*'),
-                       (exp->suppl.part.eval_10 ? ' ' : '*'),
-                       (exp->suppl.part.eval_11 ? ' ' : '*') );
+                       (exp->cov.part.eval_01 ? ' ' : '*'),
+                       (exp->cov.part.eval_10 ? ' ' : '*'),
+                       (exp->cov.part.eval_11 ? ' ' : '*') );
         assert( rv < length );
 
       }
@@ -1887,9 +1887,9 @@ static void combination_two_vars(
         length = 28 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[4], length, "%s          All | %c    %c    %c", spaces,
-                       (exp->suppl.part.eval_10 ? ' ' : '*'),
-                       (exp->suppl.part.eval_01 ? ' ' : '*'),
-                       (exp->suppl.part.eval_00 ? ' ' : '*') );
+                       (exp->cov.part.eval_10 ? ' ' : '*'),
+                       (exp->cov.part.eval_01 ? ' ' : '*'),
+                       (exp->cov.part.eval_00 ? ' ' : '*') );
         assert( rv < length );
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
@@ -1909,9 +1909,9 @@ static void combination_two_vars(
         length = 21 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[4], length, "%s         %c    %c    %c", spaces,
-                       (exp->suppl.part.eval_10 ? ' ' : '*'),
-                       (exp->suppl.part.eval_01 ? ' ' : '*'),
-                       (exp->suppl.part.eval_00 ? ' ' : '*') );
+                       (exp->cov.part.eval_10 ? ' ' : '*'),
+                       (exp->cov.part.eval_01 ? ' ' : '*'),
+                       (exp->cov.part.eval_00 ? ' ' : '*') );
         assert( rv < length );
 
       }
@@ -1930,10 +1930,10 @@ static void combination_two_vars(
         length = 33 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[4], length, "%s          All | %c    %c    %c    %c", spaces,
-                       (exp->suppl.part.eval_00 ? ' ' : '*'),
-                       (exp->suppl.part.eval_01 ? ' ' : '*'),
-                       (exp->suppl.part.eval_10 ? ' ' : '*'),
-                       (exp->suppl.part.eval_11 ? ' ' : '*') );
+                       (exp->cov.part.eval_00 ? ' ' : '*'),
+                       (exp->cov.part.eval_01 ? ' ' : '*'),
+                       (exp->cov.part.eval_10 ? ' ' : '*'),
+                       (exp->cov.part.eval_11 ? ' ' : '*') );
         assert( rv < length );
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
@@ -1954,10 +1954,10 @@ static void combination_two_vars(
         length = 26 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[4], length, "%s         %c    %c    %c    %c", spaces,
-                       (exp->suppl.part.eval_00 ? ' ' : '*'),
-                       (exp->suppl.part.eval_01 ? ' ' : '*'),
-                       (exp->suppl.part.eval_10 ? ' ' : '*'),
-                       (exp->suppl.part.eval_11 ? ' ' : '*') );
+                       (exp->cov.part.eval_00 ? ' ' : '*'),
+                       (exp->cov.part.eval_01 ? ' ' : '*'),
+                       (exp->cov.part.eval_10 ? ' ' : '*'),
+                       (exp->cov.part.eval_11 ? ' ' : '*') );
         assert( rv < length );
 
       }
@@ -2025,10 +2025,10 @@ static void combination_multi_var_exprs(
       }
       curr_id_str[i] = '\0';
       if( and_op ) {
-        rv = snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", (exp->suppl.part.eval_01 ? ' ' : '*'), curr_id_str );
+        rv = snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", (exp->cov.part.eval_01 ? ' ' : '*'), curr_id_str );
         assert( rv < (curr_id_str_len + 4) );
       } else {
-        rv = snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", (exp->suppl.part.eval_10 ? ' ' : '*'), curr_id_str );
+        rv = snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", (exp->cov.part.eval_10 ? ' ' : '*'), curr_id_str );
         assert( rv < (curr_id_str_len + 4) );
       }
 
@@ -2066,10 +2066,10 @@ static void combination_multi_var_exprs(
       }
       curr_id_str[i] = '\0';
       if( and_op ) {
-        rv = snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", (exp->suppl.part.eval_10 ? ' ' : '*'), curr_id_str );
+        rv = snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", (exp->cov.part.eval_10 ? ' ' : '*'), curr_id_str );
         assert( rv < (curr_id_str_len + 4) );
       } else {
-        rv = snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", (exp->suppl.part.eval_01 ? ' ' : '*'), curr_id_str );
+        rv = snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", (exp->cov.part.eval_01 ? ' ' : '*'), curr_id_str );
         assert( rv < (curr_id_str_len + 4) );
       }
 
@@ -2127,14 +2127,14 @@ static void combination_multi_var_exprs(
         assert( rv < slen1 );
         rv = snprintf( *line2, slen2, "%s==1==",  left_line2 );
         assert( rv < slen2 );
-        rv = snprintf( *line3, slen3, "%s  %c  ", left_line3, (exp->suppl.part.eval_11 ? ' ' : '*') );
+        rv = snprintf( *line3, slen3, "%s  %c  ", left_line3, (exp->cov.part.eval_11 ? ' ' : '*') );
         assert( rv < slen3 );
       } else {
         rv = snprintf( *line1, slen1, "%s All",   left_line1 );
         assert( rv < slen1 );
         rv = snprintf( *line2, slen2, "%s==0==",  left_line2 );
         assert( rv < slen2 );
-        rv = snprintf( *line3, slen3, "%s  %c  ", left_line3, (exp->suppl.part.eval_00 ? ' ' : '*') );
+        rv = snprintf( *line3, slen3, "%s  %c  ", left_line3, (exp->cov.part.eval_00 ? ' ' : '*') );
         assert( rv < slen3 );
       }
       free_safe( left_line1, (strlen( left_line1 ) + 1) );

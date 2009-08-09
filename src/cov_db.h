@@ -45,6 +45,11 @@ enum cov_db_tokens {
 /*! \brief Allocates and initializes a coverage database. */
 cov_db* cov_db_create();
 
+/*! \brief Returns the index of the specified ul entry in the ul array. */
+ulong cov_db_get_ul_index(
+  ulong* addr
+);
+
 /*! \brief Writes the contents of the given coverage database. */
 void cov_db_write(
   FILE*   ofile,
