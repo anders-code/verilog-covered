@@ -402,13 +402,14 @@ void vector_db_write(
           ulong        hmask  = UL_HMASK( vec->width - 1 );
           if( vec->suppl.part.type != VTYPE_VAL ) {
             fprintf( file, " %lx", cov_db_get_ul_index( &(vec->value.ul[0][0]) ) );
+          } else {
+            for( i=0; i<(UL_SIZE(vec->width) - 1); i++ ) {
+              fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l );
+              fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h );
+            }
+            fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l) & hmask );
+            fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h) & hmask );
           }
-          for( i=0; i<(UL_SIZE(vec->width) - 1); i++ ) {
-            fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l );
-            fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h );
-          }
-          fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l) & hmask );
-          fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h) & hmask );
         }
         break;
       case VDATA_R64 :
