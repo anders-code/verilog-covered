@@ -1,6 +1,3 @@
-#ifndef __SCORE_H__
-#define __SCORE_H__
-
 /*
  Copyright (c) 2006-2009 Trevor Williams
 
@@ -17,35 +14,27 @@
 */
 
 /*!
- \file     score.h
+ \file     generate.c
  \author   Trevor Williams  (phase1geo@gmail.com)
- \date     11/29/2001
- \brief    Contains functions for score command.
+ \date     8/9/2009
 */
 
+#include <string.h>
 
-extern bool         flag_use_command_line_debug;
-extern unsigned int inline_comb_depth;
-extern char*        top_module;
-extern uint64       timestep_update;
+#include "profiler.h"
 
 
-/*! \brief Creates a module that contains all of the signals to dump from the design for coverage purposes. */
-void score_generate_top_dumpvars_module(
-  const char* dumpvars_file
-);
+/*!
+ Parses the 'generate' command-line options, creates the design database, generated Verilog code
+ and empty coverage file.
+*/
+void command_generate(
+  int          argc,      /*!< Number of arguments in score command-line */
+  int          last_arg,  /*!< Index of last parsed argument in list */
+  const char** argv       /*!< Arguments from command-line to parse */
+) { PROFILE(COMMAND_GENERATE);
 
-/*! \brief Parses the specified define from the command-line */
-void score_parse_define(
-  const char* def
-);
+  PROFILE_END;
 
-/*! \brief Parses score command-line and performs score. */
-void command_score(
-  int          argc,
-  int          last_arg,
-  const char** argv
-);
-
-#endif
+}
 

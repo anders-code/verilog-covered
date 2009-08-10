@@ -1,5 +1,5 @@
-#ifndef __SCORE_H__
-#define __SCORE_H__
+#ifndef __GENERATE_H__
+#define __GENERATE_H__
 
 /*
  Copyright (c) 2006-2009 Trevor Williams
@@ -17,31 +17,15 @@
 */
 
 /*!
- \file     score.h
+ \file     generate.h
  \author   Trevor Williams  (phase1geo@gmail.com)
- \date     11/29/2001
- \brief    Contains functions for score command.
+ \date     8/9/2009
+ \brief    Contains functions for the generate command.
 */
 
 
-extern bool         flag_use_command_line_debug;
-extern unsigned int inline_comb_depth;
-extern char*        top_module;
-extern uint64       timestep_update;
-
-
-/*! \brief Creates a module that contains all of the signals to dump from the design for coverage purposes. */
-void score_generate_top_dumpvars_module(
-  const char* dumpvars_file
-);
-
-/*! \brief Parses the specified define from the command-line */
-void score_parse_define(
-  const char* def
-);
-
-/*! \brief Parses score command-line and performs score. */
-void command_score(
+/*! \brief Performs the 'generate' command. */
+void command_generate(
   int          argc,
   int          last_arg,
   const char** argv

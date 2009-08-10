@@ -480,6 +480,7 @@ profiler profiles[NUM_PROFILES] = {
   {"generate_find_tfn_by_position_helper", NULL, 0, 0, 0, TRUE},
   {"generate_find_tfn_by_position", NULL, 0, 0, 0, TRUE},
   {"gen_item_dealloc", NULL, 0, 0, 0, TRUE},
+  {"command_generate", NULL, 0, 0, 0, TRUE},
   {"generator_display", NULL, 0, 0, 0, TRUE},
   {"generator_get_relative_scope", NULL, 0, 0, 0, TRUE},
   {"generator_clear_replace_ptrs", NULL, 0, 0, 0, TRUE},

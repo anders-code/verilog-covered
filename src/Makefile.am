@@ -20,6 +20,7 @@ covered_SOURCES = arc.c \
 		  func_unit.c \
                   genprof.c \
                   gen_item.c \
+                  generate.c \
                   generator.c \
 		  info.c \
 		  instance.c \

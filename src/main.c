@@ -34,6 +34,7 @@
 #include "devel_doc.h"
 #include "defines.h"
 #include "exclude.h"
+#include "generate.h"
 #include "merge.h"
 #include "obfuscate.h"
 #include "profiler.h"
@@ -87,7 +88,8 @@ static void usage() {
   printf( "      -h                      Help.  Display this usage information\n" );
   printf( "\n" );
   printf( "   Commands:\n" );
-  printf( "      score                   Parses Verilog files and VCD dumpfiles to create database file used\n" );
+  printf( "      generate                Parsed Verilog files and generates design database and inlined Verilog coverage files for simulation.\n" );
+  printf( "      score                   Reads design database and parses VCD dumpfiles to create coverage database file used\n" );
   printf( "                                for merging and reporting.\n" );
   printf( "      merge                   Merges two database files into one.\n" );
   printf( "      report                  Generates human-readable coverage reports from database file.\n" );
@@ -182,6 +184,11 @@ int main( int argc, const char** argv ) {
           } else if( strncmp( "-B", argv[curr_arg], 2 ) == 0 ) {
 
             obfuscate_set_mode( TRUE );
+
+          } else if( strncmp( "generate", argv[curr_arg], 8 ) == 0 ) {
+
+            command_generate( argc, curr_arg, argv );
+            cmd_found = TRUE;
 
           } else if( strncmp( "score", argv[curr_arg], 5 ) == 0 ) {
 
