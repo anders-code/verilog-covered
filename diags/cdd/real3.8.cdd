@@ -1,5 +1,5 @@
-5 14 181 5 main
-8 /home/bryce3/trevorw/stable/covered/diags/verilog 2 -t (foo) 2 -i (main.a) 2 -vcd (real3.8.vcd) 2 -o (real3.8.cdd) 2 -v (real3.8.v) 2 -P (main.a.A=-3.4) 2 -D (DUMP)
+5 14 101 5 main
+8 /Users/trevorw/projects/stable/covered/diags/verilog 2 -t (foo) 2 -i (main.a) 2 -vcd (real3.8.vcd) 2 -o (real3.8.cdd) 2 -v (real3.8.v) 2 -P (main.a.A=-3.4) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
 3 0 foo "main.a" 0 real3.8.v 24 41 1
@@ -8,7 +8,7 @@
 1 b 2 30 1070005 1 0 0 0 1 17 0 1 0 1 0 0
 1 c 3 31 1110005 1 0 63 0 64 53 0 -3.400000
 1 A 4 0 120000 1 0 31 0 64 21 0 -3.400000
-4 1 1 0 0 33
+4 1 1 0 0 1 33
 3 1 foo.$u0 "main.a.$u0" 0 real3.8.v 0 39 1
 2 2 34 20002 1 0 1008 0 0 32 48 1 0
 2 3 34 10002 2 2c 900a 2 0 32 18 0 ffffffff 0 0 0 0
@@ -26,8 +26,8 @@
 2 15 38 6000e 1 11 201048 13 14 1 50 0 1 0 1 0 0
 2 16 38 10001 0 1 1410 0 0 1 1 b
 2 17 38 1000f 1 37 1a 15 16
-4 17 0 0 0 38
-4 11 0 17 0 37
-4 9 0 11 11 36
-4 6 0 9 9 35
-4 3 11 6 0 34
+4 3 11 6 0 3 34
+4 6 0 9 9 3 35
+4 9 0 11 11 3 36
+4 11 0 17 0 3 37
+4 17 0 0 0 3 38

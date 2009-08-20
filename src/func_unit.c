@@ -990,6 +990,7 @@ void funit_db_mod_merge(
   char*        rest_line;       /* Pointer to rest of read line */
   int          type;            /* Specifies currently read CDD type */
   int          chars_read;      /* Number of characters read from current CDD line */
+  bool         new_funit_found = FALSE;
 
   assert( base != NULL );
   assert( base->name != NULL );
@@ -1002,76 +1003,95 @@ void funit_db_mod_merge(
   curr_base_race = base->race_head;
 
   /* Parse the current functional unit in the CDD file */
-  while( util_readline( file, &curr_line, &curr_line_size ) ) {
+  while( !new_funit_found && util_readline( file, &curr_line, &curr_line_size ) ) {
 
     if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
 
       rest_line = curr_line + chars_read;
    
-      switch( type ) {
+      Try {
 
-        case DB_TYPE_FUNIT_VERSION :
-          /* Do nothing */
-          break;
+        switch( type ) {
 
-        case DB_TYPE_EXPRESSION :
-          {
-            int          op;
-            int          line;
-            unsigned int col;
-            if( sscanf( rest_line, "%d %d %x", &op, &line, &col ) == 3 ) {
-              if( (curr_base_exp != NULL) && (curr_base_exp->exp->line == line) && (curr_base_exp->exp->col.all == col) ) {
-                expression_db_merge( curr_base_exp->exp, &rest_line, TRUE );
-                curr_base_exp = curr_base_exp->next;
+          case DB_TYPE_FUNIT_VERSION :
+            /* Do nothing */
+            break;
+
+          case DB_TYPE_EXPRESSION :
+            {
+              int          op;
+              int          line;
+              unsigned int col;
+              if( sscanf( rest_line, "%d %d %x", &op, &line, &col ) == 3 ) {
+                if( (curr_base_exp != NULL) && (curr_base_exp->exp->line == line) && (curr_base_exp->exp->col.all == col) ) {
+                  expression_db_merge( curr_base_exp->exp, &rest_line, FALSE );
+                  curr_base_exp = curr_base_exp->next;
+                } else {
+                  expression_db_read( &rest_line, base, FALSE );
+                  /* TBD - Need to make sure that the new expression is inserted into the expression list */
+                }
               } else {
-                expression_db_read( &rest_line, base, FALSE );
-                /* TBD - Need to make sure that the new expression is inserted into the expression list */
+                print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
+                free_safe( curr_line, curr_line_size );
+                Throw 0;
               }
-            } else {
-              print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
-              Throw 0;
+              break;
             }
-            break;
-          }
 
-        case DB_TYPE_SIGNAL :
-          {
-            char name[256];
-            if( sscanf( rest_line, "%s", name ) == 1 ) {
-              if( (curr_base_sig != NULL) && (strcmp( curr_base_sig->sig->name, name ) == 0) ) {
-                vsignal_db_merge( curr_base_sig->sig, &rest_line, TRUE );
-                curr_base_sig = curr_base_sig->next;
+          case DB_TYPE_SIGNAL :
+            {
+              char name[256];
+              if( sscanf( rest_line, "%s", name ) == 1 ) {
+                if( (curr_base_sig != NULL) && (strcmp( curr_base_sig->sig->name, name ) == 0) ) {
+                  vsignal_db_merge( curr_base_sig->sig, &rest_line, FALSE );
+                  curr_base_sig = curr_base_sig->next;
+                } else {
+                  vsignal_db_read( &rest_line, base );
+                  /* TBD - Need to make sure that the new signal is inserted into the expression list */
+                }
               } else {
-                vsignal_db_read( &rest_line, base );
-                /* TBD - Need to make sure that the new signal is inserted into the expression list */
+                print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
+                Throw 0;
               }
-            } else {
-              print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
-              Throw 0;
+              break;
             }
+
+          case DB_TYPE_STATEMENT :
+            {
+              break;
+            }
+
+          case DB_TYPE_FSM :
+            {
+              /* TBD - Need to know how to match up FSMs -- by name? */
+              fsm_db_merge( curr_base_fsm->table, &rest_line );
+              break;
+            }
+
+          case DB_TYPE_RACE :
+            {
+              break;
+            }
+
+          /* If the type is a new functional unit, move the current file pointer back to the beginning of the line */
+          case DB_TYPE_FUNIT :
+            {
+              int rv = fseek( file, (0 - (strlen( curr_line ) + 1)), SEEK_CUR );
+              assert( rv == 0 );
+              new_funit_found = TRUE;
+              break;
+            }
+
+          default :
+            print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
+            Throw 0;
             break;
-          }
 
-        case DB_TYPE_STATEMENT :
-          {
-            break;
-          }
+        }
 
-        case DB_TYPE_FSM :
-          {
-            break;
-          }
-
-        case DB_TYPE_RACE :
-          {
-            break;
-          }
-
-        default :
-          print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
-          Throw 0;
-          break;
-
+      } Catch_anonymous {
+        free_safe( curr_line, curr_line_size );
+        Throw 0;
       }
 
     }

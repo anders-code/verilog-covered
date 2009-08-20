@@ -246,6 +246,7 @@ sub runCommand {
 #          mode 3:  Finish run (removes all *.done files if FAILED count == 0)
 #          mode 4:  Finish run but leave *.done files
 #          mode 5:  Run report file diagnostic error check (for use with LXT/VPI dump verification)
+#          mode 6:  Remove CDD files only (that match)
 sub checkTest {
  
   my( $test, $rm_cdd, $mode ) = @_;
@@ -285,12 +286,14 @@ sub checkTest {
     my( $check1, $check2, $check3, $check4, $check5 );
     
     # If this is not an error test, check the CDD and report files */
-    if( ($mode == 0) || ($mode == 1) || ($mode == 5) ) {
+    if( ($mode == 0) || ($mode == 1) || ($mode == 5) || ($mode == 6) ) {
 
       # Check CDD file
       if( (-e "${test}.cdd") || ($mode == 1) ) {
         if( ($mode != 5) && (($mode == 0) || (-e "${CDD_DIR}/${test}.cdd")) ) {
           $check1 = system( "./cdd_diff ${test}.cdd ${CDD_DIR}/${test}.cdd" );
+        } elsif( $mode == 6 ) {
+          $check1 = 1;
         } else {
           $check1 = 0;
         }
@@ -376,43 +379,47 @@ sub checkTest {
 
     }
 
-    open( RPT_RESULTS, ">${RPT_OUTPUT}" ) || die "Can't open ${RPT_OUTPUT} for writing!\n";
-    open( RPT_FAILED, ">>${FAIL_OUTPUT}" ) || die "Can't open ${FAIL_OUTPUT} for writing!\n";
+    if( $mode != 6 ) {
 
-    if( (($mode == 0) && (($check1 > 0) || ($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0))) ||
-        (($mode == 1) && ($check1 > 0)) ||
-        (($mode == 5) && (($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0))) ) {
-      print "  Checking output results         -- FAILED\n";
-      print RPT_FAILED "${test}\n";
-      $failed++;
-      $retval = 1;
+      open( RPT_RESULTS, ">${RPT_OUTPUT}" ) || die "Can't open ${RPT_OUTPUT} for writing!\n";
+      open( RPT_FAILED, ">>${FAIL_OUTPUT}" ) || die "Can't open ${FAIL_OUTPUT} for writing!\n";
 
-    } else {
+      if( (($mode == 0) && (($check1 > 0) || ($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0))) ||
+          (($mode == 1) && ($check1 > 0)) ||
+          (($mode == 5) && (($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0))) ) {
+        print "  Checking output results         -- FAILED\n";
+        print RPT_FAILED "${test}\n";
+        $failed++;
+        $retval = 1;
 
-      # Check to make sure that a tmp* file does not exist
-      my( $tmp ) = `ls | grep ^tmp`;
-      chomp( $tmp );
-      if( $tmp ne "" ) {
-        die "  Temporary file was not removed!\n";
-      }
+      } else {
 
-      if( ($mode == 0) || ($mode == 1) || ($mode == 5) ) {
-        print "  Checking output results         -- PASSED\n";
-      }
-      $passed++;
+        # Check to make sure that a tmp* file does not exist
+        my( $tmp ) = `ls | grep ^tmp`;
+        chomp( $tmp );
+        if( $tmp ne "" ) {
+          die "  Temporary file was not removed!\n";
+        }
 
-      # Remove VCD file
-      system( "rm -f *.vcd" ) && die;
+        if( ($mode == 0) || ($mode == 1) || ($mode == 5) ) {
+          print "  Checking output results         -- PASSED\n";
+        }
+        $passed++;
+  
+        # Remove VCD file
+        system( "rm -f *.vcd" ) && die;
  
-      # Create the done file
-      system( "touch ${test}.done" ) && die;
+        # Create the done file
+        system( "touch ${test}.done" ) && die;
+
+      }
+
+      print RPT_RESULTS "DIAGNOSTICS PASSED: ${passed}, FAILED: ${failed}\n";
+
+      close( RPT_RESULTS );
+      close( RPT_FAILED  );
 
     }
-
-    print RPT_RESULTS "DIAGNOSTICS PASSED: ${passed}, FAILED: ${failed}\n";
-
-    close( RPT_RESULTS );
-    close( RPT_FAILED  );
 
   }
 

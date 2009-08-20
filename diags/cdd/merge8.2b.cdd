@@ -1,5 +1,5 @@
 5 14 101 4 main.adder
-8 /home/trevorw/projects/covered/diags/verilog 2 -t (adder1) 2 -i (main.adder.bit0) 2 -vcd (merge8.2b.vcd) 2 -o (merge8.2b.cdd) 2 -v (merge8.2b.v) 2 -y (lib) 2 -D (DUMP)
+8 /Users/trevorw/projects/stable/covered/diags/verilog 2 -t (adder1) 2 -i (main.adder.bit0) 2 -vcd (merge8.2b.vcd) 2 -o (merge8.2b.cdd) 2 -v (merge8.2b.v) 2 -y (lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
 15 main.adder 0
@@ -18,5 +18,5 @@
 1 b 2 9 7 1 0 0 0 1 17 1 1 0 1 0 0
 1 c 3 10 20008 1 0 0 0 1 17 1 1 0 0 0 0
 1 z 4 11 20009 1 0 0 0 1 17 1 1 0 1 0 0
-4 5 f 5 5 15
-4 10 f 10 10 16
+4 5 f 5 5 5 15
+4 10 f 10 10 10 16

@@ -1,5 +1,5 @@
 5 14 101 4 main.mlevel
-8 /home/trevorw/projects/covered/diags/verilog 2 -t (level1) 2 -i (main.mlevel.l1) 2 -e (level2a) 2 -e (level2b) 2 -vcd (merge8.4c.vcd) 2 -o (merge8.4c.cdd) 2 -v (merge8.4c.v) 2 -y (lib) 2 -D (DUMP)
+8 /Users/trevorw/projects/stable/covered/diags/verilog 2 -t (level1) 2 -i (main.mlevel.l1) 2 -e (level2a) 2 -e (level2b) 2 -vcd (merge8.4c.vcd) 2 -o (merge8.4c.cdd) 2 -v (merge8.4c.v) 2 -y (lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
 15 main.mlevel 0
@@ -13,4 +13,4 @@
 1 c 3 4 2000e 1 0 0 0 1 17 1 1 0 0 0 0
 1 d 4 7 60005 1 0 0 0 1 17 1 1 0 0 0 0
 1 e 5 7 60008 1 0 0 0 1 17 1 1 0 0 0 0
-4 4 f 4 4 12
+4 4 f 4 4 4 12

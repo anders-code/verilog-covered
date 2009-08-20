@@ -1,14 +1,14 @@
 5 14 101 7 *
-8 /home/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (urandom_range1.2.vcd) 2 -o (urandom_range1.2.cdd) 2 -v (urandom_range1.2.v) 2 -D (DUMP)
+8 /Users/trevorw/projects/stable/covered/diags/verilog 2 -t (main) 2 -vcd (urandom_range1.2.vcd) 2 -o (urandom_range1.2.cdd) 2 -v (urandom_range1.2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 urandom_range1.2.v 9 29 1
 2 1 13 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
 1 i 1 11 1070008 1 0 31 0 32 49 0 ffffffff 0 7 3 0
 1 a 2 11 107000b 1 0 31 0 32 49 0 ffffffff 0 3 7 0
-4 1 1 0 0 13
+4 1 1 0 0 1 13
 3 1 main.$u0 "main.$u0" 0 urandom_range1.2.v 0 18 1
 2 2 14 10003 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
-4 2 11 0 0 14
+4 2 11 0 0 2 14
 3 1 main.$u0.$u1 "main.$u0.$u1" 0 urandom_range1.2.v 0 0 1
 2 3 14 80008 1 0 1004 0 0 32 48 0 0
 2 4 14 60006 0 1 1410 0 0 32 33 i
@@ -22,10 +22,10 @@
 2 12 14 120014 4 6 1298 10 11 32 50 0 ffffffff fffffffe 1 2 1
 2 13 14 100010 0 1 1410 0 0 32 33 i
 2 14 14 100014 4 37 3a 12 13
-4 14 6 8 8 14
-4 9 0 14 0 14
-4 8 0 9 0 14
-4 5 11 8 8 14
+4 5 11 8 8 5 14
+4 8 0 9 0 5 14
+4 14 6 8 8 5 14
+4 9 0 14 0 5 14
 3 1 main.$u0.$u1.$u2 "main.$u0.$u1.$u2" 0 urandom_range1.2.v 0 17 1
 2 15 15 1a001a 1 0 1008 0 0 32 48 7 0
 2 16 15 1a001a 1 6c 1000 15 0 32 18 0 ffffffff 0 0 0 0
@@ -37,6 +37,6 @@
 2 22 15 3001c 4 37 10003a 20 21
 2 23 16 40004 1 0 1008 0 0 32 48 5 0
 2 24 16 30004 8 2c 900a 23 0 32 18 0 ffffffff 0 0 0 0
-4 24 0 0 0 16
-4 22 11 24 24 15
+4 22 11 24 24 22 15
+4 24 0 0 0 22 16
 3 1 main.$u3 "main.$u3" 0 urandom_range1.2.v 0 27 1

@@ -1,5 +1,5 @@
 5 14 101 4 *
-8 /home/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (define3.vcd) 2 -o (define3.cdd) 2 -v (define3.v) 2 -D (DUMP)
+8 /Users/trevorw/projects/stable/covered/diags/verilog 2 -t (main) 2 -vcd (define3.vcd) 2 -o (define3.cdd) 2 -v (define3.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 define3.v 1 26 1
 2 1 9 120012 2 1 1008 0 0 4 1 e
@@ -27,8 +27,8 @@
 1 c 3 6 60015 1 0 3 0 4 17 f f 0 1 0 0
 1 d 4 6 60018 1 0 3 0 4 17 f f 0 1 0 0
 1 e 5 7 7000f 1 0 3 0 4 17 0 f 0 1 0 0
-4 5 f 5 5 9
-4 10 f 10 10 10
-4 15 f 15 15 11
-4 20 f 20 20 12
+4 5 f 5 5 5 9
+4 10 f 10 10 10 10
+4 15 f 15 15 15 11
+4 20 f 20 20 20 12
 3 1 main.$u0 "main.$u0" 0 define3.v 0 24 1
