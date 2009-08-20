@@ -414,7 +414,7 @@ void command_merge(
       bind_perform( TRUE, 0 );
 
       /* Write out new database to output file */
-      db_write( merged_file, FALSE, TRUE, FALSE );
+      db_write( merged_file, FALSE, TRUE );
 
       print_output( "\n***  Merging completed successfully!  ***", NORMAL, __FILE__, __LINE__ );
 

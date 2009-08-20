@@ -1909,7 +1909,7 @@ void command_exclude(
         rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing CDD file \"%s\"", exclude_cdd );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-        db_write( exclude_cdd, FALSE, FALSE, TRUE );
+        db_write( exclude_cdd, FALSE, FALSE );
       }
 
     }

@@ -60,9 +60,6 @@ int statement_get_last_line( statement* stmt );
 /*! \brief Creates a list of all signals on the RHS of expressions in the given statement block */
 void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail );
 
-/*! \brief Gets the head statement for the block containing stmt */
-statement* statement_find_head_statement( statement* stmt, stmt_link* head );
-
 /*! \brief Searches for statement with ID in the given statement block */
 statement* statement_find_statement( statement* curr, int id );
 

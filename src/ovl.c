@@ -35,7 +35,6 @@
 #include "func_iter.h"
 #include "func_unit.h"
 #include "instance.h"
-#include "iter.h"
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
@@ -390,7 +389,6 @@ void ovl_collect(
   funit_inst*  funiti;             /* Pointer to found functional unit instance containing this functional unit */
   funit_inst*  curr_child;         /* Current child of this functional unit's instance */
   int          ignore        = 0;  /* Number of functional units to ignore */
-  stmt_iter    si;                 /* Statement iterator */
   unsigned int total         = 0;  /* Total number of coverage points for a given assertion module */
   unsigned int hit           = 0;  /* Number of hit coverage points for a given assertion module */
   int          exclude_found = 0;  /* Set to a value of 1 if at least one excluded coverage point was found */

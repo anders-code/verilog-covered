@@ -2020,8 +2020,8 @@ expr_primary
     {
       if( (ignore_mode == 0) && ($1 != NULL) && ($2 != NULL) ) {
         db_bind_expr_tree( $2, $1 );
-        $2->line = @1.first_line;
-        $2->col  = ((@1.first_column & 0xffff) << 16) | ($2->col & 0xffff);
+        $2->line           = @1.first_line;
+        $2->col.part.first = @1.first_column;
         $$ = $2;
       } else {
         expression_dealloc( $2, FALSE );
@@ -2033,8 +2033,8 @@ expr_primary
     {
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         db_bind_expr_tree( $2, $1 );
-        $2->line = @1.first_line;
-        $2->col  = ((@1.first_column & 0xffff) << 16) | ($2->col & 0xffff);
+        $2->line           = @1.first_line;
+        $2->col.part.first = @1.first_column;
         Try {
           $$ = db_create_expression( NULL, $2, EXP_OP_PINC, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         } Catch_anonymous {
@@ -2051,8 +2051,8 @@ expr_primary
     {
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         db_bind_expr_tree( $2, $1 );
-        $2->line = @1.first_line;
-        $2->col  = ((@1.first_column & 0xffff) << 16) | ($2->col & 0xffff);
+        $2->line           = @1.first_line;
+        $2->col.part.first = @1.first_column;
         Try {
           $$ = db_create_expression( NULL, $2, EXP_OP_PDEC, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         } Catch_anonymous {
@@ -2069,8 +2069,8 @@ expr_primary
     {
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         db_bind_expr_tree( $3, $2 );
-        $3->line = @2.first_line;
-        $3->col  = ((@2.first_column & 0xffff) << 16) | ($3->col & 0xffff);
+        $3->line           = @2.first_line;
+        $3->col.part.first = @2.first_column;
         Try {
           $$ = db_create_expression( NULL, $3, EXP_OP_IINC, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         } Catch_anonymous {
@@ -2087,8 +2087,8 @@ expr_primary
     {
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         db_bind_expr_tree( $3, $2 );
-        $3->line = @2.first_line;
-        $3->col  = ((@2.first_column & 0xffff) << 16) | ($3->col & 0xffff);
+        $3->line           = @2.first_line;
+        $3->col.part.first = @2.first_column;
         Try {
           $$ = db_create_expression( NULL, $3, EXP_OP_IDEC, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         } Catch_anonymous {
@@ -5633,8 +5633,8 @@ lpvalue
     {
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         db_bind_expr_tree( $3, $1 );
-        $3->line = @1.first_line;
-        $3->col  = ((@1.first_column & 0xffff) << 16) | ($3->col & 0xffff);
+        $3->line           = @1.first_line;
+        $3->col.part.first = @1.first_column;
         $$ = $3;
       } else {
         expression_dealloc( $3, FALSE );
@@ -5680,8 +5680,8 @@ lavalue
     {
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         db_bind_expr_tree( $3, $1 );
-        $3->line = @1.first_line;
-        $3->col  = ((@1.first_column & 0xffff) << 16) | ($3->col & 0xffff);
+        $3->line           = @1.first_line;
+        $3->col.part.first = @1.first_column;
         $$ = $3;
       } else {
         expression_dealloc( $3, FALSE );

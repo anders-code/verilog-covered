@@ -1794,7 +1794,6 @@ struct fsm_table_arc_s;
 struct fsm_table_s;
 struct statement_s;
 struct sig_link_s;
-struct stmt_iter_s;
 struct exp_link_s;
 struct stmt_link_s;
 struct stmt_loop_link_s;
@@ -1931,11 +1930,6 @@ typedef struct statement_s statement;
  Renaming signal link structure for convenience.
 */
 typedef struct sig_link_s sig_link;
-
-/*!
- Renaming statement iterator structure for convenience.
-*/
-typedef struct stmt_iter_s stmt_iter;
 
 /*!
  Renaming expression link structure for convenience.
@@ -2317,7 +2311,13 @@ struct expression_s {
   int          ulid;               /*!< Specifies underline ID for reporting purposes */
   int          line;               /*!< Specified line in file that this expression is found on */
   uint32       exec_num;           /*!< Specifies the number of times this expression was executed during simulation */
-  uint32       col;                /*!< Specifies column location of beginning/ending of expression */
+  union {
+    uint32 all;
+    struct {
+      uint32 last  : 16;           /*!< Column position of the end of the expression */
+      uint32 first : 16;           /*!< Column position of the beginning of the expression */
+    } part;
+  } col;
   vsignal*     sig;                /*!< Pointer to signal.  If NULL then no signal is attached */
   char*        name;               /*!< Name of signal/function/task for output purposes (only valid if we are binding
                                         to a signal, task or function */
@@ -2404,6 +2404,7 @@ struct statement_s {
   expression* exp;                   /*!< Pointer to associated expression tree */
   statement*  next_true;             /*!< Pointer to next statement to run if expression tree non-zero */
   statement*  next_false;            /*!< Pointer to next statement to run if next_true not picked */
+  statement*  head;                  /*!< Pointer to head statement in this block */
   int         conn_id;               /*!< Current connection ID (used to make sure that we do not infinitely loop
                                           in connecting statements together) */
   func_unit*  funit;                 /*!< Pointer to statement's functional unit that it belongs to */
@@ -2448,14 +2449,6 @@ struct sig_link_s {
 };
 
 /*!
- Statement link iterator.
-*/
-struct stmt_iter_s {
-  stmt_link* curr;                   /*!< Pointer to current statement link */
-  stmt_link* last;                   /*!< Two-way pointer to next/previous statement link */
-};
-
-/*!
  Expression link element.  Stores pointer to an expression.
 */
 struct exp_link_s {
@@ -2468,7 +2461,8 @@ struct exp_link_s {
 */
 struct stmt_link_s {
   statement* stmt;                   /*!< Pointer to statement */
-  stmt_link* ptr;                    /*!< Pointer to next statement element in list */
+  stmt_link* next;                   /*!< Pointer to next statement element in list */
+  bool       rm_stmt;                /*!< Set to TRUE if the associated statement should be removed */
 };
 
 /*!
@@ -2485,7 +2479,7 @@ struct stmt_link_s {
 struct stmt_loop_link_s {
   statement*      stmt;              /*!< Pointer to last statement in loop */
   int             id;                /*!< ID of next statement after last */
-  bool            next_true;         /*!< Specifies if the ID is for next_true or next_false */
+  int             type;              /*!< Specifies if the ID is for next_true (0), next_false (1) or head (2) */
   stmt_loop_link* next;              /*!< Pointer to next statement in stack */
 };
 

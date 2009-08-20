@@ -31,8 +31,8 @@
 */
 typedef struct func_iter_s {
   unsigned int scopes;     /*!< The number of scopes iterated with this iteration (i.e., the allocated size of sis and sigs) */
-  stmt_iter**  sis;        /*!< Pointer to array of statement iterators (sorted by line number) for the given functional unit */
-  unsigned int si_num;     /*!< Specifies the current index in the sis array to process */
+  stmt_link**  sls;        /*!< Pointer to array of statement lists (sorted by line number) for the given functional unit */
+  unsigned int sl_num;     /*!< Specifies the current index in the sls array to process */
   sig_link**   sigs;       /*!< Pointer to array of signal lists for the given functional unit */
   unsigned int sig_num;    /*!< Specifies the current index in the sigs array to process */
   sig_link*    curr_sigl;  /*!< Pointer to current sig_link element in the given sigs array element */
@@ -40,16 +40,27 @@ typedef struct func_iter_s {
 
 
 /*! \brief Initializes the values in the given structure */
-void func_iter_init( func_iter* fi, func_unit* funit, bool stmts, bool sigs );
+void func_iter_init(
+  func_iter* fi,
+  func_unit* funit,
+  bool       stmts,
+  bool       sigs
+);
 
 /*! \brief Provides the next statement iterator in the functional unit statement iterator */
-statement* func_iter_get_next_statement( func_iter* fi );
+statement* func_iter_get_next_statement(
+  func_iter* fi
+);
 
 /*! \brief Provides the next signal in the functional unit signal iterator */
-vsignal* func_iter_get_next_signal( func_iter* fi );
+vsignal* func_iter_get_next_signal(
+  func_iter* fi
+);
 
 /*! \brief Deallocates functional unit iterator */
-void func_iter_dealloc( func_iter* si );
+void func_iter_dealloc(
+  func_iter* fi
+);
 
 #endif
 

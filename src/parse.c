@@ -201,7 +201,7 @@ void parse_design(
     }
 
     /* Write contents to baseline database file. */
-    db_write( output_db, TRUE, TRUE, FALSE );
+    db_write( output_db, TRUE, TRUE );
 
   } Catch_anonymous {
     fsm_var_cleanup();
@@ -292,7 +292,7 @@ void parse_and_score_dumpfile(
     info_suppl.part.scored = 1;
 
     /* Write contents to database file */
-    db_write( db, FALSE, FALSE, FALSE );
+    db_write( db, FALSE, FALSE );
 
   } Catch_anonymous {
     sim_dealloc();

@@ -53,7 +53,7 @@ am_covered_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) attr.$(OBJEXT) \
 	fsm.$(OBJEXT) fsm_arg.$(OBJEXT) fsm_var.$(OBJEXT) \
 	func_iter.$(OBJEXT) func_unit.$(OBJEXT) genprof.$(OBJEXT) \
 	gen_item.$(OBJEXT) info.$(OBJEXT) instance.$(OBJEXT) \
-	iter.$(OBJEXT) keywords_1995.$(OBJEXT) keywords_2001.$(OBJEXT) \
+	keywords_1995.$(OBJEXT) keywords_2001.$(OBJEXT) \
 	keywords_sv.$(OBJEXT) keywords_sys_1995.$(OBJEXT) \
 	keywords_sys_2001.$(OBJEXT) keywords_sys_sv.$(OBJEXT) \
 	pplexer.$(OBJEXT) lexer.$(OBJEXT) line.$(OBJEXT) \
@@ -230,7 +230,6 @@ covered_SOURCES = arc.c \
                   gen_item.c \
 		  info.c \
 		  instance.c \
- 		  iter.c \
 		  keywords_1995.c \
 		  keywords_2001.c \
 		  keywords_sv.c \
@@ -382,7 +381,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/genprof.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/info.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instance.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/iter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keywords_1995.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keywords_2001.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keywords_sv.Po@am__quote@

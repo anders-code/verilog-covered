@@ -38,19 +38,33 @@ vsignal* vsignal_create(
 );
 
 /*! \brief Creates the vector for a given signal based on the values of its dimension information */
-void vsignal_create_vec( vsignal* sig );
+void vsignal_create_vec(
+  vsignal* sig
+);
 
 /*! \brief Duplicates the given signal and returns a newly allocated signal */
-vsignal* vsignal_duplicate( vsignal* sig );
+vsignal* vsignal_duplicate(
+  vsignal* sig
+);
 
 /*! \brief Outputs this vsignal information to specified file. */
-void vsignal_db_write( vsignal* sig, FILE* file );
+void vsignal_db_write(
+  vsignal* sig,
+  FILE*    file
+);
 
 /*! \brief Reads vsignal information from specified file. */
-void vsignal_db_read( char** line, /*@null@*/func_unit* curr_funit );
+void vsignal_db_read(
+             char**     line,
+  /*@null@*/ func_unit* curr_funit
+);
 
 /*! \brief Reads and merges two vsignals, placing result into base vsignal. */
-void vsignal_db_merge( vsignal* base, char** line, bool same );
+void vsignal_db_merge(
+  vsignal* base,
+  char**   line,
+  bool     same
+);
 
 /*! \brief Merges two vsignals, placing the result into the base vsignal. */
 void vsignal_merge(
@@ -74,22 +88,38 @@ void vsignal_vcd_assign(
 );
 
 /*! \brief Adds an expression to the vsignal list. */
-void vsignal_add_expression( vsignal* sig, expression* expr );
+void vsignal_add_expression(
+  vsignal*    sig,
+  expression* expr
+);
 
 /*! \brief Displays vsignal contents to standard output. */
-void vsignal_display( vsignal* sig );
+void vsignal_display(
+  vsignal* sig
+);
 
 /*! \brief Converts a string to a vsignal. */
-vsignal* vsignal_from_string( char** str );
+vsignal* vsignal_from_string(
+  char** str
+);
 
 /*! \brief Calculates width of the specified signal's vector value based on the given expression */
-int vsignal_calc_width_for_expr( expression* expr, vsignal* sig );
+int vsignal_calc_width_for_expr(
+  expression* expr,
+  vsignal*    sig
+);
 
 /*! \brief Calculates LSB of the specified signal's vector value based on the given expression */
-int vsignal_calc_lsb_for_expr( expression* expr, vsignal* sig, int lsb_val );
+int vsignal_calc_lsb_for_expr(
+  expression* expr,
+  vsignal*    sig,
+  int         lsb_val
+);
 
 /*! \brief Deallocates the memory used for this vsignal. */
-void vsignal_dealloc( vsignal* sig );
+void vsignal_dealloc(
+  vsignal* sig
+);
 
 #endif
 

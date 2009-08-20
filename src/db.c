@@ -40,7 +40,6 @@
 #include "func_unit.h"
 #include "gen_item.h"
 #include "info.h"
-#include "iter.h"
 #include "instance.h"
 #include "link.h"
 #include "obfuscate.h"
@@ -338,8 +337,7 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
 void db_write(
   const char* file,        /*!< Name of database file to output contents to */
   bool        parse_mode,  /*!< Specifies if we are outputting parse data or score data */
-  bool        issue_ids,   /*!< Specifies if we need to issue/reissue expression and signal IDs */
-  bool        report_save  /*!< Specifies if we are attempting to "save" a CDD file modified in the report command */
+  bool        issue_ids    /*!< Specifies if we need to issue/reissue expression and signal IDs */
 ) { PROFILE(DB_WRITE);
 
   FILE*      db_handle;  /* Pointer to database file being written */
@@ -365,7 +363,7 @@ void db_write(
         if( !instl->ignore ) {
 
           /* Now write the instance */
-          instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, issue_ids, report_save );
+          instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, issue_ids );
 
         }
 
@@ -601,12 +599,12 @@ bool db_read(
                     ((foundinst = inst_link_find_by_scope( funit_scope, db_list[curr_db]->inst_head )) != NULL) ) {
                   merge_mode = TRUE;
                   curr_funit = foundinst->funit;
-                  funit_db_merge( foundinst->funit, db_handle, TRUE );
+                  funit_db_inst_merge( foundinst->funit, db_handle, TRUE );
                 } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) &&
                            ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.type, db_list[curr_db]->funit_head )) != NULL) ) {
                   merge_mode = TRUE;
                   curr_funit = foundfunit->funit;
-                  funit_db_merge( foundfunit->funit, db_handle, FALSE );
+                  funit_db_mod_merge( foundfunit->funit, db_handle, FALSE );
                 } else {
                   curr_funit             = funit_create();
                   curr_funit->name       = strdup_safe( funit_name );
@@ -1276,8 +1274,6 @@ void db_end_function_task_namedblock(
   int end_line  /*!< Line number of end of this task/function */
 ) { PROFILE(DB_END_FUNCTION_TASK_NAMEDBLOCK);
 
-  stmt_iter si;  /* Statement iterator for finding the first statement of the functional unit */
-
 #ifdef DEBUG_MODE
   if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_end_function_task_namedblock, end_line: %d", end_line );
@@ -1291,17 +1287,8 @@ void db_end_function_task_namedblock(
 
   /* Set the first statement pointer */
   if( curr_funit->stmt_head != NULL ) {
-
     assert( curr_funit->stmt_head->stmt != NULL );
-
-    /* Set functional unit's first_stmt pointer to its head statement */
-    stmt_iter_reset( &si, curr_funit->stmt_tail );
-    stmt_iter_find_head( &si, FALSE );
-
-    if( si.curr->stmt != NULL ) {
-      curr_funit->first_stmt = si.curr->stmt;
-    }
-
+    curr_funit->first_stmt = curr_funit->stmt_head->stmt->head;
   }
 
   /* Set the current functional unit to the parent module */
@@ -2274,7 +2261,7 @@ statement* db_parallelize_statement(
 #endif
 
     /* Create FORK expression */
-    exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
+    exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, stmt->exp->col.part.first, stmt->exp->col.part.last, NULL );
 
     /* Create unnamed scope */
     scope = db_create_unnamed_scope();
@@ -2399,6 +2386,9 @@ void db_add_statement(
     }
 #endif
 
+    /* Set the head statement pointer */
+    stmt->head = start;
+
     /* Now add current statement */
     if( generate_top_mode > 0 ) {
 
@@ -2428,7 +2418,7 @@ void db_add_statement(
       stmt->suppl.part.added = 1;
 
       /* Finally, add the statement to the functional unit statement list */
-      stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+      stmt_link_add( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
 
     }
 
