@@ -1006,7 +1006,7 @@ void funit_db_mod_merge(
 
     if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
 
-      curr_line += chars_read;
+      rest_line = curr_line + chars_read;
    
       switch( type ) {
 
@@ -1019,12 +1019,12 @@ void funit_db_mod_merge(
             int          op;
             int          line;
             unsigned int col;
-            if( sscanf( curr_line, "%d %d %x", &op, &line, &col ) == 3 ) {
+            if( sscanf( rest_line, "%d %d %x", &op, &line, &col ) == 3 ) {
               if( (curr_base_exp != NULL) && (curr_base_exp->exp->line == line) && (curr_base_exp->exp->col.all == col) ) {
-                expression_db_merge( curr_base_exp->exp, &curr_line, TRUE );
+                expression_db_merge( curr_base_exp->exp, &rest_line, TRUE );
                 curr_base_exp = curr_base_exp->next;
               } else {
-                expression_db_read( &curr_line, base, FALSE );
+                expression_db_read( &rest_line, base, FALSE );
                 /* TBD - Need to make sure that the new expression is inserted into the expression list */
               }
             } else {
@@ -1037,12 +1037,12 @@ void funit_db_mod_merge(
         case DB_TYPE_SIGNAL :
           {
             char name[256];
-            if( sscanf( curr_line, "%s", name ) == 1 ) {
+            if( sscanf( rest_line, "%s", name ) == 1 ) {
               if( (curr_base_sig != NULL) && (strcmp( curr_base_sig->sig->name, name ) == 0) ) {
-                vsignal_db_merge( curr_base_sig->sig, &curr_line, TRUE );
+                vsignal_db_merge( curr_base_sig->sig, &rest_line, TRUE );
                 curr_base_sig = curr_base_sig->next;
               } else {
-                vsignal_db_read( &curr_line, base );
+                vsignal_db_read( &rest_line, base );
                 /* TBD - Need to make sure that the new signal is inserted into the expression list */
               }
             } else {
