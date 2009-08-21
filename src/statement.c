@@ -334,14 +334,14 @@ void statement_db_write(
   assert( stmt != NULL );
 
   /* Write out contents of this statement last */
-  fprintf( ofile, "%d %d %x %d %d %d %u",
+  fprintf( ofile, "%d %u %d %x %d %d %d",
     DB_TYPE_STATEMENT,
     expression_get_id( stmt->exp, ids_issued ),
+    stmt->ppline,
     (stmt->suppl.all & 0xff),
     ((stmt->next_true   == NULL) ? 0 : expression_get_id( stmt->next_true->exp, ids_issued )),
     ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, ids_issued )),
-    ((stmt->head        == NULL) ? 0 : expression_get_id( stmt->head->exp, ids_issued )),
-    stmt->ppline
+    ((stmt->head        == NULL) ? 0 : expression_get_id( stmt->head->exp, ids_issued ))
   );
 
   fprintf( ofile, "\n" );
@@ -445,7 +445,7 @@ void statement_db_read(
   uint32       suppl;          /* Supplemental field value */
   unsigned int ppline;         /* Preprocessor file line */
 
-  if( sscanf( *line, "%d %x %d %d %d %u%n", &id, &suppl, &true_id, &false_id, &head_id, &ppline, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %u %x %d %d %d%n", &id, &ppline, &suppl, &true_id, &false_id, &head_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 

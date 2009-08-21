@@ -86,7 +86,7 @@ str_link* str_link_add(
  next pointer of element to head, sets the head element to point to the
  new element and (possibly) sets the tail value to the new element.
 */
-void stmt_link_add(
+stmt_link* stmt_link_add(
             statement*  stmt,     /*!< Pointer to statement to add to specified statement list */
             bool        rm_stmt,  /*!< Value to specify if statement should be removed when the statement link is deleted */
   /*@out@*/ stmt_link** head,     /*!< Pointer to head str_link element of list */
@@ -134,6 +134,8 @@ void stmt_link_add(
   }
 
   PROFILE_END;
+
+  return( tmp );
 
 }
 
@@ -533,6 +535,32 @@ exp_link* exp_link_find(
 
   curr = head;
   while( (curr != NULL) && (curr->exp->id != id) ) {
+    curr = curr->next;
+  }
+
+  PROFILE_END;
+
+  return( curr );
+
+}
+
+/*!
+ \return Returns the pointer to the found exp_link or NULL if the search was unsuccessful.
+
+ Iteratively searches the exp_link list specified by the head exp_link element.  If
+ a matching expression is found, the pointer to this element is returned.  If the specified
+ expression could not be matched, the value of NULL is returned.
+*/
+exp_link* exp_link_find_by_pos(
+  int          line,  /*!< First line of expression */
+  unsigned int col,   /*!< First and last column of expression */
+  exp_link*    head   /*!< Pointer to head of exp_link list to search */
+) { PROFILE(EXP_LINK_FIND);
+
+  exp_link* curr;   /* Expression list iterator */
+
+  curr = head;
+  while( (curr != NULL) && ((curr->exp->line != line) || (curr->exp->col.all != col)) ) {
     curr = curr->next;
   }
 

@@ -34,7 +34,7 @@ str_link* str_link_add(
 );
 
 /*! \brief Adds specified statement to stmt_link element at the beginning of the list. */
-void stmt_link_add(
+stmt_link* stmt_link_add(
   statement*  stmt,
   bool        rm_stmt,
   stmt_link** head,
@@ -142,6 +142,13 @@ void inst_link_display(
 /*@null@*/ exp_link* exp_link_find(
   int       id,
   exp_link* head
+);
+
+/*! \brief Finds specified expression in the given exp_link list. */
+/*@null@*/ exp_link* exp_link_find_by_pos(
+  int          line,
+  unsigned int col,
+  exp_link*    head
 );
 
 /*! \brief Finds specified signal in given sig_link list. */

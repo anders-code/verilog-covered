@@ -8,10 +8,11 @@
 
 module main;
 
-reg a;
+reg a, b;
 
-foobar #(0) f0( a );
-foobar #(1) f1( a );
+foobar #(0) f0(  a, b );
+foobar #(1) f1(  a, b );
+foobar #(1) f2( ~a, b );
 
 initial begin
 `ifdef DUMP
@@ -19,8 +20,7 @@ initial begin
         $dumpvars( 0, main );
 `endif
 	a = 1'b0;
-	#5;
-	a = 1'b1;
+	b = 1'b1;
         #10;
         $finish;
 end
@@ -28,16 +28,17 @@ end
 endmodule
 
 module foobar(
-  input wire a
+  input wire a,
+  input wire b
 );
 
 parameter X = 0;
 
 generate
   if( X == 0 ) begin
-    assign b = 1'b0;
+    assign c = a & b;
   end else begin
-    assign b = a;
+    assign c = a | b;
   end
 endgenerate
 

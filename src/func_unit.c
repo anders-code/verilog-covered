@@ -980,8 +980,6 @@ void funit_db_mod_merge(
   bool       same   /*!< Specifies if functional unit to be merged should match existing functional unit exactly or not */
 ) { PROFILE(FUNIT_DB_MOD_MERGE);
 
-  exp_link*    curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
-  sig_link*    curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
   stmt_link*   curr_base_stmt;  /* Statement list iterator */
   fsm_link*    curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
   race_blk*    curr_base_race;  /* Pointer to current race condition block in base module list  */
@@ -996,8 +994,6 @@ void funit_db_mod_merge(
   assert( base->name != NULL );
 
   /* Initialize pointers */
-  curr_base_exp  = base->exp_head;
-  curr_base_sig  = base->sig_head;
   curr_base_stmt = base->stmt_head;
   curr_base_fsm  = base->fsm_head;
   curr_base_race = base->race_head;
@@ -1023,16 +1019,14 @@ void funit_db_mod_merge(
               int          line;
               unsigned int col;
               if( sscanf( rest_line, "%d %d %x", &op, &line, &col ) == 3 ) {
-                if( (curr_base_exp != NULL) && (curr_base_exp->exp->line == line) && (curr_base_exp->exp->col.all == col) ) {
-                  expression_db_merge( curr_base_exp->exp, &rest_line, FALSE );
-                  curr_base_exp = curr_base_exp->next;
+                exp_link* expl = exp_link_find_by_pos( line, col, base->exp_head );
+                if( expl != NULL ) {
+                  expression_db_merge( expl->exp, &rest_line, FALSE );
                 } else {
                   expression_db_read( &rest_line, base, FALSE );
-                  /* TBD - Need to make sure that the new expression is inserted into the expression list */
                 }
               } else {
                 print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
-                free_safe( curr_line, curr_line_size );
                 Throw 0;
               }
               break;
@@ -1042,12 +1036,11 @@ void funit_db_mod_merge(
             {
               char name[256];
               if( sscanf( rest_line, "%s", name ) == 1 ) {
-                if( (curr_base_sig != NULL) && (strcmp( curr_base_sig->sig->name, name ) == 0) ) {
-                  vsignal_db_merge( curr_base_sig->sig, &rest_line, FALSE );
-                  curr_base_sig = curr_base_sig->next;
+                sig_link* sigl = sig_link_find( name, base->sig_head );
+                if( sigl != NULL ) {
+                  vsignal_db_merge( sigl->sig, &rest_line, FALSE );
                 } else {
                   vsignal_db_read( &rest_line, base );
-                  /* TBD - Need to make sure that the new signal is inserted into the expression list */
                 }
               } else {
                 print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
@@ -1058,6 +1051,18 @@ void funit_db_mod_merge(
 
           case DB_TYPE_STATEMENT :
             {
+              int          id;
+              unsigned int ppline;
+              if( sscanf( rest_line, "%d %u", &id, &ppline ) == 2 ) {
+                if( (curr_base_stmt == NULL) || (curr_base_stmt->stmt->ppline != ppline) ) {
+                  statement_db_read( &rest_line, base, READ_MODE_REPORT_MOD_MERGE );
+                } else {
+                  curr_base_stmt = curr_base_stmt->next;
+                }
+              } else {
+                print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
+                Throw 0;
+              }
               break;
             }
 
