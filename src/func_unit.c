@@ -1053,11 +1053,11 @@ void funit_db_mod_merge(
             {
               int          id;
               unsigned int ppline;
-              if( sscanf( rest_line, "%d %u", &id, &ppline ) == 2 ) {
-                if( (curr_base_stmt == NULL) || (curr_base_stmt->stmt->ppline != ppline) ) {
+              uint32       first_col;
+              if( sscanf( rest_line, "%d %u %u", &id, &ppline, &first_col ) == 3 ) {
+                stmt_link* stmtl = stmt_link_find_by_pos( ppline, first_col, base->stmt_head );
+                if( stmtl == NULL ) {
                   statement_db_read( &rest_line, base, READ_MODE_REPORT_MOD_MERGE );
-                } else {
-                  curr_base_stmt = curr_base_stmt->next;
                 }
               } else {
                 print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );

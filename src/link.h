@@ -138,6 +138,13 @@ void inst_link_display(
   stmt_link* head
 );
 
+/*! \brief Finds specified statement in the given stmt_link list. */
+/*@null@*/ stmt_link* stmt_link_find_by_pos(
+  unsigned int ppline,
+  uint32       first_col,
+  stmt_link*   head
+);
+
 /*! \brief Finds specified expression in the given exp_link list. */
 /*@null@*/ exp_link* exp_link_find(
   int       id,

@@ -520,6 +520,32 @@ stmt_link* stmt_link_find(
 }
 
 /*!
+ \return Returns the pointer to the found stmt_link or NULL if the search was unsuccessful.
+
+ Iteratively searches the stmt_link list specified by the head stmt_link element.  If
+ a matching statement is found, the pointer to this element is returned.  If the specified
+ statement could not be matched, the value of NULL is returned.
+*/
+stmt_link* stmt_link_find_by_pos(
+  unsigned int ppline,     /*! Preprocessor line number of statement to find */
+  uint32       first_col,  /*!< First column of statement to find */
+  stmt_link*   head        /*!< Pointer to head of stmt_link list to search */
+) { PROFILE(STMT_LINK_FIND_BY_POS);
+
+  stmt_link* curr;   /* Statement list iterator */
+
+  curr = head;
+  while( (curr != NULL) && ((curr->stmt->ppline != ppline) || (curr->stmt->exp->col.part.first != first_col)) ) {
+    curr = curr->next;
+  }
+
+  PROFILE_END;
+
+  return( curr );
+
+}
+
+/*!
  \return Returns the pointer to the found exp_link or NULL if the search was unsuccessful.
 
  Iteratively searches the exp_link list specified by the head exp_link element.  If
@@ -555,7 +581,7 @@ exp_link* exp_link_find_by_pos(
   int          line,  /*!< First line of expression */
   unsigned int col,   /*!< First and last column of expression */
   exp_link*    head   /*!< Pointer to head of exp_link list to search */
-) { PROFILE(EXP_LINK_FIND);
+) { PROFILE(EXP_LINK_FIND_BY_POS);
 
   exp_link* curr;   /* Expression list iterator */
 
