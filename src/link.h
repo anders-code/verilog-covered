@@ -153,6 +153,7 @@ void inst_link_display(
 
 /*! \brief Finds specified expression in the given exp_link list. */
 /*@null@*/ exp_link* exp_link_find_by_pos(
+  exp_op_type  op,
   int          line,
   unsigned int col,
   exp_link*    head

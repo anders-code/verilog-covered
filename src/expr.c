@@ -1514,13 +1514,13 @@ void expression_db_write(
 
   assert( expr != NULL );
 
-  fprintf( file, "%d %d %d %x %x %x %x %d %d",
+  fprintf( file, "%d %d %x %d %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
     expression_get_id( expr, ids_issued ),
+    expr->op,
     expr->line,
     expr->col.all,
     ((((expr->op == EXP_OP_DASSIGN) || (expr->op == EXP_OP_ASSIGN)) && (expr->exec_num == 0)) ? (uint32)1 : expr->exec_num),
-    expr->op,
     (expr->suppl.all & ESUPPL_MERGE_MASK),
     ((expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right, ids_issued )),
     ((expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left,  ids_issued ))
@@ -1588,7 +1588,7 @@ void expression_db_read(
 
   expression*  expr;        /* Pointer to newly created expression */
   int          linenum;     /* Holder of current line for this expression */
-  unsigned int column;      /* Holder of column alignment information */
+  uint32       column;      /* Holder of column alignment information */
   uint32       exec_num;    /* Holder of expression's execution number */
   uint32       op;          /* Holder of expression operation */
   esuppl       suppl;       /* Holder of supplemental value of this expression */
@@ -1600,9 +1600,9 @@ void expression_db_read(
   vector*      vec;         /* Holders vector value of this expression */
   exp_link*    expl;        /* Pointer to found expression in functional unit */
 
-  if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &curr_expr_id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
+  if( sscanf( *line, "%d %x %d %x %x %x %d %d%n", &curr_expr_id, &op, &linenum, &column, &exec_num, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
 
-    *line = *line + chars_read;
+    *line += chars_read;
 
     /* Find functional unit instance name */
     if( curr_funit == NULL ) {
@@ -1751,7 +1751,7 @@ void expression_db_merge(
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
+  if( sscanf( *line, "%d %x %d %x %x %x %d %d%n", &id, &op, &linenum, &column, &exec_num, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
 
     *line = *line + chars_read;
 

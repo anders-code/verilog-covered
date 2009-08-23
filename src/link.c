@@ -578,15 +578,16 @@ exp_link* exp_link_find(
  expression could not be matched, the value of NULL is returned.
 */
 exp_link* exp_link_find_by_pos(
-  int          line,  /*!< First line of expression */
-  unsigned int col,   /*!< First and last column of expression */
-  exp_link*    head   /*!< Pointer to head of exp_link list to search */
+  exp_op_type op,    /*!< Operation */
+  int         line,  /*!< First line of expression */
+  uint32      col,   /*!< First and last column of expression */
+  exp_link*   head   /*!< Pointer to head of exp_link list to search */
 ) { PROFILE(EXP_LINK_FIND_BY_POS);
 
   exp_link* curr;   /* Expression list iterator */
 
   curr = head;
-  while( (curr != NULL) && ((curr->exp->line != line) || (curr->exp->col.all != col)) ) {
+  while( (curr != NULL) && ((curr->exp->line != line) || (curr->exp->col.all != col) || (curr->exp->op != op)) ) {
     curr = curr->next;
   }
 

@@ -1015,11 +1015,12 @@ void funit_db_mod_merge(
 
           case DB_TYPE_EXPRESSION :
             {
-              int          op;
-              int          line;
-              unsigned int col;
-              if( sscanf( rest_line, "%d %d %x", &op, &line, &col ) == 3 ) {
-                exp_link* expl = exp_link_find_by_pos( line, col, base->exp_head );
+              int         id;
+              exp_op_type op;
+              int         line;
+              uint32      col;
+              if( sscanf( rest_line, "%d %x %d %x", &id, &op, &line, &col ) == 4 ) {
+                exp_link* expl = exp_link_find_by_pos( op, line, col, base->exp_head );
                 if( expl != NULL ) {
                   expression_db_merge( expl->exp, &rest_line, FALSE );
                 } else {
