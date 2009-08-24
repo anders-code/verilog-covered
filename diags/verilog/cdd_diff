@@ -97,8 +97,8 @@ sub parse_cdd {
       }
 
       # If our exec_num is non-zero, set it to one to make sure that we compare
-      if( $line[4] ne "0" ) {
-        $line[4] = "1";
+      if( $line[5] ne "0" ) {
+        $line[5] = "1";
       }
 
     # FSM
@@ -108,18 +108,18 @@ sub parse_cdd {
       # a different size than the first CDD file.
       if( ($num == 1) && ($vec_ul_size[0] != $vec_ul_size[1]) ) { 
 
-        my( $table_exists ) = $line[3];
-        my( @tmp_line1    ) = @line[0,1,2,3];
+        my( $table_exists ) = $line[4];
+        my( @tmp_line1    ) = @line[0,1,2,3,4];
 
         # If a table is specified, parse its arc information
         if( $table_exists == 1 ) {
 
-          my( $from_states ) = $line[5];
-          my( $to_states   ) = $line[6];
-          my( $start       ) = 7;
+          my( $from_states ) = $line[6];
+          my( $to_states   ) = $line[7];
+          my( $start       ) = 8;
 
           # Add to the temporary line
-          @tmp_line1 = (@tmp_line1,@line[4,5,6]);
+          @tmp_line1 = (@tmp_line1,@line[5,6,7]);
 
           # Parse the from states
           for( $i=0; $i<$from_states; $i++ ) {
