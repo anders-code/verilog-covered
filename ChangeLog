@@ -1,3 +1,7 @@
+2009-08-24 09:08  phase1geo
+
+	Fixing splint warnings.
+
 2009-08-24 08:33  phase1geo
 
 	Fixing CDD difference utility to conform to the new CDD format.

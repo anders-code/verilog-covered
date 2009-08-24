@@ -1,6 +1,14 @@
 Covered-Related NEWS
 ====================
 
+    * 8/24/2009
+
+Stable release covered-0.7.6 made.  This is a bug fix release only.
+
+  - Fixed misspelling in report generator code (misspelling showed up in text reports)
+  - Fixed issues with performing module merging with modules containing generate blocks configured differently
+    for different instantiations of the same module.
+
     * 8/2/2009
 
 Stable release covered-0.7.5 made.  This is a bug fix release only.
