@@ -1757,7 +1757,6 @@ void expression_db_merge(
 
     if( (base->op != op) || (base->line != linenum) || (base->col.all != column) ) {
 
-      printf( "In expression_db_merge, base: %s, op: %d, linenum: %d, column: %u\n", expression_string( base ), op, linenum, column );
       print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
       Throw 0;

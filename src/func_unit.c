@@ -975,9 +975,9 @@ void funit_db_inst_merge(
  displayed to the user.
 */
 void funit_db_mod_merge(
-  func_unit* base,  /*!< Module that will merge in that data from the in functional unit */
-  FILE*      file,  /*!< Pointer to CDD file handle to read */
-  bool       same   /*!< Specifies if functional unit to be merged should match existing functional unit exactly or not */
+               func_unit* base,  /*!< Module that will merge in that data from the in functional unit */
+               FILE*      file,  /*!< Pointer to CDD file handle to read */
+  /*@unused@*/ bool       same   /*!< Specifies if functional unit to be merged should match existing functional unit exactly or not */
 ) { PROFILE(FUNIT_DB_MOD_MERGE);
 
   stmt_link*   curr_base_stmt;  /* Statement list iterator */
@@ -1116,7 +1116,9 @@ void funit_db_mod_merge(
           default :
             print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
             Throw 0;
+            /*@-unreachable@*/
             break;
+            /*@=unreachable@*/
 
         }
 

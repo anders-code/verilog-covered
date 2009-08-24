@@ -334,7 +334,7 @@ void statement_db_write(
   assert( stmt != NULL );
 
   /* Write out contents of this statement last */
-  fprintf( ofile, "%d %u %u %d %x %d %d %d",
+  fprintf( ofile, "%d %d %u %u %x %d %d %d",
     DB_TYPE_STATEMENT,
     expression_get_id( stmt->exp, ids_issued ),
     stmt->ppline,
@@ -521,7 +521,7 @@ void statement_db_read(
       }
 
       /* Add the statement to the functional unit list */
-      stmt_link_add( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+      (void)stmt_link_add( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
 
       /*
        Possibly add statement to presimulation queue (if the current functional unit is a task

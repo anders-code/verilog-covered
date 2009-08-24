@@ -684,7 +684,6 @@ void vector_db_merge(
     if( base->width != width ) {
 
       if( same ) {
-        printf( "In vector_db_merge, base->width: %d, width: %d\n", base->width, width );
         print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                       FATAL, __FILE__, __LINE__ );
         Throw 0;

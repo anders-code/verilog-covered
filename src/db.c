@@ -2418,7 +2418,7 @@ void db_add_statement(
       stmt->suppl.part.added = 1;
 
       /* Finally, add the statement to the functional unit statement list */
-      stmt_link_add( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+      (void)stmt_link_add( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
 
     }
 

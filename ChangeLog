@@ -1,160 +1,164 @@
+2009-08-24 08:33  phase1geo
+
+	Fixing CDD difference utility to conform to the new CDD format.
+
+2009-08-24 00:09  phase1geo
+
+	Updating VCS regressions.  All tests fully pass.
+
+2009-08-23 23:35  phase1geo
+
+	Missed a couple of files.
+
+2009-08-23 23:22  phase1geo
+
+	file generate22.2.v was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 23:22  phase1geo
+
+	file generate22.2.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 23:22  phase1geo
+
+	file generate22.3.v was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 23:22  phase1geo
+
+	file generate22.3.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 23:22  phase1geo
+
+	file generate22.2.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 23:22  phase1geo
+
+	file generate22.2.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 23:22  phase1geo
+
+	file generate22.3.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 23:22  phase1geo
+
+	file generate22.3.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 23:22  phase1geo
+
+	file generate22.3.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 23:22  phase1geo
+
+	file generate22.2.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 23:22  phase1geo
+
+	Fixing race condition and FSM merging.	Updating regression files.
+
+2009-08-23 08:41  phase1geo
+
+	file generate22.1.v was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 08:41  phase1geo
+
+	file generate22.1.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 08:41  phase1geo
+
+	file generate22.1.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 08:41  phase1geo
+
+	file generate22.1.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 08:40  phase1geo
+
+	file generate22.1.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-08-23 08:40  phase1geo
+
+	Fixing issues with the last checkin.  Full IV and Cver regressions
+	now pass.  Added diagnostic to verify signal merging works
+	properly.  Still need to finish race condition and FSM merging.
+
+2009-08-21 08:20  phase1geo
+
+	file generate22.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-08-21 08:20  phase1geo
+
+	file generate22.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-08-21 08:20  phase1geo
+
+	Last change needed to fix merging dissimilar functional units that
+	have different statements/expressions.	This should also work for
+	dissimilar signals too.  Need to add support for merging dissimilar
+	FSMs.  Also need to change CDD version number and update all
+	regression files.  Checkpointing.
+
+2009-08-21 08:20  phase1geo
+
+	file generate22.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-08-21 00:06  phase1geo
+
+	More updates to fix module merging.
+
+2009-08-20 17:24  phase1geo
+
+	Fixing regression issues and updating regression files.  IV and
+	Cver regressions have been updated to this point.
+
+2009-08-20 15:30  phase1geo
+
+	Fixing segmentation faults.
+
+2009-08-20 00:04  phase1geo
+
+	Fixing compilation issues with VPI library builds.
+
+2009-08-20 00:01  phase1geo
+
+	file generate22.v was initially added on branch stable-0_7-branch.
+
+2009-08-20 00:01  phase1geo
+
+	file generate22.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-08-20 00:01  phase1geo
+
+	Starting to work on converting stmt_iter to stmt_link (to match
+	development release version).  Starting to update regression files.
+	 Still have some work to do here.  Checkpointing.
+
+2009-08-04 20:51  phase1geo
+
+	Fixing typo in report generator.
+
+2009-08-02 14:57  phase1geo
+
+	Updates for 0.7.5 stable release.
+
 2009-08-02 08:12  phase1geo
 
 	Fixing splint warnings.
-
-2009-07-30 09:10  phase1geo
-
-	Fixing bug 2813948.  Fixed merge6.1 diagnostic and updated
-	regression suite per this change.
-
-2009-06-27 21:40  phase1geo
-
-	Fixing bug 2813405.
-
-2009-06-25 23:03  phase1geo
-
-	file race8.rptI was initially added on branch stable-0_7-branch.
-
-2009-06-25 23:03  phase1geo
-
-	file race8.v was initially added on branch stable-0_7-branch.
-
-2009-06-25 23:03  phase1geo
-
-	file race8.cfg was initially added on branch stable-0_7-branch.
-
-2009-06-25 23:03  phase1geo
-
-	file race8.rptM was initially added on branch stable-0_7-branch.
-
-2009-06-25 23:03  phase1geo
-
-	file race8.cdd was initially added on branch stable-0_7-branch.
-
-2009-06-25 23:03  phase1geo
-
-	Fixing bug 2812495.  Added race8 diagnostic to verify the bug fix.
-
-2009-06-25 16:40  phase1geo
-
-	Fixing a few issues with the last checkin.
-
-2009-06-25 13:47  phase1geo
-
-	file generate21.rptM was initially added on branch
-	stable-0_7-branch.
-
-2009-06-25 13:47  phase1geo
-
-	file generate12.rptM was initially added on branch
-	stable-0_7-branch.
-
-2009-06-25 13:47  phase1geo
-
-	file generate21.rptI was initially added on branch
-	stable-0_7-branch.
-
-2009-06-25 13:47  phase1geo
-
-	file generate21.cfg was initially added on branch
-	stable-0_7-branch.
-
-2009-06-25 13:47  phase1geo
-
-	file generate21.v was initially added on branch stable-0_7-branch.
-
-2009-06-25 13:47  phase1geo
-
-	file generate12.rptI was initially added on branch
-	stable-0_7-branch.
-
-2009-06-25 13:47  phase1geo
-
-	file generate21.cdd was initially added on branch
-	stable-0_7-branch.
-
-2009-06-25 13:47  phase1geo
-
-	file generate12.cdd was initially added on branch
-	stable-0_7-branch.
-
-2009-06-25 13:47  phase1geo
-
-	Fixed bug 2812321.  Added generate12 and generate21 regression
-	files and included both diagnostics in the regression.
-
-2009-06-25 08:37  phase1geo
-
-	Updating version number to 0.7.5 in preparation for the new stable
-	release.
-
-2009-06-25 07:33  phase1geo
-
-	Cleaning up splint warnings.
-
-2009-06-20 22:49  phase1geo
-
-	file err3.2.cfg was initially added on branch stable-0_7-branch.
-
-2009-06-20 22:49  phase1geo
-
-	file err3.2.v was initially added on branch stable-0_7-branch.
-
-2009-06-20 22:49  phase1geo
-
-	file err3.2.err was initially added on branch stable-0_7-branch.
-
-2009-06-20 22:49  phase1geo
-
-	Fixing bug 2808820.  Added err3.2 to verify part of the fix.
-
-2009-06-20 16:48  phase1geo
-
-	file generate20.1.v was initially added on branch
-	stable-0_7-branch.
-
-2009-06-20 16:48  phase1geo
-
-	Fixing bug 2808820.
-
-2009-06-20 16:48  phase1geo
-
-	file generate20.1.cfg was initially added on branch
-	stable-0_7-branch.
-
-2009-06-20 16:48  phase1geo
-
-	file generate20.1.err was initially added on branch
-	stable-0_7-branch.
-
-2009-06-20 16:19  phase1geo
-
-	Removing dump portion of the generate20 diagnostic.
-
-2009-06-20 16:14  phase1geo
-
-	file generate20.err was initially added on branch
-	stable-0_7-branch.
-
-2009-06-20 16:14  phase1geo
-
-	Fixing bug 2809587.  Adding generate20.v diagnostic to verify bug
-	fix.
-
-2009-06-19 08:07  phase1geo
-
-	file generate20.v was initially added on branch stable-0_7-branch.
-
-2009-06-19 08:07  phase1geo
-
-	file generate20.cfg was initially added on branch
-	stable-0_7-branch.
-
-2009-06-19 08:07  phase1geo
-
-	Adding generate20 diagnostic to hit bug 2808818.
-
-2009-06-17 22:13  phase1geo
-
-	Readying files for new 0.7.4 stable release.
 
