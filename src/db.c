@@ -2753,7 +2753,8 @@ attr_param* db_create_attr_param(
  Calls the attribute_parse() function and deallocates this list.
 */
 void db_parse_attribute(
-  attr_param* ap  /*!< Pointer to attribute parameter list to parse */
+  attr_param* ap,   /*!< Pointer to attribute parameter list to parse */
+  int         line  /*!< First line of attribute */
 ) { PROFILE(DB_PARSE_ATTRIBUTE);
 
 #ifdef DEBUG_MODE
@@ -2765,7 +2766,7 @@ void db_parse_attribute(
   Try {
 
     /* First, parse the entire attribute */
-    attribute_parse( ap, curr_funit, (exclude_mode > 0) );
+    attribute_parse( ap, line, curr_funit, (exclude_mode > 0) );
 
   } Catch_anonymous {
     attribute_dealloc( ap );

@@ -34,6 +34,7 @@ void fsm_arg_parse(
 /*! \brief Parses specified attribute argument for FSM information. */
 void fsm_arg_parse_attr(
   attr_param*      ap,
+  int              line,
   const func_unit* funit,
   bool             exclude
 );

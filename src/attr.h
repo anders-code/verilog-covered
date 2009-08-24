@@ -32,6 +32,7 @@ attr_param* attribute_create( const char* name, expression* expr );
 /*! \brief Parses and handles specified attribute parameter list. */
 void attribute_parse(
   attr_param*      ap,
+  int              line,
   const func_unit* mod,
   bool             exclude
 );

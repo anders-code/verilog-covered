@@ -2357,6 +2357,7 @@ struct vsignal_s {
 */
 struct fsm_s {
   char*       name;                  /*!< User-defined name that this FSM pertains to */
+  int         line;                  /*!< First line of FSM attribute */
   expression* from_state;            /*!< Pointer to from_state expression */
   expression* to_state;              /*!< Pointer to to_state expression */
   fsm_arc*    arc_head;              /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
@@ -2780,6 +2781,7 @@ struct fsm_var_s {
   vsignal*    iexp;                  /*!< Pointer to input signal matching ovar name */
   fsm*        table;                 /*!< Pointer to FSM containing signal from ovar */
   bool        exclude;               /*!< Set to TRUE if the associated FSM needs to be excluded from coverage consideration */
+  int         line;                  /*!< First line of FSM attribute */
   fsm_var*    next;                  /*!< Pointer to next fsm_var element in list */
 };
 

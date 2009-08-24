@@ -73,6 +73,7 @@ extern bool         flag_output_exclusion_ids;
 fsm* fsm_create(
   expression* from_state,  /*!< Pointer to expression that is input state variable for this FSM */
   expression* to_state,    /*!< Pointer to expression that is output state variable for this FSM */
+  int         line,        /*!< First line of FSM attribute */
   bool        exclude      /*!< Value to set the exclude bit to */
 ) { PROFILE(FSM_CREATE);
 
@@ -80,6 +81,7 @@ fsm* fsm_create(
 
   table             = (fsm*)malloc_safe( sizeof( fsm ) );
   table->name       = NULL;
+  table->line       = line;
   table->from_state = from_state;
   table->to_state   = to_state;
   table->arc_head   = NULL;
@@ -174,8 +176,9 @@ void fsm_db_write(
   bool  ids_issued  /*!< Set to TRUE if expression IDs were just issued */
 ) { PROFILE(FSM_DB_WRITE);
 
-  fprintf( file, "%d %d %d ",
+  fprintf( file, "%d %d %d %d ",
     DB_TYPE_FSM,
+    table->line,
     expression_get_id( table->from_state, ids_issued ),
     expression_get_id( table->to_state, ids_issued )
   );
@@ -209,17 +212,21 @@ void fsm_db_write(
  Reads in contents of FSM line from CDD file and stores newly created
  FSM into the specified functional unit.
 */
-void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
+void fsm_db_read(
+  char**     line,
+  func_unit* funit
+) { PROFILE(FSM_DB_READ);
 
-  int        iexp_id;        /* Input expression ID */
-  int        oexp_id;        /* Output expression ID */
-  exp_link*  iexpl;          /* Pointer to found state variable */
-  exp_link*  oexpl;          /* Pointer to found state variable */
-  int        chars_read;     /* Number of characters read from sscanf */
-  fsm*       table;          /* Pointer to newly created FSM structure from CDD */
-  int        is_table;       /* Holds value of is_table entry of FSM output */
+  int        fline;       /* First line of FSM attribute */
+  int        iexp_id;     /* Input expression ID */
+  int        oexp_id;     /* Output expression ID */
+  exp_link*  iexpl;       /* Pointer to found state variable */
+  exp_link*  oexpl;       /* Pointer to found state variable */
+  int        chars_read;  /* Number of characters read from sscanf */
+  fsm*       table;       /* Pointer to newly created FSM structure from CDD */
+  int        is_table;    /* Holds value of is_table entry of FSM output */
  
-  if( sscanf( *line, "%d %d %d%n", &iexp_id, &oexp_id, &is_table, &chars_read ) == 3 ) {
+  if( sscanf( *line, "%d %d %d %d%n", &fline, &iexp_id, &oexp_id, &is_table, &chars_read ) == 4 ) {
 
     *line = *line + chars_read + 1;
 
@@ -235,7 +242,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
           ((oexpl = exp_link_find( oexp_id, funit->exp_head )) != NULL) ) {
 
         /* Create new FSM */
-        table = fsm_create( iexpl->exp, oexpl->exp, FALSE );
+        table = fsm_create( iexpl->exp, oexpl->exp, fline, FALSE );
 
         /*
          If the input state variable is the same as the output state variable, create the new expression now.
@@ -311,6 +318,7 @@ void fsm_db_merge(
   char** line
 ) { PROFILE(FSM_DB_MERGE);
 
+  int fline;       /* First line number of FSM */
   int iid;         /* Input state variable expression ID */
   int oid;         /* Output state variable expression ID */
   int chars_read;  /* Number of characters read from line */
@@ -320,7 +328,7 @@ void fsm_db_merge(
   assert( base->from_state != NULL );
   assert( base->to_state != NULL );
 
-  if( sscanf( *line, "%d %d %d%n", &iid, &oid, &is_table, &chars_read ) == 3 ) {
+  if( sscanf( *line, "%d %d %d %d%n", &fline, &iid, &oid, &is_table, &chars_read ) == 4 ) {
 
     *line = *line + chars_read + 1;
 

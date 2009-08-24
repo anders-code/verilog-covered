@@ -141,10 +141,10 @@ MERGE1        = merge1          merge3          merge4          merge5          
                 rank1.1
 MERGE3        = merge2          merge8.4        merge8.5
 
-RACELIST      = race1           race1.1         race1.2         race2.1         race2.2 \
-                race2.3         race2.4         race4           race5           race5.1 \
-                race5.2         race6           race7           race7.1         race7.2 \
-                race8
+RACELIST      = generate22.2    race1           race1.1         race1.2         race2.1 \
+                race2.2         race2.3         race2.4         race4           race5 \
+                race5.1         race5.2         race6           race7           race7.1 \
+                race7.2         race8
 
 ERRSCORE      = err1.0          err2.0          err3            err3.1          err3.2 \
                 err5 \
@@ -269,20 +269,20 @@ IVVCSDIAGS1   = afunc1           atask1           define3          delay3       
                 generate12       generate15       generate15.1     generate15.2     generate15.3 \
                 generate15.4     generate15.5     generate16.1     generate16.2     generate16.3 \
                 generate17       generate19       generate19.1     generate19.2     generate21 \
-                generate22       generate22.1     hier3            ifdef3           ifndef2 \
-                localparam1      localparam1.1    localparam1.2    localparam1.3    localparam2 \
-                localparam3      mbit_sel5        mbit_sel5.1      mbit_sel5.2      mbit_sel5.3 \
-                mbit_sel6        mbit_sel6.1      mbit_sel6.2      mbit_sel6.3      mem4 \
-                mem4.1           nand1            nor1             ovl1             ovl1.1 \
-                ovl1.2           ovl1.3           param10.1        param10.5        port2 \
-                timescale1.1     timescale1.2     timescale1.3     timescale1.4     timescale1.5 \
-                timescale1.7     timescale1.8     timescale1.10    timescale1.11    timescale1.13 \
-                timescale1.14    timescale1.19    timescale2.1     timescale4.2     timescale4.3 \
-                timescale4.4     timescale4.5     timescale4.6     timescale4.7     timescale4.8 \
-                timescale4.17    timescale4.18    timescale4.19    timescale4.20    timescale4.21 \
-                urandom1         urandom1.1       urandom2         urandom2.1       urandom3 \
-                urandom3.1       urandom_range1.1 urandom_range1.2 urandom_range2.1 urandom_range2.2 \
-                urandom_range3
+                generate22       generate22.1     generate22.3     hier3            ifdef3 \
+                ifndef2          localparam1      localparam1.1    localparam1.2    localparam1.3 \
+                localparam2      localparam3      mbit_sel5        mbit_sel5.1      mbit_sel5.2 \
+                mbit_sel5.3      mbit_sel6        mbit_sel6.1      mbit_sel6.2      mbit_sel6.3 \
+                mem4             mem4.1           nand1            nor1             ovl1 \
+                ovl1.1           ovl1.2           ovl1.3           param10.1        param10.5 \
+                port2            timescale1.1     timescale1.2     timescale1.3     timescale1.4 \
+                timescale1.5     timescale1.7     timescale1.8     timescale1.10    timescale1.11 \
+                timescale1.13    timescale1.14    timescale1.19    timescale2.1     timescale4.2 \
+                timescale4.3     timescale4.4     timescale4.5     timescale4.6     timescale4.7 \
+                timescale4.8     timescale4.17    timescale4.18    timescale4.19    timescale4.20 \
+                timescale4.21    urandom1         urandom1.1       urandom2         urandom2.1 \
+                urandom3         urandom3.1       urandom_range1.1 urandom_range1.2 urandom_range2.1 \
+                urandom_range2.2 urandom_range3
 IVVCSDIAGS2   =
 IVVCSDIAGS3   =
 IVVCSDIAGS4   =

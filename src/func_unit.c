@@ -1069,13 +1069,38 @@ void funit_db_mod_merge(
 
           case DB_TYPE_FSM :
             {
-              /* TBD - Need to know how to match up FSMs -- by name? */
-              fsm_db_merge( curr_base_fsm->table, &rest_line );
+              int line;
+              if( sscanf( rest_line, "%d", &line ) == 1 ) {
+                fsm_link* fsml = fsm_link_find_by_pos( line, base->fsm_head );
+                if( fsml == NULL ) {
+                  fsm_db_read( &rest_line, base );
+                } else {
+                  fsm_db_merge( curr_base_fsm->table, &rest_line );
+                }
+              } else {
+                print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
+                Throw 0;
+              }
               break;
             }
 
           case DB_TYPE_RACE :
             {
+              int reason;
+              int start_line;
+              int end_line;
+              if( sscanf( rest_line, "%d %d %d", &reason, &start_line, &end_line ) == 3 ) {
+                race_blk* rb = base->race_head;
+                while( (rb != NULL) && ((rb->reason != reason) || (rb->start_line != start_line) || (rb->end_line != end_line)) ) {
+                  rb = rb->next;
+                }
+                if( rb == NULL ) {
+                  race_db_read( &rest_line, base );
+                }
+              } else {
+                print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
+                Throw 0;
+              }
               break;
             }
 

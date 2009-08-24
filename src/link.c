@@ -648,6 +648,31 @@ fsm_link* fsm_link_find(
 }
 
 /*!
+ \return Returns the pointer to the found fsm_link, or NULL if the search was unsuccessful.
+
+ Iteratively searches the fsm_link list specified by the head fsm_link element.  If
+ a matching FSM is found, the pointer to this element is returned.  If the specified
+ FSM structure could not be matched, the value of NULL is returned.
+*/
+fsm_link* fsm_link_find_by_pos(
+  int       line,  /*!< Line number */
+  fsm_link* head   /*!< Pointer to head of fsm_link list to search */
+) { PROFILE(FSM_LINK_FIND);
+
+  fsm_link* curr;  /* Pointer to current fsm_link element */
+
+  curr = head;
+  while( (curr != NULL) && (curr->table->line != line) ) {
+    curr = curr->next;
+  }
+
+  PROFILE_END;
+
+  return( curr );
+
+}
+
+/*!
  \return Returns the pointer to the found funit_link or NULL if the search was unsuccessful.
 
  Iteratively searches the funit_link list specified by the head funit_link element.  If

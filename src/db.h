@@ -194,7 +194,10 @@ void db_connect_statement_false( statement* stmt, statement* exp_false );
 attr_param* db_create_attr_param( char* name, expression* expr );
 
 /*! \brief Parses the specified attribute parameter list for Covered attributes */
-void db_parse_attribute( attr_param* ap );
+void db_parse_attribute(
+  attr_param* ap,
+  int         line
+);
 
 /*! \brief Searches entire design for expressions that call the specified statement */
 void db_remove_stmt_blks_calling_statement( statement* stmt );

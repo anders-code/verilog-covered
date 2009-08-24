@@ -35,6 +35,7 @@ void assertion_parse( const char* arg );
 /*! \brief Parses an in-line attribute for assertion coverage information */
 void assertion_parse_attr(
   attr_param*      ap,
+  int              line,
   const func_unit* funit,
   bool             exclude
 );

@@ -171,6 +171,12 @@ void inst_link_display(
   fsm_link*   head
 );
 
+/*! \brief Finds specified FSM structure in fsm_link list based on file position. */
+/*@null@*/ fsm_link* fsm_link_find_by_pos(
+  int         line,
+  fsm_link*   head
+);
+
 /*! \brief Finds specified functional unit in given funit_link list. */
 /*@null@*/ /*@shared@*/ funit_link* funit_link_find(
   const char* name,

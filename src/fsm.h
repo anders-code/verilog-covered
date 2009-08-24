@@ -31,6 +31,7 @@
 fsm* fsm_create(
   expression* from_state,
   expression* to_state,
+  int         line,
   bool        exclude
 );
 
@@ -42,13 +43,22 @@ void fsm_add_arc(
 );
 
 /*! \brief Sets sizes of tables in specified FSM structure. */
-void fsm_create_tables( fsm* table );
+void fsm_create_tables(
+  fsm* table
+);
 
 /*! \brief Outputs contents of specified FSM to CDD file. */
-void fsm_db_write( fsm* table, FILE* file, bool ids_issued );
+void fsm_db_write(
+  fsm*  table,
+  FILE* file,
+  bool  ids_issued
+);
 
 /*! \brief Reads in contents of specified FSM. */
-void fsm_db_read( char** line, /*@null@*/func_unit* funit );
+void fsm_db_read(
+             char**     line,
+  /*@null@*/ func_unit* funit
+);
 
 /*! \brief Reads and merges two FSMs, placing result into base FSM. */
 void fsm_db_merge(
@@ -132,10 +142,15 @@ void fsm_get_coverage(
 );
 
 /*! \brief Generates report output for FSM coverage. */
-void fsm_report( FILE* ofile, bool verbose );
+void fsm_report(
+  FILE* ofile,
+  bool  verbose
+);
 
 /*! \brief Deallocates specified FSM structure. */
-void fsm_dealloc( fsm* table );
+void fsm_dealloc(
+  fsm* table
+);
 
 #endif
 

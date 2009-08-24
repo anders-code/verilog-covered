@@ -385,7 +385,7 @@ attribute_list_opt
       if( !parser_check_generation( GENERATION_2001 ) ) {
         ignore_mode--;
       } else if( ignore_mode == 0 ) {
-        db_parse_attribute( $3 );
+        db_parse_attribute( $3, @1.first_line );
       }
     }
   | K_PSTAR

@@ -29,6 +29,7 @@
 /*! \brief Allocates, initializes and adds FSM variable to global list. */
 fsm_var* fsm_var_add(
   const char* funit_name,
+  int         line,
   expression* in_state,
   expression* out_state,
   char*       name,

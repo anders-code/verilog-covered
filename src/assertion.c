@@ -58,6 +58,7 @@ void assertion_parse( /*@unused@*/const char* arg ) { PROFILE(ASSERTION_PARSE);
 */
 void assertion_parse_attr(
   /*@unused@*/ attr_param*      ap,      /*!< Pointer to attribute to parse */
+  /*@unused@*/ int              line,    /*!< First line number of assertion */
   /*@unused@*/ const func_unit* funit,   /*!< Pointer to current functional unit containing this attribute */
   /*@unused@*/ bool             exclude  /*!< If TRUE, excludes this assertion from coverage consideration */
 ) { PROFILE(ASSERTION_PARSE_ATTR);

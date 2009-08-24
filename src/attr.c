@@ -84,6 +84,7 @@ attr_param* attribute_create(
 */
 void attribute_parse(
   attr_param*      ap,      /*!< Pointer to current element of attribute parameter list to parse */
+  int              line,    /*!< First line of attribute */
   const func_unit* funit,   /*!< Pointer to current functional unit containing this attribute */
   bool             exclude  /*!< If set to 1, sets the exclude bits (if they exist) in the structure created by the attribute */
 ) { PROFILE(ATTRIBUTE_PARSE);
@@ -91,12 +92,12 @@ void attribute_parse(
   if( ap != NULL ) {
 
     if( ap->next != NULL ) {
-      attribute_parse( ap->next, funit, exclude );
+      attribute_parse( ap->next, line, funit, exclude );
     } else {
       if( strcmp( ap->name, "covered_fsm" ) == 0 ) {
-        fsm_arg_parse_attr( ap->prev, funit, exclude );
+        fsm_arg_parse_attr( ap->prev, line, funit, exclude );
       } else if( strcmp( ap->name, "covered_assert" ) == 0 ) {
-        assertion_parse_attr( ap->prev, funit, exclude );
+        assertion_parse_attr( ap->prev, line, funit, exclude );
       }
     }
 
