@@ -40,22 +40,19 @@
 #include "db.h"
 #include "defines.h"
 #include "fsm.h"
+#include "generate.h"
 #include "info.h"
 #include "instance.h"
 #include "line.h"
 #include "memory.h"
 #include "merge.h"
 #include "ovl.h"
-#include "race.h"
 #include "report.h"
 #include "stat.h"
 #include "tcl_funcs.h"
 #include "toggle.h"
 #include "util.h"
 
-
-extern unsigned int db_size;
-extern char*        cdd_message;
 
 /*!
  If set to a boolean value of TRUE, reports the line coverage for the specified database
@@ -81,12 +78,6 @@ bool report_combination = TRUE;
  report output.
 */
 bool report_fsm = TRUE;
-
-/*!
- If set to a boolean value of TRUE, reports the race condition violations for the specified
- database file; otherwise, omits this information from the report output.
-*/
-bool report_race = FALSE;
 
 /*!
  If set to a boolean value of TRUE, reports the assertion coverage for the specified
@@ -244,7 +235,6 @@ static void report_parse_metrics(
   report_toggle      = FALSE;
   report_combination = FALSE;
   report_fsm         = FALSE;
-  report_race        = FALSE;
   report_assertion   = FALSE;
   report_memory      = FALSE;
 
@@ -263,8 +253,6 @@ static void report_parse_metrics(
       case 'F' :  report_fsm         = TRUE;  break;
       case 'a' :
       case 'A' :  report_assertion   = TRUE;  break;
-      case 'r' :
-      case 'R' :  report_race        = TRUE;  break;
       default  :
         {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown metric specified '%c'...  Ignoring.", *ptr );
@@ -555,14 +543,6 @@ void report_gather_instance_stats(
                         &(root->stat->mem_cov_found) );
     }
 
-    /* Only get race condition statistics for this instance module if the module hasn't been gathered yet */
-    if( report_race && (root->funit->stat == NULL) ) {
-      statistic_create( &(root->funit->stat) );
-      race_get_stats( root->funit->race_head,
-                      &(root->funit->stat->race_total),
-                      &(root->funit->stat->rtype_total) );
-    }
-
   }
 
   /* Set show bit */
@@ -639,12 +619,6 @@ static void report_gather_funit_stats(
                           &(head->funit->stat->mem_tog_total),
                           &(head->funit->stat->mem_excluded),
                           &(head->funit->stat->mem_cov_found) );
-      }
-
-      if( report_race ) {
-        race_get_stats( head->funit->race_head,
-                        &(head->funit->stat->race_total),
-                        &(head->funit->stat->rtype_total) );
       }
 
     }
@@ -860,10 +834,6 @@ static void report_generate(
     } else {
       print_output( "Assertion reporting requested when assertion coverage was not accumulated during scoring", WARNING, __FILE__, __LINE__ );
     }
-  }
-
-  if( report_race ) {
-    race_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
   }
 
   PROFILE_END;

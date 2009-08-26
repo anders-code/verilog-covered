@@ -31,20 +31,9 @@
 #include "link.h"
 #include "profiler.h"
 #include "rank.h"
+#include "report.h"
 #include "util.h"
 #include "vsignal.h"
-
-
-extern uint64         num_timesteps;
-extern bool           output_suppressed;
-extern int64          largest_malloc_size;
-extern bool           report_line;
-extern bool           report_toggle;
-extern bool           report_combination;
-extern bool           report_fsm;
-extern bool           report_assertion;
-extern bool           report_memory;
-extern bool           allow_multi_expr;
 
 
 /*!

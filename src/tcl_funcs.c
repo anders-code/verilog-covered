@@ -39,6 +39,7 @@
 #include "expr.h"
 #include "fsm.h"
 #include "func_unit.h"
+#include "generate.h"
 #include "info.h"
 #include "instance.h"
 #include "line.h"
@@ -46,30 +47,13 @@
 #include "memory.h"
 #include "merge.h"
 #include "ovl.h"
-#include "race.h"
+#include "parser_misc.h"
 #include "report.h"
 #include "score.h"
 #include "search.h"
 #include "tcl_funcs.h"
 #include "toggle.h"
 #include "util.h"
-
-
-extern const char*  race_msgs[RACE_TYPE_NUM];
-extern char         score_run_path[4096];
-extern str_link*    score_args_head;
-extern str_link*    score_args_tail;
-extern void         reset_pplexer( const char* filename, FILE* out );
-extern int          PPVLlex( void );
-extern char*        output_file;
-extern bool         report_line;
-extern bool         report_toggle;
-extern bool         report_memory;
-extern bool         report_combination;
-extern bool         report_fsm;
-extern bool         report_assertion;
-extern bool         report_race;
-extern int          merge_er_value;
 
 
 /*!
@@ -92,32 +76,6 @@ static funit_inst** gui_inst_list = NULL;
 */
 static int gui_inst_index = 0;
 
-
-/*!
- \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
-         TCL_ERROR.
-
- Retrieves all of the race condition messages for all possible race conditions and stores them into
- the "race_msgs" global array.
-*/
-int tcl_func_get_race_reason_msgs(
-  ClientData  d,      /*!< Not used */
-  Tcl_Interp* tcl,    /*!< Pointer to the Tcl interpreter */
-  int         argc,   /*!< Number of arguments in the argv list */
-  const char* argv[]  /*!< Array of arguments passed to this function */
-) { PROFILE(TCL_FUNC_GET_RACE_REASON_MSGS);
-
-  int retval = TCL_OK;  /* Return value of this function */
-  int i;                /* Loop iterator */
-
-  for( i=0; i<RACE_TYPE_NUM; i++ ) {
-    strcpy( user_msg, race_msgs[i] );
-    Tcl_SetVar( tcl, "race_msgs", user_msg, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-  }
-
-  return( retval );
-
-}
 
 /*!
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
@@ -540,57 +498,6 @@ int tcl_func_collect_covered_lines(
     free_safe( lines,    (sizeof( int ) * line_size) );
     free_safe( excludes, (sizeof( int ) * line_size) );
     free_safe( reasons,  (sizeof( char* ) * line_size) );
-
-  } else {
-
-    strcpy( user_msg, "Internal Error:  Unable to find functional unit in design" );
-    Tcl_AddErrorInfo( tcl, user_msg );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    retval = TCL_ERROR;
-
-  }
-
-  return( retval );
-
-}
-
-/*!
- \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
-         TCL_ERROR.
-
- Returns the race condition information (lines reason) for the specified functional unit.
-*/
-int tcl_func_collect_race_lines(
-  ClientData  d,      /*!< Not used */
-  Tcl_Interp* tcl,    /*!< Pointer to the Tcl interpreter */
-  int         argc,   /*!< Number of arguments in the argv list */
-  const char* argv[]  /*!< Array of arguments passed to this function */
-) { PROFILE(TCL_FUNC_COLLECT_RACE_LINES);
-
-  int        retval = TCL_OK;  /* Return value for this function */
-  int        start_line;       /* Starting line of specified functional unit */
-  int*       slines;           /* Starting line numbers of statement blocks containing race condition(s) */
-  int*       elines;           /* Ending line numbers of statement blocks containing race conditions(s) */
-  int*       reasons;          /* Reason for race condition for a specified statement block */
-  int        line_cnt;         /* Number of valid entries in the slines, elines and reasons arrays */
-  int        i      = 0;       /* Loop iterator */
-  char       line[70];         /* Temporary string containing line information */
-  func_unit* funit;            /* Pointer to found functional unit */
-
-  start_line = atoi( argv[2] );
-
-  if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
-
-    race_collect_lines( funit, &slines, &elines, &reasons, &line_cnt );
-
-    for( i=0; i<line_cnt; i++ ) {
-      snprintf( line, 70, "{%d.0 %d.end} %d", (slines[i] - (start_line - 1)), (elines[i] - (start_line - 1)), reasons[i] );
-      Tcl_AppendElement( tcl, line );
-    }
-
-    free_safe( slines,  (sizeof( int ) * line_cnt) );
-    free_safe( elines,  (sizeof( int ) * line_cnt) );
-    free_safe( reasons, (sizeof( int ) * line_cnt) );
 
   } else {
 
@@ -2118,10 +2025,10 @@ int tcl_func_preprocess_verilog(
   str_link* arg;
   
   /* Add all of the include and define score arguments before calling the preprocessor */
-  arg = score_args_head;
+  arg = generate_args_head;
   while( arg != NULL) {
     if( strcmp( "-D", arg->str ) == 0 ) {
-      score_parse_define( arg->str2 );
+      generate_parse_define( arg->str2 );
     } else if( strcmp( "-I", arg->str ) == 0 ) {
       search_add_include_path( arg->str2 );
     }
@@ -2207,7 +2114,7 @@ int tcl_func_get_include_pathname(
   while( !file_exists( incpath ) && (retval == TCL_OK) ) {
     
     /* Find an include path from the score args */
-    str_link* arg = score_args_head;
+    str_link* arg = generate_args_head;
     while( (arg != NULL) && (strcmp( "-I", arg->str ) != 0) ) {
       arg = arg->next;
     }
@@ -2260,7 +2167,7 @@ int tcl_func_get_generation(
   strcpy( generation, "3" );
 
   /* Search the entire command-line */
-  arg = score_args_head;
+  arg = generate_args_head;
   while( arg != NULL ) {
 
     /* Find a generation argument in the score args */
@@ -2961,10 +2868,6 @@ int tcl_func_generate_report(
         assertion_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
       }
 
-      if( report_race ) {
-        race_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
-      }
-
       fclose( ofile );
 
       snprintf( user_msg, USER_MSG_LENGTH, "Successfully generated report file %s", output_file );
@@ -3000,7 +2903,6 @@ void tcl_func_initialize(
   const char* browser     /*!< Name of browser executable to use for displaying help information */
 ) { PROFILE(TCL_FUNC_INITIALIZE);
  
-  Tcl_CreateCommand( tcl, "tcl_func_get_race_reason_msgs",         (Tcl_CmdProc*)(tcl_func_get_race_reason_msgs),         0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_funit_list",               (Tcl_CmdProc*)(tcl_func_get_funit_list),               0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_instance_list",            (Tcl_CmdProc*)(tcl_func_get_instance_list),            0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_funit_name",               (Tcl_CmdProc*)(tcl_func_get_funit_name),               0, 0 );
@@ -3008,7 +2910,6 @@ void tcl_func_initialize(
   Tcl_CreateCommand( tcl, "tcl_func_get_inst_scope",               (Tcl_CmdProc*)(tcl_func_get_inst_scope),               0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_lines",      (Tcl_CmdProc*)(tcl_func_collect_uncovered_lines),      0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_covered_lines",        (Tcl_CmdProc*)(tcl_func_collect_covered_lines),        0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_collect_race_lines",           (Tcl_CmdProc*)(tcl_func_collect_race_lines),           0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_toggles",    (Tcl_CmdProc*)(tcl_func_collect_uncovered_toggles),    0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_covered_toggles",      (Tcl_CmdProc*)(tcl_func_collect_covered_toggles),      0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_memories",   (Tcl_CmdProc*)(tcl_func_collect_uncovered_memories),   0, 0 );

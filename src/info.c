@@ -32,16 +32,12 @@
 
 #include "db.h"
 #include "defines.h"
+#include "generate.h"
 #include "info.h"
 #include "link.h"
 #include "merge.h"
 #include "score.h"
 #include "util.h"
-
-
-extern char*        merged_file;
-extern uint64       num_timesteps;
-extern char*        cdd_message;
 
 
 /*!
@@ -63,27 +59,25 @@ char score_run_path[4096];
 /*!
  Pointer to the head of the score arguments list.
 */
-/*@null@*/ str_link* score_args_head = NULL;
+/*@null@*/ str_link* generate_args_head = NULL;
 
 /*!
  Pointer to the tail of the score arguments list.
 */
-/*@null@*/ str_link* score_args_tail = NULL;
+/*@null@*/ str_link* generate_args_tail = NULL;
 
 
 /*!
- *  Adds the specified argument to the list of score arguments that will be written to the CDD file.
- *  */
-void score_add_args(
+ Adds the specified argument to the list of generate arguments that will be written to the CDD file.
+*/
+void generate_add_args(
              const char* arg1,  /*!< First argument from score command */
   /*@null@*/ const char* arg2   /*!< Second argument from score command */
-) { PROFILE(SCORE_ADD_ARGS);
+) { PROFILE(GENERATE_ADD_ARGS);
 
-  str_link* arg    = score_args_head;
+  str_link* arg    = generate_args_head;
   bool      done   = FALSE;
   bool      nondup = ((strncmp( arg1, "-vpi", 4 ) == 0) ||
-                      (strncmp( arg1, "-lxt", 4 ) == 0) ||
-                      (strncmp( arg1, "-vcd", 4 ) == 0) ||
                       (strncmp( arg1, "-t",   2 ) == 0) ||
                       (strncmp( arg1, "-i",   2 ) == 0) ||
                       (strncmp( arg1, "-o",   2 ) == 0));
@@ -97,7 +91,7 @@ void score_add_args(
 
     /* If the argument doesn't exist, just add it and be done */
     if( arg == NULL ) {
-      arg = str_link_add( strdup_safe( arg1 ), &score_args_head, &score_args_tail );
+      arg = str_link_add( strdup_safe( arg1 ), &generate_args_head, &generate_args_tail );
       if( arg2 != NULL ) {
         arg->str2 = strdup_safe( arg2 );
       }
@@ -166,7 +160,7 @@ void info_db_write(
   /* Display score arguments */
   fprintf( file, "%d %s", DB_TYPE_SCORE_ARGS, score_run_path );
 
-  arg = score_args_head;
+  arg = generate_args_head;
   while( arg != NULL ) {
     if( arg->str2 != NULL ) {
       fprintf( file, " 2 %s (%s)", arg->str, arg->str2 );
@@ -328,9 +322,9 @@ void args_db_read(
     while( sscanf( *line, "%d%n", &arg_num, &chars_read ) == 1 ) {
       *line = *line + chars_read;
       if( (arg_num == 1) && (sscanf( *line, "%s%n", tmp1, &chars_read ) == 1) ) {
-        score_add_args( tmp1, NULL );
+        generate_add_args( tmp1, NULL );
       } else if( (arg_num == 2) && (sscanf( *line, "%s (%[^)])%n", tmp1, tmp2, &chars_read ) == 2) ) {
-        score_add_args( tmp1, tmp2 );
+        generate_add_args( tmp1, tmp2 );
       }
       *line = *line + chars_read;
     }
@@ -424,9 +418,9 @@ void merged_cdd_db_read(
 */
 void info_dealloc() { PROFILE(INFO_DEALLOC);
 
-  str_link_delete_list( score_args_head );
-  score_args_head = NULL;
-  score_args_tail = NULL;
+  str_link_delete_list( generate_args_head );
+  generate_args_head = NULL;
+  generate_args_tail = NULL;
 
   /* Free merged arguments */
   str_link_delete_list( merge_in_head );

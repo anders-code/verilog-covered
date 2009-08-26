@@ -34,6 +34,7 @@
 #include "scope.h"
 #include "util.h"
 #include "obfuscate.h"
+#include "parser_misc.h"
 
 #define yylval SElval
 #define YYDEBUG 1
@@ -43,19 +44,15 @@
 #undef YY_INPUT
 #define YY_INPUT(b, r, ms) (r = seinput(b, ms))
 
-static char* seinputptr;
-static char* seinputlim;
-
-extern func_unit* se_funit;
-extern int        se_lineno;
-extern bool       se_no_gvars;
-
 /*!
  Contains state before entering comment block.
 */
 static int comment_enter;
 static int yywrap();
 static int seinput( char* buf, int max_size );
+
+static char* seinputptr;
+static char* seinputlim;
 
 /*@-unreachable@*/
 %}

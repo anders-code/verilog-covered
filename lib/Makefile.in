@@ -59,12 +59,12 @@ am_libcovered_a_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) \
 	func_iter.$(OBJEXT) func_unit.$(OBJEXT) genprof.$(OBJEXT) \
 	info.$(OBJEXT) instance.$(OBJEXT) link.$(OBJEXT) \
 	obfuscate.$(OBJEXT) ovl.$(OBJEXT) param.$(OBJEXT) \
-	parser_misc.$(OBJEXT) profiler.$(OBJEXT) race.$(OBJEXT) \
-	reentrant.$(OBJEXT) scope.$(OBJEXT) search.$(OBJEXT) \
-	sim.$(OBJEXT) stat.$(OBJEXT) statement.$(OBJEXT) \
-	static.$(OBJEXT) stmt_blk.$(OBJEXT) struct_union.$(OBJEXT) \
-	symtable.$(OBJEXT) sys_tasks.$(OBJEXT) tree.$(OBJEXT) \
-	util.$(OBJEXT) vector.$(OBJEXT) vsignal.$(OBJEXT)
+	parser_misc.$(OBJEXT) profiler.$(OBJEXT) reentrant.$(OBJEXT) \
+	scope.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) \
+	statement.$(OBJEXT) static.$(OBJEXT) stmt_blk.$(OBJEXT) \
+	struct_union.$(OBJEXT) symtable.$(OBJEXT) sys_tasks.$(OBJEXT) \
+	tree.$(OBJEXT) util.$(OBJEXT) vector.$(OBJEXT) \
+	vsignal.$(OBJEXT)
 libcovered_a_OBJECTS = $(am_libcovered_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(libexecdir)"
 libexecPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
@@ -241,7 +241,6 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/param.c \
                        ../src/parser_misc.c \
                        ../src/profiler.c \
-                       ../src/race.c \
                        ../src/reentrant.c \
                        ../src/scope.c \
                        ../src/search.c \
@@ -363,7 +362,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/param.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser_misc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/profiler.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/race.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reentrant.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scope.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/search.Po@am__quote@
@@ -673,20 +671,6 @@ profiler.obj: ../src/profiler.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../src/profiler.c' object='profiler.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o profiler.obj `if test -f '../src/profiler.c'; then $(CYGPATH_W) '../src/profiler.c'; else $(CYGPATH_W) '$(srcdir)/../src/profiler.c'; fi`
-
-race.o: ../src/race.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT race.o -MD -MP -MF $(DEPDIR)/race.Tpo -c -o race.o `test -f '../src/race.c' || echo '$(srcdir)/'`../src/race.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/race.Tpo $(DEPDIR)/race.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../src/race.c' object='race.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o race.o `test -f '../src/race.c' || echo '$(srcdir)/'`../src/race.c
-
-race.obj: ../src/race.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT race.obj -MD -MP -MF $(DEPDIR)/race.Tpo -c -o race.obj `if test -f '../src/race.c'; then $(CYGPATH_W) '../src/race.c'; else $(CYGPATH_W) '$(srcdir)/../src/race.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/race.Tpo $(DEPDIR)/race.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../src/race.c' object='race.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o race.obj `if test -f '../src/race.c'; then $(CYGPATH_W) '../src/race.c'; else $(CYGPATH_W) '$(srcdir)/../src/race.c'; fi`
 
 reentrant.o: ../src/reentrant.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reentrant.o -MD -MP -MF $(DEPDIR)/reentrant.Tpo -c -o reentrant.o `test -f '../src/reentrant.c' || echo '$(srcdir)/'`../src/reentrant.c

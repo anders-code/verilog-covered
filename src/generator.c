@@ -25,26 +25,17 @@
 #include "expr.h"
 #include "func_iter.h"
 #include "func_unit.h"
+#include "generate.h"
 #include "generator.h"
 #include "gen_item.h"
 #include "info.h"
 #include "link.h"
 #include "ovl.h"
 #include "param.h"
+#include "parser_misc.h"
 #include "profiler.h"
 #include "score.h"
 #include "util.h"
-
-
-extern void reset_lexer_for_generation(
-  const char* in_fname,  /*!< Name of file to read */
-  const char* out_dir    /*!< Output directory name */
-);
-extern int VLparse();
-
-extern str_link*      modlist_head;
-extern str_link*      modlist_tail;
-extern int            generate_mode;
 
 
 struct fname_link_s;

@@ -24,21 +24,10 @@
 */
 
 
-extern bool         flag_use_command_line_debug;
-extern unsigned int inline_comb_depth;
-extern char*        top_module;
-extern uint64       timestep_update;
+extern char*  top_module;
+extern uint64 timestep_update;
+extern char*  cdd_message;
 
-
-/*! \brief Creates a module that contains all of the signals to dump from the design for coverage purposes. */
-void score_generate_top_dumpvars_module(
-  const char* dumpvars_file
-);
-
-/*! \brief Parses the specified define from the command-line */
-void score_parse_define(
-  const char* def
-);
 
 /*! \brief Parses score command-line and performs score. */
 void command_score(

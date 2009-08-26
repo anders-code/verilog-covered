@@ -87,8 +87,6 @@
 */
 static funit_inst* defparam_list = NULL;
 
-extern int          curr_sig_id;
-
 
 /*!
  \return Returns pointer to found module parameter or NULL if module parameter is not

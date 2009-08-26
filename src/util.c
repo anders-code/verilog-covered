@@ -51,19 +51,16 @@
 #include "link.h"
 #include "obfuscate.h"
 #include "profiler.h"
+#include "report.h"
 #include "score.h"
 #include "vpi.h"
 
-extern bool        report_gui;
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
 extern Tcl_Interp* interp;
 #endif
 #endif
 
-#ifndef CLI_DEBUG_MODE_EXISTS
-static bool cli_debug_mode = FALSE;
-#endif
 
 /*!
  If set to TRUE, suppresses all non-fatal error messages from being displayed.
@@ -157,7 +154,7 @@ void print_output(
 
   switch( type ) {
     case DEBUG:
-      if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
+      if( debug_mode ) {
 #ifdef VPI_ONLY
         vpi_print_output( msg );
 #else

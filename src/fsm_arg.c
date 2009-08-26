@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "db.h"
 #include "defines.h"
 #include "fsm_arg.h"
 #include "util.h"
@@ -35,9 +36,6 @@
 #include "link.h"
 #include "param.h"
 #include "obfuscate.h"
-
-
-extern int  curr_expr_id;
 
 
 /*!

@@ -28,6 +28,8 @@
 
 
 extern str_link* no_score_head;
+extern str_link* use_files_head;
+extern str_link* inc_paths_head;
 
 
 /*! \brief Initializes search maintained pointers. */

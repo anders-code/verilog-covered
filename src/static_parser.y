@@ -38,8 +38,6 @@
 #include "static.h"
 #include "util.h"
 
-extern int  SElex();
-extern void reset_static_lexer( char* str );
 
 int SEerror( char* str );
 

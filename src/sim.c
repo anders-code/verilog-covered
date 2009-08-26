@@ -81,11 +81,6 @@
 #include <assert.h>
 #include <signal.h>
 
-#ifdef DEBUG_MODE
-#ifndef VPI_ONLY
-#include "cli.h"
-#endif
-#endif
 #include "defines.h"
 #include "expr.h"
 #include "func_unit.h"
@@ -97,9 +92,6 @@
 #include "util.h"
 #include "vector.h"
 #include "vsignal.h"
-
-
-extern /*@null@*/inst_link*  inst_head;
 
 
 /*!
@@ -160,11 +152,6 @@ static const char* thread_state_str[4] = {"NONE", "ACTIVE", "DELAYED", "WAITING"
  Global variable used to cause simulator to stop simulation.  Do not directly modify this variable!
 */
 static bool simulate = TRUE;
-
-/*!
- Causes simulation to stop and invoke the CLI prompt, if possible.
-*/
-static bool force_stop = FALSE;
 
 /*!
  Non-blocking assignment queue.
@@ -306,7 +293,7 @@ static void sim_thread_pop_head() { PROFILE(SIM_THREAD_POP_HEAD);
   thread* thr = active_head;  /* Pointer to head of active queue */
 
 #ifdef DEBUG_MODE
-  if( debug_mode && !flag_use_command_line_debug ) {
+  if( debug_mode ) {
     printf( "Before thread is popped from active queue...\n" );
     sim_display_active_queue();
   }
@@ -334,7 +321,7 @@ static void sim_thread_pop_head() { PROFILE(SIM_THREAD_POP_HEAD);
   }
 
 #ifdef DEBUG_MODE
-  if( debug_mode && !flag_use_command_line_debug ) {
+  if( debug_mode ) {
     printf( "After thread is popped from active queue...\n" );
     sim_display_active_queue();
   }
@@ -355,7 +342,7 @@ void sim_thread_insert_into_delay_queue(
   thread* curr;  /* Pointer to current thread in delayed queue to compare against */
 
 #ifdef DEBUG_MODE
-  if( debug_mode && !flag_use_command_line_debug ) {
+  if( debug_mode ) {
     printf( "Before delay thread is inserted for time %llu...\n", time->full );
   }
 #endif
@@ -365,7 +352,7 @@ void sim_thread_insert_into_delay_queue(
     assert( thr->suppl.part.state != THR_ST_DELAYED );
 
 #ifdef DEBUG_MODE
-    if( debug_mode && !flag_use_command_line_debug ) {
+    if( debug_mode ) {
       sim_display_delay_queue();
     }
 #endif
@@ -418,7 +405,7 @@ void sim_thread_insert_into_delay_queue(
     }
     
 #ifdef DEBUG_MODE
-    if( debug_mode && !flag_use_command_line_debug ) {
+    if( debug_mode ) {
       printf( "After delay thread is inserted...\n" );
       sim_display_delay_queue();
       sim_display_all_list();
@@ -444,7 +431,7 @@ void sim_thread_push(
   exp_op_type op;  /* Operation type of current expression in given thread */
 
 #ifdef DEBUG_MODE
-  if( debug_mode && !flag_use_command_line_debug ) {
+  if( debug_mode ) {
     printf( "Before thread is pushed...\n" );
     sim_display_active_queue();
   }
@@ -479,7 +466,7 @@ void sim_thread_push(
   }
 
 #ifdef DEBUG_MODE
-  if( debug_mode && !flag_use_command_line_debug ) {
+  if( debug_mode ) {
     printf( "After thread is pushed...\n" );
     sim_display_active_queue();
     sim_display_all_list();
@@ -740,7 +727,7 @@ thread* sim_add_thread(
     }
 
 #ifdef DEBUG_MODE
-    if( debug_mode && !flag_use_command_line_debug ) {
+    if( debug_mode ) {
       printf( "Adding thread: " );
       sim_display_thread( thr, FALSE, TRUE );
       printf( "After thread is added to active queue...\n" );
@@ -768,7 +755,7 @@ static void sim_kill_thread(
   assert( thr != NULL );
 
 #ifdef DEBUG_MODE
-  if( debug_mode && !flag_use_command_line_debug ) {
+  if( debug_mode ) {
     printf( "Thread queue before thread is killed...\n" );
     sim_display_active_queue();
   }
@@ -835,7 +822,7 @@ static void sim_kill_thread(
   }
 
 #ifdef DEBUG_MODE
-  if( debug_mode && !flag_use_command_line_debug ) {
+  if( debug_mode ) {
     printf( "Thread queue after thread is killed...\n" );
     sim_display_active_queue();
     sim_display_all_list();
@@ -1011,13 +998,6 @@ void sim_thread(
 
   while( (stmt != NULL) && !thr->suppl.part.kill && simulate ) {
 
-#ifdef DEBUG_MODE
-#ifndef VPI_ONLY
-    cli_execute( time, force_stop, stmt );
-    force_stop = FALSE;
-#endif
-#endif
-
     /* Place expression in expression simulator and run */
     expr_changed = sim_expression( stmt->exp, thr, time, FALSE );
 
@@ -1133,7 +1113,7 @@ bool sim_simulate(
   }
 
 #ifdef DEBUG_MODE
-  if( debug_mode && !flag_use_command_line_debug ) {
+  if( debug_mode ) {
     printf( "After delay simulation...\n" );
     sim_display_delay_queue();
   }
@@ -1158,37 +1138,6 @@ void sim_initialize() { PROFILE(SIM_INITIALIZE);
 
   /* Add static values */
   sim_add_statics();
-
-#ifdef DEBUG_MODE
-#ifndef VPI_ONLY
-  /* Set the CLI debug mode to the value of the general debug mode */
-  cli_debug_mode = debug_mode;
-
-  /* Add a signal handler for Ctrl-C if we are running in CLI mode */
-  if( flag_use_command_line_debug ) {
-    signal( SIGINT, cli_ctrl_c );
-  }
-#endif
-#endif
-
-  PROFILE_END;
-
-}
-
-/*!
- Stops the simulation and gets the user to a CLI prompt, if possible.
-*/
-void sim_stop() { PROFILE(SIM_STOP);
-
-#ifdef DEBUG_MODE
-#ifndef VPI_ONLY
-  force_stop = TRUE;
-#else
-  simulate = FALSE;
-#endif
-#else
-  simulate = FALSE;
-#endif
 
   PROFILE_END;
 
@@ -1250,7 +1199,7 @@ void sim_perform_nba(
     nba->lhs_sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY
-    if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
+    if( debug_mode ) {
       if( i == 0 ) {
         printf( "Non-blocking assignments:\n" );
       }
@@ -1294,13 +1243,6 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
   /* Deallocate the non-blocking assignment queue */
   free_safe( nba_queue, (sizeof( nonblock_assign ) * nba_queue_size) );
-
-#ifdef DEBUG_MODE
-#ifndef VPI_ONLY
-  /* Clear CLI debug mode */
-  cli_debug_mode = FALSE;
-#endif
-#endif
 
   PROFILE_END;
 

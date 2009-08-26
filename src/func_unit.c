@@ -44,7 +44,6 @@
 #include "obfuscate.h"
 #include "param.h"
 #include "parser_misc.h"
-#include "race.h"
 #include "sim.h"
 #include "stat.h"
 #include "statement.h"
@@ -79,8 +78,6 @@ static void funit_init(
   funit->stmt_tail  = NULL;
   funit->fsm_head   = NULL;
   funit->fsm_tail   = NULL;
-  funit->race_head  = NULL;
-  funit->race_tail  = NULL;
   funit->param_head = NULL;
   funit->param_tail = NULL;
   funit->gitem_head = NULL;
@@ -556,7 +553,6 @@ void funit_db_write(
   stmt_link*      curr_stmt;      /* Statement list iterator */
   inst_parm*      curr_parm;      /* Pointer to current instance parameter */
   fsm_link*       curr_fsm;       /* Pointer to current functional unit fsm_link element */
-  race_blk*       curr_race;      /* Pointer to current race condition block */
 #ifndef VPI_ONLY
   gitem_link*     curr_gi;        /* Pointer to current gitem_link element */
 #endif
@@ -703,15 +699,6 @@ void funit_db_write(
       curr_fsm = curr_fsm->next;
     }
 
-    /* Now print all race condition block structures in functional unit (if we are a module) */
-    if( funit->suppl.part.type == FUNIT_MODULE ) {
-      curr_race = funit->race_head;
-      while( curr_race != NULL ) {
-        race_db_write( curr_race, file );
-        curr_race = curr_race->next;
-      }
-    }
-
     /* Now print all of the exclusion reasons in the functional unit */
     curr_er = funit->er_head;
     while( curr_er != NULL ) {
@@ -814,7 +801,6 @@ void funit_db_merge(
   sig_link*    curr_base_sig;     /* Pointer to current signal in base functional unit signal list */
   stmt_link*   curr_base_stmt;    /* Statement list link */
   fsm_link*    curr_base_fsm;     /* Pointer to current FSM in base functional unit FSM list */
-  race_blk*    curr_base_race;    /* Pointer to current race condition block in base module list  */
   char*        curr_line = NULL;  /* Pointer to current line being read from CDD */
   unsigned int curr_line_size;    /* Number of bytes allocated for curr_line */
   char*        rest_line;         /* Pointer to rest of read line */
@@ -962,34 +948,6 @@ void funit_db_merge(
       Throw 0;
     }
     curr_base_fsm = curr_base_fsm->next;
-  }
-
-  /* Since race condition blocks don't get merged, we will just read these lines in */
-  if( base->suppl.part.type == FUNIT_MODULE ) {
-    curr_base_race = base->race_head;
-    while( curr_base_race != NULL ) {
-      if( util_readline( file, &curr_line, &curr_line_size ) ) {
-        Try {
-          if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-            rest_line = curr_line + chars_read;
-            if( type != DB_TYPE_RACE ) {
-              print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
-              Throw 0;
-            }
-          } else {
-            print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
-            Throw 0;
-          }
-        } Catch_anonymous {
-          free_safe( curr_line, curr_line_size );
-          Throw 0;
-        }
-      } else {
-        print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
-        Throw 0;
-      }
-      curr_base_race = curr_base_race->next;
-    }
   }
 
   /* Deallocate memory */
@@ -1535,11 +1493,6 @@ static void funit_clean(
     mod_parm_dealloc( funit->param_head, TRUE );
     funit->param_head = NULL;
     funit->param_tail = NULL;
-
-    /* Free race condition block list */
-    race_blk_delete_list( funit->race_head );
-    funit->race_head = NULL;
-    funit->race_tail = NULL;
 
 #ifndef VPI_ONLY
     /* Free generate item list */

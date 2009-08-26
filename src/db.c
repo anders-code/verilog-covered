@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "arc.h"
 #include "attr.h"
 #include "binding.h"
 #include "db.h"
@@ -39,6 +40,7 @@
 #include "fsm.h"
 #include "func_unit.h"
 #include "gen_item.h"
+#include "generate.h"
 #include "info.h"
 #include "instance.h"
 #include "link.h"
@@ -46,7 +48,6 @@
 #include "ovl.h"
 #include "param.h"
 #include "parser_misc.h"
-#include "race.h"
 #include "scope.h"
 #include "score.h"
 #include "search.h"
@@ -59,19 +60,6 @@
 #include "util.h"
 #include "vector.h"
 #include "vsignal.h"
-
-
-extern int         fork_depth;
-extern int         block_depth;
-/*@null@*/extern tnode*      def_table;
-extern int         generate_mode;
-extern int         generate_top_mode;
-extern int         generate_expr_mode;
-extern int         for_mode;
-extern int         curr_sig_id;
-extern int         curr_arc_id;
-extern bool        instance_specified;
-extern char*       top_instance;
 
 
 /*!
@@ -170,13 +158,6 @@ static int global_timescale_precision = 2;
  should not be excluding anything.  If it is a value greater than 0, we will exclude.
 */
 unsigned int exclude_mode = 0;
-
-/*!
- Specifies the state of pragma-controlled race condition check handling.  If the mode
- is a value of 0, we should be performing race condition checking.  If it is a value
- greater than 0, we will not perform race condition checking.
-*/
-unsigned int ignore_racecheck_mode = 0;
 
 /*!
  Specifies the number of timesteps that have transpired during this simulation.
@@ -541,13 +522,6 @@ bool db_read(
               } else {
                 exclude_db_read( &rest_line, curr_funit );
               }
-
-            } else if( type == DB_TYPE_RACE ) {
-
-              assert( !merge_mode );
-
-              /* Parse rest of line for race condition block info */
-              race_db_read( &rest_line, curr_funit );
 
             } else if( type == DB_TYPE_FUNIT_VERSION ) {
 
@@ -1219,8 +1193,8 @@ func_unit* db_add_instance(
 */
 void db_add_module(
   char*        name,        /*!< Name of module being added to tree */
-  char*        orig_fname,  /*!< Filename that module exists in */
-  char*        incl_fname,  /*!< Name of file that this module has been included into */
+  const char*  orig_fname,  /*!< Filename that module exists in */
+  const char*  incl_fname,  /*!< Name of file that this module has been included into */
   unsigned int start_line,  /*!< Starting line number of this module in the file */
   unsigned int start_col    /*!< Starting column number of this module in the file */
 ) { PROFILE(DB_ADD_MODULE);
@@ -1293,12 +1267,12 @@ void db_end_module(
  pointer to point to this new functional unit.
 */
 bool db_add_function_task_namedblock(
-  int   type,         /*!< Specifies type of functional unit being added (function, task or named_block) */
-  char* name,         /*!< Name of functional unit */
-  char* orig_fname,   /*!< File containing the specified functional unit */
-  char* incl_fname,   /*!< Name of file that the function/task/namedblock is included into */
-  int   start_line,   /*!< Starting line number of functional unit */
-  int   start_column  /*!< Starting line column of functional unit */
+  int         type,         /*!< Specifies type of functional unit being added (function, task or named_block) */
+  char*       name,         /*!< Name of functional unit */
+  const char* orig_fname,   /*!< File containing the specified functional unit */
+  const char* incl_fname,   /*!< Name of file that the function/task/namedblock is included into */
+  int         start_line,   /*!< Starting line number of functional unit */
+  int         start_column  /*!< Starting line column of functional unit */
 ) { PROFILE(DB_ADD_FUNCTION_TASK_NAMEDBLOCK);
 
   func_unit* tf = NULL;  /* Pointer to created functional unit */
@@ -2448,11 +2422,6 @@ statement* db_create_statement(
     /* If we are in the exclude mode, exclude this statement */
     if( exclude_mode > 0 ) {
       stmt->suppl.part.excluded = 1;
-    }
-
-    /* If we need to exclude this statement from race condition checking, do so */
-    if( ignore_racecheck_mode > 0 ) {
-      stmt->suppl.part.ignore_rc = 1;
     }
 
     Try {

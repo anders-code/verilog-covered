@@ -237,11 +237,6 @@
 #define DB_TYPE_FSM           6
 
 /*!
- Specifies that the current coverage database line describes a race condition block.
-*/
-#define DB_TYPE_RACE          7
-
-/*!
  Specifies the arguments specified to the score command.
 */
 #define DB_TYPE_SCORE_ARGS    8
@@ -1821,7 +1816,6 @@ struct mod_parm_s;
 struct inst_parm_s;
 struct fsm_arc_s;
 struct fsm_link_s;
-struct race_blk_s;
 struct func_unit_s;
 struct funit_link_s;
 struct inst_link_s;
@@ -1999,11 +1993,6 @@ typedef struct fsm_arc_s fsm_arc;
  Renaming fsm_link structure for convenience.
 */
 typedef struct fsm_link_s fsm_link;
-
-/*!
- Renaming race_blk structure for convenience.
-*/
-typedef struct race_blk_s race_blk;
 
 /*!
  Renaming functional unit structure for convenience.
@@ -2500,11 +2489,9 @@ struct statement_s {
                                           tree) should be excluded from coverage results. */
       uint32  final     :1;          /*!< Bit 6.  Mask bit = 1.  Indicates that this statement block should only be executed
                                           during the final simulation step. */
-      uint32  ignore_rc :1;          /*!< Bit 7.  Mask bit = 1.  Specifies that we should ignore race condition checking for
-                                          this statement. */
 
       /* Unmasked bits */
-      uint32  added     :1;          /*!< Bit 8.  Mask bit = 0.  Temporary bit value used by the score command but not
+      uint32  added     :1;          /*!< Bit 7.  Mask bit = 0.  Temporary bit value used by the score command but not
                                           displayed to the CDD file.  When this bit is set to a one, it indicates to the
                                           db_add_statement function that this statement and all children statements have
                                           already been added to the functional unit statement list and should not be added again. */
@@ -2645,16 +2632,6 @@ struct fsm_link_s {
 };
 
 /*!
- Contains information for storing race condition information
-*/
-struct race_blk_s {
-  int       start_line;              /*!< Starting line number of statement block that was found to be a race condition */
-  int       end_line;                /*!< Ending line number of statement block that was found to be a race condition */
-  int       reason;                  /*!< Numerical reason for why this statement block was found to be a race condition */
-  race_blk* next;                    /*!< Pointer to next race block in list */
-};
-
-/*!
  Contains information for a functional unit (i.e., module, named block, function or task).
 */
 struct func_unit_s {
@@ -2678,8 +2655,6 @@ struct func_unit_s {
   stmt_link*      stmt_tail;         /*!< Tail pointer to list of statements in this functional unit */
   fsm_link*       fsm_head;          /*!< Head pointer to list of FSMs in this functional unit */
   fsm_link*       fsm_tail;          /*!< Tail pointer to list of FSMs in this functional unit */
-  race_blk*       race_head;         /*!< Head pointer to list of race condition blocks in this functional unit if we are a module */
-  race_blk*       race_tail;         /*!< Tail pointer to list of race condition blocks in this functional unit if we are a module */
   mod_parm*       param_head;        /*!< Head pointer to list of parameters in this functional unit if we are a module */
   mod_parm*       param_tail;        /*!< Tail pointer to list of parameters in this functional unit if we are a module */
   gitem_link*     gitem_head;        /*!< Head pointer to list of generate items within this module */

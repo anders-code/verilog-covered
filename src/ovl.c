@@ -51,9 +51,6 @@
 #define OVL_ASSERT_NUM 27
 
 
-extern bool         flag_check_ovl_assertions;
-
-
 /*!
  Specifies the module names of all OVL assertions that contain functional coverage task calls.
 */

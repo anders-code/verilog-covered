@@ -27,6 +27,8 @@
 extern str_link* merge_in_head;
 extern str_link* merge_in_tail;
 extern int       merge_in_num;
+extern int       merge_er_value;
+extern char*     merged_file;
 
 
 /*! \brief Parses command-line for merge options and performs merge command. */

@@ -32,9 +32,6 @@
 #include "util.h"
 
 
-extern symtable** timestep_tab;
-
-
 /*! Specifies the last timestamp simulated */
 static lxtint64_t vcd_prevtime = 0;
 

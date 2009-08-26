@@ -33,9 +33,6 @@
 #include "obfuscate.h"
 
 
-extern func_unit*   global_funit;
-
-
 /*!
  \param scope       Verilog hierachical scope to a functional unit.
  \param curr_funit  Pointer to current functional unit whose member is calling this function

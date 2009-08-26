@@ -324,7 +324,7 @@ void statement_db_write(
   fprintf( ofile, "%d %d %x %d %d %d",
     DB_TYPE_STATEMENT,
     expression_get_id( stmt->exp, ids_issued ),
-    (stmt->suppl.all & 0xff),
+    (stmt->suppl.all & 0x7f),
     ((stmt->next_true   == NULL) ? 0 : expression_get_id( stmt->next_true->exp, ids_issued )),
     ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, ids_issued )),
     ((stmt->head        == NULL) ? 0 : expression_get_id( stmt->head->exp, ids_issued ))

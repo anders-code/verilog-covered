@@ -32,16 +32,12 @@
 #include "link.h"
 #include "obfuscate.h"
 #include "param.h"
+#include "parser_misc.h"
 #include "scope.h"
 #include "statement.h"
 #include "util.h"
 #include "vector.h"
 #include "vsignal.h"
-
-
-extern int parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars );
-
-extern int          curr_sig_id;
 
 
 /*!

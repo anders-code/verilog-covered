@@ -50,11 +50,6 @@
 struct exception_context the_exception_context[1];
 
 
-extern char* ppfilename;
-extern int64 curr_malloc_size;
-extern bool  test_mode;
-
-
 /*!
  Displays usage information about this utility.
 */

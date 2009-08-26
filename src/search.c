@@ -33,6 +33,7 @@
 #include "db.h"
 #include "defines.h"
 #include "func_unit.h"
+#include "generate.h"
 #include "instance.h"
 #include "link.h"
 #include "score.h"
@@ -52,10 +53,6 @@
 /*@null@*/ static str_link* extensions_head = NULL;   /*!< Pointer to head element of extensions list */
 /*@null@*/ static str_link* extensions_tail = NULL;   /*!< Pointer to tail element of extensions list */
 
-extern unsigned int db_size;
-extern char*        top_instance;
-extern func_unit*   global_funit;
-extern unsigned int flag_global_generation;
 
 /*!
  \throws anonymous Throw

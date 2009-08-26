@@ -55,8 +55,13 @@
 #endif
 
 
-extern char user_msg[USER_MSG_LENGTH];
-extern bool debug_mode;
+extern char  user_msg[USER_MSG_LENGTH];
+extern bool  debug_mode;
+extern bool  warnings_suppressed;
+extern int64 largest_malloc_size;
+extern int64 curr_malloc_size;
+extern bool  test_mode;
+extern bool  output_suppressed;
 
 
 /*! \brief Sets error suppression to specified value */

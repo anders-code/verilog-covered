@@ -39,9 +39,6 @@
 #include "util.h"
 
 
-extern unsigned int exclusion_id_size;
-
-
 /*!
  Calculates the total and hit memory coverage information for the given memory signal.
 */

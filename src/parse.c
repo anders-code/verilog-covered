@@ -27,32 +27,21 @@
 #include "db.h"
 #include "defines.h"
 #include "fsm_var.h"
+#include "generate.h"
 #include "generator.h"
 #include "info.h"
 #include "link.h"
 #include "lxt.h"
 #include "parse.h"
+#include "parser_func.h"
 #include "parser_misc.h"
-#include "race.h"
 #include "score.h"
+#include "search.h"
 #include "sim.h"
 #include "stmt_blk.h"
 #include "util.h"
 #include "vcd.h"
 
-
-extern void reset_lexer( str_link* file_list_head );
-extern int VLparse();
-
-extern str_link* use_files_head;
-extern str_link* modlist_head;
-extern str_link* modlist_tail;
-extern bool      flag_check_races;
-extern sig_range curr_prange;
-extern sig_range curr_urange;
-extern bool      instance_specified;
-extern char*     ppfilename;
-extern char*     dumpvars_file;
 
 /*!
  \return Returns the number of characters read from this line.
@@ -90,7 +79,7 @@ int parse_readline(
 }
 
 /*!
- \throws anonymous fsm_var_bind race_check_modules Throw bind_perform db_write
+ \throws anonymous fsm_var_bind Throw bind_perform db_write
 
  Resets the lexer and parses all Verilog files specified in use_files list.
  After all design files are parsed, their information will be appropriately
@@ -163,16 +152,6 @@ void parse_design(
       bind_perform( FALSE, 0 );
       fsm_var_bind();
   
-      /* Perform race condition checking */
-      if( flag_check_races ) {
-        print_output( "\nChecking for race conditions...", NORMAL, __FILE__, __LINE__ );
-        race_check_modules();
-      } else {
-        print_output( "The -rI option was specified in the command-line, causing Covered to skip race condition", WARNING, __FILE__, __LINE__ );
-        print_output( "checking; therefore, coverage information may not be accurate if actual race conditions", WARNING_WRAP, __FILE__, __LINE__ );
-        print_output( "do exist.  Proceed at your own risk!", WARNING_WRAP, __FILE__, __LINE__ );
-      }
-
       /* Remove all statement blocks that cannot be considered for coverage */
       stmt_blk_remove();
 
@@ -198,7 +177,7 @@ void parse_design(
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Outputting dumpvars file %s...", dumpvars_file );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      score_generate_top_dumpvars_module( dumpvars_file );
+      generate_top_dumpvars_module( dumpvars_file );
     }
 
     /* Write contents to baseline database file. */

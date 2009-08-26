@@ -37,6 +37,7 @@
 #include "expr.h"
 #include "func_unit.h"
 #include "gen_item.h"
+#include "generate.h"
 #include "generator.h"
 #include "info.h"
 #include "link.h"
@@ -49,23 +50,6 @@
 #include "util.h"
 #include "vector.h"
 #include "vsignal.h"
-
-extern int    delay_expr_type;
-extern int    stmt_conn_id;
-extern int    gi_conn_id;
-extern char*  file_version;
-extern int    curr_sig_type;
-
-/* Functions from lexer */
-extern void lex_start_udp_table();
-extern void lex_end_udp_table();
-
-/* TBD - We won't be needing these later */
-extern int ignore_mode;
-extern sig_range curr_prange;
-extern sig_range curr_urange;
-extern bool curr_signed;
-extern bool lhs_mode;
 
 
 /*!
@@ -86,7 +70,7 @@ int attr_mode = 0;
 /*!
  If set to a value > 0, specifies that we are parsing the control block of a for loop.
 */
-int for_mode = 0;
+static int for_mode = 0;
 
 /*!
  If set to a value > 0, specifies that we are parsing a generate block

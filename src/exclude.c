@@ -34,13 +34,12 @@
 #include "line.h"
 #include "link.h"
 #include "memory.h"
+#include "merge.h"
 #include "ovl.h"
 #include "profiler.h"
 #include "toggle.h"
 #include "vector.h"
 
-
-extern int          merge_er_value;
 
 /*!
  Name of CDD file that will be read, modified with exclusion modifications and written back.

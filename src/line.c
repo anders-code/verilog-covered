@@ -47,9 +47,6 @@
 #include "util.h"
 
 
-extern bool         flag_suppress_empty_funits;
-
-
 /*!
  Iterates through given statement list, gathering information about which
  lines exist in the list, which lines were hit during simulation and which

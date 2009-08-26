@@ -43,9 +43,6 @@
 #include "util.h"
 
 
-extern int          curr_expr_id;
-
-
 /*!
  Signal ID that is used for identification purposes (each signal will receive a unique ID).
 */

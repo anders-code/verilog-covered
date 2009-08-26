@@ -30,11 +30,13 @@
 #include "db.h"
 #include "defines.h"
 #include "gen_item.h"
+#include "generate.h"
 #include "generator.h"
 #include "info.h"
 #include "keywords.h"
 #include "link.h"
 #include "obfuscate.h"
+#include "parser_func.h"
 #include "parser_misc.h"
 #include "parser.h"
 #include "tree.h"
@@ -46,25 +48,6 @@
 #define YYDEBUG 1
 #define YYERROR_VERBOSE 1
 
-extern YYLTYPE yylloc;
-
-extern void reset_pplexer( char* filename, FILE* out );
-extern int PPVLlex( void );
-
-extern int          ignore_mode;
-extern int          generate_mode;
-extern int          attr_mode;
-extern unsigned int exclude_mode;
-extern unsigned int ignore_racecheck_mode;
-extern char*        ppfilename;
-extern str_link*    modlist_head;
-extern str_link*    modlist_tail;
-extern sig_range    curr_prange;
-extern sig_range    curr_urange;
-extern gen_item*    last_gi;
-extern bool         flag_conservative;
-extern bool         parse_mode;
-extern int          block_depth;
 
 /*!
  Contains state before entering exclusive block.
@@ -98,25 +81,10 @@ static int last_keyword = 0;
 static tnode* found_modules = NULL;
 
 /*!
- Holds the name of the file specified in a `line or \#line preprocessor directive.
-*/
-char* directive_filename = NULL;
-
-/*!
  Specifies if the current file was previously parsed.  If it was, we need to ignore
  all globally declared stuff.
 */
 static bool file_prev_parsed;
-
-/*!
- Specifies the keyword of the coverage on/off pragma.
-*/
-char* pragma_coverage_name = NULL;
-
-/*!
- Specifies the keyword of the racecheck on/off pragma.
-*/
-char* pragma_racecheck_name = NULL;
 
 /*!
  Saves file version information (if found) for the current file.
@@ -980,10 +948,6 @@ WSPACE [ \t\b\f]+
   if( (rc == S_ignore) && parser_check_generation( GENERATION_SV ) ) {
     rc = lexer_keyword_sys_sv_code( (yytext + 1), (yyleng - 1) );
   }
-  /* If we are running in conservative mode, change $random, $urandom and $urandom_range to ignored lies */
-  if( flag_conservative && ((rc == S_random) || (rc == S_urandom) || (rc == S_urandom_range)) ) {
-    rc = S_ignore;
-  }
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
   return( rc ); 
@@ -1683,7 +1647,7 @@ void reset_lexer(
  and ready to go.
 */
 void reset_lexer_for_generation(
-  char*       in_fname,  /*!< Name of file to read */
+  const char* in_fname,  /*!< Name of file to read */
   const char* out_dir    /*!< Output directory name */
 ) { PROFILE(RESET_LEXER_FOR_GENERATION);
 
@@ -1779,21 +1743,6 @@ void check_for_pragma(
           exclude_mode++;
         }
  
-      }
-
-      /* If the keyword matches the given race condition check pragma keyword, check the value */
-      if( (pragma_racecheck_name != NULL) && (strcmp( keyword, pragma_racecheck_name ) == 0) ) {
-
-        if( strcmp( value, "on" ) == 0 ) {
-
-          if( ignore_racecheck_mode > 0 ) {
-            ignore_racecheck_mode--;
-          }
-
-        } else if( strcmp( value, "off" ) == 0 ) {
-          ignore_racecheck_mode++;
-        }
-
       }
 
     }

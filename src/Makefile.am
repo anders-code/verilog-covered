@@ -5,7 +5,6 @@ covered_SOURCES = arc.c \
                   parser.c \
                   static_parser.c \
 		  binding.c \
-                  cli.c \
 		  codegen.c \
 		  comb.c \
                   cov_db.c \
@@ -47,7 +46,6 @@ covered_SOURCES = arc.c \
 		  parser_misc.c \
 		  perf.c \
                   profiler.c \
-                  race.c \
                   rank.c \
                   reentrant.c \
 		  report.c \

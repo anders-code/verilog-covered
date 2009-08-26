@@ -31,14 +31,11 @@
 #include "binding.h"
 #include "db.h"
 #include "defines.h"
+#include "generate.h"
 #include "info.h"
 #include "merge.h"
 #include "sim.h"
 #include "util.h"
-
-
-extern int          merged_code;
-extern char*        cdd_message;
 
 
 /*!

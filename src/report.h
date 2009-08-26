@@ -32,6 +32,15 @@ extern int          line_width;
 extern unsigned int report_comb_depth;
 extern bool         report_bitwise;
 extern bool         flag_output_exclusion_ids;
+extern bool         flag_suppress_empty_funits;
+extern char*        output_file;
+extern bool         report_line;
+extern bool         report_toggle;
+extern bool         report_memory;
+extern bool         report_combination;
+extern bool         report_fsm;
+extern bool         report_assertion;
+extern bool         report_gui;
 
 
 /*! \brief Parses command-line for report command and performs report functionality. */

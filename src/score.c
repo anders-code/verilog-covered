@@ -31,9 +31,6 @@
 #include <sys/times.h>
 #include <unistd.h>
 
-#ifdef DEBUG_MODE
-#include "cli.h"
-#endif
 #include "db.h"
 #include "defines.h"
 #include "fsm_arg.h"
@@ -53,15 +50,6 @@
 #include "vpi.h"
 
 
-/*! Name of top-level module to score */
-char* top_module = NULL;
-
-/*! Name of top-level instance name */
-char* top_instance = NULL;
-
-/*! Name of output score database file to generate */
-static char* output_db = NULL;
-
 /*! Name of dumpfile to parse */
 static char* dump_file = NULL;
 
@@ -71,60 +59,11 @@ static int dump_mode = DUMP_FMT_NONE;
 /*! Name of LXT dumpfile to parse */
 char* lxt_file = NULL;
 
-/*! Name of VPI output file to write contents to */
-static char* vpi_file = NULL;
-
-/*! Name of dumpvars output file to write contents to */
-char* dumpvars_file = NULL;
-
-/*! Value to use when a delay expression with min:typ:max */
-int delay_expr_type = DELAY_EXPR_DEFAULT;
-
-/*! Name of preprocessor filename to use */
-char* ppfilename = NULL;
-
-/*! Specifies if -i option was specified */
-bool instance_specified = FALSE;
-
 /*! Specifies timestep increment to display current time */
 uint64 timestep_update = 0;
 
-/*! Specifies how race conditions should be handled */
-int flag_race_check = WARNING;
-
-/*! Specifies if race condition checking should occur */
-bool flag_check_races = TRUE;
-
-/*! Specifies if simulation performance information should be output */
-static bool flag_display_sim_stats = FALSE;
-
-/*! Specifies the supported global generation value */
-unsigned int flag_global_generation = GENERATION_SV;
-
-/*! Specifies whether the command-line debugger should be enabled */
-bool flag_use_command_line_debug = FALSE;
-
 /*! Specifies the name of an input file to use for debugging */
 char* command_line_debug_file = NULL;
-
-/*! Pointer to the head of the generation module list */
-str_link* gen_mod_head = NULL;
-
-/*! Pointer to the tail of the generation module list */
-static str_link* gen_mod_tail = NULL;
-
-/*! Specifies the user-supplied timescale information for VPI */
-static char* timescale = NULL;
-
-/*! User-supplied message to include in the CDD database */
-char* cdd_message = NULL;
-
-/*!
- Specifies if we should be conservative in our approach to simulation.  If this flag is set, we will
- remove logic blocks from coverage consideration that contain supported functionality but functionality
- that might not be right depending on the design.
-*/
-bool flag_conservative = FALSE;
 
 /*!
  Pointer to head of string list containing the names of modules that should be ignored for race condition checking.
@@ -137,25 +76,15 @@ str_link* race_ignore_mod_head = NULL;
 str_link* race_ignore_mod_tail = NULL;
 
 /*!
- Specifies the depth that inlined combinational logic will be generated for.
+ Name of output coverage database file.
 */
-unsigned int inline_comb_depth = 0xffffffff;
+static char* output_db = NULL;
 
+/*! Specifies if simulation performance information should be output */
+static bool flag_display_sim_stats = FALSE;
 
-extern int64     largest_malloc_size;
-extern int64     curr_malloc_size;
-extern str_link* use_files_head;
-extern char*     directive_filename;
-extern char*     pragma_coverage_name;
-extern char*     pragma_racecheck_name;
-extern char      score_run_path[4096];
-extern bool      warnings_suppressed;
-extern str_link* sim_plusargs_head;
-extern str_link* sim_plusargs_tail;
-
-
-extern void process_timescale( const char* txt, bool report );
-extern void define_macro( const char* name, const char* value );
+/*! User-supplied message to include in the CDD database */
+char* cdd_message = NULL;
 
 
 /*!
@@ -289,281 +218,6 @@ static void score_usage() {
 }
 
 /*!
- \throws anonymous Throw
-
- Creates a Verilog file that calls the Covered VPI system task.
-*/
-static void score_generate_top_vpi_module(
-  const char* vpi_file,   /*!< Name of VPI module to create */
-  const char* output_db,  /*!< Name of output CDD database file */
-  const char* top_inst    /*!< Name of top-level instance */
-) { PROFILE(SCORE_GENERATE_TOP_VPI_MODULE);
-
-  FILE* vfile;     /* File handle to VPI top-level module */
-  char* mod_name;  /* Name of VPI module */
-  char* ext;       /* Extension of VPI module */
-
-  /* Extract the name of the module from the given filename */
-  mod_name = strdup_safe( vpi_file );
-  ext      = strdup_safe( vpi_file );
-  scope_extract_front( vpi_file, mod_name, ext );
-
-  Try {
- 
-    if( ext[0] != '\0' ) {
-
-      if( (vfile = fopen( vpi_file, "w" )) != NULL ) {
-  
-        unsigned int rv;
-        if( timescale != NULL ) {
-          fprintf( vfile, "`timescale %s\n", timescale );
-        }
-        fprintf( vfile, "module %s;\ninitial $covered_sim( \"%s\", %s );\nendmodule\n", mod_name, output_db, top_inst );
-        rv = fclose( vfile );
-        assert( rv == 0 );
-
-      } else {
-  
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", vpi_file );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        Throw 0;
-
-      }
-
-    } else {
-
-      print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
-      Throw 0;
-
-    }
-
-  } Catch_anonymous {
-    free_safe( mod_name, (strlen( mod_name ) + 1) );
-    free_safe( ext, (strlen( ext ) + 1) );
-    Throw 0;
-  }
-
-  /* Deallocate memory */
-  free_safe( mod_name, (strlen( vpi_file ) + 1) );
-  free_safe( ext, (strlen( vpi_file ) + 1) );
-
-  PROFILE_END;
-
-}
-
-/*!
- \throws anonymous Throw
-
- Creates the dumpvars top-level module to use for dumping only needed portions of the design to the designated
- dumpfile.
-*/
-void score_generate_top_dumpvars_module(
-  const char* dumpvars_file  /*!< Name of dumpvars file to create */
-) { PROFILE(SCORE_GENERATE_TOP_DUMPVARS_MODULE);
-
-  FILE* vfile;     /* File handle to top-level module */
-  char* mod_name;  /* Name of dumpvars module */
-  char* ext;       /* Extension of dumpvars module */
-
-  /* Extract the name of the module from the given filename */
-  mod_name = strdup_safe( dumpvars_file );
-  ext      = strdup_safe( dumpvars_file );
-  scope_extract_front( dumpvars_file, mod_name, ext );
-
-  Try {
-
-    if( ext[0] != '\0' ) {
-
-      if( (vfile = fopen( dumpvars_file, "w" )) != NULL ) {
-
-        unsigned int rv;
-        if( timescale != NULL ) {
-          fprintf( vfile, "`timescale %s\n", timescale );
-        }
-        fprintf( vfile, "module %s;\n", mod_name );
-        fprintf( vfile, "initial begin\n" );
-        fprintf( vfile, "  $dumpfile( \"%s.vcd\" );\n", mod_name );
-        db_output_dumpvars( vfile );
-        fprintf( vfile, "end\n" );
-        fprintf( vfile, "endmodule\n" );
-        rv = fclose( vfile );
-        assert( rv == 0 );
-
-      } else {
-
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", dumpvars_file );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        Throw 0;
-
-      }
-
-    } else {
-
-      print_output( "Specified -dumpvars filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
-      Throw 0;
-
-    }
-
-  } Catch_anonymous {
-    free_safe( mod_name, (strlen( mod_name ) + 1) );
-    free_safe( ext, (strlen( ext ) + 1) );
-    Throw 0;
-  }
-
-  /* Deallocate memory */
-  free_safe( mod_name, (strlen( dumpvars_file ) + 1) );
-  free_safe( ext, (strlen( dumpvars_file ) + 1) );
-
-  PROFILE_END;
-
-}
-
-/*!
- \param tab_file  Name of PLI tab file to create
- \param top_mod   Name of top-level module
-
- \throws anonymous Throw
-
- Creates a PLI table file.
-*/
-static void score_generate_pli_tab_file(
-  const char* tab_file,
-  const char* top_mod
-) { PROFILE(SCORE_GENERATE_PLI_TAB_FILE);
-
-  FILE* tfile;     /* File handle of VPI tab file - only necessary for VCS */
-  char* mod_name;  /* Name of VPI module */
-  char* ext;       /* Extension of VPI module */
-
-  /* Extract the name of the module from the given filename */
-  mod_name = (char*)malloc_safe( strlen( tab_file ) + 5 );
-  ext      = strdup_safe( tab_file );
-  scope_extract_front( tab_file, mod_name, ext );
-
-  Try {
-
-    if( ext[0] != '\0' ) {
-
-      strcat( mod_name, ".tab" );
-      if( (tfile = fopen( mod_name, "w" )) != NULL ) {
-
-        unsigned int rv;
-        fprintf( tfile, "$covered_sim  call=covered_sim_calltf  acc+=r,cbk:%s+\n", top_mod );
-        rv = fclose( tfile );
-        assert( rv == 0 );
-
-      } else {
-  
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", mod_name );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        Throw 0;
-
-      }
-
-    } else {
-
-      print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
-      Throw 0;
-
-    }
-
-  } Catch_anonymous {
-    free_safe( mod_name, (strlen( mod_name ) + 1) );
-    free_safe( ext, (strlen( ext ) + 1) );
-    Throw 0;
-  }
-
-  /* Deallocate memory */
-  free_safe( mod_name, (strlen( tab_file ) + 5) );
-  free_safe( ext, (strlen( tab_file ) + 1) );
-
-}
-
-/*!
- \param def  Define value to parse
- 
- Parses the specified define from the command-line, storing the define value in the
- define tree according to its value.
-*/
-void score_parse_define( const char* def ) { PROFILE(SCORE_PARSE_DEFINE);
-
-  char* tmp = strdup_safe( def );  /* Temporary copy of the given argument */
-  char* ptr = tmp;                 /* Pointer to current character in define */
-
-  while( (*ptr != '\0') && (*ptr != '=') ) {
-    ptr++;
-  }
-
-  if( *ptr == '=' ) {
-    *ptr = '\0';
-    ptr++;
-    define_macro( tmp, ptr );
-  } else {
-    define_macro( tmp, "1" );
-  }
-
-  /* Deallocate memory */
-  free_safe( tmp, (strlen( def ) + 1) );
-
-}
-
-/*!
- Parses the specified string containing the metrics to test.  If
- a legal metric character is found, its corresponding flag is set
- to TRUE.  If a character is found that does not correspond to a
- metric, an error message is flagged to the user (a warning).
-*/
-static void score_parse_metrics(
-  const char* metrics  /*!< Specified metrics to calculate coverage for */
-) { PROFILE(SCORE_PARSE_METRICS);
-
-  const char* ptr;  /* Pointer to current character being evaluated */
-
-  /* Set all flags to FALSE */
-  info_suppl.part.scored_line   = 0;
-  info_suppl.part.scored_toggle = 0;
-  info_suppl.part.scored_memory = 0;
-  info_suppl.part.scored_comb   = 0;
-  info_suppl.part.scored_fsm    = 0;
-  info_suppl.part.scored_assert = 0;
-  info_suppl.part.scored_events = 0;
-
-  for( ptr=metrics; ptr<(metrics + strlen( metrics )); ptr++ ) {
-
-    switch( *ptr ) {
-      case 'l' :
-      case 'L' :  info_suppl.part.scored_line   = 1;  break;
-      case 't' :
-      case 'T' :  info_suppl.part.scored_toggle = 1;  break;
-      case 'm' :
-      case 'M' :  info_suppl.part.scored_memory = 1;  break;
-      case 'c' :
-      case 'C' :  info_suppl.part.scored_comb   = 1;  break;
-      case 'f' :
-      case 'F' :  info_suppl.part.scored_fsm    = 1;  break;
-      case 'a' :
-      case 'A' :  info_suppl.part.scored_assert = 1;  break;
-      case 'e' :
-      case 'E' :  info_suppl.part.scored_events = 1;  break;
-      default  :
-        {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown metric specified '%c'...  Ignoring.", *ptr );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, WARNING, __FILE__, __LINE__ );
-        }
-        break;
-    }
-
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
  \return Returns TRUE if the help option was parsed.
 
  \throws anonymous search_add_directory_path Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw
@@ -592,46 +246,6 @@ static bool score_parse_args(
       score_usage();
       help_found = TRUE;
 
-    } else if( strncmp( "-inline-comb-depth", argv[i], 18 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        inline_comb_depth = atoi( argv[i] );
-        if( inline_comb_depth <= 0 ) {
-          inline_comb_depth = 0xffffffff;
-        }
-      } else {
-        Throw 0;
-      }
-
-    } else if( strncmp( "-inline-metrics", argv[i], 15 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        score_parse_metrics( argv[i] );
-      } else {
-        Throw 0;
-      }
-
-    } else if( strncmp( "-inline", argv[i], 7 ) == 0 ) {
-
-      info_suppl.part.inlined = 1;
-
-    } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        if( instance_specified ) {
-          print_output( "Only one -i option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
-        } else {
-          top_instance       = strdup_safe( argv[i] );
-          score_add_args( argv[i-1], argv[i] );
-          instance_specified = TRUE;
-        }
-      } else {
-        Throw 0;
-      }
-
     } else if( (strncmp( "-o", argv[i], 2 ) == 0) || (strncmp( "-cdd", argv[i], 4 ) == 0) ) {
 
       if( check_option_value( argc, argv, i ) ) {
@@ -641,7 +255,6 @@ static bool score_parse_args(
         } else {
           if( file_exists( argv[i] ) || is_legal_filename( argv[i] ) ) {
             output_db = strdup_safe( argv[i] );
-            score_add_args( argv[i-1], argv[i] );
           } else {
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
             assert( rv < USER_MSG_LENGTH );
@@ -653,71 +266,6 @@ static bool score_parse_args(
         Throw 0;
       }
 
-    } else if( strncmp( "-ts", argv[i], 3 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        if( timestep_update != 0 ) {
-          print_output( "Only one -ts option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
-        } else {
-          timestep_update = ato64( argv[i] );
-          score_add_args( argv[i-1], argv[i] );
-        }
-      } else {
-        Throw 0;
-      }
-
-    } else if( strncmp( "-t", argv[i], 2 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        if( top_module != NULL ) {
-          print_output( "Only one -t option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
-        } else {
-          if( is_variable( argv[i] ) ) {
-            top_module = strdup_safe( argv[i] );
-            score_add_args( argv[i-1], argv[i] );
-          } else {
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
-            assert( rv < USER_MSG_LENGTH );
-            print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            Throw 0;
-          }
-        }
-      } else {
-        Throw 0;
-      }
-
-    } else if( strncmp( "-I", argv[i], 2 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        search_add_include_path( argv[i] );
-        score_add_args( argv[i-1], argv[i] );
-      } else {
-        Throw 0;
-      }
-
-    } else if( strncmp( "-y", argv[i], 2 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        search_add_directory_path( argv[i] );
-        score_add_args( argv[i-1], argv[i] );
-      } else {
-        Throw 0;
-      }
-
-    } else if( strncmp( "-F", argv[i], 2 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        fsm_arg_parse( argv[i] );
-        score_add_args( argv[i-1], argv[i] );
-      } else {
-        Throw 0;
-      }
-      
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
@@ -742,48 +290,6 @@ static bool score_parse_args(
         Throw 0;
       }
 
-    } else if( strncmp( "-ec", argv[i], 3 ) == 0 ) {
-
-      info_suppl.part.excl_assign = 1;
-      score_add_args( argv[i], NULL );
-
-    } else if( strncmp( "-ea", argv[i], 3 ) == 0 ) {
-
-      info_suppl.part.excl_always = 1;
-      score_add_args( argv[i], NULL );
-
-    } else if( strncmp( "-ei", argv[i], 3 ) == 0 ) {
-
-      info_suppl.part.excl_init = 1;
-      score_add_args( argv[i], NULL );
-
-    } else if( strncmp( "-ef", argv[i], 3 ) == 0 ) {
-
-      info_suppl.part.excl_final = 1;
-      score_add_args( argv[i], NULL );
-
-    } else if( strncmp( "-ep", argv[i], 3 ) == 0 ) {
-
-      info_suppl.part.excl_pragma = 1;
-      score_add_args( argv[i], NULL );
-      if( ((i+1) < argc) && (argv[i+1][0] != '-') ) {
-        i++;
-        pragma_coverage_name = strdup_safe( argv[i] );
-        score_add_args( argv[i], NULL );
-      } else {
-        pragma_coverage_name = strdup_safe( "coverage" );
-      }
-
-    } else if( strncmp( "-e", argv[i], 2 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        search_add_no_score_funit( argv[i] );
-        score_add_args( argv[i-1], argv[i] );
-      } else {
-        Throw 0;
-      }
-
     } else if( strncmp( "-vcd", argv[i], 4 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
@@ -793,7 +299,6 @@ static bool score_parse_args(
             if( file_exists( argv[i] ) ) {
               dump_file = strdup_safe( argv[i] );
               dump_mode = DUMP_FMT_VCD;
-              score_add_args( argv[i-1], argv[i] );
             } else {
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
               assert( rv < USER_MSG_LENGTH );
@@ -830,7 +335,6 @@ static bool score_parse_args(
             if( file_exists( argv[i] ) ) {
               dump_file = strdup_safe( argv[i] );
               dump_mode = DUMP_FMT_LXT;
-              score_add_args( argv[i-1], argv[i] );
             } else {
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
               assert( rv < USER_MSG_LENGTH );
@@ -858,293 +362,9 @@ static bool score_parse_args(
         Throw 0;
       }
 
-    } else if( strncmp( "-top_ts", argv[i], 7 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        if( timescale != NULL ) {
-          print_output( "Only one -top_ts option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
-          if( (i == argc) || (argv[i][0] == '-') ) {
-            i--;
-          }
-        } else {
-          process_timescale( argv[i], FALSE );
-          timescale = strdup_safe( argv[i] );
-          score_add_args( argv[i-1], argv[i] );
-        }
-      } else {
-        Throw 0;
-      }
-
-    } else if( strncmp( "-vpi", argv[i], 4 ) == 0 ) {
-
-      i++;
-      if( vpi_file != NULL ) {
-        print_output( "Only one -vpi option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
-        if( (i == argc) || (argv[i][0] == '-') ) {
-          i--;
-        }
-      } else {
-        if( (i < argc) && (argv[i][0] != '-') ) {
-          vpi_file = strdup_safe( argv[i] );
-          score_add_args( argv[i-1], argv[i] );
-        } else {
-          vpi_file = strdup_safe( DFLT_VPI_NAME );
-          i--;
-          score_add_args( argv[i], NULL );
-        }
-      }
-
-    } else if( strncmp( "-dumpvars", argv[i], 9 ) == 0 ) {
-
-      i++;
-      if( dumpvars_file != NULL ) {
-        print_output( "Only one -dumpvars option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
-        if( (i == argc) || (argv[i][0] == '-') ) {
-          i--;
-        }
-      } else {
-        if( (i < argc) && (argv[i][0] != '-') ) {
-          dumpvars_file = strdup_safe( argv[i] );
-          score_add_args( argv[i-1], argv[i] );
-        } else {
-          dumpvars_file = strdup_safe( DFLT_DUMPVARS_NAME );
-          i--;
-          score_add_args( argv[i], NULL );
-        }
-      }
-
-    } else if( strncmp( "-v", argv[i], 2 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        search_add_file( argv[i] );
-        score_add_args( argv[i-1], argv[i] );
-      } else {
-        Throw 0;
-      }
-
-    } else if( strncmp( "+libext+", argv[i], 8 ) == 0 ) {
-
-      search_add_extensions( argv[i] + 8 );
-      score_add_args( argv[i], NULL );
-
-    } else if( strncmp( "-D", argv[i], 2 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        score_parse_define( argv[i] );
-        score_add_args( argv[i-1], argv[i] );
-      } else {
-        Throw 0;
-      }
- 
-    } else if( strncmp( "-p", argv[i], 2 ) == 0 ) {
-      
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        if( ppfilename != NULL ) {
-          print_output( "Only one -p option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
-        } else {
-          if( is_variable( argv[i] ) ) {
-            ppfilename = strdup_safe( argv[i] );
-            score_add_args( argv[i-1], argv[i] );
-          } else {
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
-            assert( rv < USER_MSG_LENGTH );
-            print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            Throw 0;
-          }
-        }
-      } else {
-        Throw 0;
-      }
-        
-    } else if( strncmp( "-P", argv[i], 2 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        char* tmp = strdup_safe( argv[i+1] );
-        Try {
-          i++;
-          ptr = tmp;
-          while( (*ptr != '\0') && (*ptr != '=') ) {
-            ptr++;
-          }
-          if( *ptr == '\0' ) {
-            print_output( "Option -P must specify a value to assign.  See \"covered score -h\" for more information.",
-                          FATAL, __FILE__, __LINE__ );
-            Throw 0;
-          } else {
-            vector* vec;
-            int     base;
-            score_add_args( argv[i-1], argv[i] );
-            *ptr = '\0';
-            ptr++;
-            vector_from_string( &ptr, FALSE, &vec, &base );
-            if( vec == NULL ) {
-              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to parse value for option -P %s=%s", tmp, ptr );
-              assert( rv < USER_MSG_LENGTH );
-              print_output( user_msg, FATAL, __FILE__, __LINE__ );
-              Throw 0;
-            }
-            defparam_add( tmp, vec );
-          }
-        } Catch_anonymous {
-          free_safe( tmp, (strlen( argv[i] ) + 1) );
-          Throw 0;
-        }
-        free_safe( tmp, (strlen( argv[i] ) + 1) );
-      } else {
-        Throw 0;
-      }
-      
-    } else if( strncmp( "-T", argv[i], 2 ) == 0 ) {
-      
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        if( delay_expr_type != DELAY_EXPR_DEFAULT ) {
-          print_output( "Only one -T option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
-        } else {
-          if( strcmp( argv[i], "min" ) == 0 ) {
-            delay_expr_type = DELAY_EXPR_MIN;
-            score_add_args( argv[i-1], argv[i] );
-          } else if( strcmp( argv[i], "max" ) == 0 ) {
-            delay_expr_type = DELAY_EXPR_MAX;
-            score_add_args( argv[i-1], argv[i] );
-          } else if( strcmp( argv[i], "typ" ) == 0 ) {
-            delay_expr_type = DELAY_EXPR_TYP;
-            score_add_args( argv[i-1], argv[i] );
-          } else {
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
-            assert( rv < USER_MSG_LENGTH );
-            print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            Throw 0;
-          }
-        }
-      } else {
-        Throw 0;
-      }
-
-    } else if( strncmp( "-r", argv[i], 2 ) == 0 ) {
-
-      switch( argv[i][2] ) {
-        case 'E'  :  flag_race_check  = FATAL;    break;
-        case 'W'  :  flag_race_check  = WARNING;  break;
-        case 'I'  :
-          if( argv[i][3] == '=' ) {
-            (void)str_link_add( strdup_safe( argv[i] + 4 ), &race_ignore_mod_head, &race_ignore_mod_tail );
-          } else { 
-            flag_check_races = FALSE;
-          }
-        case 'S'  :
-        case '\0' :  flag_race_check  = NORMAL;   break;
-        case 'P'  :
-          if( argv[i][3] == '=' ) {
-            pragma_racecheck_name = strdup_safe( argv[i] + 4 );
-          } else {
-            pragma_racecheck_name = strdup_safe( "racecheck" );
-          }
-          break;
-        default   :
-          {
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown race condition value %c (available types are E, W, S, I or P)", argv[i][2] );
-            assert( rv < USER_MSG_LENGTH );
-            print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            Throw 0;
-          }
-          /*@-unreachable@*/
-          break;
-          /*@=unreachable@*/
-      }
-      score_add_args( argv[i], NULL );
-
     } else if( strncmp( "-S", argv[i], 2 ) == 0 ) {
 
       flag_display_sim_stats = TRUE;
-      score_add_args( argv[i], NULL );
-
-    } else if( strncmp( "-A", argv[i], 2 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        if( strncmp( argv[i], "ovl", 3 ) == 0 ) {
-          info_suppl.part.assert_ovl = 1;
-          define_macro( "OVL_VERILOG",  "1" );
-          define_macro( "OVL_COVER_ON", "1" );
-          score_add_args( argv[i-1], argv[i] );
-        } else {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown -A value (%s).  Please specify ovl.", argv[i] );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          Throw 0;
-        }
-      } else {
-        Throw 0;
-      }
-
-    } else if( strncmp( "-g", argv[i], 2 ) == 0 ) {
-
-      int  generation;
-      char tmp[256];
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        if( argv[i][(strlen( argv[i] ) - 1)] == '1' ) {
-          generation = GENERATION_1995;
-        } else if( argv[i][(strlen( argv[i] ) - 1)] == '2' ) {
-          generation = GENERATION_2001;
-        } else if( argv[i][(strlen( argv[i] ) - 1)] == '3' ) {
-          generation = GENERATION_SV;
-        } else {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown generation value '%c'.  Legal values are 1, 2 or 3.", argv[i][(strlen( argv[i] ) - 1)] );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ ); 
-          Throw 0;
-        }
-        if( strlen( argv[i] ) == 1 ) {
-          flag_global_generation = generation;
-        } else {
-          strcpy( tmp, argv[i] );
-          if( tmp[(strlen( tmp ) - 2)] == '=' ) {
-            str_link* strl;
-            tmp[(strlen( tmp ) - 2)] = '\0';
-            strl        = str_link_add( strdup_safe( tmp ), &gen_mod_head, &gen_mod_tail );
-            strl->suppl = generation;
-          } else {
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal -g syntax \"%s\".  See \"covered score -h\" for correct syntax.", tmp );
-            assert( rv < USER_MSG_LENGTH );
-            print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            Throw 0;
-          }
-        }
-        score_add_args( argv[i-1], argv[i] );
-      } else {
-        Throw 0;
-      }
-
-    } else if( strncmp( "-cli", argv[i], 4 ) == 0 ) {
-
-#ifdef DEBUG_MODE
-      i++;
-      if( flag_use_command_line_debug ) {
-        print_output( "Only one -cli option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
-        if( (i == argc) || (argv[i][0] == '-') ) {
-          i--;
-        }
-      } else {
-        if( (i < argc) && (argv[i][0] != '-') ) {
-          cli_read_hist_file( argv[i] );
-          score_add_args( argv[i-1], argv[i] );
-        } else {
-          i--;
-          score_add_args( argv[i], argv[i] );
-        }
-        flag_use_command_line_debug = TRUE;
-      }
-#else
-      print_output( "Command-line debugger (-cli option) is not available because Covered was not configured with the --enable-debug option", FATAL, __FILE__, __LINE__ );
-      Throw 0;
-#endif
 
     } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
 
@@ -1159,19 +379,10 @@ static bool score_parse_args(
         Throw 0;
       }
 
-    } else if( strncmp( "-conservative", argv[i], 13 ) == 0 ) {
-
-      flag_conservative = TRUE;
-
-    } else if( strncmp( "-Wignore", argv[i], 8 ) == 0 ) {
-
-      warnings_suppressed = TRUE;
-
     /* Any other option that is a plusarg will be added to the list of simulation plusargs */
     } else if( strncmp( "+", argv[i], 1 ) == 0 ) {
 
       sys_task_store_plusarg( argv[i] + 1 );
-      score_add_args( argv[i], NULL );
 
     } else {
 
@@ -1183,17 +394,6 @@ static bool score_parse_args(
     }
 
     i++;
-
-  }
-
-  if( !help_found ) {
-
-    /* If the -A option was not specified, add all OVL modules to list of no-score modules */
-    ovl_add_assertions_to_no_score_list( info_suppl.part.assert_ovl );
-    
-    /* Get the current directory */
-    rv = getcwd( score_run_path, 4096 );
-    assert( rv != NULL );
 
   }
 
@@ -1220,65 +420,11 @@ void command_score(
 
   Try {
 
-    /* Create a database to start storing the results */
-    (void)db_create();
-
-    /* Initialize the "scored" bits */
-    info_suppl.part.scored_line   = 1;
-    info_suppl.part.scored_toggle = 1;
-    info_suppl.part.scored_memory = 1;
-    info_suppl.part.scored_comb   = 1;
-    info_suppl.part.scored_fsm    = 1;
-    info_suppl.part.scored_assert = 1;
-    info_suppl.part.scored_events = 1;
-
     /* Parse score command-line */
     if( !score_parse_args( argc, last_arg, argv ) ) {
 
-      /* If inlining is not being performed, make sure that all "scored" bits are set */
-      if( info_suppl.part.inlined == 0 ) {
-        info_suppl.part.scored_line   = 1;
-        info_suppl.part.scored_toggle = 1;
-        info_suppl.part.scored_memory = 1;
-        info_suppl.part.scored_comb   = 1;
-        info_suppl.part.scored_fsm    = 1;
-        info_suppl.part.scored_assert = 1;
-        info_suppl.part.scored_events = 1;
-      } else if( (info_suppl.part.scored_line   == 0) && 
-                 (info_suppl.part.scored_toggle == 0) &&
-                 (info_suppl.part.scored_memory == 0) &&
-                 (info_suppl.part.scored_comb   == 0) &&
-                 (info_suppl.part.scored_fsm    == 0) &&
-                 (info_suppl.part.scored_assert == 0) &&
-                 (info_suppl.part.scored_events == 0) ) {
-        print_output( "No metrics were specified for scoring in the -inline-metrics option", FATAL, __FILE__, __LINE__ );
-        Throw 0;
-      }
- 
-
-      if( output_db == NULL ) {
-        output_db = strdup_safe( DFLT_OUTPUT_CDD );
-      }
- 
-      /* Parse design */
-      if( use_files_head != NULL ) {
-        print_output( "Reading design...", NORMAL, __FILE__, __LINE__ );
-        search_init();
-        parse_design( top_module, output_db );
-        print_output( "", NORMAL, __FILE__, __LINE__ );
-      }
-
-      /* Generate VPI-based top module */
-      if( vpi_file != NULL ) {
-
-        rv = snprintf( user_msg, USER_MSG_LENGTH, "Outputting VPI file %s...", vpi_file );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-        score_generate_top_vpi_module( vpi_file, output_db, top_instance );
-        score_generate_pli_tab_file( vpi_file, top_module );
-
       /* Read dumpfile and score design */
-      } else if( dump_mode != DUMP_FMT_NONE ) {
+      if( dump_mode != DUMP_FMT_NONE ) {
 
         switch( dump_mode ) {
           case DUMP_FMT_VCD :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring VCD dumpfile %s...", dump_file );  break;
@@ -1294,12 +440,6 @@ void command_score(
       if( dump_mode != DUMP_FMT_NONE ) {
         print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
       }
-      /*@-duplicatequals -formattype@*/
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
-      assert( rv < USER_MSG_LENGTH );
-      /*@=duplicatequals =formattype@*/
-      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      print_output( "", NORMAL, __FILE__, __LINE__ );
 
       /* Display simulation statistics if specified */
       if( flag_display_sim_stats ) {
@@ -1315,34 +455,8 @@ void command_score(
   /* Close database */
   db_close();
 
-  /* Deallocate memory for search engine */
-  search_free_lists();
-
-  /* Deallocate memory for defparams */
-  defparam_dealloc();
-
-  /* Deallocate memory for system tasks */
-  sys_task_dealloc();
-
-  /* Deallocate generation module string list */
-  str_link_delete_list( gen_mod_head );
-
-  /* Deallocate race ignore string list */
-  str_link_delete_list( race_ignore_mod_head );
-
   free_safe( output_db, (strlen( output_db ) + 1) );
   free_safe( dump_file, (strlen( dump_file ) + 1) );
-  free_safe( vpi_file, (strlen( vpi_file ) + 1) );
-  free_safe( dumpvars_file, (strlen( dumpvars_file ) + 1) );
-  free_safe( top_module, (strlen( top_module ) + 1) );
-  free_safe( ppfilename, (strlen( ppfilename ) + 1) );
-  ppfilename = NULL;
-
-  free_safe( directive_filename, (strlen( directive_filename ) + 1) );
-  free_safe( top_instance, (strlen( top_instance ) + 1) );
-  free_safe( timescale, (strlen( timescale ) + 1) );
-  free_safe( pragma_coverage_name, (strlen( pragma_coverage_name ) + 1) );
-  free_safe( pragma_racecheck_name, (strlen( pragma_racecheck_name ) + 1) );
 
   if( error ) {
     Throw 0;

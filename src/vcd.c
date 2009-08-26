@@ -37,9 +37,6 @@
 #include "symtable.h"
 
 
-extern symtable** timestep_tab;
-
-
 /*!
  \return Returns a 32-bit value containing the index into the symbol array based off of the
          VCD symbol.

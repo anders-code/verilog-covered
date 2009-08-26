@@ -23,7 +23,9 @@
  \brief    Contains miscellaneous functions declarations and defines used by parser.
 */
 
+
 #include "defines.h"
+
 
 /*!
  The vlltype supports the passing of detailed source file location
@@ -35,8 +37,8 @@ struct vlltype {
   unsigned int first_column;
   unsigned int last_line;
   unsigned int last_column;
-  char*        orig_fname;
-  char*        incl_fname;
+  const char*  orig_fname;
+  const char*  incl_fname;
   unsigned int ppfline;
   unsigned int pplline;
 };
@@ -53,14 +55,39 @@ extern YYLTYPE yylloc;
  * Interface into the lexical analyzer. ...
  */
 extern int  VLlex();
+extern int  PPVLlex( void );
+extern int  SElex();
 extern void VLerror( char* msg );
 #define yywarn VLwarn
 /*@-exportlocal@*/
 extern void VLwarn( char* msg );
 /*@=exportlocal@*/
+extern void reset_pplexer( const char* filename, FILE* out );
+extern int  VLparse();
+extern void reset_lexer( str_link* file_list_head );
+extern void reset_lexer_for_generation( const char* in_fname, const char* out_dir );
+extern int  parse_static_expr( char* str, func_unit* funit, int lineno, bool no_genvars );
+extern void lex_start_udp_table();
+extern void lex_end_udp_table();
+extern void process_timescale( const char* txt, bool report );
+extern void define_macro( const char* name, const char* value );
+extern void reset_static_lexer( char* str );
 
-extern unsigned error_count;
-extern int*     fork_block_depth;
+
+extern unsigned   error_count;
+extern int*       fork_block_depth;
+extern int        fork_depth;
+extern int        block_depth;
+extern tnode*     def_table;
+extern int        generate_mode;
+extern int        generate_top_mode;
+extern int        generate_expr_mode;
+extern int        attr_mode;
+extern bool       parse_mode;
+extern func_unit* se_funit;
+extern int        se_lineno;
+extern bool       se_no_gvars;
+extern char*      file_version;
 
 
 /*! \brief Deallocates the curr_sig_width variable if it has been previously set */

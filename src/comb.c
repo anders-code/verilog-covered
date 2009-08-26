@@ -70,6 +70,7 @@
 #include "expr.h"
 #include "func_iter.h"
 #include "func_unit.h"
+#include "generate.h"
 #include "info.h"
 #include "link.h"
 #include "obfuscate.h"

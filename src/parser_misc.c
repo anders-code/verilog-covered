@@ -23,19 +23,16 @@
 
 #include "db.h"
 #include "defines.h"
-#include "parser_misc.h"
-#include "util.h"
-#include "static.h"
+#include "generate.h"
 #include "link.h"
 #include "obfuscate.h"
+#include "parser_func.h"
+#include "parser_misc.h"
+#include "static.h"
+#include "util.h"
 
 
 #ifndef VPI_ONLY
-extern sig_range    curr_prange;
-extern sig_range    curr_urange;
-extern str_link*    gen_mod_head;
-extern unsigned int flag_global_generation;
-
 
 /*!
  Counts the number of errors found during the parsing process.

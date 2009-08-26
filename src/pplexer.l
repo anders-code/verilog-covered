@@ -31,12 +31,12 @@
 #include "util.h"
 #include "tree.h"
 #include "obfuscate.h"
+#include "parser_misc.h"
+#include "search.h"
+
 
 #define yylval PPVLlval
 #define YYDEBUG 1
-
-extern str_link* inc_paths_head;
-extern bool      parse_mode;
 
 
 /*!
@@ -718,8 +718,8 @@ static int yywrap() { PROFILE(YYWRAP);
  * and ready to go.
  */
 void reset_pplexer(
-  char* filename,  /*!< Name of initial file to start parsing */
-  FILE* out        /*!< Name of file to output preprocessed contents to */
+  const char* filename,  /*!< Name of initial file to start parsing */
+  FILE*       out        /*!< Name of file to output preprocessed contents to */
 ) { PROFILE(RESET_PPLEXER);
 
   struct include_stack_t* isp = malloc_safe( sizeof( struct include_stack_t ) );

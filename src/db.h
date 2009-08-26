@@ -28,11 +28,21 @@
 
 
 extern db**         db_list;
+extern unsigned int db_size;
 extern unsigned int curr_db;
 extern funit_inst*  curr_instance;
 extern char**       curr_inst_scope;
 extern int          curr_inst_scope_size;
 extern func_unit*   curr_funit;
+extern int          curr_expr_id;
+extern str_link*    modlist_head;
+extern str_link*    modlist_tail;
+extern uint64       num_timesteps;
+extern func_unit*   global_funit;
+extern unsigned int exclude_mode;
+extern gen_item*    last_gi;
+extern int          stmt_conn_id;
+extern int          gi_conn_id;
 
 
 /*! \brief Creates a new database. */
@@ -129,20 +139,20 @@ func_unit* db_add_instance(
 /*! \brief Adds specified module to module list.  Called by parser. */
 void db_add_module(
   char*        name,
-  char*        orig_fname,
-  char*        incl_fname,
+  const char*  orig_fname,
+  const char*  incl_fname,
   unsigned int start_line,
   unsigned int start_col
 );
 
 /*! \brief Adds specified task/function to functional unit list.  Called by parser. */
 bool db_add_function_task_namedblock(
-  int   type,
-  char* name,
-  char* orig_fname,
-  char* incl_fname,
-  int   start_line,
-  int   start_column
+  int         type,
+  char*       name,
+  const char* orig_fname,
+  const char* incl_fname,
+  int         start_line,
+  int         start_column
 );
 
 /*! \brief Performs actions necessary when the end of a function/task/named-block is seen.  Called by parser. */

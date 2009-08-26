@@ -62,9 +62,6 @@
 #include "binding.h"
 
 
-extern int        curr_expr_id;
-
-
 /*!
  \param stexp  Pointer to static expression.
  \param op     Unary static expression operation.

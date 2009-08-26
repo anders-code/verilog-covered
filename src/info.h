@@ -25,12 +25,18 @@
 
 #include <stdio.h>
 
+#include "defines.h"
 
-extern isuppl info_suppl;
+
+extern isuppl    info_suppl;
+extern char      score_run_path[4096];
+extern str_link* generate_args_head;
+extern str_link* generate_args_tail;
+
 
 
 /*! \brief Adds the given argument(s) from the command-line to the score array such that no arguments are duplicated. */
-void score_add_args(
+void generate_add_args(
              const char* arg1,
   /*@null@*/ const char* arg2
 );

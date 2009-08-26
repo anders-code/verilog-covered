@@ -136,7 +136,6 @@
 #include <math.h>
 
 #include "db.h"
-#include "cli.h"
 #include "binding.h"
 #include "defines.h"
 #include "expr.h"
@@ -144,6 +143,7 @@
 #include "func_unit.h"
 #include "instance.h"
 #include "link.h"
+#include "parser_misc.h"
 #include "reentrant.h"
 #include "score.h"
 #include "sim.h"
@@ -153,12 +153,6 @@
 #include "vector.h"
 #include "vsignal.h"
 
-
-extern exp_link*    static_expr_head;
-extern exp_link*    static_expr_tail;
-extern int          generate_expr_mode;
-extern int          curr_expr_id;
-extern int          nba_queue_size;
 
 static bool expression_op_func__xor( expression*, thread*, const sim_time* );
 static bool expression_op_func__multiply( expression*, thread*, const sim_time* );
@@ -5213,7 +5207,7 @@ bool expression_op_func__iinc(
   }
 
 #ifdef DEBUG_MODE
-  if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
+  if( debug_mode ) {
     printf( "        " );  vsignal_display( expr->left->sig );
   }
 #endif
@@ -5256,7 +5250,7 @@ bool expression_op_func__pinc(
   }
 
 #ifdef DEBUG_MODE
-  if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
+  if( debug_mode ) {
     printf( "        " );  vsignal_display( expr->left->sig );
   }
 #endif
@@ -5299,7 +5293,7 @@ bool expression_op_func__idec(
   }
 
 #ifdef DEBUG_MODE
-  if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
+  if( debug_mode ) {
     printf( "        " );  vsignal_display( expr->left->sig );
   }
 #endif
@@ -5342,7 +5336,7 @@ bool expression_op_func__pdec(
   }
 
 #ifdef DEBUG_MODE
-  if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
+  if( debug_mode ) {
     printf( "        " );  vsignal_display( expr->left->sig );
     printf( "        " );  expression_display( expr->left );
   }
@@ -5544,8 +5538,6 @@ bool expression_op_func__stop(
   /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__STOP);
-
-  sim_stop();
 
   PROFILE_END;
 
@@ -6071,7 +6063,7 @@ void expression_assign(
             bool changed = vector_part_select_push( lhs->sig->value, 0, (lhs->value->width - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), rhs->value->suppl.part.is_signed );
             lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
-            if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
+            if( debug_mode ) {
               printf( "        " );  vsignal_display( lhs->sig );
             }
 #endif
@@ -6109,7 +6101,7 @@ void expression_assign(
               changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE );
               lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
-              if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
+              if( debug_mode ) {
                 printf( "        " );  vsignal_display( lhs->sig );
               }
 #endif
@@ -6144,7 +6136,7 @@ void expression_assign(
               changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE );
               lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
-              if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
+              if( debug_mode ) {
                 printf( "        " );  vsignal_display( lhs->sig );
               }
 #endif
@@ -6180,7 +6172,7 @@ void expression_assign(
               bool changed = vector_set_value( lhs->value, rhs->value->value.ul, intval2, *lsb, 0 );
               lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
-              if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
+              if( debug_mode ) {
                 printf( "        " );  vsignal_display( lhs->sig );
               }
 #endif
@@ -6215,7 +6207,7 @@ void expression_assign(
               bool changed = vector_set_value( lhs->value, rhs->value->value.ul, intval2, *lsb, 0 );
               lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
-              if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
+              if( debug_mode ) {
                 printf( "        " );  vsignal_display( lhs->sig );
               }
 #endif
