@@ -225,14 +225,10 @@ bool info_db_read(
 ) { PROFILE(INFO_DB_READ);
 
   int          chars_read;  /* Number of characters scanned in from this line */
-  uint32       scored;      /* Indicates if this file contains scored data */
   unsigned int version;     /* Contains CDD version from file */
   char         tmp[4096];   /* Temporary string */
   isuppl       info   = info_suppl;
   bool         retval = TRUE;
-
-  /* Save off original scored value */
-  scored = info_suppl.part.scored;
 
   if( sscanf( *line, "%x%n", &version, &chars_read ) == 1 ) {
 
@@ -250,7 +246,7 @@ bool info_db_read(
       *line = *line + chars_read;
 
       /* If this CDD contains useful information, continue on */
-      if( (info.part.scored != 0) || (read_mode != READ_MODE_MERGE_NO_MERGE) ) {
+      if( read_mode != READ_MODE_MERGE_NO_MERGE ) {
 
         /* Create a new database element */
         (void)db_create();
@@ -267,11 +263,6 @@ bool info_db_read(
 
         /* Save off the info supplemental information */
         info_suppl.all = info.all;
-
-        /* Set scored flag to correct value */
-        if( info_suppl.part.scored == 0 ) {
-          info_suppl.part.scored = scored;
-        }
 
       } else {
 

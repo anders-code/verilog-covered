@@ -52,7 +52,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        23
+#define CDD_VERSION        30
 
 /*!
  This contains the header information specified when executing this tool.
@@ -60,9 +60,9 @@
 #define COVERED_HEADER     "\nCovered %s -- Verilog Code Coverage Utility\nWritten by Trevor Williams  (phase1geo@gmail.com)\nCopyright 2006-2009\nFreely distributable under the GPL license\n", COVERED_VERSION
 
 /*!
- Default database filename if not specified on command-line.
+ Default database directory name if not specified on command-line.
 */
-#define DFLT_OUTPUT_CDD    "cov.cdd"
+#define DFLT_OUTPUT_CDD    "covered"
 
 /*!
  Default profiling output filename.
@@ -581,8 +581,7 @@
 /*!
  Returns TRUE if the signal must be assigned from the dumpfile.
 */
-#define SIGNAL_ASSIGN_FROM_DUMPFILE(x)  (((x->suppl.part.assigned == 0) || info_suppl.part.inlined) && \
-                                         (x->suppl.part.type != SSUPPL_TYPE_PARAM)      && \
+#define SIGNAL_ASSIGN_FROM_DUMPFILE(x)  ((x->suppl.part.type != SSUPPL_TYPE_PARAM)      && \
                                          (x->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) && \
                                          (x->suppl.part.type != SSUPPL_TYPE_ENUM)       && \
                                          (x->suppl.part.type != SSUPPL_TYPE_MEM)        && \
@@ -1675,22 +1674,20 @@ typedef union isuppl_u isuppl;
 union isuppl_u {
   uint32 all;
   struct {
-    uint32 scored        : 1;  /*!< Bit 0.    Specifies if the design has been scored yet */
-    uint32 excl_assign   : 1;  /*!< Bit 1.    Specifies if assign statements are being excluded from coverage */
-    uint32 excl_always   : 1;  /*!< Bit 2.    Specifies if always statements are being excluded from coverage */
-    uint32 excl_init     : 1;  /*!< Bit 3.    Specifies if initial statements are being excluded from coverage */
-    uint32 excl_final    : 1;  /*!< Bit 4.    Specifies if final statements are being excluded from coverage */
-    uint32 excl_pragma   : 1;  /*!< Bit 5.    Specifies if code encapsulated in coverage pragmas should be excluded from coverage */
-    uint32 assert_ovl    : 1;  /*!< Bit 6.    Specifies that OVL assertions should be included for coverage */
-    uint32 vec_ul_size   : 2;  /*!< Bit 8:7.  Specifies the bit size of a vector element (0=8 bits, 1=16-bits, 2=32-bits, 3=64-bits) */
-    uint32 inlined       : 1;  /*!< Bit 9.    Specifies if this CDD is used with an inlined code coverage method */
-    uint32 scored_line   : 1;  /*!< Bit 10.   Specifies that line coverage was scored and is available for reporting */
-    uint32 scored_toggle : 1;  /*!< Bit 11.   Specifies that toggle coverage was scored and is available for reporting */
-    uint32 scored_memory : 1;  /*!< Bit 12.   Specifies that memory coverage was scored and is available for reporting */
-    uint32 scored_comb   : 1;  /*!< Bit 13.   Specifies that combinational logic coverage was scored and is available for reporting */
-    uint32 scored_fsm    : 1;  /*!< Bit 14.   Specifies that FSM coverage was scored and is available for reporting */
-    uint32 scored_assert : 1;  /*!< Bit 15.   Specifies that assertion coverage was scored and is available for reporting */
-    uint32 scored_events : 1;  /*!< Bit 16.   Specifies that combinational logic event coverage was scored and is available for reporting */
+    uint32 excl_assign   : 1;  /*!< Bit 0.    Specifies if assign statements are being excluded from coverage */
+    uint32 excl_always   : 1;  /*!< Bit 1.    Specifies if always statements are being excluded from coverage */
+    uint32 excl_init     : 1;  /*!< Bit 2.    Specifies if initial statements are being excluded from coverage */
+    uint32 excl_final    : 1;  /*!< Bit 3.    Specifies if final statements are being excluded from coverage */
+    uint32 excl_pragma   : 1;  /*!< Bit 4.    Specifies if code encapsulated in coverage pragmas should be excluded from coverage */
+    uint32 assert_ovl    : 1;  /*!< Bit 5.    Specifies that OVL assertions should be included for coverage */
+    uint32 vec_ul_size   : 2;  /*!< Bit 7:6.  Specifies the bit size of a vector element (0=8 bits, 1=16-bits, 2=32-bits, 3=64-bits) */
+    uint32 scored_line   : 1;  /*!< Bit 8.    Specifies that line coverage was scored and is available for reporting */
+    uint32 scored_toggle : 1;  /*!< Bit 9.    Specifies that toggle coverage was scored and is available for reporting */
+    uint32 scored_memory : 1;  /*!< Bit 10.   Specifies that memory coverage was scored and is available for reporting */
+    uint32 scored_comb   : 1;  /*!< Bit 11.   Specifies that combinational logic coverage was scored and is available for reporting */
+    uint32 scored_fsm    : 1;  /*!< Bit 12.   Specifies that FSM coverage was scored and is available for reporting */
+    uint32 scored_assert : 1;  /*!< Bit 13.   Specifies that assertion coverage was scored and is available for reporting */
+    uint32 scored_events : 1;  /*!< Bit 14.   Specifies that combinational logic event coverage was scored and is available for reporting */
   } part;
 };
 
@@ -2418,13 +2415,14 @@ struct vsignal_s {
  Stores information for an FSM within the design.
 */
 struct fsm_s {
-  char*       name;                  /*!< User-defined name that this FSM pertains to */
-  expression* from_state;            /*!< Pointer to from_state expression */
-  expression* to_state;              /*!< Pointer to to_state expression */
-  fsm_arc*    arc_head;              /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
-  fsm_arc*    arc_tail;              /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
-  fsm_table*  table;                 /*!< FSM arc traversal table */
-  bool        exclude;               /*!< Set to TRUE if the states/transitions of this table should be excluded as determined by pragmas */
+  char*        name;                 /*!< User-defined name that this FSM pertains to */
+  unsigned int line;                 /*!< First line of FSM attribute */
+  expression*  from_state;           /*!< Pointer to from_state expression */
+  expression*  to_state;             /*!< Pointer to to_state expression */
+  fsm_arc*     arc_head;             /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
+  fsm_arc*     arc_tail;             /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
+  fsm_table*   table;                /*!< FSM arc traversal table */
+  bool         exclude;              /*!< Set to TRUE if the states/transitions of this table should be excluded as determined by pragmas */
 };
 
 /*!
@@ -2848,14 +2846,15 @@ struct timer_s {
  Contains information for an FSM state variable.
 */
 struct fsm_var_s {
-  char*       funit;                 /*!< Name of functional unit containing FSM variable */
-  char*       name;                  /*!< Name associated with this FSM variable */
-  expression* ivar;                  /*!< Pointer to input state expression */
-  expression* ovar;                  /*!< Pointer to output state expression */
-  vsignal*    iexp;                  /*!< Pointer to input signal matching ovar name */
-  fsm*        table;                 /*!< Pointer to FSM containing signal from ovar */
-  bool        exclude;               /*!< Set to TRUE if the associated FSM needs to be excluded from coverage consideration */
-  fsm_var*    next;                  /*!< Pointer to next fsm_var element in list */
+  char*        funit;                /*!< Name of functional unit containing FSM variable */
+  char*        name;                 /*!< Name associated with this FSM variable */
+  unsigned int line;                 /*!< First line of FSM attribute */ 
+  expression*  ivar;                 /*!< Pointer to input state expression */
+  expression*  ovar;                 /*!< Pointer to output state expression */
+  vsignal*     iexp;                 /*!< Pointer to input signal matching ovar name */
+  fsm*         table;                /*!< Pointer to FSM containing signal from ovar */
+  bool         exclude;              /*!< Set to TRUE if the associated FSM needs to be excluded from coverage consideration */
+  fsm_var*     next;                 /*!< Pointer to next fsm_var element in list */
 };
 
 /*!

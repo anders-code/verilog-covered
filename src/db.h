@@ -366,7 +366,8 @@ attr_param* db_create_attr_param(
 
 /*! \brief Parses the specified attribute parameter list for Covered attributes */
 void db_parse_attribute(
-  attr_param* ap
+  attr_param*  ap,
+  unsigned int line
 );
 
 /*! \brief Searches entire design for expressions that call the specified statement */

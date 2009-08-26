@@ -100,11 +100,12 @@ static void fsm_var_remove( fsm_var* );
  find during the parsing phase.
 */
 fsm_var* fsm_var_add(
-  const char* funit_name,
-  expression* in_state,
-  expression* out_state,
-  char*       name,
-  bool        exclude
+  const char*  funit_name,
+  expression*  in_state,
+  expression*  out_state,
+  char*        name,
+  unsigned int line,
+  bool         exclude
 ) { PROFILE(FSM_VAR_ADD);
 
   fsm_var*    new_var = NULL;  /* Pointer to newly created FSM variable */
@@ -117,6 +118,7 @@ fsm_var* fsm_var_add(
     new_var          = (fsm_var*)malloc_safe( sizeof( fsm_var ) );
     new_var->funit   = strdup_safe( funit_name );
     new_var->name    = NULL;
+    new_var->line    = line;
     new_var->ivar    = in_state;
     new_var->ovar    = out_state;
     new_var->iexp    = NULL;
@@ -134,7 +136,7 @@ fsm_var* fsm_var_add(
   } else {
 
     if( (funitl = funit_link_find( funit_name, FUNIT_MODULE, db_list[curr_db]->funit_head )) != NULL ) {
-      table = fsm_create( in_state, out_state, exclude );
+      table = fsm_create( in_state, out_state, line, exclude );
       if( name != NULL ) {
         table->name = strdup_safe( name );
       }
@@ -285,7 +287,7 @@ static bool fsm_var_bind_stmt(
 
     /* Finally, create the new FSM if we are the output state */
     if( (fv = fsm_var_is_output_state( stmt->exp )) != NULL ) {
-      fv->table       = fsm_create( fv->ivar, fv->ovar, fv->exclude );
+      fv->table       = fsm_create( fv->ivar, fv->ovar, fv->line, fv->exclude );
       fv->ivar->table = fv->table;
       fv->ovar->table = fv->table;
       fsm_link_add( fv->table, &(funitl->funit->fsm_head), &(funitl->funit->fsm_tail) );

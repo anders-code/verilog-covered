@@ -21,6 +21,8 @@
 
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "info.h"
 #include "link.h"
@@ -149,7 +151,6 @@ static void generate_usage() {
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
   printf( "                                   Extensions of Verilog files to allow in scoring\n" );
   printf( "\n" );
-  printf( "      -inline                                Outputs Verilog with inlined code coverage\n" );
   printf( "      -inline-metrics [l][t][m][e][c][f][a]  Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics\n" );
   printf( "                                               will be available for reporting and ranking.  l=line, t=toggle, m=memory, e=logic events,\n" );
   printf( "                                               c=combinational logic, f=FSM, a=assertions.  Default is ltmecfa.\n" );
@@ -172,6 +173,103 @@ static void generate_usage() {
   printf( "      unless these modules are explicitly stated to not be scored using\n" );
   printf( "      the -e flag.\n" );
   printf( "\n" );
+
+}
+
+/*!
+ Creates a directory.
+*/
+static void generate_create_dir(
+  const char* dirname  /*!< Name of directory to create */
+) { PROFILE(GENERATE_CREATE_DIR);
+
+  /* Create the initial directory */
+  /*@-shiftimplementation@*/
+  if( mkdir( dirname, (S_IRWXU | S_IRWXG | S_IRWXO) ) != 0 ) {
+  /*@=shiftimplementation@*/
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to create \"%s\" directory", dirname );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Deletes the specified directory.
+*/
+static void generate_delete_dir(
+  const char* dirname  /*!< Name of directory to delete */
+) { PROFILE(GENERATE_DELETE_DIR);
+
+  unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "rm -rf %s", dirname );
+  assert( rv < USER_MSG_LENGTH );
+
+  if( system( user_msg ) != 0 ) {
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to remove \"%s\" directory", dirname );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Creates the base file system used to hold the database files.
+*/
+static void generate_create_file_system(
+  const char* dirname  /*!< Base directory name */
+) { PROFILE(GENERATE_CREATE_FILE_SYSTEM);
+
+  unsigned int rv;
+
+  /* Delete the coverage directory */
+  if( directory_exists( dirname ) ) {
+    generate_delete_dir( dirname );
+  }
+
+  Try {
+
+    /* Create the initial directory */
+    generate_create_dir( dirname );
+
+    /* Create "verilog" directory */
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "%s/verilog", dirname );
+    assert( rv < USER_MSG_LENGTH );
+    generate_create_dir( user_msg );
+
+    /* Create "db" directory */
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "%s/db", dirname );
+    assert( rv < USER_MSG_LENGTH );
+    generate_create_dir( user_msg );
+
+    /* Create "cov" directory */
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "%s/cov", dirname );
+    assert( rv < USER_MSG_LENGTH );
+    generate_create_dir( user_msg );
+
+    /* Create "cov/merged" directory */
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "%s/cov/merged", dirname );
+    assert( rv < USER_MSG_LENGTH );
+    generate_create_dir( user_msg );
+  
+    /* Create "cov/tests" directory */
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "%s/cov/tests", dirname );
+    assert( rv < USER_MSG_LENGTH );
+    generate_create_dir( user_msg );
+
+  } Catch_anonymous {
+
+    generate_delete_dir( dirname );
+    Throw 0;
+
+  }
+
+  PROFILE_END;
 
 }
 
@@ -524,15 +622,8 @@ static bool generate_parse_args(
         if( output_db != NULL ) {
           print_output( "Only one -o option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
-          if( file_exists( argv[i] ) || is_legal_filename( argv[i] ) ) {
-            output_db = strdup_safe( argv[i] );
-            generate_add_args( argv[i-1], argv[i] );
-          } else {
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
-            assert( rv < USER_MSG_LENGTH ); 
-            print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            Throw 0;
-          }
+          output_db = strdup_safe( argv[i] );
+          generate_add_args( argv[i-1], argv[i] );
         }
       } else {   
         Throw 0; 
@@ -953,30 +1044,13 @@ void command_generate(
     /* Parse score command-line */
     if( !generate_parse_args( argc, last_arg, argv ) ) {
 
-      /* If inlining is not being performed, make sure that all "scored" bits are set */
-      if( info_suppl.part.inlined == 0 ) {
-        info_suppl.part.scored_line   = 1;
-        info_suppl.part.scored_toggle = 1;
-        info_suppl.part.scored_memory = 1;
-        info_suppl.part.scored_comb   = 1;
-        info_suppl.part.scored_fsm    = 1;
-        info_suppl.part.scored_assert = 1;
-        info_suppl.part.scored_events = 1;
-      } else if( (info_suppl.part.scored_line   == 0) &&
-                 (info_suppl.part.scored_toggle == 0) &&
-                 (info_suppl.part.scored_memory == 0) &&
-                 (info_suppl.part.scored_comb   == 0) &&
-                 (info_suppl.part.scored_fsm    == 0) &&
-                 (info_suppl.part.scored_assert == 0) &&
-                 (info_suppl.part.scored_events == 0) ) {
-        print_output( "No metrics were specified for scoring in the -inline-metrics option", FATAL, __FILE__, __LINE__ );
-        Throw 0;
-      }
-
-
+      /* If the user did not specify an output database directory name, use the default */
       if( output_db == NULL ) {
         output_db = strdup_safe( DFLT_OUTPUT_CDD );
       }
+
+      /* Create a filesystem for the database */
+      generate_create_file_system( output_db );
 
       /* Parse design */
       if( use_files_head != NULL ) {

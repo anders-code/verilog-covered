@@ -371,7 +371,7 @@ attribute_list_opt
     attribute_list K_STARP
     {
       if( parse_mode ) {
-        parser_check_attribute( $3 );
+        parser_check_attribute( $3, @1.ppfline );
       }
     }
   | K_PSTAR
@@ -3356,7 +3356,7 @@ module_item
         if( stmt != NULL ) {
           if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head = 1;
-            if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
+            if( info_suppl.part.scored_line ) {
               stmt->exp->cov.part.execd = 1;
             }
             db_add_statement( stmt, stmt );
@@ -3409,7 +3409,7 @@ module_item
               } else {
                 if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
                   stmt->suppl.part.head = 1;
-                  if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
+                  if( info_suppl.part.scored_line ) {
                     stmt->exp->cov.part.execd = 1;
                   }
                   db_add_statement( stmt, stmt );
@@ -3467,7 +3467,7 @@ module_item
               } else {
                 if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
                   stmt->suppl.part.head = 1;
-                  if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
+                  if( info_suppl.part.scored_line ) {
                     stmt->exp->cov.part.execd = 1;
                   }
                   db_add_statement( stmt, stmt );
@@ -3511,7 +3511,7 @@ module_item
           if( stmt != NULL ) {
             if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
               stmt->suppl.part.head = 1;
-              if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
+              if( info_suppl.part.scored_line ) {
                 stmt->exp->cov.part.execd = 1;
               }
               db_add_statement( stmt, stmt );
@@ -3541,7 +3541,7 @@ module_item
         if( stmt != NULL ) {
           if( (info_suppl.part.excl_init == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head = 1;
-            if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
+            if( info_suppl.part.scored_line ) {
               stmt->exp->cov.part.execd = 1;
             }
             db_add_statement( stmt, stmt );
@@ -3569,7 +3569,7 @@ module_item
           if( (info_suppl.part.excl_final == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head  = 1;
             stmt->suppl.part.final = 1;
-            if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
+            if( info_suppl.part.scored_line ) {
               stmt->exp->cov.part.execd = 1;
             }
             db_add_statement( stmt, stmt );

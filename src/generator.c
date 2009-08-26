@@ -814,7 +814,8 @@ static void generator_dealloc_filename_list(
  Generates an instrumented version of a given functional unit.
 */
 static void generator_output_funits(
-  fname_link* head  /*!< Pointer to the head of the filename list */
+  const char* output_dir,  /*!< Output directory */
+  fname_link* head         /*!< Pointer to the head of the filename list */
 ) { PROFILE(GENERATOR_OUTPUT_FUNIT);
 
   while( head != NULL ) {
@@ -824,7 +825,7 @@ static void generator_output_funits(
     funit_link*  funitl;
 
     /* Create the output file pathname */
-    rv = snprintf( filename, 4096, "covered/verilog/%s", get_basename( head->filename ) );
+    rv = snprintf( filename, 4096, "%s/verilog/%s", output_dir, get_basename( head->filename ) );
     assert( rv < 4096 );
 
     /* Output the name to standard output */
@@ -842,8 +843,11 @@ static void generator_output_funits(
     /* Open the output file for writing */
     if( (curr_ofile = fopen( filename, "w" )) != NULL ) {
 
+      rv = snprintf( filename, 4096, "%s/verilog", output_dir );
+      assert( rv < 4096 );
+
       /* Parse the original code and output inline coverage code */
-      reset_lexer_for_generation( head->filename, "covered/verilog" );
+      reset_lexer_for_generation( head->filename, filename );
       (void)VLparse();
 
       /* Flush the work and hold buffers */
@@ -874,39 +878,14 @@ static void generator_output_funits(
 }
 
 /*!
- Outputs the covered portion of the design to the covered/verilog directory.
+ Outputs the covered portion of the design to the /verilog directory.
 */
-void generator_output() { PROFILE(GENERATOR_OUTPUT);
+void generator_output(
+  const char* output_dir  /*!< Output directory */
+) { PROFILE(GENERATOR_OUTPUT);
 
   fname_link* fname_head = NULL;  /* Pointer to head of filename linked list */
   fname_link* fname_tail = NULL;  /* Pointer to tail of filename linked list */
-  fname_link* fnamel;             /* Pointer to current filename link */
-
-  /* Create the initial "covered" directory - TBD - this should be done prior to this function call */
-  if( !directory_exists( "covered" ) ) {
-    /*@-shiftimplementation@*/
-    if( mkdir( "covered", (S_IRWXU | S_IRWXG | S_IRWXO) ) != 0 ) {
-    /*@=shiftimplementation@*/
-      print_output( "Unable to create \"covered\" directory", FATAL, __FILE__, __LINE__ );
-      Throw 0;
-    }
-  }
-
-  /* If the "covered/verilog" directory exists, remove it */
-  if( directory_exists( "covered/verilog" ) ) {
-    if( system( "rm -rf covered/verilog" ) != 0 ) {
-      print_output( "Unable to remove \"covered/verilog\" directory", FATAL, __FILE__, __LINE__ );
-      Throw 0;
-    }
-  }
-
-  /* Create "covered/verilog" directory */
-  /*@-shiftimplementation@*/
-  if( mkdir( "covered/verilog", (S_IRWXU | S_IRWXG | S_IRWXO) ) != 0 ) {
-  /*@=shiftimplementation@*/
-    print_output( "Unable to create \"covered/verilog\" directory", FATAL, __FILE__, __LINE__ );
-    Throw 0;
-  }
 
   /* Initialize the work_buffer and hold_buffer arrays */
   work_buffer[0] = '\0';
@@ -920,7 +899,7 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
   generator_create_filename_list( db_list[curr_db]->funit_head, &fname_head, &fname_tail );
 
   /* Iterate through the covered files, generating coverage output along with the design information */
-  generator_output_funits( fname_head );
+  generator_output_funits( output_dir, fname_head );
 
   /* Deallocate memory from filename list */
   generator_dealloc_filename_list( fname_head );

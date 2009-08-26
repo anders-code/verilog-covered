@@ -321,9 +321,11 @@ void statement_db_write(
   assert( stmt != NULL );
 
   /* Write out contents of this statement last */
-  fprintf( ofile, "%d %d %x %d %d %d",
+  fprintf( ofile, "%d %d %u %u %x %d %d %d",
     DB_TYPE_STATEMENT,
     expression_get_id( stmt->exp, ids_issued ),
+    stmt->exp->ppfline,
+    stmt->exp->col.part.first,
     (stmt->suppl.all & 0x7f),
     ((stmt->next_true   == NULL) ? 0 : expression_get_id( stmt->next_true->exp, ids_issued )),
     ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, ids_issued )),
@@ -410,17 +412,19 @@ void statement_db_read(
   int        read_mode    /*!< If set to REPORT, adds statement to head of list; otherwise, adds statement to tail */
 ) { PROFILE(STATEMENT_DB_READ);
 
-  int        id;          /* ID of root expression that is associated with this statement */
-  int        true_id;     /* ID of root expression that is associated with the next_true statement */
-  int        false_id;    /* ID of root expression that is associated with the next_false statement */
-  int        head_id;
-  statement* stmt;        /* Pointer to newly created statement */
-  exp_link*  expl;        /* Pointer to found expression link */
-  stmt_link* stmtl;       /* Pointer to found statement link */
-  int        chars_read;  /* Number of characters read from line */
-  uint32     suppl;       /* Supplemental field value */
+  int          id;          /* ID of root expression that is associated with this statement */
+  int          true_id;     /* ID of root expression that is associated with the next_true statement */
+  int          false_id;    /* ID of root expression that is associated with the next_false statement */
+  int          head_id;
+  unsigned int fline;
+  uint32       fcol;
+  statement*   stmt;        /* Pointer to newly created statement */
+  exp_link*    expl;        /* Pointer to found expression link */
+  stmt_link*   stmtl;       /* Pointer to found statement link */
+  int          chars_read;  /* Number of characters read from line */
+  uint32       suppl;       /* Supplemental field value */
 
-  if( sscanf( *line, "%d %x %d %d %d%n", &id, &suppl, &true_id, &false_id, &head_id, &chars_read ) == 5 ) {
+  if( sscanf( *line, "%d %u %u %x %d %d %d%n", &id, &fline, &fcol, &suppl, &true_id, &false_id, &head_id, &chars_read ) == 7 ) {
 
     *line = *line + chars_read;
 
@@ -496,15 +500,17 @@ void statement_db_read(
       /* Add the statement to the functional unit list */
       stmt_link_add( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
 
+#ifdef OBSOLETE
       /*
        Possibly add statement to presimulation queue (if the current functional unit is a task
        or function, do not add this to the presimulation queue (this will be added when the expression
        is called.
       */
-      if( (read_mode == READ_MODE_NO_MERGE) && (stmt->suppl.part.is_called == 0) && (info_suppl.part.inlined == 0) ) {
+      if( (read_mode == READ_MODE_NO_MERGE) && (stmt->suppl.part.is_called == 0) ) {
         sim_time tmp_time = {0,0,0,FALSE};
         (void)sim_add_thread( NULL, stmt, curr_funit, &tmp_time );
       }
+#endif
 
     }
 

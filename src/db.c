@@ -449,18 +449,6 @@ bool db_read(
               /* Parse rest of line for general info */
               stop_reading = !info_db_read( &rest_line, read_mode );
   
-              if( !stop_reading ) {
-
-                /* If we are in report mode or merge mode and this CDD file has not been scored, bow out now */
-                if( (info_suppl.part.scored == 0) &&
-                    ((read_mode == READ_MODE_REPORT_NO_MERGE) ||
-                     (read_mode == READ_MODE_REPORT_MOD_MERGE)) ) {
-                  print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL, __FILE__, __LINE__ );
-                  Throw 0;
-                }
-
-              }
-          
             } else if( type == DB_TYPE_SCORE_ARGS ) {
           
               assert( !merge_mode );
@@ -578,12 +566,12 @@ bool db_read(
                     ((foundinst = inst_link_find_by_scope( funit_scope, db_list[curr_db]->inst_head, FALSE )) != NULL) ) {
                   merge_mode = TRUE;
                   curr_funit = foundinst->funit;
-                  funit_db_merge( foundinst->funit, db_handle, TRUE );
+                  funit_db_inst_merge( foundinst->funit, db_handle, TRUE );
                 } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) &&
                            ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.suppl.part.type, db_list[curr_db]->funit_head )) != NULL) ) {
                   merge_mode = TRUE;
                   curr_funit = foundfunit->funit;
-                  funit_db_merge( foundfunit->funit, db_handle, FALSE );
+                  funit_db_mod_merge( foundfunit->funit, db_handle, FALSE );
                 } else {
                   curr_funit             = funit_create();
                   curr_funit->name       = strdup_safe( funit_name );
@@ -2832,7 +2820,8 @@ attr_param* db_create_attr_param(
  Calls the attribute_parse() function and deallocates this list.
 */
 void db_parse_attribute(
-  attr_param* ap  /*!< Pointer to attribute parameter list to parse */
+  attr_param*  ap,   /*!< Pointer to attribute parameter list to parse */
+  unsigned int line  /*!< First line of attribute */
 ) { PROFILE(DB_PARSE_ATTRIBUTE);
 
 #ifdef DEBUG_MODE
@@ -2844,7 +2833,7 @@ void db_parse_attribute(
   Try {
 
     /* First, parse the entire attribute */
-    attribute_parse( ap, curr_funit, (exclude_mode > 0) );
+    attribute_parse( ap, curr_funit, line, (exclude_mode > 0) );
 
   } Catch_anonymous {
     attribute_dealloc( ap );
@@ -3037,7 +3026,7 @@ void db_assign_symbol(
     char* found_str;
     bool  internal_sig_found = ((found_str = strstr( name, "\\covered$" )) != NULL) || ((found_str = strstr( name, "covered$" )) != NULL);
     
-    if( info_suppl.part.inlined && internal_sig_found ) {
+    if( internal_sig_found ) {
 
       unsigned int index = (found_str - name) + ((name[found_str-name] == '\\') ? 9 : 8);
       char         type  = name[index];
@@ -3226,17 +3215,6 @@ void db_assign_symbol(
       vsignal*   sig;
       func_unit* found_funit;
 
-      /*
-       If we found an internal Covered signal in a CDD that is not expecting inlined data, the user specified a bad CDD file.
-       Alert them to this issue and quit immediately.
-      */
-      if( !info_suppl.part.inlined && internal_sig_found ) {
-        print_output( "The CDD file in use was not created for inlined coverage; however,",  FATAL,      __FILE__, __LINE__ );
-        print_output( "Covered has detected an inlined signal from the specified dumpfile.", FATAL_WRAP, __FILE__, __LINE__ );
-        print_output( "Please use a CDD file created for inlined coverage.",                 FATAL_WRAP, __FILE__, __LINE__ );
-        Throw 0;
-      }
-
       /* Find the signal that matches the specified signal name */
       if( ((sigl = sig_link_find( name, curr_instance->funit->sig_head )) != NULL) ||
           scope_find_signal( name, curr_instance->funit, &sig, &found_funit, 0 ) ) {
@@ -3371,21 +3349,18 @@ bool db_do_timestep(
     assert( rv == 0 );
   }
 
-  /* Only perform simulation if we are not scoring an inlined coverage design. */
-  if( !info_suppl.part.inlined ) {
+#ifdef OBSOLETE
+  /* Simulate the current timestep */
+  retval = sim_simulate( &curr_time );
 
-    /* Simulate the current timestep */
+  /* If this is the last timestep, add the final list and do one more simulate */
+  if( final && retval ) {
+    curr_time.lo   = 0xffffffff;
+    curr_time.hi   = 0xffffffff;
+    curr_time.full = 0xffffffffffffffffLL;
     retval = sim_simulate( &curr_time );
-
-    /* If this is the last timestep, add the final list and do one more simulate */
-    if( final && retval ) {
-      curr_time.lo   = 0xffffffff;
-      curr_time.hi   = 0xffffffff;
-      curr_time.full = 0xffffffffffffffffLL;
-      retval = sim_simulate( &curr_time );
-    }
-
   }
+#endif
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {

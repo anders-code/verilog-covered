@@ -39,7 +39,8 @@ void parser_check_pstar();
 
 /*! \brief Parses and checks attributes. */
 void parser_check_attribute(
-  attr_param* ap
+  attr_param*  ap,
+  unsigned int line
 );
     
 /*! \brief Appends an attribute to an attribute list. */

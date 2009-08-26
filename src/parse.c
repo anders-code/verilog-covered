@@ -90,6 +90,8 @@ void parse_design(
   const char* output_db  /*!< Name of output directory for generated scored files */
 ) { PROFILE(PARSE_DESIGN);
 
+  unsigned int rv;
+
   Try {
 
     (void)str_link_add( strdup_safe( top ), &modlist_head, &modlist_tail );
@@ -181,12 +183,12 @@ void parse_design(
     }
 
     /* Write contents to baseline database file. */
-    db_write( output_db, TRUE, TRUE );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "%s/db/cov.db", output_db );
+    assert( rv < USER_MSG_LENGTH );
+    db_write( user_msg, TRUE, TRUE );
 
-    /* Generate the needed Verilog if specified */
-    if( info_suppl.part.inlined ) {
-      generator_output();
-    }
+    /* Generate the needed Verilog */
+    generator_output( output_db );
 
   } Catch_anonymous {
     /* Deallocate module list */
@@ -248,9 +250,7 @@ void parse_and_score_dumpfile(
     bind_perform( TRUE, 0 );
 
     /* Add static values to simulator */
-    if( info_suppl.part.inlined == 0 ) {
-      sim_initialize();
-    }
+    // sim_initialize();
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
@@ -279,10 +279,10 @@ void parse_and_score_dumpfile(
 #endif
 
     /* Indicate that this CDD contains scored information */
-    info_suppl.part.scored = 1;
+    // info_suppl.part.scored = 1;
 
     /* Write contents to database file */
-    db_write( db, FALSE, FALSE );
+    // db_write( db, FALSE, FALSE );
 
   } Catch_anonymous {
     sim_dealloc();

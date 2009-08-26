@@ -81,13 +81,14 @@ void parser_check_pstar() { PROFILE(PARSER_CHECK_PSTAR);
  Parses the given attribute list for a valid Covered attribute and handles it accordingly.
 */
 void parser_check_attribute(
-  attr_param* ap  /*!< Pointer to attribute parameter */
+  attr_param*  ap,   /*!< Pointer to attribute parameter */
+  unsigned int line  /*!< First line of attribute */
 ) { PROFILE(PARSER_CHECK_ATTRIBUTE);
 
   if( !parser_check_generation( GENERATION_2001 ) ) {
     ignore_mode--;
   } else if( ignore_mode == 0 ) {
-    db_parse_attribute( ap );
+    db_parse_attribute( ap, line );
   }
 
   PROFILE_END;

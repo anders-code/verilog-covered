@@ -272,7 +272,7 @@ void fsm_arg_parse(
           ptr++;
 
           if( (out_state = fsm_arg_parse_state( &ptr, tmp )) != NULL ) {
-            (void)fsm_var_add( arg, in_state, out_state, NULL, FALSE );
+            (void)fsm_var_add( arg, in_state, out_state, NULL, 0, FALSE );
           } else {
             print_output( "Illegal FSM command-line output state", FATAL, __FILE__, __LINE__ );
             Throw 0;
@@ -281,7 +281,7 @@ void fsm_arg_parse(
         } else {
 
           /* Copy the current expression */
-          (void)fsm_var_add( arg, in_state, in_state, NULL, FALSE );
+          (void)fsm_var_add( arg, in_state, in_state, NULL, 0, FALSE );
 
         }
 
@@ -589,6 +589,7 @@ static void fsm_arg_parse_trans(
 void fsm_arg_parse_attr(
   attr_param*      ap,      /*!< Pointer to attribute parameter list */
   const func_unit* funit,   /*!< Pointer to functional unit containing this attribute */
+  unsigned int     line,    /*!< First line of FSM attribute */
   bool             exclude  /*!< If TRUE, sets the exclude bits in the FSM */
 ) { PROFILE(FSM_ARG_PARSE_ATTR);
 
@@ -647,7 +648,7 @@ void fsm_arg_parse_attr(
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             Throw 0;
           } else {
-            (void)fsm_var_add( funit->name, out_state, out_state, curr->name, exclude );
+            (void)fsm_var_add( funit->name, out_state, out_state, curr->name, line, exclude );
             fsml = fsm_link_find( curr->name, funit->fsm_head );
           }
         } Catch_anonymous {
@@ -675,7 +676,7 @@ void fsm_arg_parse_attr(
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             Throw 0;
           } else {
-            (void)fsm_var_add( funit->name, in_state, out_state, curr->name, exclude );
+            (void)fsm_var_add( funit->name, in_state, out_state, curr->name, line, exclude );
             fsml = fsm_link_find( curr->name, funit->fsm_head );
           }
         } Catch_anonymous {

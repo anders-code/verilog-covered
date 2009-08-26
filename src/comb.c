@@ -101,7 +101,7 @@ static int combination_calc_depth(
 
   int our_depth;  /* Return value for this function */
 
-  if( (!info_suppl.part.inlined || ((curr_depth + 1) <= inline_comb_depth)) &&
+  if( ((curr_depth + 1) <= inline_comb_depth) &&
       (((report_comb_depth == REPORT_DETAILED) && ((curr_depth + 1) <= report_comb_depth)) ||
        (report_comb_depth == REPORT_VERBOSE)) ) {
 
@@ -334,7 +334,7 @@ void combination_get_tree_stats(
     combination_get_tree_stats( exp->left,  ulid, combination_calc_depth( exp, curr_depth, TRUE ),  excluded, hit, excludes, total );
     combination_get_tree_stats( exp->right, ulid, combination_calc_depth( exp, curr_depth, FALSE ), excluded, hit, excludes, total );
 
-    if( (!info_suppl.part.inlined || (curr_depth <= inline_comb_depth)) &&
+    if( (curr_depth <= inline_comb_depth) &&
         (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ||
          (report_comb_depth == REPORT_SUMMARY)) ) {
@@ -1241,7 +1241,7 @@ static void combination_underline_tree(
         /* Calculate ulid */
         ulid = exp->ulid;
 
-        comb_missed = ((!info_suppl.part.inlined || (curr_depth <= inline_comb_depth)) &&
+        comb_missed = ((curr_depth <= inline_comb_depth) &&
                        (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
                         (report_comb_depth == REPORT_VERBOSE))) ? ((ulid != -1) ? 1 : 0) : 0;
 
@@ -2419,7 +2419,7 @@ static void combination_get_missed_expr(
   *info_size = 0;
 
   if( EXPR_COMB_MISSED( exp ) &&
-      (!info_suppl.part.inlined || (curr_depth <= inline_comb_depth)) &&
+      (curr_depth <= inline_comb_depth) &&
       (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
         (report_comb_depth == REPORT_VERBOSE)) ) {
  
@@ -2541,7 +2541,7 @@ static void combination_output_expr(
     combination_output_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ), any_missed, any_measurable, any_excluded, all_excluded );
     combination_output_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ),  any_missed, any_measurable, any_excluded, all_excluded );
 
-    if( (!info_suppl.part.inlined || (curr_depth <= inline_comb_depth)) &&
+    if( (curr_depth <= inline_comb_depth) &&
         (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE)) ) {
  

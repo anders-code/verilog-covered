@@ -547,13 +547,15 @@ void vsignal_vcd_assign(
     vec_changed = vector_vcd_assign( sig->value, value, msb, lsb );
   }
 
+#ifdef OBSOLETE
   /* Don't go through the hassle of updating expressions if value hasn't changed */
-  if( vec_changed && !info_suppl.part.inlined ) {
+  if( vec_changed ) {
 
     /* Propagate signal changes to rest of design */
     vsignal_propagate( sig, time );
 
   } 
+#endif
 
   PROFILE_END;
 
