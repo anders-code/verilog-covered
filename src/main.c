@@ -164,9 +164,10 @@ int main( int argc, const char** argv ) {
             profiler_set_mode( TRUE );
             curr_arg++;
             if( (curr_arg < argc) && (argv[curr_arg][0] != '-') &&
-                (strncmp( "score",  argv[curr_arg], 5 ) != 0) &&
-                (strncmp( "merge",  argv[curr_arg], 5 ) != 0) &&
-                (strncmp( "report", argv[curr_arg], 6 ) != 0)) {
+                (strncmp( "generate", argv[curr_arg], 8 ) != 0) &&
+                (strncmp( "score",    argv[curr_arg], 5 ) != 0) &&
+                (strncmp( "merge",    argv[curr_arg], 5 ) != 0) &&
+                (strncmp( "report",   argv[curr_arg], 6 ) != 0)) {
               profiler_set_filename( argv[curr_arg] );
             } else {
               curr_arg--;

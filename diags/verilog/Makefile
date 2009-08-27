@@ -1,0 +1,421 @@
+######################################################
+# Written by:   Trevor Williams  (phase1geo@gmail.com)
+#
+# Date:         3/22/2002
+#
+# Purpose:      Runs regression suite for Verilog
+######################################################
+
+VG_LOG_PREFIX       = mem_check
+VG_EXEC             = valgrind
+VG_FLAGS            = --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=15 --log-file=$(VG_LOG_PREFIX) --suppressions=vg_supp -v
+
+COVERED_SRC         = ../../src
+COVERED_LIB         = ../../lib
+COVERED             = $(COVERED_SRC)/covered
+COVERED_GFLAG       = -D
+COVERED_GEN_GFLAG   = -P
+COVERED_SCORE_GFLAG = -P
+
+ifdef CHECK_MEM
+VG_COVERED    = $(VG_EXEC) $(VG_FLAGS) $(COVERED)
+else
+VG_COVERED    = $(COVERED)
+endif
+
+ifdef LEAVE
+FINISH_CODE   = 4
+else
+FINISH_CODE   = 3
+endif
+
+# VComp support
+VCOMP_LIB      = $(realpath $(dir $(shell which vcomp))../lib)
+VCOMP          = vcomp
+VCOMP_FLAGS    = -d0 -logfile foobar +libext+.v+.vlib -y ./covered/verilog -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT+15 +define+DUMP -LL $(VCOMP_LIB) -P $(VCOMP_LIB)/vcomp/vcd.tab
+VCOMP_EXEC     = ./vrun $(SIM_PLUSARGS)
+
+CDD_DIR       = ../cdd
+RPT_DIR       = ../rpt
+
+export COVERED_TESTMODE=1
+export LIBRARY_PATH=lib
+
+CHECKMEM := $(shell ./check_testmode)
+
+LOGFILE = regress.log
+
+.PHONY:	view_vg_errs check-ovl covered
+
+regress:	covered $(DIAGLIST) $(DIAG2LIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST) $(NOSIMLIST) $(NOSIMERRLIST) $(ERRREPORTLIST) $(ERRRANKLIST) $(ERREXCLUDELIST)
+
+check-ovl:
+	@if test ! -h ovl; then \
+		echo "Create symlink called \"ovl\" in the diags/verilog directory to point to base OVL vlib directory"; \
+		exit 1; \
+	fi
+
+$(DIAGLIST): check-ovl
+	@if test ! -f $@.done; then \
+		if test ! -f ../regress/$@.pl; then \
+			./rundiag $@ $(MAKEFLAGS); \
+		else \
+			perl ../regress/$@.pl $(MAKEFLAGS); \
+		fi; \
+	else \
+		echo Skipping $@; \
+		./check_test $@ 1 2; \
+	fi
+
+#diag2run:
+#	@echo Running $(DIAG)
+#	@./convert_cfg $(CFG_CMD) 0 $(VERILATOR_SET) $(DIAG).cfg
+#ifdef VPI
+#	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+#ifdef USE_CVER
+#	@if test "$(COVERED_GFLAG)" = "-D"; then \
+#		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
+#	else \
+#		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
+#	fi
+#else
+#	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v
+#	@if test "$(COVERED_GFLAG)" = "-D"; then \
+#		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
+#	else \
+#		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
+#	fi
+#endif
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -b -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -b -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+#else
+#	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+#ifndef USE_CVER
+#ifndef USE_VERIWELL
+#	@$(VERILOG_CMD)
+#endif
+#endif   
+#	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -b -e -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -b -e -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+#endif
+#	@rm -f $(DIAG).cfg
+#	@./check_test $(DIAG) 1 $(CHK_CODE)
+#
+#$(DIAG2LIST): check-ovl
+#	@if test ! -f $@.done; then \
+#		if test ! -f ../regress/$@.pl; then \
+#			$(MAKE) DIAG=$@ diag2run; \
+#		else \
+#			perl ../regress/$@.pl $(MAKEFLAGS); \
+#		fi; \
+#	else \
+#		echo Skipping $@; \
+#		./check_test $@ 1 2; \
+#	fi
+#
+#racerun:
+#	@echo Running $(DIAG)
+#	@./convert_cfg $(CFG_CMD) 0 $(VERILATOR_SET) $(DIAG).cfg
+#ifdef VPI
+#	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+#ifdef USE_CVER
+#	@if test "$(COVERED_GFLAG)" = "-D"; then \
+#		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
+#	else \
+#		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
+#	fi
+#else
+#	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v
+#	@if test "$(COVERED_GFLAG)" = "-D"; then \
+#		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
+#	else \
+#		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
+#	fi
+#endif
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfamr -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfamr -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+#else
+#	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+#ifndef USE_CVER
+#ifndef USE_VERIWELL
+#	@$(VERILOG_CMD)
+#endif
+#endif
+#	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfamr -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfamr -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+#endif
+#	@rm -f $(DIAG).cfg
+#	@./check_test $(DIAG) 1 $(CHK_CODE)
+#
+#$(RACELIST):
+#	@if test ! -f $@.done; then \
+#		if test ! -f ../regress/$@.pl; then \
+#			$(MAKE) DIAG=$@ racerun; \
+#		else \
+#			perl ../regress/$@.pl $(MAKEFLAGS); \
+#		fi; \
+#	else \
+#		echo Skipping $@; \
+#		./check_test $@ 1 2; \
+#	fi
+#
+#onemergerun:
+#	@./convert_cfg $(CFG_CMD) 0 $(VERILATOR_SET) $(DIAG).cfg
+#ifdef VPI
+#	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+#ifdef USE_CVER
+#	@if test "$(COVERED_GFLAG)" = "-D"; then \
+#		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
+#	else \
+#		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
+#	fi
+#else
+#	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v
+#	@if test "$(COVERED_GFLAG)" = "-D"; then \
+#		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
+#	else \
+#		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
+#	fi
+#endif
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+#else
+#	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+#ifndef USE_CVER
+#ifndef USE_VERIWELL
+#	@$(VERILOG_CMD)
+#endif
+#endif
+#	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+#endif
+#	@rm -f $(DIAG).cfg
+#	@./check_test $(DIAG) 0 $(CHK_CODE)
+#	
+#mergerun:
+#	@echo Running $(DIAG)
+#	@$(MAKE) DIAG=$(DIAG)a onemergerun
+#	@$(MAKE) DIAG=$(DIAG)b onemergerun
+#	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+#	@./check_test $(DIAG) 3 $(CHK_CODE)
+#
+#$(MERGELIST):
+#	@if test ! -f $@.done; then \
+#		if test ! -f ../regress/$@.pl; then \
+#			$(MAKE) DIAG=$@ mergerun; \
+#		else \
+#			perl ../regress/$@.pl $(MAKEFLAGS); \
+#		fi; \
+#	else \
+#		echo Skipping $@; \
+#		./check_test $@ 3 2; \
+#	fi
+#
+#merge3run:
+#	@$(MAKE) DIAG=$(DIAG)a onemergerun
+#	@$(MAKE) DIAG=$(DIAG)b onemergerun
+#	@$(MAKE) DIAG=$(DIAG)c onemergerun
+#	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(DIAG)c.cdd $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+#	@./check_test $(DIAG) 4 $(CHK_CODE)
+#
+#$(MERGE3LIST):
+#	@if test ! -f $@.done; then \
+#		if test ! -f ../regress/$@.pl; then \
+#			$(MAKE) DIAG=$@ merge3run; \
+#		else \
+#			perl ../regress/$@.pl $(MAKEFLAGS); \
+#		fi; \
+#	else \
+#		echo Skipping $@; \
+#		./check_test $@ 4 2; \
+#	fi
+#
+#errscorerun:
+#ifndef VPI
+#	@echo Running $(DIAG) -- should see an error message
+#	@./convert_cfg $(CFG_CMD) 0 $(VERILATOR_SET) $(DIAG).cfg
+#	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+#ifndef USE_CVER
+#ifndef USE_VERIWELL
+#	@$(VERILOG_CMD)
+#endif
+#endif
+#	-$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP 2> $(DIAG).err $(CHECKMEM)
+#	@rm -f $(DIAG).cfg
+#	@cat $(DIAG).err
+#	@./check_test $(DIAG) 1 1
+#endif
+#
+#$(ERRSCORELIST):
+#	@if test ! -f $@.done; then \
+#		if test ! -f ../regress/$@.pl; then \
+#			$(MAKE) DIAG=$@ errscorerun; \
+#		else \
+#			perl ../regress/$@.pl $(MAKEFLAGS); \
+#		fi; \
+#	else \
+#		echo Skipping $@; \
+#		./check_test $@ 1 2; \
+#	fi
+#
+#oneerrmergerun:
+#ifndef VPI
+#	@./convert_cfg $(CFG_CMD) 0 $(VERILATOR_SET) $(DIAG).cfg
+#	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+#ifndef USE_CVER
+#ifndef USE_VERIWELL
+#	@$(VERILOG_CMD)
+#endif
+#endif
+#	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+#	@rm -f $(DIAG).cfg
+#endif
+#
+#errmergerun:
+#ifndef VPI
+#	@echo Running $(DIAG) -- should see an error message
+#	@$(MAKE) DIAG=$(DIAG)a oneerrmergerun
+#	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd.bad 2> $(DIAG).err $(CHECKMEM)
+#	@cat $(DIAG).err
+#	@./check_test $(DIAG) 2 1
+#endif
+#
+#$(ERRMERGELIST):
+#	@if test ! -f $@.done; then \
+#		if test ! -f ../regress/$@.pl; then \
+#			$(MAKE) DIAG=$@ errmergerun; \
+#		else \
+#			perl ../regress/$@.pl $(MAKEFLAGS); \
+#		fi; \
+#	else \
+#		echo Skipping $@; \
+#		./check_test $@ 2 2; \
+#	fi
+#
+#errreportrun:
+#ifndef VPI
+#	@echo Running $(DIAG) -- should see an error message
+#	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+#ifndef USE_CVER
+#ifndef USE_VERIWELL
+#	@$(VERILOG_CMD)
+#endif
+#endif
+#	@./convert_cfg $(CFG_CMD) 0 $(VERILATOR_SET) $(DIAG).cfg
+#	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) report -d v -e $(DIAG).cdd 2> $(DIAG).err $(CHECKMEM)
+#	@rm -f $(DIAG).cfg
+#	@cat $(DIAG).err
+#	@./check_test $(DIAG) 1 1
+#endif
+#
+#$(ERRREPORTLIST):
+#	@if test ! -f $@.done; then \
+#		if test ! -f ../regress/$@.pl; then \
+#			$(MAKE) DIAG=$@ errreportrun; \
+#		else \
+#			perl ../regress/$@.pl $(MAKEFLAGS); \
+#		fi; \
+#	else \
+#		echo Skipping $@; \
+#		./check_test $@ 1 2; \
+#	fi
+#
+#$(ERRRANKLIST):
+#	@if test ! -f $@.done; then \
+#		if test -f ../regress/$@.pl; then \
+#			perl ../regress/$@.pl $(MAKEFLAGS); \
+#		fi; \
+#	else \
+#		echo Skipping $@; \
+#		./check_test $@ 1 2; \
+#	fi
+#
+#errexcluderun:
+#ifndef VPI
+#	@echo Running $(DIAG) -- should see an error message
+#	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+#ifndef USE_CVER
+#ifndef USE_VERIWELL
+#	@$(VERILOG_CMD)
+#endif
+#endif
+#	@./convert_cfg $(CFG_CMD) 0 $(VERILATOR_SET) $(DIAG).cfg
+#	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+#	$(COVERED) $(COVERED_GFLAG) exclude -p $(DIAG).cdd 2> $(DIAG).err $(CHECKMEM)
+#	@rm -f $(DIAG).cfg
+#	@cat $(DIAG).err
+#	@./check_test $(DIAG) 1 1
+#endif
+#
+#$(ERREXCLUDELIST):
+#	@if test ! -f $@.done; then \
+#		if test ! -f ../regress/$@.pl; then \
+#			$(MAKE) DIAG=$@ errexcluderun; \
+#		else \
+#			perl ../regress/$@.pl $(MAKEFLAGS); \
+#		fi; \
+#	else \
+#		echo Skipping $@; \
+#		./check_test $@ 1 2; \
+#	fi
+#
+#$(NOSIMLIST):
+#	@if test ! -f $@.done; then \
+#		echo Running $@; \
+#		./convert_cfg $(CFG_CMD) 0 $(VERILATOR_SET) $@.cfg; \
+#		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $@.cfg 2> $@.err $(CHECKMEM); \
+#		rm -f $@.cfg $@.cdd; \
+#		cat $@.err; \
+#		./check_test $@ 1 1; \
+#	else \
+#		echo Skipping $@; \
+#		./check_test $@ 1 2; \
+#	fi
+#
+#$(NOSIMERRLIST):
+#	@if test ! -f $@.done; then \
+#		echo Running $@ -- should see an error message; \
+#		./convert_cfg $(CFG_CMD) 0 $(VERILATOR_SET) $@.cfg; \
+#		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $@.cfg 2> $@.err $(CHECKMEM); \
+#		rm -f $@.cfg $@.cdd; \
+#		cat $@.err; \
+#		./check_test $@ 1 1; \
+##	else \
+#		echo Skipping $@; \
+#		./check_test $@ 1 2; \
+#	fi
+#
+covered:
+ifdef VPI
+	cd $(COVERED_LIB); $(MAKE)
+endif
+	cd $(COVERED_SRC); $(MAKE)
+
+eot:
+	@./check_test dummy 1 $(FINISH_CODE)
+
+view_vg_errs:
+	@./view_vg_errs $(VG_LOG_PREFIX)
+	
+reset:  clobber
+	@rm -f *.done
+
+clobber:  clean
+	@rm -f *.rpt* *.cdd *.err regress.output regress.failed
+	@rm -f $(VG_LOG_PREFIX).*
+	@rm -rf covered
+
+clean:
+	@rm -f $(LOGFILE)
+	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.log *.cfg
+	@rm -f core *.o
+	@rm -rf $(VCS_EXEC).*
+	@rm -f tmp*
