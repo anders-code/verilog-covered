@@ -86,11 +86,15 @@ int parse_readline(
  stored in the associated lists.
 */
 void parse_design(
-  const char* top,       /*!< Name of top-level module to score */
-  const char* output_db  /*!< Name of output directory for generated scored files */
+  const char* top  /*!< Name of top-level module to score */
 ) { PROFILE(PARSE_DESIGN);
 
   unsigned int rv;
+  unsigned int slen = strlen( get_cdd() ) + 11;
+  char*        odb  = (char*)malloc_safe( slen );
+
+  rv = snprintf( odb, slen, "%s/db/cov.db", get_cdd() );
+  assert( rv < slen );
 
   Try {
 
@@ -183,15 +187,14 @@ void parse_design(
     }
 
     /* Write contents to baseline database file. */
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "%s/db/cov.db", output_db );
-    assert( rv < USER_MSG_LENGTH );
-    db_write( user_msg, TRUE, TRUE );
+    db_write( odb, TRUE, TRUE );
 
     /* Generate the needed Verilog */
-    generator_output( output_db );
+    generator_output();
 
   } Catch_anonymous {
     /* Deallocate module list */
+    free_safe( odb, slen );
     str_link_delete_list( modlist_head );
     modlist_head = modlist_tail = NULL;
     fsm_var_cleanup();
@@ -208,11 +211,13 @@ void parse_design(
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Design written to database %s successfully  ========\n\n", output_db );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Design written to database %s successfully  ========\n\n", odb );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
+
+  free_safe( odb, slen );
 
   PROFILE_END;
 
@@ -226,25 +231,39 @@ void parse_design(
  for merging or reporting.
 */
 void parse_and_score_dumpfile(
-  const char* db,         /*!< Name of output database file to generate */
+  const char* cdb,        /*!< Name of output coverage database file to generate */
   const char* dump_file,  /*!< Name of dumpfile to parse for scoring */
   int         dump_mode   /*!< Type of dumpfile being used (see \ref dumpfile_fmt for legal values) */
 ) { PROFILE(PARSE_AND_SCORE_DUMPFILE);
 
+  unsigned int rv;
+  unsigned int olen = strlen( get_cdd() ) + 11 + strlen( cdb ) + 1;
+  char*        odb  = (char*)malloc_safe( olen );
+  unsigned int ilen = strlen( get_cdd() ) + 11;
+  char*        idb  = (char*)malloc_safe( ilen );
+
   assert( dump_file != NULL );
+
+  /* Output database */
+  rv = snprintf( odb, olen, "%s/cov/tests/%s", get_cdd(), cdb );
+  assert( rv < olen );
+
+  /* Input database */
+  rv = snprintf( idb, ilen, "%s/db/cov.db", get_cdd() );
+  assert( rv < ilen );
 
   Try {
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in database %s  ========\n", db );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in database %s  ========\n", idb );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
 #endif
 
     /* Read in contents of specified database file */
-    (void)db_read( db, READ_MODE_NO_MERGE );
+    (void)db_read( idb, READ_MODE_NO_MERGE );
   
     /* Bind expressions to signals/functional units */
     bind_perform( TRUE, 0 );
@@ -272,7 +291,7 @@ void parse_and_score_dumpfile(
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", odb );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
@@ -284,13 +303,21 @@ void parse_and_score_dumpfile(
     /* Write contents to database file */
     // db_write( db, FALSE, FALSE );
 
+    /* Write the coverage file */
+    cov_db_write( odb );
+
   } Catch_anonymous {
     sim_dealloc();
+    free_safe( odb, olen );
+    free_safe( idb, ilen );
     Throw 0;
   }
 
   /* Deallocate simulator stuff */
   sim_dealloc();
+
+  free_safe( odb, olen );
+  free_safe( idb, ilen );
 
   PROFILE_END;
 

@@ -40,9 +40,6 @@ char* top_instance = NULL;
 /*! Name of the coverage pragma to parse for */
 char* pragma_coverage_name = NULL;
 
-/*! Name of output score database file to generate */
-static char* output_db = NULL;
-
 /*! Specifies if -i option was specified */
 bool instance_specified = FALSE;
 
@@ -615,20 +612,6 @@ static bool generate_parse_args(
         Throw 0;
       }
 
-    } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
-        
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        if( output_db != NULL ) {
-          print_output( "Only one -o option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
-        } else {
-          output_db = strdup_safe( argv[i] );
-          generate_add_args( argv[i-1], argv[i] );
-        }
-      } else {   
-        Throw 0; 
-      }
-                 
     } else if( strncmp( "-t", argv[i], 2 ) == 0 ) {
           
       if( check_option_value( argc, argv, i ) ) {
@@ -1044,19 +1027,14 @@ void command_generate(
     /* Parse score command-line */
     if( !generate_parse_args( argc, last_arg, argv ) ) {
 
-      /* If the user did not specify an output database directory name, use the default */
-      if( output_db == NULL ) {
-        output_db = strdup_safe( DFLT_OUTPUT_CDD );
-      }
-
       /* Create a filesystem for the database */
-      generate_create_file_system( output_db );
+      generate_create_file_system( get_cdd() );
 
       /* Parse design */
       if( use_files_head != NULL ) {
         print_output( "Reading design...", NORMAL, __FILE__, __LINE__ );
         search_init();
-        parse_design( top_module, output_db );
+        parse_design( top_module );
         print_output( "", NORMAL, __FILE__, __LINE__ );
       }
 
@@ -1066,7 +1044,7 @@ void command_generate(
         rv = snprintf( user_msg, USER_MSG_LENGTH, "Outputting VPI file %s...", vpi_file );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-        generate_top_vpi_module( vpi_file, output_db, top_instance );
+        generate_top_vpi_module( vpi_file, get_cdd(), top_instance );
         generate_pli_tab_file( vpi_file, top_module );
 
       } 
@@ -1104,7 +1082,6 @@ void command_generate(
   /* Deallocate generation module string list */
   str_link_delete_list( gen_mod_head );
 
-  free_safe( output_db, (strlen( output_db ) + 1) );
   free_safe( vpi_file, (strlen( vpi_file ) + 1) );
   free_safe( dumpvars_file, (strlen( dumpvars_file ) + 1) );
   free_safe( top_module, (strlen( top_module ) + 1) );

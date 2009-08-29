@@ -163,6 +163,9 @@ char* substitute_env_vars(
   const char* value
 );
 
+/*! \brief Returns the name of the directory containing the design and coverage databases */
+char* get_cdd();
+
 /*! \brief Extracts highest level of hierarchy from specified scope. */
 void scope_extract_front(
             const char* scope,

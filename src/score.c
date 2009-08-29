@@ -152,7 +152,7 @@ static bool score_parse_args(
       score_usage();
       help_found = TRUE;
 
-    } else if( (strncmp( "-o", argv[i], 2 ) == 0) || (strncmp( "-cdd", argv[i], 4 ) == 0) ) {
+    } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
@@ -301,6 +301,11 @@ static bool score_parse_args(
 
     i++;
 
+  }
+
+  /* If the user did not specify a coverage file name, use the default */
+  if( output_db == NULL ) {
+    output_db = strdup_safe( "cov.cdb" );
   }
 
   return( help_found );

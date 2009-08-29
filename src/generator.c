@@ -814,7 +814,6 @@ static void generator_dealloc_filename_list(
  Generates an instrumented version of a given functional unit.
 */
 static void generator_output_funits(
-  const char* output_dir,  /*!< Output directory */
   fname_link* head         /*!< Pointer to the head of the filename list */
 ) { PROFILE(GENERATOR_OUTPUT_FUNIT);
 
@@ -825,7 +824,7 @@ static void generator_output_funits(
     funit_link*  funitl;
 
     /* Create the output file pathname */
-    rv = snprintf( filename, 4096, "%s/verilog/%s", output_dir, get_basename( head->filename ) );
+    rv = snprintf( filename, 4096, "%s/verilog/%s", get_cdd(), get_basename( head->filename ) );
     assert( rv < 4096 );
 
     /* Output the name to standard output */
@@ -843,7 +842,7 @@ static void generator_output_funits(
     /* Open the output file for writing */
     if( (curr_ofile = fopen( filename, "w" )) != NULL ) {
 
-      rv = snprintf( filename, 4096, "%s/verilog", output_dir );
+      rv = snprintf( filename, 4096, "%s/verilog", get_cdd() );
       assert( rv < 4096 );
 
       /* Parse the original code and output inline coverage code */
@@ -880,9 +879,7 @@ static void generator_output_funits(
 /*!
  Outputs the covered portion of the design to the /verilog directory.
 */
-void generator_output(
-  const char* output_dir  /*!< Output directory */
-) { PROFILE(GENERATOR_OUTPUT);
+void generator_output() { PROFILE(GENERATOR_OUTPUT);
 
   fname_link* fname_head = NULL;  /* Pointer to head of filename linked list */
   fname_link* fname_tail = NULL;  /* Pointer to tail of filename linked list */
@@ -899,7 +896,7 @@ void generator_output(
   generator_create_filename_list( db_list[curr_db]->funit_head, &fname_head, &fname_tail );
 
   /* Iterate through the covered files, generating coverage output along with the design information */
-  generator_output_funits( output_dir, fname_head );
+  generator_output_funits( fname_head );
 
   /* Deallocate memory from filename list */
   generator_dealloc_filename_list( fname_head );

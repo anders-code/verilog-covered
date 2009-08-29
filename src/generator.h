@@ -84,9 +84,7 @@ char* generator_create_expr_name(
 );
 
 /*! \brief Generates Verilog containing coverage instrumentation */
-void generator_output(
-  const char* output_dir
-);
+void generator_output();
 
 /*! \brief Initializes and resets the functional unit iterator. */
 void generator_init_funit(

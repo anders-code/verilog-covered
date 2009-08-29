@@ -123,22 +123,47 @@ cov_db* cov_db_create() { PROFILE(COV_DB_CREATE);
 */
 ulong cov_db_get_ul_index(
   ulong* addr  /*!< Address of the ul entry in the ul array */
-) { PROFILE(COV_DB_GET_INDEX);
+) { PROFILE(COV_DB_GET_UL_INDEX);
+
+  ulong index;
+
+  if( cov_db_list == NULL ) {
+    index = UL_SET;
+  } else {
+    index = (ulong)(addr - cov_db_list[0]->ul);
+  }
 
   PROFILE_END;
 
-  return( (ulong)(addr - cov_db_list[0]->ul) );
+  return( index );
 
 } 
 
 /*!
  Adds coverage data to the coverage database for the specified vector.
 */
-void cov_db_add_vector(
-  vector* vec  /*!< Pointer to vector to add coverage information for */
+static void cov_db_add_vector(
+  const vector* vec  /*!< Pointer to vector to add coverage information for */
 ) { PROFILE(COV_DB_ADD_VECTOR);
 
-  if( vec->suppl.part.data_type == VDATA_UL ) {
+  if( (vec->suppl.part.data_type == VDATA_UL) && (vec->suppl.part.type != VTYPE_VAL) ) {
+    cov_db_list[0]->ul_num += UL_SIZE( vec->width ) * vector_type_sizes[vec->suppl.part.type];
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Resizes the given vector (occurs when an expression is resized to match signal width.
+*/
+void cov_db_resize_vector(
+  unsigned int  orig_width,  /*!< Original bit width of the vector */
+  const vector* vec          /*!< Pointer to vector to add coverage information for */
+) { PROFILE(COV_DB_RESIZE_VECTOR);
+
+  if( (vec->suppl.part.data_type == VDATA_UL) && (vec->suppl.part.type != VTYPE_VAL) ) {
+    cov_db_list[0]->ul_num -= UL_SIZE( orig_width ) * vector_type_sizes[vec->suppl.part.type];
     cov_db_list[0]->ul_num += UL_SIZE( vec->width ) * vector_type_sizes[vec->suppl.part.type];
   }
 
@@ -150,7 +175,7 @@ void cov_db_add_vector(
  Adds coverage data to the coverage database for the specified FSM.
 */
 void cov_db_add_fsm(
-  fsm* table  /*!< Pointer to FSM structure to parse */
+  const fsm* table  /*!< Pointer to FSM structure to parse */
 ) { PROFILE(COV_DB_ADD_FSM);
 
   /* TBD */
@@ -163,11 +188,13 @@ void cov_db_add_fsm(
  Adds coverage data to the coverage database for the specified expression.
 */
 void cov_db_add_expr(
-  expression* expr  /*!< Pointer to expression to add coverage for */
+  const expression* expr  /*!< Pointer to expression to add coverage for */
 ) { PROFILE(COV_DB_ADD_EXPR);
 
+  printf( "In cov_db_add_expr...\n" );
+
   /* Update the coverage and set the current expression's ID */
-  expr->id = cov_db_list[0]->u8_num++;
+  cov_db_list[0]->u8_num++;
 
   if( EXPR_OWNS_VEC( expr->op ) ) {
     cov_db_add_vector( expr->value );
@@ -181,7 +208,7 @@ void cov_db_add_expr(
  Adds coverage data to the coverage database for the specified signal.
 */
 void cov_db_add_sig(
-  vsignal* sig  /*!< Pointer to signal to add coverage for */
+  const vsignal* sig  /*!< Pointer to signal to add coverage for */
 ) { PROFILE(COV_DB_ADD_SIG);
 
   cov_db_add_vector( sig->value );
@@ -194,25 +221,35 @@ void cov_db_add_sig(
  Writes coverage database file to the specified coverage file.
 */
 void cov_db_write(
-  FILE*   ofile,  /*!< Pointer to file to output file to write */
-  cov_db* cdb     /*!< Pointer to coverage database structure to write */
+  const char* odb  /*!< Name of output coverage database file */
 ) { PROFILE(COV_DB_WRITE);
 
+  FILE*        ofile;
   unsigned int i;
 
-  fprintf( ofile, "%u", cdb->ul_num );
+  if( (ofile = fopen( odb, "r" )) != NULL ) { 
 
-  for( i=0; i<cdb->ul_num; i++ ) {
-    fprintf( ofile, " %lx", cdb->ul[i] );
+    fprintf( ofile, "%u", cov_db_list[0]->ul_num );
+
+    for( i=0; i<cov_db_list[0]->ul_num; i++ ) {
+      fprintf( ofile, " %lx", cov_db_list[0]->ul[i] );
+    }
+
+    fprintf( ofile, "\n%u", cov_db_list[0]->u8_num );
+
+    for( i=0; i<cov_db_list[0]->u8_num; i++ ) {
+      fprintf( ofile, " %lx", cov_db_list[0]->u8[i] );
+    }
+
+    fprintf( ofile, "\n" );
+
+  } else {
+
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to write coverage database file \"%s\"", odb );
+    assert( rv < USER_MSG_LENGTH );
+    Throw 0;
+
   }
-
-  fprintf( ofile, "\n%u", cdb->u8_num );
-
-  for( i=0; i<cdb->u8_num; i++ ) {
-    fprintf( ofile, " %lx", cdb->u8[i] );
-  }
-
-  fprintf( ofile, "\n" );
 
   PROFILE_END;
 

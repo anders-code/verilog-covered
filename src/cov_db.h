@@ -50,10 +50,30 @@ ulong cov_db_get_ul_index(
   ulong* addr
 );
 
+/*! \brief Resizes the given vector (occurs when an expression is resized to match signal width */
+void cov_db_resize_vector( 
+  unsigned int  orig_width,
+  const vector* vec
+);
+
+/*! \brief Adds coverage data to the coverage database for the specified FSM */
+void cov_db_add_fsm(
+  const fsm* table
+);
+ 
+/*! \brief Adds coverage data to the coverage database for the specified expression */
+void cov_db_add_expr(
+  const expression* expr
+);
+  
+/*! \brief Adds coverage data to the coverage database for the specified signal */
+void cov_db_add_sig(
+  const vsignal* sig
+);
+
 /*! \brief Writes the contents of the given coverage database. */
 void cov_db_write(
-  FILE*   ofile,
-  cov_db* cdb
+  const char* odb
 );
 
 /*!

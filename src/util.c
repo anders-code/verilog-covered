@@ -878,6 +878,26 @@ char* substitute_env_vars(
 }
 
 /*!
+ \return Returns the name of the CDD from the environment.
+*/
+char* get_cdd() { PROFILE(GET_CDD);
+
+  static char* cdd_name      = NULL;
+  static char* dflt_cdd_name = DFLT_OUTPUT_CDD;
+
+  if( cdd_name == NULL ) {
+    if( (cdd_name = getenv( "COVERED_DB_DIR" )) == NULL ) {
+      cdd_name = dflt_cdd_name;
+    }
+  }
+
+  PROFILE_END;
+
+  return( cdd_name );
+
+}
+
+/*!
  Extracts the highest level of hierarchy from the specified scope,
  returning that instance name to the value of front and the the
  rest of the hierarchy in the value of rest.
