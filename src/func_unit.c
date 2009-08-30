@@ -585,7 +585,7 @@ void funit_db_write(
     }
   
     /*@-duplicatequals -formattype@*/
-    fprintf( file, "%d %d %s \"%s\" %d %s %d %d %llu\n",
+    fprintf( file, "%d %d %s \"%s\" %d %s %d %d %" FMT64 "u\n",
       DB_TYPE_FUNIT,
       funit->type,
       modname,
@@ -719,8 +719,8 @@ void funit_db_read(
   int  params;       /* Number of parameters in string that were parsed */
 
   /*@-duplicatequals -formattype@*/
-  if( (params = sscanf( *line, "%d %s \"%[^\"]\" %d %s %d %d %llu%n", 
-                        &(funit->type), funit->name, scope, name_diff, funit->filename,
+  if( (params = sscanf( *line, "%d %s \"%[^\"]\" %d %s %d %d %" FMT64 "u%n", 
+                        &(funit->type), funit->name, scope, (int*)name_diff, funit->filename,
                         &(funit->start_line), &(funit->end_line), &(funit->timescale), &chars_read )) == 8 ) {
   /*@=duplicatequals =formattype@*/
 

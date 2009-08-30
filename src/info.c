@@ -159,7 +159,7 @@ void info_db_write(
   info_set_vector_elem_size();
 
   /*@-formattype -duplicatequals@*/
-  fprintf( file, "%d %x %x %llu %s\n",
+  fprintf( file, "%d %x %x %" FMT64 "u %s\n",
            DB_TYPE_INFO,
            CDD_VERSION,
            info_suppl.all,
@@ -254,7 +254,7 @@ bool info_db_read(
     }
 
     /*@-formattype -duplicatequals@*/
-    if( sscanf( *line, "%x %llu %s%n", &(info.all), &num_timesteps, tmp, &chars_read ) == 3 ) {
+    if( sscanf( *line, "%x %" FMT64 "u %s%n", &(info.all), &num_timesteps, tmp, &chars_read ) == 3 ) {
     /*@=formattype =duplicatequals@*/
 
       *line = *line + chars_read;
