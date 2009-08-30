@@ -238,7 +238,7 @@ void cov_db_write(
     fprintf( ofile, "\n%u", cov_db_list[0]->u8_num );
 
     for( i=0; i<cov_db_list[0]->u8_num; i++ ) {
-      fprintf( ofile, " %lx", cov_db_list[0]->u8[i] );
+      fprintf( ofile, " %" FMT8 "x", cov_db_list[0]->u8[i] );
     }
 
     fprintf( ofile, "\n" );

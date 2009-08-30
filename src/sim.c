@@ -183,7 +183,7 @@ void sim_display_thread(
   }
 
   /*@-duplicatequals -formattype@*/
-  printf( "time %llu, ", thr->curr_time.full );
+  printf( "time %" FMT64 "u, ", thr->curr_time.full );
   /*@=duplicatequals =formattype@*/
 
   if( thr->curr == NULL ) {
@@ -343,7 +343,7 @@ void sim_thread_insert_into_delay_queue(
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    printf( "Before delay thread is inserted for time %llu...\n", time->full );
+    printf( "Before delay thread is inserted for time %" FMT64 "u...\n", time->full );
   }
 #endif
 
@@ -502,7 +502,7 @@ void sim_expr_changed(
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d, time: %llu",
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d, time: %" FMT64 "u",
                                   expr->id, expression_string_op( expr->op ), expr->line,
                                   ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
                                   ESUPPL_IS_RIGHT_CHANGED( expr->suppl ),
@@ -546,7 +546,7 @@ void sim_expr_changed(
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d, time: %llu",
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d, time: %" FMT64 "u",
                                   expr->id, expression_string_op( expr->op ), expr->line,
                                   ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
                                   ESUPPL_IS_RIGHT_CHANGED( expr->suppl ),

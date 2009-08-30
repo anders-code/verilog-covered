@@ -1597,32 +1597,32 @@ char* timer_to_string(
   /* If the time is less than a minute, output the seconds and milliseconds */
   if( tm->total < 10 ) {
     /*@-duplicatequals -formattype@*/
-    unsigned int rv = snprintf( str, 33, "0.00000%1llu seconds", tm->total );
+    unsigned int rv = snprintf( str, 33, "0.00000%1" FMT64 "u seconds", tm->total );
     /*@=duplicatequals =formattype@*/
     assert( rv < 33 );
   } else if( tm->total < 100 ) {
     /*@-duplicatequals -formattype@*/
-    unsigned int rv = snprintf( str, 33, "0.0000%1llu seconds", (tm->total / 10) ); 
+    unsigned int rv = snprintf( str, 33, "0.0000%1" FMT64 "u seconds", (tm->total / 10) ); 
     /*@=duplicatequals =formattype@*/
     assert( rv < 33 );
   } else if( tm->total < 1000 ) {
     /*@-duplicatequals -formattype@*/
-    unsigned int rv = snprintf( str, 33, "0.000%1llu seconds", (tm->total / 100) );
+    unsigned int rv = snprintf( str, 33, "0.000%1" FMT64 "u seconds", (tm->total / 100) );
     /*@=duplicatequals =formattype@*/
     assert( rv < 33 );
   } else if( tm->total < 60000000 ) {
     /*@-duplicatequals -formattype@*/
-    unsigned int rv = snprintf( str, 33, "%2llu.%03llu seconds", (tm->total / 1000000), ((tm->total % 1000000) / 1000) );
+    unsigned int rv = snprintf( str, 33, "%2" FMT64 "u.%03" FMT64 "u seconds", (tm->total / 1000000), ((tm->total % 1000000) / 1000) );
     /*@=duplicatequals =formattype@*/
     assert( rv < 33 );
   } else if( tm->total < 3600000000LL ) {
     /*@-duplicatequals -formattype@*/
-    unsigned int rv = snprintf( str, 33, "%2llu minutes, %2llu seconds", (tm->total / 60000000), ((tm->total % 60000000) / 1000000) );
+    unsigned int rv = snprintf( str, 33, "%2" FMT64 "u minutes, %2" FMT64 "u seconds", (tm->total / 60000000), ((tm->total % 60000000) / 1000000) );
     /*@=duplicatequals =formattype@*/
     assert( rv < 33 );
   } else {
     /*@-duplicatequals -formattype@*/
-    unsigned int rv = snprintf( str, 33, "%2llu hours, %2llu minutes, %2llu seconds", 
+    unsigned int rv = snprintf( str, 33, "%2llu hours, %2llu minutes, %2" FMT64 "u seconds", 
                                 (tm->total / 3600000000LL), ((tm->total % 3600000000LL) / 60000000), ((tm->total % 60000000) / 1000000) );
     /*@=duplicatequals =formattype@*/
     assert( rv < 33 );

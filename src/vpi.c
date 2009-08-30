@@ -312,9 +312,6 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
   /* Perform one last simulation timestep */
   (void)db_do_timestep( 0, TRUE );
 
-  /* Indicate that this CDD contains scored information */
-  info_suppl.part.scored = 1;
-
   /* Write contents to database file */
   Try {
     db_write( out_db_name, FALSE, FALSE );
@@ -424,13 +421,10 @@ void covered_create_value_change_cb(
 
   /* Only add the signal if it is in our database and needs to be assigned from the simulator */
   if( (curr_instance->funit != NULL) &&
-      (((((vsigl = sig_link_find( name, curr_instance->funit->sig_head )) != NULL) ||
-         scope_find_signal( name, curr_instance->funit, &vsig, &found_funit, 0 )) &&
-        (((vsigl != NULL) && (vsigl->sig->suppl.part.assigned == 0)) ||
-         ((vsig != NULL) && (vsig->suppl.part.assigned == 0)) || info_suppl.part.inlined)) ||
-       (info_suppl.part.inlined &&
-        (((strncmp( name, "\\covered$", 9 ) == 0) && (name[9] != 'x') && (name[9] != 'X') && (name[9] != 'i') && (name[9] != 'I') && (name[9] != 'Z')) ||
-         ((strncmp( name, "covered$",   8 ) == 0) && (name[8] != 'x') && (name[8] != 'X') && (name[8] != 'i') && (name[8] != 'I') && (name[8] != 'Z'))))) ) {
+      ((((vsigl = sig_link_find( name, curr_instance->funit->sig_head )) != NULL) ||
+         scope_find_signal( name, curr_instance->funit, &vsig, &found_funit, 0 )) ||
+       (((strncmp( name, "\\covered$", 9 ) == 0) && (name[9] != 'x') && (name[9] != 'X') && (name[9] != 'i') && (name[9] != 'I') && (name[9] != 'Z')) ||
+        ((strncmp( name, "covered$",   8 ) == 0) && (name[8] != 'x') && (name[8] != 'X') && (name[8] != 'i') && (name[8] != 'I') && (name[8] != 'Z')))) ) {
 
     if( vsigl != NULL ) {
       vsig = vsigl->sig;
