@@ -686,15 +686,16 @@ static void rank_gather_signal_cov(
         comp_cov->cps[CP_TYPE_TOGGLE][UL_DIV(index)] |= (ulong)0x1 << UL_MOD(index);
       }
     } else {
+      int num = vector_get_type_size( sig->value->suppl.part.type );
       switch( sig->value->suppl.part.data_type ) {
         case VDATA_UL :
           for( i=0; i<sig->value->width; i++ ) {
             uint64 index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
             rank_check_index( CP_TYPE_TOGGLE, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_TOGGLE][UL_DIV(index)] |= ((sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_SIG_TOG01] >> UL_MOD(i)) & (ulong)0x1) << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_TOGGLE][UL_DIV(index)] |= ((sig->value->value.ul[(UL_DIV(i)*num)+VTYPE_INDEX_SIG_TOG01] >> UL_MOD(i)) & (ulong)0x1) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_TOGGLE]++;
             rank_check_index( CP_TYPE_TOGGLE, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_TOGGLE][UL_DIV(index)] |= ((sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_SIG_TOG10] >> UL_MOD(i)) & (ulong)0x1) << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_TOGGLE][UL_DIV(index)] |= ((sig->value->value.ul[(UL_DIV(i)*num)+VTYPE_INDEX_SIG_TOG10] >> UL_MOD(i)) & (ulong)0x1) << UL_MOD(index);
           }
         break;
         default :  assert( 0 );  break;
@@ -751,15 +752,16 @@ static void rank_gather_signal_cov(
         comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= (ulong)0x1 << UL_MOD(index);
       }
     } else {
+      int num = vector_get_type_size( sig->value->suppl.part.type );
       switch( sig->value->suppl.part.data_type ) {
         case VDATA_UL :
           for( i=0; i<sig->value->width; i++ ) {  
             uint64 index = comp_cov->cps_index[CP_TYPE_MEM]++;
             rank_check_index( CP_TYPE_MEM, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= ((sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_MEM_TOG01] >> UL_MOD(i)) & (ulong)0x1) << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= ((sig->value->value.ul[(UL_DIV(i)*num)+VTYPE_INDEX_MEM_TOG01] >> UL_MOD(i)) & (ulong)0x1) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_MEM]++;
             rank_check_index( CP_TYPE_MEM, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= ((sig->value->value.ul[UL_DIV(i)][VTYPE_INDEX_MEM_TOG10] >> UL_MOD(i)) & (ulong)0x1) << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_MEM][UL_DIV(index)] |= ((sig->value->value.ul[(UL_DIV(i)*num)+VTYPE_INDEX_MEM_TOG10] >> UL_MOD(i)) & (ulong)0x1) << UL_MOD(index);
           }
           break;
         default :  assert( 0 );  break;

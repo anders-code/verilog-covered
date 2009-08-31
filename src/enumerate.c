@@ -126,7 +126,7 @@ void enumerate_resolve(
         (void)vector_from_int( ei->sig->value, ei->value->num );
       } else {
         param_expr_eval( ei->value->exp, inst );
-        (void)vector_set_value_ulong( ei->sig->value, ei->value->exp->value->value.ul, ei->sig->value->width );
+        (void)vector_set_value_ulong( ei->sig->value, ei->value->exp->value->value.ul, ei->sig->value->width, ei->sig->value->suppl.part.type );
       }
 
     }

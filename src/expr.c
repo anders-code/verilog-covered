@@ -899,7 +899,7 @@ void expression_set_value(
 
     /* Allocate a vector for this expression */
     if( exp->value->value.ul != NULL ) {
-      vector_dealloc_value( exp->value );
+      vector_dealloc_value( exp->value, FALSE );
     }
     expression_create_value( exp, exp_width, TRUE );
 
@@ -1542,7 +1542,9 @@ void expression_db_write(
 
   /* If we are scoring, update the coverage database */
   if( scoring ) {
-    cov_db_list[0]->u8[expr->id] = expr->cov.all;
+    assert( (expr->id - 1) < cov_db_list[0]->u8_num );
+    cov_db_list[0]->u8[expr->id-1] = expr->cov.all;
+    // printf( "Setting coverage of %s to %d\n", expression_string( expr ), expr->cov.all );
   }
 
   PROFILE_END;
@@ -1897,7 +1899,7 @@ void expression_display(
     printf( "NO DATA VECTOR" );
   } else {
     switch( expr->value->suppl.part.data_type ) {
-      case VDATA_UL  :  vector_display_value_ulong( expr->value->value.ul, expr->value->width );  break;
+      case VDATA_UL  :  vector_display_value_ulong( expr->value->value.ul, expr->value->width, expr->value->suppl.part.type );  break;
       case VDATA_R64 :
         if( expr->value->value.r64->str != NULL ) {
           printf( "%s", expr->value->value.r64->str );
@@ -2997,7 +2999,7 @@ bool expression_op_func__sassign(
   bool retval;
 
   switch( expr->value->suppl.part.data_type ) {
-    case VDATA_UL  :  retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );  break;
+    case VDATA_UL  :  retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width, expr->right->value->suppl.part.type );  break;
     case VDATA_R64 :
       {
         double real = expr->right->value->value.r64->val;
@@ -3770,7 +3772,7 @@ bool expression_op_func__cond(
   /* Simple vector copy from right side and gather coverage information */
   switch( expr->value->suppl.part.data_type ) {
     case VDATA_UL :
-      retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
+      retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width, expr->right->value->suppl.part.type );
       break;
     case VDATA_R64 :
       retval = !DEQ( expr->value->value.r64->val, expr->right->value->value.r64->val );
@@ -3810,9 +3812,9 @@ bool expression_op_func__cond_sel(
     case VDATA_UL :
       if( !vector_is_unknown( expr->parent->expr->left->value ) ) {
         if( !vector_is_not_zero( expr->parent->expr->left->value ) ) {
-          retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
+          retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width, expr->right->value->suppl.part.type );
         } else {
-          retval = vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );
+          retval = vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width, expr->left->value->suppl.part.type );
         }
       } else {
         retval = vector_set_to_x( expr->value );
@@ -4298,7 +4300,7 @@ bool expression_op_func__concat(
 ) { PROFILE(EXPRESSION_OP_FUNC__CONCAT);
 
   /* Perform concatenation operation */
-  bool retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
+  bool retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width, expr->right->value->suppl.part.type );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
@@ -4322,10 +4324,10 @@ bool expression_op_func__pedge(
 ) { PROFILE(EXPRESSION_OP_FUNC__PEDGE);
 
   bool   retval;   /* Return value for this function */
-  ulong  nvall = expr->right->value->value.ul[0][VTYPE_INDEX_EXP_VALL];
-  ulong  nvalh = expr->right->value->value.ul[0][VTYPE_INDEX_EXP_VALH];
-  ulong* ovall = &(expr->elem.tvecs->vec[0].value.ul[0][VTYPE_INDEX_EXP_VALL]);
-  ulong* ovalh = &(expr->elem.tvecs->vec[0].value.ul[0][VTYPE_INDEX_EXP_VALH]);
+  ulong  nvall = expr->right->value->value.ul[0+VTYPE_INDEX_EXP_VALL];
+  ulong  nvalh = expr->right->value->value.ul[0+VTYPE_INDEX_EXP_VALH];
+  ulong* ovall = &(expr->elem.tvecs->vec[0].value.ul[0+VTYPE_INDEX_EXP_VALL]);
+  ulong* ovalh = &(expr->elem.tvecs->vec[0].value.ul[0+VTYPE_INDEX_EXP_VALH]);
 
   if( ((*ovalh | ~(*ovall)) & (~nvalh & nvall)) && thr->suppl.part.exec_first ) {
     expr->cov.part.true     = 1;
@@ -4358,10 +4360,10 @@ bool expression_op_func__nedge(
 ) { PROFILE(EXPRESSION_OP_FUNC__NEDGE);
 
   bool   retval;   /* Return value for this function */
-  ulong  nvall = expr->right->value->value.ul[0][VTYPE_INDEX_EXP_VALL];
-  ulong  nvalh = expr->right->value->value.ul[0][VTYPE_INDEX_EXP_VALH];
-  ulong* ovall = &(expr->elem.tvecs->vec[0].value.ul[0][VTYPE_INDEX_EXP_VALL]);
-  ulong* ovalh = &(expr->elem.tvecs->vec[0].value.ul[0][VTYPE_INDEX_EXP_VALH]);
+  ulong  nvall = expr->right->value->value.ul[0+VTYPE_INDEX_EXP_VALL];
+  ulong  nvalh = expr->right->value->value.ul[0+VTYPE_INDEX_EXP_VALH];
+  ulong* ovall = &(expr->elem.tvecs->vec[0].value.ul[0+VTYPE_INDEX_EXP_VALL]);
+  ulong* ovalh = &(expr->elem.tvecs->vec[0].value.ul[0+VTYPE_INDEX_EXP_VALH]);
 
   if( ((*ovalh | *ovall) & (~nvalh & ~nvall)) && thr->suppl.part.exec_first ) {
     expr->cov.part.true     = 1;
@@ -4565,8 +4567,8 @@ bool expression_op_func__trigger(
 ) { PROFILE(EXPRESSION_OP_FUNC__TRIGGER);
 
   /* Indicate that we have triggered */
-  expr->sig->value->value.ul[0][VTYPE_INDEX_SIG_VALL] = 1;
-  expr->sig->value->value.ul[0][VTYPE_INDEX_SIG_VALH] = 0;
+  expr->sig->value->value.ul[0+VTYPE_INDEX_SIG_VALL] = 1;
+  expr->sig->value->value.ul[0+VTYPE_INDEX_SIG_VALH] = 0;
 
   /* Propagate event */
   vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
@@ -4761,7 +4763,7 @@ bool expression_op_func__func_call(
 
   /* Then copy the function variable to this expression */
   switch( expr->value->suppl.part.data_type ) {
-    case VDATA_UL  :  retval = vector_set_value_ulong( expr->value, expr->sig->value->value.ul, expr->value->width );  break;
+    case VDATA_UL  :  retval = vector_set_value_ulong( expr->value, expr->sig->value->value.ul, expr->value->width, expr->value->suppl.part.type );  break;
     case VDATA_R64 :  retval = vector_from_real64( expr->value, expr->sig->value->value.r64->val );  break;
     case VDATA_R32 :  retval = vector_from_real64( expr->value, (double)expr->sig->value->value.r32->val );  break;
     default        :  assert( 0 );  break;
@@ -4913,7 +4915,7 @@ bool expression_op_func__repeat(
 
   retval = vector_op_lt( expr->value, expr->left->value, expr->right->value );
 
-  if( expr->value->value.ul[0][VTYPE_INDEX_VAL_VALL] == 0 ) {
+  if( expr->value->value.ul[0+VTYPE_INDEX_VAL_VALL] == 0 ) {
     (void)vector_from_int( expr->left->value, 0 );
   } else {
     (void)vector_from_int( expr->left->value, (vector_to_int( expr->left->value ) + 1) );
@@ -5005,7 +5007,7 @@ bool expression_op_func__passign(
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT_NET :
     case SSUPPL_TYPE_INPUT_REG :
-      retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
+      retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width, expr->right->value->suppl.part.type );
       vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
       break;
 
@@ -5219,7 +5221,7 @@ bool expression_op_func__iinc(
 
   /* Assign the left value to our value */
   switch( expr->left->value->suppl.part.data_type ) {
-    case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );  break;
+    case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width, expr->left->value->suppl.part.type );  break;
     case VDATA_R64 :  expr->value->value.r64->val = expr->left->value->value.r64->val;  break;
     case VDATA_R32 :  expr->value->value.r32->val = expr->left->value->value.r32->val;  break;
     default        :  assert( 0 );  break;
@@ -5253,7 +5255,7 @@ bool expression_op_func__pinc(
 
   /* Copy the left-hand value to our expression */
   switch( expr->left->value->suppl.part.data_type ) {
-    case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );  break;
+    case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width, expr->left->value->suppl.part.type );  break;
     case VDATA_R64 :  expr->value->value.r64->val = expr->left->value->value.r64->val;  break;
     case VDATA_R32 :  expr->value->value.r32->val = expr->left->value->value.r32->val;  break;
     default        :  assert( 0 );  break;
@@ -5305,7 +5307,7 @@ bool expression_op_func__idec(
 
   /* Copy the left-hand value to our expression */
   switch( expr->left->value->suppl.part.data_type ) {
-    case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );  break;
+    case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width, expr->left->value->suppl.part.type );  break;
     case VDATA_R64 :  expr->value->value.r64->val = expr->left->value->value.r64->val;  break;
     case VDATA_R32 :  expr->value->value.r32->val = expr->left->value->value.r32->val;  break;
     default        :  assert( 0 );  break;
@@ -5339,7 +5341,7 @@ bool expression_op_func__pdec(
 
   /* Copy the left-hand value to our expression */
   switch( expr->left->value->suppl.part.data_type ) {
-    case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );  break;
+    case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width, expr->left->value->suppl.part.type );  break;
     case VDATA_R64 :  expr->value->value.r64->val = expr->left->value->value.r64->val;  break;
     case VDATA_R32 :  expr->value->value.r32->val = expr->left->value->value.r32->val;  break;
     default        :  assert( 0 );  break;
@@ -5418,7 +5420,7 @@ bool expression_op_func__dly_op(
 
   /* If we are not waiting for the delay to occur, copy the contents of the operation */
   if( !thr->suppl.part.exec_first ) {
-    (void)vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
+    (void)vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width, expr->right->value->suppl.part.type );
   }
 
   /* Explicitly call the delay/event.  If the delay is complete, set eval_t to TRUE */
@@ -5454,7 +5456,7 @@ bool expression_op_func__repeat_dly(
     (void)expression_op_func__repeat( expr->left, thr, time );
 
     /* If the repeat operation evaluated to TRUE, perform delay operation */
-    if( expr->left->value->value.ul[0][VTYPE_INDEX_VAL_VALL] == 1 ) {
+    if( expr->left->value->value.ul[0+VTYPE_INDEX_VAL_VALL] == 1 ) {
       (void)exp_op_info[expr->right->op].func( expr->right, thr, time );
       expr->suppl.part.eval_t = 0;
 

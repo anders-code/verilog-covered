@@ -100,8 +100,9 @@ static void reentrant_store_data_bits(
         case VDATA_UL :
           {
             unsigned int i;
+            int          num = vector_get_type_size( sigl->sig->value->suppl.part.type );
             for( i=0; i<sigl->sig->value->width; i++ ) {
-              ulong* entry = sigl->sig->value->value.ul[UL_DIV(i)];
+              ulong* entry = sigl->sig->value->value.ul + (UL_DIV(i)*num);
               ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
               curr_bit++;
               ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
@@ -147,8 +148,9 @@ static void reentrant_store_data_bits(
         switch( expl->exp->value->suppl.part.data_type ) {
           case VDATA_UL :
             {
+              int num = vector_get_type_size( expl->exp->value->suppl.part.type );
               for( i=0; i<expl->exp->value->width; i++ ) {
-                ulong* entry = expl->exp->value->value.ul[UL_DIV(i)];
+                ulong* entry = expl->exp->value->value.ul + (UL_DIV(i)*num);
                 ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
                 curr_bit++;
                 ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
@@ -233,8 +235,9 @@ static void reentrant_restore_data_bits(
         case VDATA_UL :
           {
             unsigned int i;
+            int          num = vector_get_type_size( sigl->sig->value->suppl.part.type );
             for( i=0; i<sigl->sig->value->width; i++ ) {
-              ulong* entry = sigl->sig->value->value.ul[UL_DIV(i)];
+              ulong* entry = sigl->sig->value->value.ul + (UL_DIV(i)*num);
               if( UL_MOD(i) == 0 ) {
                 entry[VTYPE_INDEX_VAL_VALL] = 0;
                 entry[VTYPE_INDEX_VAL_VALH] = 0;
@@ -286,8 +289,9 @@ static void reentrant_restore_data_bits(
             case VDATA_UL :
               {
                 unsigned int i;
+                int          num = vector_get_type_size( expl->exp->value->suppl.part.type );
                 for( i=0; i<expl->exp->value->width; i++ ) {
-                  ulong* entry = expl->exp->value->value.ul[UL_DIV(i)];
+                  ulong* entry = expl->exp->value->value.ul + (UL_DIV(i)*num);
                   if( UL_MOD(i) == 0 ) {
                     entry[VTYPE_INDEX_VAL_VALL] = 0;
                     entry[VTYPE_INDEX_VAL_VALH] = 0;

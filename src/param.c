@@ -611,7 +611,7 @@ static inst_parm* inst_parm_add(
       /* Copy the contents of the specified vector value to the signal */
       switch( value->suppl.part.data_type ) {
         case VDATA_UL :
-          (void)vector_set_value_ulong( iparm->sig->value, value->value.ul, value->width );
+          (void)vector_set_value_ulong( iparm->sig->value, value->value.ul, value->width, value->suppl.part.type );
           break;
         case VDATA_R64 :
           (void)vector_from_real64( iparm->sig->value, value->value.r64->val );

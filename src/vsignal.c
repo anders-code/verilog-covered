@@ -361,6 +361,11 @@ void vsignal_db_read(
       sig_link_add( sig, TRUE, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
     }
 
+    /* If we are scoring, update the coverage database counters */
+    if( !use_cov ) {
+      cov_db_add_sig( sig );
+    }
+
   } else {
 
     print_output( "Unable to parse signal line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
@@ -608,7 +613,7 @@ void vsignal_display(
   }
 
   switch( sig->value->suppl.part.data_type ) {
-    case VDATA_UL  :  vector_display_value_ulong( sig->value->value.ul, sig->value->width );  break;
+    case VDATA_UL  :  vector_display_value_ulong( sig->value->value.ul, sig->value->width, sig->value->suppl.part.type );  break;
     case VDATA_R64 :  printf( "%.16lf", sig->value->value.r64->val );  break;
     case VDATA_R32 :  printf( "%.16f", sig->value->value.r32->val );  break;
     default        :  assert( 0 );  break;

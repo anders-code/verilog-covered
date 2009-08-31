@@ -242,6 +242,8 @@ void parse_and_score_dumpfile(
   char*        odb  = (char*)malloc_safe( olen );
   unsigned int ilen = strlen( get_cdd() ) + 11;
   char*        idb  = (char*)malloc_safe( ilen );
+  unsigned int mlen = strlen( get_cdd() ) + 23;
+  char*        mdb  = (char*)malloc_safe( mlen );
 
   assert( dump_file != NULL );
 
@@ -252,6 +254,10 @@ void parse_and_score_dumpfile(
   /* Input database */
   rv = snprintf( idb, ilen, "%s/db/cov.db", get_cdd() );
   assert( rv < ilen );
+
+  /* Merged database */
+  rv = snprintf( mdb, mlen, "%s/cov/merged/merged.cdb", get_cdd() );
+  assert( rv < mlen );
 
   /* Allocate the coverage database */
   cov_db_add();
@@ -307,17 +313,34 @@ void parse_and_score_dumpfile(
     /* Indicate that this CDD contains scored information */
     // info_suppl.part.scored = 1;
 
-    /* Write contents to database file */
-    // db_write( db, FALSE, FALSE );
+    /*
+     Write contents to database file - TBD - This step should be unnecessary when expression sizing is fixed for
+     hierarchical references.
+    */
+    db_write( idb, FALSE, FALSE, TRUE );
 
     /* Write the coverage file */
     cov_db_write( odb );
+ 
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "\nUpdating merged coverage file \"%s\"", mdb );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+    /* Merge with the "merged.cdb" file in the "merged" directory, if it exists */
+    if( file_exists( mdb ) ) {
+      cov_db_read( mdb );
+      cov_db_merge();
+    }
+
+    /* Write the merged coverage file */
+    cov_db_write( mdb );
 
   } Catch_anonymous {
     sim_dealloc();
     cov_db_close();
     free_safe( odb, olen );
     free_safe( idb, ilen );
+    free_safe( mdb, mlen );
     Throw 0;
   }
 
@@ -329,6 +352,7 @@ void parse_and_score_dumpfile(
 
   free_safe( odb, olen );
   free_safe( idb, ilen );
+  free_safe( mdb, mlen );
 
   PROFILE_END;
 

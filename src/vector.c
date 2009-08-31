@@ -56,6 +56,15 @@
 const unsigned int vector_type_sizes[4] = {VTYPE_INDEX_VAL_NUM, VTYPE_INDEX_SIG_NUM, VTYPE_INDEX_EXP_NUM, VTYPE_INDEX_MEM_NUM};
 
 
+/*! \brief Returns the size of the given vector type */
+int vector_get_type_size(
+  uint8 type
+) {
+
+  return( vector_type_sizes[type] );
+
+}
+
 /*!
  Initializes the specified vector with the contents of width
  and value (if value != NULL).  If value != NULL, initializes all contents 
@@ -63,7 +72,7 @@ const unsigned int vector_type_sizes[4] = {VTYPE_INDEX_VAL_NUM, VTYPE_INDEX_SIG_
 */
 void vector_init_ulong(
   vector* vec,         /*!< Pointer to vector to initialize */
-  ulong** value,       /*!< Pointer to vec_data array for vector */
+  ulong*  value,       /*!< Pointer to vec_data array for vector */
   ulong   data_l,      /*!< Initial value to set each lower data value to */
   ulong   data_h,      /*!< Initial value to set each upper data value to */
   bool    owns_value,  /*!< Set to TRUE if this vector is responsible for deallocating the given value array */
@@ -88,17 +97,17 @@ void vector_init_ulong(
     assert( width > 0 );
 
     for( i=0; i<(size - 1); i++ ) {
-      vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = data_l;
-      vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = data_h;
+      vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] = data_l;
+      vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] = data_h;
       for( j=2; j<num; j++ ) {
-        vec->value.ul[i][j] = 0x0;
+        vec->value.ul[(i*num)+j] = 0x0;
       }
     }
 
-    vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = data_l & lmask;
-    vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = data_h & lmask;
+    vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] = data_l & lmask;
+    vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] = data_h & lmask;
     for( j=2; j<num; j++ ) {
-      vec->value.ul[i][j] = 0x0;
+      vec->value.ul[(i*num)+j] = 0x0;
     }
 
   } else {
@@ -202,15 +211,12 @@ vector* vector_create(
   switch( data_type ) {
     case VDATA_UL :
       {
-        ulong** value = NULL;
+        ulong* value = NULL;
         if( data == TRUE ) {
           int          num  = vector_type_sizes[type];
-          unsigned int size = UL_SIZE(width);
+          unsigned int size = UL_SIZE(width) * num;
           unsigned int i;
-          value = (ulong**)malloc_safe( sizeof( ulong* ) * size );
-          for( i=0; i<size; i++ ) {
-            value[i] = (ulong*)malloc_safe( sizeof( ulong ) * num );
-          }
+          value = (ulong*)malloc_safe( sizeof( ulong ) * size );
         }
         vector_init_ulong( new_vec, value, 0x0, 0x0, (value != NULL), width, type );
       }
@@ -262,9 +268,11 @@ void vector_copy(
       {
         unsigned int size      = UL_SIZE( from_vec->width );
         unsigned int type_size = (from_vec->suppl.part.type != to_vec->suppl.part.type) ? 2 : vector_type_sizes[to_vec->suppl.part.type];
+        int          to_num    = vector_type_sizes[to_vec->suppl.part.type];
+        int          from_num  = vector_type_sizes[from_vec->suppl.part.type];
         for( i=0; i<size; i++ ) {
           for( j=0; j<type_size; j++ ) {
-            to_vec->value.ul[i][j] = from_vec->value.ul[i][j];
+            to_vec->value.ul[(i*to_num)+j] = from_vec->value.ul[(i*from_num)+j];
           }
         }
       }
@@ -307,15 +315,16 @@ void vector_copy_range(
     case VDATA_UL :
       {
         unsigned int i, j;
+        int          num = vector_type_sizes[to_vec->suppl.part.type];
         for( i=0; i<to_vec->width; i++ ) {
           unsigned int my_index     = UL_DIV(i);
           unsigned int their_index  = UL_DIV(i + lsb);
           unsigned int their_offset = UL_MOD(i + lsb);
-          for( j=0; j<vector_type_sizes[to_vec->suppl.part.type]; j++ ) {
+          for( j=0; j<num; j++ ) {
             if( UL_MOD(i) == 0 ) {
-              to_vec->value.ul[my_index][j] = 0;
+              to_vec->value.ul[(my_index*num)+j] = 0;
             }
-            to_vec->value.ul[my_index][j] |= (((from_vec->value.ul[their_index][j] >> their_offset) & 0x1) << i);
+            to_vec->value.ul[(my_index*num)+j] |= (((from_vec->value.ul[(their_index*num)+j] >> their_offset) & 0x1) << i);
           }
         }
       }
@@ -402,25 +411,27 @@ void vector_db_write(
           ulong        dflt_h = (vec->suppl.part.is_2state == 1) ? 0x0 : UL_SET;
           unsigned int i, j;
           ulong        hmask  = UL_HMASK( vec->width - 1 );
+          int          num    = vector_type_sizes[vec->suppl.part.type];
           if( vec->suppl.part.type != VTYPE_VAL ) {
             if( scoring ) {
               ulong cov_index = cov_db_get_score_ul_index( vec );
               fprintf( file, " %lx", cov_index );
-              for( i=0; i<(UL_SIZE(vec->width) - 1); i++ ) {
+              for( i=0; i<UL_SIZE(vec->width); i++ ) {
                 for( j=0; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
-                  cov_db_list[0]->ul[cov_index++] = vec->value.ul[i][j];
+                  assert( cov_index < cov_db_list[0]->ul_num );
+                  cov_db_list[0]->ul[cov_index++] = vec->value.ul[(i*num)+j];
                 }
               }
             } else {
-              fprintf( file, " %lx", ((vec->value.ul != NULL) ? cov_db_get_ul_index( vec->value.ul[0] ) : UL_SET) );
+              fprintf( file, " %lx", ((vec->value.ul != NULL) ? cov_db_get_ul_index( vec->value.ul ) : UL_SET) );
             }
           } else {
             for( i=0; i<(UL_SIZE(vec->width) - 1); i++ ) {
-              fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l );
-              fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h );
+              fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] : dflt_l );
+              fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] : dflt_h );
             }
-            fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l) & hmask );
-            fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h) & hmask );
+            fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] : dflt_l) & hmask );
+            fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] : dflt_h) & hmask );
           }
         }
         break;
@@ -479,7 +490,7 @@ void vector_db_read(
     *line = *line + chars_read;
 
     /* Create new vector */
-    *vec              = vector_create( width, suppl.part.type, suppl.part.data_type, !use_cov );
+    *vec              = vector_create( width, suppl.part.type, suppl.part.data_type, (!use_cov || (suppl.part.type == VTYPE_VAL)) );
     (*vec)->suppl.all = suppl.all;
 
     if( suppl.part.owns_data == 1 ) {
@@ -491,8 +502,9 @@ void vector_db_read(
             {
               unsigned int i, j;
               if( suppl.part.type == VTYPE_VAL ) {
+                int num = vector_type_sizes[suppl.part.type];
                 for( i=0; i<=((width-1)>>(info_suppl.part.vec_ul_size+3)); i++ ) {
-                  for( j=0; j<vector_type_sizes[suppl.part.type]; j++ ) {
+                  for( j=0; j<num; j++ ) {
                     /* If the CDD vector size and our size are the same, just do a direct read */
 #if SIZEOF_LONG == 4
                     if( info_suppl.part.vec_ul_size == 2 ) {
@@ -501,7 +513,7 @@ void vector_db_read(
 #else
 #error "Unsupported long size"
 #endif
-                      if( sscanf( *line, "%lx%n", &((*vec)->value.ul[i][j]), &chars_read ) == 1 ) {
+                      if( sscanf( *line, "%lx%n", ((*vec)->value.ul + ((i*num)+j)), &chars_read ) == 1 ) {
                         *line += chars_read;
                       } else {
                         print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
@@ -515,9 +527,9 @@ void vector_db_read(
                       if( sscanf( *line, "%x%n", &val, &chars_read ) == 1 ) {
                         *line += chars_read;
                         if( i == 0 ) {
-                          (*vec)->value.ul[i/2][j] = (ulong)val;
+                          (*vec)->value.ul[((i/2)*num)+j] = (ulong)val;
                         } else {
-                          (*vec)->value.ul[i/2][j] |= ((ulong)val << 32);
+                          (*vec)->value.ul[((i/2)*num)+j] |= ((ulong)val << 32);
                         }
                       } else {
                         print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
@@ -532,8 +544,8 @@ void vector_db_read(
                       if( sscanf( *line, "%llx%n", &val, &chars_read ) == 1 ) {
                       /*@=duplicatequals =ignorequals@*/
                         *line += chars_read;
-                        (*vec)->value.ul[(i*2)+0][j] = (ulong)(val & 0xffffffffLL);
-                        (*vec)->value.ul[(i*2)+1][j] = (ulong)((val >> 32) & 0xffffffffLL);
+                        (*vec)->value.ul[(((i*2)+0)*num)+j] = (ulong)(val & 0xffffffffLL);
+                        (*vec)->value.ul[(((i*2)+1)*num)+j] = (ulong)((val >> 32) & 0xffffffffLL);
                       } else {
                         print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
                         Throw 0;
@@ -551,11 +563,7 @@ void vector_db_read(
                 if( sscanf( *line, "%lx%n", &cov_index, &chars_read ) == 1 ) {
                   *line += chars_read;
                   if( cov_index != UL_SET ) {
-                    unsigned int i;
-                    for( i=0; i<=((width-1)>>(info_suppl.part.vec_ul_size+3)); i++ ) {
-                      (*vec)->value.ul[i] = &(cov_db_list[0]->ul[cov_index++]);
-                      cov_index += vector_type_sizes[suppl.part.type];
-                    }
+                    (*vec)->value.ul = (cov_db_list[0]->ul + cov_index);
                   }
                 } else {
                   print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
@@ -708,8 +716,9 @@ void vector_db_merge(
         case VDATA_UL :
           {
             unsigned int i, j;
+            int          num = vector_type_sizes[suppl.part.type];
             for( i=0; i<=((width-1)>>(info_suppl.part.vec_ul_size+3)); i++ ) {
-              for( j=0; j<vector_type_sizes[suppl.part.type]; j++ ) {
+              for( j=0; j<num; j++ ) {
 
                 /* If the CDD vector size and our size are the same, just do a direct read */
 #if SIZEOF_LONG == 4
@@ -723,7 +732,7 @@ void vector_db_merge(
                   if( sscanf( *line, "%lx%n", &val, &chars_read ) == 1 ) {
                     *line += chars_read;
                     if( j >= 2 ) {
-                      base->value.ul[i][j] |= val;
+                      base->value.ul[(i*num)+j] |= val;
                     }
                   } else {
                     print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
@@ -738,9 +747,9 @@ void vector_db_merge(
                     *line += chars_read;
                     if( j >= 2 ) {
                       if( i == 0 ) {
-                        base->value.ul[i/2][j] = (ulong)val;
+                        base->value.ul[((i/2)*num)+j] = (ulong)val;
                       } else {
-                        base->value.ul[i/2][j] |= ((ulong)val << 32);
+                        base->value.ul[((i/2)*num)+j] |= ((ulong)val << 32);
                       }
                     }
                   } else {
@@ -757,8 +766,8 @@ void vector_db_merge(
                   /*@=duplicatequals =ignorequals@*/
                     *line += chars_read;
                     if( j >= 2 ) {
-                      base->value.ul[(i*2)+0][j] = (ulong)(val & 0xffffffffLL);
-                      base->value.ul[(i*2)+1][j] = (ulong)((val >> 32) & 0xffffffffLL);
+                      base->value.ul[(((i*2)+0)*num)+j] = (ulong)(val & 0xffffffffLL);
+                      base->value.ul[(((i*2)+1)*num)+j] = (ulong)((val >> 32) & 0xffffffffLL);
                     }
                   } else {
                     print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
@@ -827,14 +836,18 @@ void vector_merge(
 
   assert( base != NULL );
   assert( base->width == other->width );
+  assert( base->suppl.part.type == other->suppl.part.type );
 
   if( base->suppl.part.owns_data == 1 ) {
 
     switch( base->suppl.part.data_type ) {
       case VDATA_UL :
-        for( i=0; i<UL_SIZE(base->width); i++ ) {
-          for( j=2; j<vector_type_sizes[base->suppl.part.type]; j++ ) {
-            base->value.ul[i][j] |= other->value.ul[i][j];
+        {
+          int num = vector_type_sizes[base->suppl.part.type];
+          for( i=0; i<UL_SIZE(base->width); i++ ) {
+            for( j=2; j<num; j++ ) {
+              base->value.ul[(i*num)+j] |= other->value.ul[(i*num)+j];
+            }
           }
         }
         break;
@@ -859,13 +872,18 @@ int vector_get_eval_a(
   int     index  /*!< Index to retrieve bit from */
 ) { PROFILE(VECTOR_GET_EVAL_A);
 
-  int retval;  /* Return value for this function */
+  int retval;
 
   assert( vec != NULL );
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL  :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_A] >> UL_MOD(index)) & 0x1;  break;
+    case VDATA_UL  :
+      {
+        int num = vector_type_sizes[vec->suppl.part.type];
+        retval  = (vec->value.ul[(UL_DIV(index)*num)+VTYPE_INDEX_EXP_EVAL_A] >> UL_MOD(index)) & 0x1;
+      }
+      break;
     case VDATA_R64 :  retval = 0;
     default        :  assert( 0 );  break;
   }
@@ -884,13 +902,19 @@ int vector_get_eval_b(
   int     index  /*!< Index to retrieve bit from */
 ) { PROFILE(VECTOR_GET_EVAL_B);
 
-  int retval;  /* Return value for this function */
+  int retval;
+  int num = vector_type_sizes[vec->suppl.part.type];
 
   assert( vec != NULL );
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL  :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_B] >> UL_MOD(index)) & 0x1;  break;
+    case VDATA_UL  :
+      {
+        int num = vector_type_sizes[vec->suppl.part.type];
+        retval  = (vec->value.ul[(UL_DIV(index)*num)+VTYPE_INDEX_EXP_EVAL_B] >> UL_MOD(index)) & 0x1;
+      }
+      break;
     case VDATA_R64 :  retval = 0;
     default        :  assert( 0 );  break;
   }
@@ -909,13 +933,18 @@ int vector_get_eval_c(
   int     index  /*!< Index to retrieve bit from */
 ) { PROFILE(VECTOR_GET_EVAL_C);
 
-  int retval;  /* Return value for this function */
+  int retval;
 
   assert( vec != NULL );
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL  :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_C] >> UL_MOD(index)) & 0x1;  break;
+    case VDATA_UL  :
+      {
+        int num = vector_type_sizes[vec->suppl.part.type];
+        retval  = (vec->value.ul[(UL_DIV(index)*num)+VTYPE_INDEX_EXP_EVAL_C] >> UL_MOD(index)) & 0x1;
+      }
+      break;
     case VDATA_R64 :  retval = 0;
     default        :  assert( 0 );  break;
   }
@@ -940,7 +969,12 @@ int vector_get_eval_d(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL  :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_D] >> UL_MOD(index)) & 0x1;  break;
+    case VDATA_UL  :
+      {
+        int num = vector_type_sizes[vec->suppl.part.type];
+        retval  = (vec->value.ul[(UL_DIV(index)*num)+VTYPE_INDEX_EXP_EVAL_D] >> UL_MOD(index)) & 0x1;  break;
+      }
+      break;
     case VDATA_R64 :  retval = 0;
     default        :  assert( 0 );  break;
   }
@@ -963,12 +997,15 @@ int vector_get_eval_ab_count(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      for( i=0; i<UL_SIZE( vec->width ); i++ ) {
-        ulong value_a = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_A];
-        ulong value_b = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_B];
-        for( j=0; j<UL_BITS; j++ ) {
-          count += (value_a >> j) & 0x1;
-          count += (value_b >> j) & 0x1;
+      {
+        int num = vector_type_sizes[vec->suppl.part.type];
+        for( i=0; i<UL_SIZE( vec->width ); i++ ) {
+          ulong value_a = vec->value.ul[(i*num)+VTYPE_INDEX_EXP_EVAL_A];
+          ulong value_b = vec->value.ul[(i*num)+VTYPE_INDEX_EXP_EVAL_B];
+          for( j=0; j<UL_BITS; j++ ) {
+            count += (value_a >> j) & 0x1;
+            count += (value_b >> j) & 0x1;
+          }
         }
       }
       break;
@@ -995,14 +1032,17 @@ int vector_get_eval_abc_count(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      for( i=0; i<UL_SIZE( vec->width ); i++ ) {
-        ulong value_a = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_A]; 
-        ulong value_b = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_B]; 
-        ulong value_c = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_C]; 
-        for( j=0; j<UL_BITS; j++ ) {
-          count += (value_a >> j) & 0x1;
-          count += (value_b >> j) & 0x1;
-          count += (value_c >> j) & 0x1;
+      {
+        int num = vector_type_sizes[vec->suppl.part.type];
+        for( i=0; i<UL_SIZE( vec->width ); i++ ) {
+          ulong value_a = vec->value.ul[(i*num)+VTYPE_INDEX_EXP_EVAL_A]; 
+          ulong value_b = vec->value.ul[(i*num)+VTYPE_INDEX_EXP_EVAL_B]; 
+          ulong value_c = vec->value.ul[(i*num)+VTYPE_INDEX_EXP_EVAL_C]; 
+          for( j=0; j<UL_BITS; j++ ) {
+            count += (value_a >> j) & 0x1;
+            count += (value_b >> j) & 0x1;
+            count += (value_c >> j) & 0x1;
+          }
         }
       }
       break;
@@ -1029,16 +1069,19 @@ int vector_get_eval_abcd_count(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      for( i=0; i<UL_SIZE( vec->width ); i++ ) {
-        ulong value_a = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_A]; 
-        ulong value_b = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_B]; 
-        ulong value_c = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_C]; 
-        ulong value_d = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_D]; 
-        for( j=0; j<UL_BITS; j++ ) {
-          count += (value_a >> j) & 0x1;
-          count += (value_b >> j) & 0x1;
-          count += (value_c >> j) & 0x1;
-          count += (value_d >> j) & 0x1;
+      {
+        int num = vector_type_sizes[vec->suppl.part.type];
+        for( i=0; i<UL_SIZE( vec->width ); i++ ) {
+          ulong value_a = vec->value.ul[(i*num)+VTYPE_INDEX_EXP_EVAL_A]; 
+          ulong value_b = vec->value.ul[(i*num)+VTYPE_INDEX_EXP_EVAL_B]; 
+          ulong value_c = vec->value.ul[(i*num)+VTYPE_INDEX_EXP_EVAL_C]; 
+          ulong value_d = vec->value.ul[(i*num)+VTYPE_INDEX_EXP_EVAL_D]; 
+          for( j=0; j<UL_BITS; j++ ) {
+            count += (value_a >> j) & 0x1;
+            count += (value_b >> j) & 0x1;
+            count += (value_c >> j) & 0x1;
+            count += (value_d >> j) & 0x1;
+          }
         }
       }
       break;
@@ -1057,17 +1100,19 @@ int vector_get_eval_abcd_count(
  \return Returns a string showing the toggle 0 -> 1 information.
 */
 char* vector_get_toggle01_ulong(
-  ulong** value,  /*!< Pointer to vector data array to get string from */
-  int     width   /*!< Width of given vector data array */
+  ulong* value,  /*!< Pointer to vector data array to get string from */
+  int    width,  /*!< Width of given vector data array */
+  uint8  type    /*!< Type of vector array */
 ) { PROFILE(VECTOR_GET_TOGGLE01_ULONG);
 
   char* bits = (char*)malloc_safe( width + 1 );
   int   i;
   char  tmp[2];
+  int   num  = vector_type_sizes[type];
 
   for( i=width; i--; ) {
     /*@-formatcode@*/
-    unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[UL_DIV(i)][VTYPE_INDEX_SIG_TOG01] >> UL_MOD(i)) & 0x1) );
+    unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[(UL_DIV(i)*num)+VTYPE_INDEX_SIG_TOG01] >> UL_MOD(i)) & 0x1) );
     /*@=formatcode@*/
     assert( rv < 2 );
     bits[i] = tmp[0];
@@ -1085,17 +1130,19 @@ char* vector_get_toggle01_ulong(
  \return Returns a string showing the toggle 1 -> 0 information.
 */
 char* vector_get_toggle10_ulong(
-  ulong** value,  /*!< Pointer to vector data array to get string from */
-  int     width   /*!< Width of given vector data array */
+  ulong* value,  /*!< Pointer to vector data array to get string from */
+  int    width,  /*!< Width of given vector data array */
+  uint8  type    /*!< Type of vector array */
 ) { PROFILE(VECTOR_GET_TOGGLE10_ULONG);
 
   char* bits = (char*)malloc_safe( width + 1 );
   int   i;
   char  tmp[2];
+  int   num  = vector_type_sizes[type];
   
   for( i=width; i--; ) {
     /*@-formatcode@*/ 
-    unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[UL_DIV(i)][VTYPE_INDEX_SIG_TOG10] >> UL_MOD(i)) & 0x1) );
+    unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[(UL_DIV(i)*num)+VTYPE_INDEX_SIG_TOG10] >> UL_MOD(i)) & 0x1) );
     /*@=formatcode@*/ 
     assert( rv < 2 );
     bits[i] = tmp[0];
@@ -1114,20 +1161,22 @@ char* vector_get_toggle10_ulong(
  stream specified in ofile.
 */
 void vector_display_toggle01_ulong(
-  ulong** value,  /*!< Value array to display toggle information */
-  int     width,  /*!< Number of bits in value array to display */
-  FILE*   ofile   /*!< Stream to output information to */
+  ulong* value,  /*!< Value array to display toggle information */
+  int    width,  /*!< Number of bits in value array to display */
+  uint8  type,   /*!< Type of vector value */
+  FILE*  ofile   /*!< Stream to output information to */
 ) { PROFILE(VECTOR_DISPLAY_TOGGLE01_ULONG);
 
   unsigned int nib       = 0;
   int          i, j;
   int          bits_left = UL_MOD(width - 1);
+  int          num       = vector_type_sizes[type];
 
   fprintf( ofile, "%d'h", width );
 
   for( i=UL_SIZE(width); i--; ) {
     for( j=bits_left; j>=0; j-- ) {
-      nib |= (((value[i][VTYPE_INDEX_SIG_TOG01] >> (unsigned int)j) & 0x1) << ((unsigned int)j % 4));
+      nib |= (((value[(i*num)+VTYPE_INDEX_SIG_TOG01] >> (unsigned int)j) & 0x1) << ((unsigned int)j % 4));
       if( (j % 4) == 0 ) {
         fprintf( ofile, "%1x", nib );
         nib = 0;
@@ -1148,20 +1197,22 @@ void vector_display_toggle01_ulong(
  stream specified in ofile.
 */
 void vector_display_toggle10_ulong(
-  ulong** value,  /*!< Value array to display toggle information */
-  int     width,  /*!< Number of bits of value array to display */
-  FILE*   ofile   /*!< Stream to output information to */
+  ulong* value,  /*!< Value array to display toggle information */
+  int    width,  /*!< Number of bits of value array to display */
+  uint8  type,   /*!< Type of vector value array */
+  FILE*  ofile   /*!< Stream to output information to */
 ) { PROFILE(VECTOR_DISPLAY_TOGGLE10_ULONG);
 
   unsigned int nib       = 0;
   int          i, j;
   int          bits_left = UL_MOD(width - 1);
+  int          num       = vector_type_sizes[type];
   
   fprintf( ofile, "%d'h", width );
       
   for( i=UL_SIZE(width); i--; ) {
     for( j=bits_left; j>=0; j-- ) {
-      nib |= (((value[i][VTYPE_INDEX_SIG_TOG10] >> (unsigned int)j) & 0x1) << ((unsigned int)j % 4));
+      nib |= (((value[(i*num)+VTYPE_INDEX_SIG_TOG10] >> (unsigned int)j) & 0x1) << ((unsigned int)j % 4));
       if( (j % 4) == 0 ) {
         fprintf( ofile, "%1x", nib );
         nib = 0;
@@ -1181,21 +1232,23 @@ void vector_display_toggle10_ulong(
  Displays the binary value of the specified ulong vector data array to standard output.
 */
 void vector_display_value_ulong(
-  ulong** value,  /*!< Pointer to vector value array */
-  int     width   /*!< Number of elements in value array */
+  ulong* value,  /*!< Pointer to vector value array */
+  int    width,  /*!< Number of elements in value array */
+  uint8  type    /*!< Type of vector value array */
 ) {
 
   int i, j;  /* Loop iterator */
   int bits_left = UL_MOD(width - 1);
+  int num       = vector_type_sizes[type];
 
   printf( "value: %d'b", width );
 
   for( i=UL_SIZE(width); i--; ) {
     for( j=bits_left; j>=0; j-- ) {
-      if( ((value[i][VTYPE_INDEX_VAL_VALH] >> (unsigned int)j) & 0x1) == 0 ) {
-        printf( "%lu", ((value[i][VTYPE_INDEX_VAL_VALL] >> (unsigned int)j) & 0x1) );
+      if( ((value[(i*num)+VTYPE_INDEX_VAL_VALH] >> (unsigned int)j) & 0x1) == 0 ) {
+        printf( "%lu", ((value[(i*num)+VTYPE_INDEX_VAL_VALL] >> (unsigned int)j) & 0x1) );
       } else {
-        if( ((value[i][VTYPE_INDEX_VAL_VALL] >> (unsigned int)j) & 0x1) == 0 ) {
+        if( ((value[(i*num)+VTYPE_INDEX_VAL_VALL] >> (unsigned int)j) & 0x1) == 0 ) {
           printf( "x" );
         } else {
           printf( "z" );
@@ -1212,24 +1265,25 @@ void vector_display_value_ulong(
  width parameter.
 */
 void vector_display_ulong(
-  ulong**      value,  /*!< Value array to display */
+  ulong*       value,  /*!< Value array to display */
   unsigned int width,  /*!< Number of bits in array to display */
-  unsigned int type   /*!< Type of vector to display */
+  uint8        type   /*!< Type of vector to display */
 ) {
 
   unsigned int i, j;  /* Loop iterator */
+  int          num = vector_type_sizes[type];
 
-  for( i=0; i<vector_type_sizes[type]; i++ ) {
+  for( i=0; i<num; i++ ) {
     for( j=UL_SIZE(width); j--; ) {
       /*@-formatcode@*/
-      printf( " %lx", value[j][i] );
+      printf( " %lx", value[(j*num)+i] );
       /*@=formatcode@*/
     }
   }
 
   /* Display value */
   printf( ", " );
-  vector_display_value_ulong( value, width );
+  vector_display_value_ulong( value, width, type );
 
   switch( type ) {
 
@@ -1237,11 +1291,11 @@ void vector_display_ulong(
 
       /* Display toggle01 history */
       printf( ", 0->1: " );
-      vector_display_toggle01_ulong( value, width, stdout );
+      vector_display_toggle01_ulong( value, width, type, stdout );
 
       /* Display toggle10 history */
       printf( ", 1->0: " );
-      vector_display_toggle10_ulong( value, width, stdout );
+      vector_display_toggle10_ulong( value, width, type, stdout );
 
       break;
 
@@ -1252,9 +1306,9 @@ void vector_display_ulong(
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
-        printf( "%08lx", value[i][VTYPE_INDEX_EXP_EVAL_A] );
+        printf( "%08lx", value[(i*num)+VTYPE_INDEX_EXP_EVAL_A] );
 #elif SIZEOF_LONG == 8
-        printf( "%016lx", value[i][VTYPE_INDEX_EXP_EVAL_A] );
+        printf( "%016lx", value[(i*num)+VTYPE_INDEX_EXP_EVAL_A] );
 #else
 #error "Unsupported long size"
 #endif
@@ -1266,9 +1320,9 @@ void vector_display_ulong(
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
-        printf( "%08lx", value[i][VTYPE_INDEX_EXP_EVAL_B] );
+        printf( "%08lx", value[(i*num)+VTYPE_INDEX_EXP_EVAL_B] );
 #elif SIZEOF_LONG == 8
-        printf( "%016lx", value[i][VTYPE_INDEX_EXP_EVAL_B] );
+        printf( "%016lx", value[(i*num)+VTYPE_INDEX_EXP_EVAL_B] );
 #endif
         /*@=formatcode@*/
       }
@@ -1278,9 +1332,9 @@ void vector_display_ulong(
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
-        printf( "%08lx", value[i][VTYPE_INDEX_EXP_EVAL_C] );
+        printf( "%08lx", value[(i*num)+VTYPE_INDEX_EXP_EVAL_C] );
 #elif SIZEOF_LONG == 8
-        printf( "%016lx", value[i][VTYPE_INDEX_EXP_EVAL_C] );
+        printf( "%016lx", value[(i*num)+VTYPE_INDEX_EXP_EVAL_C] );
 #endif
         /*@=formatcode@*/
       }
@@ -1290,9 +1344,9 @@ void vector_display_ulong(
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
-        printf( "%08lx", value[i][VTYPE_INDEX_EXP_EVAL_D] );
+        printf( "%08lx", value[(i*num)+VTYPE_INDEX_EXP_EVAL_D] );
 #elif SIZEOF_LONG == 8
-        printf( "%016lx", value[i][VTYPE_INDEX_EXP_EVAL_D] );
+        printf( "%016lx", value[(i*num)+VTYPE_INDEX_EXP_EVAL_D] );
 #endif
         /*@=formatcode@*/
       }
@@ -1303,20 +1357,20 @@ void vector_display_ulong(
   
       /* Display toggle01 history */
       printf( ", 0->1: " );
-      vector_display_toggle01_ulong( value, width, stdout );
+      vector_display_toggle01_ulong( value, width, type, stdout );
 
       /* Display toggle10 history */
       printf( ", 1->0: " );
-      vector_display_toggle10_ulong( value, width, stdout );
+      vector_display_toggle10_ulong( value, width, type, stdout );
 
       /* Write history */
       printf( ", wr: %u'h", width );
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
-        printf( "%08lx", value[i][VTYPE_INDEX_MEM_WR] );
+        printf( "%08lx", value[(i*num)+VTYPE_INDEX_MEM_WR] );
 #elif SIZEOF_LONG == 8
-        printf( "%016lx", value[i][VTYPE_INDEX_MEM_WR] );
+        printf( "%016lx", value[(i*num)+VTYPE_INDEX_MEM_WR] );
 #endif
         /*@=formatcode@*/
       }
@@ -1326,9 +1380,9 @@ void vector_display_ulong(
       for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
 #if SIZEOF_LONG == 4
-        printf( "%08lx", value[i][VTYPE_INDEX_MEM_RD] );
+        printf( "%08lx", value[(i*num)+VTYPE_INDEX_MEM_RD] );
 #elif SIZEOF_LONG == 8
-        printf( "%016lx", value[i][VTYPE_INDEX_MEM_RD] );
+        printf( "%016lx", value[(i*num)+VTYPE_INDEX_MEM_RD] );
 #endif
         /*@=formatcode@*/
       }
@@ -1408,10 +1462,13 @@ void vector_toggle_count(
 
     switch( vec->suppl.part.data_type ) {
       case VDATA_UL :
-        for( i=0; i<UL_SIZE(vec->width); i++ ) {
-          for( j=0; j<UL_BITS; j++ ) {
-            *tog01_cnt += ((vec->value.ul[i][VTYPE_INDEX_SIG_TOG01] >> j) & 0x1);
-            *tog10_cnt += ((vec->value.ul[i][VTYPE_INDEX_SIG_TOG10] >> j) & 0x1);
+        {
+          int num = vector_type_sizes[vec->suppl.part.type];
+          for( i=0; i<UL_SIZE(vec->width); i++ ) {
+            for( j=0; j<UL_BITS; j++ ) {
+              *tog01_cnt += ((vec->value.ul[(i*num)+VTYPE_INDEX_SIG_TOG01] >> j) & 0x1);
+              *tog10_cnt += ((vec->value.ul[(i*num)+VTYPE_INDEX_SIG_TOG10] >> j) & 0x1);
+            }
           }
         }
         break;
@@ -1445,13 +1502,14 @@ void vector_mem_rw_count(
       { 
         ulong lmask = UL_LMASK(lsb);
         ulong hmask = UL_HMASK(msb);
+        int   num   = vector_type_sizes[vec->suppl.part.type];
         if( UL_DIV(lsb) == UL_DIV(msb) ) {
           lmask &= hmask;
         }
         for( i=UL_DIV(lsb); i<=UL_DIV(msb); i++ ) {
           ulong mask = (i == UL_DIV(lsb)) ? lmask : ((i == UL_DIV(msb)) ? hmask : UL_SET);
-          ulong wr   = vec->value.ul[i][VTYPE_INDEX_MEM_WR] & mask;
-          ulong rd   = vec->value.ul[i][VTYPE_INDEX_MEM_RD] & mask;
+          ulong wr   = vec->value.ul[(i*num)+VTYPE_INDEX_MEM_WR] & mask;
+          ulong rd   = vec->value.ul[(i*num)+VTYPE_INDEX_MEM_RD] & mask;
           for( j=0; j<UL_BITS; j++ ) {
             *wr_cnt += (wr >> j) & 0x1;
             *rd_cnt += (rd >> j) & 0x1;
@@ -1494,19 +1552,20 @@ bool vector_set_assigned(
         ulong hmask     = UL_HMASK(msb);
         int   i         = UL_DIV(lsb);
         int   msb_index = UL_DIV(msb);
+        int   num       = vector_type_sizes[vec->suppl.part.type];
         if( i == msb_index ) {
           lmask &= hmask;
-          prev_assigned = ((vec->value.ul[i][VTYPE_INDEX_SIG_MISC] & lmask) != 0);
-          vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= lmask;
+          prev_assigned = ((vec->value.ul[(i*num)+VTYPE_INDEX_SIG_MISC] & lmask) != 0);
+          vec->value.ul[(i*num)+VTYPE_INDEX_SIG_MISC] |= lmask;
         } else {
-          prev_assigned |= ((vec->value.ul[i][VTYPE_INDEX_SIG_MISC] & lmask) != 0);
-          vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= lmask;
+          prev_assigned |= ((vec->value.ul[(i*num)+VTYPE_INDEX_SIG_MISC] & lmask) != 0);
+          vec->value.ul[(i*num)+VTYPE_INDEX_SIG_MISC] |= lmask;
           for( i++; i<msb_index; i++ ) {
-            prev_assigned = (vec->value.ul[i][VTYPE_INDEX_SIG_MISC] != 0);
-            vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= UL_SET;
+            prev_assigned = (vec->value.ul[(i*num)+VTYPE_INDEX_SIG_MISC] != 0);
+            vec->value.ul[(i*num)+VTYPE_INDEX_SIG_MISC] |= UL_SET;
           }
-          prev_assigned |= ((vec->value.ul[i][VTYPE_INDEX_SIG_MISC] & hmask) != 0);
-          vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= hmask;
+          prev_assigned |= ((vec->value.ul[(i*num)+VTYPE_INDEX_SIG_MISC] & hmask) != 0);
+          vec->value.ul[(i*num)+VTYPE_INDEX_SIG_MISC] |= hmask;
         }
       }
       break;
@@ -1543,6 +1602,7 @@ bool vector_set_coverage_and_assign_ulong(
   ulong        hmask   = UL_HMASK(msb);  /* Mask to be used in upper element */
   unsigned int i;                        /* Loop iterator */
   uint8        prev_set;                 /* Specifies if this vector value has previously been set */
+  int          num     = vector_type_sizes[vec->suppl.part.type];
 
   /* If the lindex and hindex are the same, set lmask to the AND of the high and low masks */
   if( lindex == hindex ) {
@@ -1552,8 +1612,8 @@ bool vector_set_coverage_and_assign_ulong(
   switch( vec->suppl.part.type ) {
     case VTYPE_VAL :
       for( i=lindex; i<=hindex; i++ ) {
-        ulong* tvall = &(vec->value.ul[i][VTYPE_INDEX_SIG_VALL]);
-        ulong* tvalh = &(vec->value.ul[i][VTYPE_INDEX_SIG_VALH]);
+        ulong* tvall = &(vec->value.ul[(i*num)+VTYPE_INDEX_SIG_VALL]);
+        ulong* tvalh = &(vec->value.ul[(i*num)+VTYPE_INDEX_SIG_VALH]);
         ulong  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : UL_SET);
         *tvall = (*tvall & ~mask) | (scratchl[i] & mask);
         *tvalh = (*tvalh & ~mask) | (scratchh[i] & mask);
@@ -1563,7 +1623,7 @@ bool vector_set_coverage_and_assign_ulong(
     case VTYPE_SIG :
       prev_set = vec->suppl.part.set;
       for( i=lindex; i<=hindex; i++ ) {
-        ulong* entry = vec->value.ul[i];
+        ulong* entry = vec->value.ul + (i*num);
         ulong  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : UL_SET);
         ulong  fvall = scratchl[i] & mask;
         ulong  fvalh = scratchh[i] & mask;
@@ -1586,7 +1646,7 @@ bool vector_set_coverage_and_assign_ulong(
       break;
     case VTYPE_MEM :
       for( i=lindex; i<=hindex; i++ ) {
-        ulong* entry = vec->value.ul[i];
+        ulong* entry = vec->value.ul + (i*num);
         ulong  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : UL_SET);
         ulong  fvall = scratchl[i] & mask;
         ulong  fvalh = scratchh[i] & mask;
@@ -1608,7 +1668,7 @@ bool vector_set_coverage_and_assign_ulong(
       break;
     case VTYPE_EXP :
       for( i=lindex; i<=hindex; i++ ) {
-        ulong* entry = vec->value.ul[i];
+        ulong* entry = vec->value.ul + (i*num);
         ulong  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : UL_SET);
         ulong  fvall = scratchl[i] & mask;
         ulong  fvalh = scratchh[i] & mask;
@@ -1639,7 +1699,8 @@ inline static void vector_get_sign_extend_vector_ulong(
   /*@out@*/ ulong*        signh   /*!< Pointer to value that will contain the upper value vector */
 ) { PROFILE(VECTOR_GET_SIGN_EXTEND_VECTOR_ULONG);
 
-  ulong* entry     = vec->value.ul[UL_DIV(vec->width - 1)];
+  int    num       = vector_type_sizes[vec->suppl.part.type];
+  ulong* entry     = vec->value.ul + (UL_DIV(vec->width - 1)*num);
   ulong  last_mask = (ulong)1 << UL_MOD(vec->width - 1);
 
   *signl = ((entry[VTYPE_INDEX_VAL_VALL] & last_mask) != 0) ? UL_SET : 0;
@@ -1699,16 +1760,17 @@ static void vector_lshift_ulong(
 
   if( UL_DIV(lsb) == UL_DIV(msb) ) {
 
-    vall[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALL] << (unsigned int)lsb);
-    valh[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALH] << (unsigned int)lsb);
+    vall[diff] = (vec->value.ul[0+VTYPE_INDEX_VAL_VALL] << (unsigned int)lsb);
+    valh[diff] = (vec->value.ul[0+VTYPE_INDEX_VAL_VALH] << (unsigned int)lsb);
 
   } else if( UL_MOD(lsb) == 0 ) {
 
     int i;
+    int num = vector_type_sizes[vec->suppl.part.type];
 
     for( i=UL_DIV(vec->width - 1); i>=0; i-- ) {
-      vall[i+diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL];
-      valh[i+diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH];
+      vall[i+diff] = vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL];
+      valh[i+diff] = vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH];
     }
 
     for( i=(UL_DIV(lsb) - 1); i>=0; i-- ) {
@@ -1724,15 +1786,16 @@ static void vector_lshift_ulong(
     ulong        mask2       = UL_SET << (UL_BITS - shift_bits1);
     ulong        mask3       = ~mask2;
     int          i;
+    int          num         = vector_type_sizes[vec->suppl.part.type];
 
-    vall[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALL] & mask1) << shift_bits1;
-    valh[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALH] & mask1) << shift_bits1;
+    vall[UL_DIV(msb)] = (vec->value.ul[(UL_DIV(vec->width-1)*num)+VTYPE_INDEX_VAL_VALL] & mask1) << shift_bits1;
+    valh[UL_DIV(msb)] = (vec->value.ul[(UL_DIV(vec->width-1)*num)+VTYPE_INDEX_VAL_VALH] & mask1) << shift_bits1;
 
     for( i=(UL_DIV(vec->width - 1) - 1); i>=0; i-- ) {
-      vall[i+diff+1] |= ((vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & mask2) >> (UL_BITS - shift_bits1));
-      valh[i+diff+1] |= ((vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & mask2) >> (UL_BITS - shift_bits1));
-      vall[i+diff]    = ((vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & mask3) << shift_bits1);
-      valh[i+diff]    = ((vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & mask3) << shift_bits1);
+      vall[i+diff+1] |= ((vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] & mask2) >> (UL_BITS - shift_bits1));
+      valh[i+diff+1] |= ((vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] & mask2) >> (UL_BITS - shift_bits1));
+      vall[i+diff]    = ((vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] & mask3) << shift_bits1);
+      valh[i+diff]    = ((vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] & mask3) << shift_bits1);
     }
 
     for( i=(UL_DIV(lsb) - 1); i>=0; i-- ) {
@@ -1748,16 +1811,17 @@ static void vector_lshift_ulong(
     ulong        mask2       = UL_SET >> (UL_BITS - shift_bits1);
     ulong        mask3       = ~mask2;
     int          i;
+    int          num         = vector_type_sizes[vec->suppl.part.type];
 
-    vall[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits1;
-    valh[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits1;
+    vall[UL_DIV(msb)] = (vec->value.ul[(UL_DIV(vec->width-1)*num)+VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits1;
+    valh[UL_DIV(msb)] = (vec->value.ul[(UL_DIV(vec->width-1)*num)+VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits1;
 
     for( i=UL_DIV(vec->width - 1); i>=0; i-- ) {
-      vall[(i+diff)-1]  = ((vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & mask2) << (UL_BITS - shift_bits1));
-      valh[(i+diff)-1]  = ((vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & mask2) << (UL_BITS - shift_bits1));
+      vall[(i+diff)-1]  = ((vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] & mask2) << (UL_BITS - shift_bits1));
+      valh[(i+diff)-1]  = ((vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] & mask2) << (UL_BITS - shift_bits1));
       if( i > 0 ) {
-        vall[(i+diff)-1] |= ((vec->value.ul[i-1][VTYPE_INDEX_VAL_VALL] & mask3) >> shift_bits1);
-        valh[(i+diff)-1] |= ((vec->value.ul[i-1][VTYPE_INDEX_VAL_VALH] & mask3) >> shift_bits1);
+        vall[(i+diff)-1] |= ((vec->value.ul[((i-1)*num)+VTYPE_INDEX_VAL_VALL] & mask3) >> shift_bits1);
+        valh[(i+diff)-1] |= ((vec->value.ul[((i-1)*num)+VTYPE_INDEX_VAL_VALH] & mask3) >> shift_bits1);
       }
     }
 
@@ -1799,9 +1863,10 @@ static void vector_rshift_ulong(
   } else if( UL_DIV(lsb) == UL_DIV(msb) ) {
 
     unsigned int i;
+    int          num = vector_type_sizes[vec->suppl.part.type];
 
-    vall[0] = (vec->value.ul[diff][VTYPE_INDEX_VAL_VALL] >> UL_MOD(lsb));
-    valh[0] = (vec->value.ul[diff][VTYPE_INDEX_VAL_VALH] >> UL_MOD(lsb));
+    vall[0] = (vec->value.ul[(diff*num)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(lsb));
+    valh[0] = (vec->value.ul[(diff*num)+VTYPE_INDEX_VAL_VALH] >> UL_MOD(lsb));
 
     for( i=1; i<=UL_DIV(vec->width); i++ ) {
       vall[i] = 0;
@@ -1812,13 +1877,14 @@ static void vector_rshift_ulong(
 
     unsigned int i;
     ulong        lmask = UL_HMASK(msb);
+    int          num   = vector_type_sizes[vec->suppl.part.type];
 
     for( i=diff; i<UL_DIV(msb); i++ ) {
-      vall[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL];
-      valh[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH];
+      vall[i-diff] = vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL];
+      valh[i-diff] = vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH];
     }
-    vall[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & lmask;
-    valh[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & lmask;
+    vall[i-diff] = vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] & lmask;
+    valh[i-diff] = vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] & lmask;
 
     for( i=((i-diff)+1); i<UL_DIV(vec->width); i++ ) {
       vall[i] = 0;
@@ -1833,13 +1899,14 @@ static void vector_rshift_ulong(
     ulong        mask3      = UL_SET >> ((UL_BITS - 1) - UL_MOD(msb - lsb));
     unsigned int hindex     = UL_DIV(vec->width - 1);
     unsigned int i;
+    int          num        = vector_type_sizes[vec->suppl.part.type];
 
     for( i=0; i<=UL_DIV(rwidth - 1); i++ ) {
-      vall[i]  = (vec->value.ul[i+diff][VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits;
-      valh[i]  = (vec->value.ul[i+diff][VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits;
+      vall[i]  = (vec->value.ul[((i+diff)*num)+VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits;
+      valh[i]  = (vec->value.ul[((i+diff)*num)+VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits;
       if( (i+diff+1) <= hindex ) {
-        vall[i] |= (vec->value.ul[i+diff+1][VTYPE_INDEX_VAL_VALL] & mask2) << (UL_BITS - shift_bits);
-        valh[i] |= (vec->value.ul[i+diff+1][VTYPE_INDEX_VAL_VALH] & mask2) << (UL_BITS - shift_bits);
+        vall[i] |= (vec->value.ul[((i+diff+1)*num)+VTYPE_INDEX_VAL_VALL] & mask2) << (UL_BITS - shift_bits);
+        valh[i] |= (vec->value.ul[((i+diff+1)*num)+VTYPE_INDEX_VAL_VALH] & mask2) << (UL_BITS - shift_bits);
       }
     }
 
@@ -1869,8 +1936,9 @@ static void vector_rshift_ulong(
 */
 bool vector_set_value_ulong(
   vector*      vec,    /*!< Pointer to vector to set value to */
-  ulong**      value,  /*!< New value to set vector value to */
-  unsigned int width   /*!< Width of new value */
+  ulong*       value,  /*!< New value to set vector value to */
+  unsigned int width,  /*!< Width of new value */
+  uint8        type    /*!< Specifies the type of the vector value */
 ) { PROFILE(VECTOR_SET_VALUE);
 
   bool  retval = FALSE;                   /* Return value for this function */
@@ -1878,6 +1946,7 @@ bool vector_set_value_ulong(
   int   v2st;                             /* Value to AND with from value bit if the target is a 2-state value */
   ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];  /* Lower scratch array */
   ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];  /* Upper scratch array */
+  int   num    = vector_type_sizes[type];
 
   assert( vec != NULL );
 
@@ -1897,8 +1966,8 @@ bool vector_set_value_ulong(
 
   /* Calculate the new values and place them in the scratch arrays */
   for( ; i>=0; i-- ) {
-    scratchl[i] = v2st ? (~value[i][VTYPE_INDEX_VAL_VALH] & value[i][VTYPE_INDEX_VAL_VALL]) : value[i][VTYPE_INDEX_VAL_VALL];
-    scratchh[i] = v2st ? 0 : value[i][VTYPE_INDEX_VAL_VALH];
+    scratchl[i] = v2st ? (~value[(i*num)+VTYPE_INDEX_VAL_VALH] & value[(i*num)+VTYPE_INDEX_VAL_VALL]) : value[(i*num)+VTYPE_INDEX_VAL_VALL];
+    scratchh[i] = v2st ? 0 : value[(i*num)+VTYPE_INDEX_VAL_VALH];
   }
 
   /* Calculate the coverage and perform the actual assignment */
@@ -1920,15 +1989,16 @@ void vector_set_mem_rd_ulong(
 ) { PROFILE(VECTOR_SET_MEM_RD);
 
   if( vec->suppl.part.type == VTYPE_MEM ) {
+    int num = vector_type_sizes[vec->suppl.part.type];
     if( UL_DIV(msb) == UL_DIV(lsb) ) {
-      vec->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= UL_HMASK(msb) & UL_LMASK(lsb);
+      vec->value.ul[(UL_DIV(lsb)*num)+VTYPE_INDEX_MEM_RD] |= UL_HMASK(msb) & UL_LMASK(lsb);
     } else {
       int i;
-      vec->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= UL_LMASK(lsb);
+      vec->value.ul[(UL_DIV(lsb)*num)+VTYPE_INDEX_MEM_RD] |= UL_LMASK(lsb);
       for( i=(UL_DIV(lsb) + 1); i<UL_DIV(msb); i++ ) {
-        vec->value.ul[UL_DIV(msb)][VTYPE_INDEX_MEM_RD] = UL_SET;
+        vec->value.ul[(UL_DIV(msb)*num)+VTYPE_INDEX_MEM_RD] = UL_SET;
       }
-      vec->value.ul[UL_DIV(msb)][VTYPE_INDEX_MEM_RD] |= UL_HMASK(msb);
+      vec->value.ul[(UL_DIV(msb)*num)+VTYPE_INDEX_MEM_RD] |= UL_HMASK(msb);
     } 
   }
 
@@ -2070,8 +2140,9 @@ void vector_set_unary_evals(
       {
         unsigned int i;
         unsigned int size = UL_SIZE(vec->width);
+        int          num  = vector_type_sizes[vec->suppl.part.type];
         for( i=0; i<size; i++ ) {
-          ulong* entry = vec->value.ul[i];
+          ulong* entry = vec->value.ul + (i*num);
           ulong  lval  =  entry[VTYPE_INDEX_EXP_VALL];
           ulong  nhval = ~entry[VTYPE_INDEX_EXP_VALH];
           entry[VTYPE_INDEX_EXP_EVAL_A] |= nhval & ~lval;
@@ -2107,11 +2178,14 @@ void vector_set_and_comb_evals(
         unsigned int size  = UL_SIZE( tgt->width );
         unsigned int lsize = UL_SIZE( left->width );
         unsigned int rsize = UL_SIZE( right->width );
+        int          tnum  = vector_type_sizes[tgt->suppl.part.type];
+        int          lnum  = vector_type_sizes[left->suppl.part.type];
+        int          rnum  = vector_type_sizes[right->suppl.part.type];
 
         for( i=0; i<size; i++ ) {
-          ulong* val    = tgt->value.ul[i];
-          ulong* lval   = (i < lsize) ? left->value.ul[i]  : 0;
-          ulong* rval   = (i < rsize) ? right->value.ul[i] : 0;
+          ulong* val    = tgt->value.ul + (i*tnum);
+          ulong* lval   = (i < lsize) ? (left->value.ul  + (i*lnum)) : 0;
+          ulong* rval   = (i < rsize) ? (right->value.ul + (i*rnum)) : 0;
           ulong  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
           ulong  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : UL_SET;
           ulong  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
@@ -2151,11 +2225,14 @@ void vector_set_or_comb_evals(
         unsigned int size  = UL_SIZE( tgt->width );
         unsigned int lsize = UL_SIZE( left->width );
         unsigned int rsize = UL_SIZE( right->width );
+        int          tnum  = vector_type_sizes[tgt->suppl.part.type];
+        int          lnum  = vector_type_sizes[left->suppl.part.type];
+        int          rnum  = vector_type_sizes[right->suppl.part.type];
 
         for( i=0; i<size; i++ ) {
-          ulong* val    = tgt->value.ul[i];
-          ulong* lval   = (i < lsize) ? left->value.ul[i]  : 0;
-          ulong* rval   = (i < rsize) ? right->value.ul[i] : 0;
+          ulong* val    = tgt->value.ul + (i*tnum);
+          ulong* lval   = (i < lsize) ? (left->value.ul  + (i*lnum)) : 0;
+          ulong* rval   = (i < rsize) ? (right->value.ul + (i*rnum)) : 0;
           ulong  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
           ulong  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : UL_SET;
           ulong  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
@@ -2195,11 +2272,14 @@ void vector_set_other_comb_evals(
         unsigned int size  = UL_SIZE( tgt->width );
         unsigned int lsize = UL_SIZE( left->width );
         unsigned int rsize = UL_SIZE( right->width );
+        int          tnum  = vector_type_sizes[tgt->suppl.part.type];
+        int          lnum  = vector_type_sizes[left->suppl.part.type];
+        int          rnum  = vector_type_sizes[right->suppl.part.type];
 
         for( i=0; i<size; i++ ) { 
-          ulong* val    = tgt->value.ul[i];
-          ulong* lval   = (i < lsize) ? left->value.ul[i]  : 0;
-          ulong* rval   = (i < rsize) ? right->value.ul[i] : 0;
+          ulong* val    = tgt->value.ul + (i*tnum);
+          ulong* lval   = (i < lsize) ? (left->value.ul  + (i*lnum)) : 0;
+          ulong* rval   = (i < rsize) ? (right->value.ul + (i*rnum)) : 0;
           ulong  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
           ulong  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : UL_SET;
           ulong  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
@@ -2238,8 +2318,11 @@ bool vector_is_unknown(
   if( vec->value.ul != NULL ) {
     switch( vec->suppl.part.data_type ) {
       case VDATA_UL :
-        size = UL_SIZE( vec->width );
-        while( (i < size) && (vec->value.ul[i][VTYPE_INDEX_VAL_VALH] == 0) ) i++;
+        {
+          int num = vector_type_sizes[vec->suppl.part.type];
+          size    = UL_SIZE( vec->width );
+          while( (i < size) && (vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] == 0) ) i++;
+        }
         break;
       case VDATA_R64 :
       case VDATA_R32 :
@@ -2272,8 +2355,11 @@ bool vector_is_not_zero(
   if( vec->value.ul != NULL ) {
     switch( vec->suppl.part.data_type ) {
       case VDATA_UL :
-        size = UL_SIZE( vec->width );
-        while( (i < size) && (vec->value.ul[i][VTYPE_INDEX_VAL_VALL] == 0) ) i++;
+        {
+          int num = vector_type_sizes[vec->suppl.part.type];
+          size    = UL_SIZE( vec->width );
+          while( (i < size) && (vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] == 0) ) i++;
+        }
         break;
       case VDATA_R64 :
         size = DEQ( vec->value.r64->val, 0.0 ) ? 1 : 0;
@@ -2350,9 +2436,9 @@ int vector_to_int(
   assert( width > 0 );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL  :  retval = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];  break;
-    case VDATA_R64 :  retval = (int)round( vec->value.r64->val );       break;
-    case VDATA_R32 :  retval = (int)roundf( vec->value.r32->val );       break;
+    case VDATA_UL  :  retval = vec->value.ul[0+VTYPE_INDEX_VAL_VALL];  break;
+    case VDATA_R64 :  retval = (int)round( vec->value.r64->val );      break;
+    case VDATA_R32 :  retval = (int)roundf( vec->value.r32->val );      break;
     default        :  assert( 0 );  break;
   }
 
@@ -2384,10 +2470,13 @@ uint64 vector_to_uint64(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      if( (vec->width > 32) && (sizeof( ulong ) == 4) ) {
-        retval = ((uint64)vec->value.ul[1][VTYPE_INDEX_VAL_VALL] << 32) | (uint64)vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
-      } else {
-        retval = (uint64)vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
+      {
+        int num = vector_type_sizes[vec->suppl.part.type];
+        if( (vec->width > 32) && (sizeof( ulong ) == 4) ) {
+          retval = ((uint64)vec->value.ul[(1*num)+VTYPE_INDEX_VAL_VALL] << 32) | (uint64)vec->value.ul[(0*num)+VTYPE_INDEX_VAL_VALL];
+        } else {
+          retval = (uint64)vec->value.ul[(0*num)+VTYPE_INDEX_VAL_VALL];
+        }
       }
       break;
     case VDATA_R64 :
@@ -2458,19 +2547,22 @@ void vector_to_sim_time(
   /* Calculate the full (64-bit) time value */
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL  :
-      assert( vec->value.ul[0][VTYPE_INDEX_VAL_VALH] == 0 );
+      {
+        int num = vector_type_sizes[vec->suppl.part.type];
+        assert( vec->value.ul[(0*num)+VTYPE_INDEX_VAL_VALH] == 0 );
 #if SIZEOF_LONG == 4
-      time_u.u32.lo = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
-      if( UL_SIZE( vec->width ) > 1 ) {
-        assert( vec->value.ul[1][VTYPE_INDEX_VAL_VALH] == 0 );
-        time_u.u32.hi = vec->value.ul[1][VTYPE_INDEX_VAL_VALL];
-      }
+        time_u.u32.lo = vec->value.ul[(0*num)+VTYPE_INDEX_VAL_VALL];
+        if( UL_SIZE( vec->width ) > 1 ) {
+          assert( vec->value.ul[(1*num)+VTYPE_INDEX_VAL_VALH] == 0 );
+          time_u.u32.hi = vec->value.ul[(1*num)+VTYPE_INDEX_VAL_VALL];
+        }
 #elif SIZEOF_LONG == 8
-      time_u.full = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
+        time_u.full = vec->value.ul[(0*num)+VTYPE_INDEX_VAL_VALL];
 #else
 #error "Unsupported long size"
 #endif
-      time_u.full *= scale;
+        time_u.full *= scale;
+      }
       break;
     case VDATA_R64 :  time_u.full = (uint64)round( vec->value.r64->val * scale );  break;
     case VDATA_R32 :  time_u.full = (uint64)roundf( vec->value.r32->val * scale );  break;
@@ -2646,6 +2738,7 @@ static void vector_set_static(
   unsigned int pos       = 0;                          /* Current bit position in vector */
   unsigned int i;                                      /* Loop iterator */
   int          data_type = vec->suppl.part.data_type;  /* Copy of data type for performance reasons */
+  int          num       = vector_type_sizes[vec->suppl.part.type];
 
   while( ptr >= str ) {
     if( *ptr != '_' ) {
@@ -2654,7 +2747,7 @@ static void vector_set_static(
           case VDATA_UL :
             for( i=0; i<bits_per_char; i++ ) {
               if( (i + pos) < vec->width ) {
-                vec->value.ul[UL_DIV(i+pos)][VTYPE_INDEX_VAL_VALH] |= ((ulong)1 << UL_MOD(i+pos));
+                vec->value.ul[(UL_DIV(i+pos)*num)+VTYPE_INDEX_VAL_VALH] |= ((ulong)1 << UL_MOD(i+pos));
               }
             }
             break;
@@ -2667,8 +2760,8 @@ static void vector_set_static(
               if( (i + pos) < vec->width ) {
                 unsigned int index = UL_DIV(i + pos);
                 ulong        value = ((ulong)1 << UL_MOD(i + pos));
-                vec->value.ul[index][VTYPE_INDEX_VAL_VALL] |= value;
-                vec->value.ul[index][VTYPE_INDEX_VAL_VALH] |= value;
+                vec->value.ul[(index*num)+VTYPE_INDEX_VAL_VALL] |= value;
+                vec->value.ul[(index*num)+VTYPE_INDEX_VAL_VALH] |= value;
               }
             }
             break;
@@ -2688,7 +2781,7 @@ static void vector_set_static(
           case VDATA_UL :
             for( i=0; i<bits_per_char; i++ ) {
               if( (i + pos) < vec->width ) {
-                vec->value.ul[UL_DIV(i+pos)][VTYPE_INDEX_VAL_VALL] |= ((val >> i) & 0x1) << UL_MOD(i + pos);
+                vec->value.ul[(UL_DIV(i+pos)*num)+VTYPE_INDEX_VAL_VALL] |= ((val >> i) & 0x1) << UL_MOD(i + pos);
               }
             }
             break;
@@ -2705,23 +2798,23 @@ static void vector_set_static(
     switch( data_type ) {
       case VDATA_UL :
         {
-          ulong hfill = (vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALH] & ((ulong)1 << UL_MOD(pos - 1))) ? UL_SET : 0x0;
-          ulong lfill = (vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALL] & ((ulong)1 << UL_MOD(pos - 1))) ? hfill  : 0x0;
+          ulong hfill = (vec->value.ul[(UL_DIV(pos)*num)+VTYPE_INDEX_VAL_VALH] & ((ulong)1 << UL_MOD(pos - 1))) ? UL_SET : 0x0;
+          ulong lfill = (vec->value.ul[(UL_DIV(pos)*num)+VTYPE_INDEX_VAL_VALL] & ((ulong)1 << UL_MOD(pos - 1))) ? hfill  : 0x0;
           ulong lmask = UL_LMASK(pos);
           ulong hmask = UL_HMASK(vec->width - 1);
           if( UL_DIV(pos) == UL_DIV(vec->width - 1) ) {
             ulong mask = lmask & hmask;
-            vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALL] |= lfill & mask;
-            vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALH] |= hfill & mask;
+            vec->value.ul[(UL_DIV(pos)*num)+VTYPE_INDEX_VAL_VALL] |= lfill & mask;
+            vec->value.ul[(UL_DIV(pos)*num)+VTYPE_INDEX_VAL_VALH] |= hfill & mask;
           } else {
-            vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALL] |= lfill & lmask;
-            vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALH] |= hfill & lmask;
+            vec->value.ul[(UL_DIV(pos)*num)+VTYPE_INDEX_VAL_VALL] |= lfill & lmask;
+            vec->value.ul[(UL_DIV(pos)*num)+VTYPE_INDEX_VAL_VALH] |= hfill & lmask;
             for( i=(UL_DIV(pos) + 1); i<(UL_SIZE( vec->width ) - 1); i++ ) {
-              vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = lfill;
-              vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = hfill;
+              vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] = lfill;
+              vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] = hfill;
             }
-            vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = lfill & hmask;
-            vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = hfill & hmask;
+            vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] = lfill & hmask;
+            vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] = hfill & hmask;
           }
         }
         break;
@@ -2747,6 +2840,7 @@ char* vector_to_string(
 ) { PROFILE(VECTOR_TO_STRING);
 
   char* str = NULL;  /* Pointer to allocated string */
+  int   num = vector_type_sizes[vec->suppl.part.type];
 
   if( base == QSTRING ) {
 
@@ -2762,7 +2856,7 @@ char* vector_to_string(
         {
           int offset = (((vec->width >> 3) & (UL_MOD_VAL >> 3)) == 0) ? SIZEOF_LONG : ((vec->width >> 3) & (UL_MOD_VAL >> 3));
           for( i=UL_SIZE(vec->width); i--; ) {
-            ulong val = vec->value.ul[i][VTYPE_INDEX_VAL_VALL]; 
+            ulong val = vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL]; 
             for( j=(offset - 1); j>=0; j-- ) {
               str[pos] = (val >> ((unsigned int)j * 8)) & 0xff;
               pos++;
@@ -2852,7 +2946,7 @@ char* vector_to_string(
           ulong value = 0;
           int    i;
           for( i=(vec->width - 1); i>=0; i-- ) {
-            ulong* entry = vec->value.ul[UL_DIV(i)];
+            ulong* entry = vec->value.ul + (UL_DIV(i)*num);
             if( ((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) == 1 ) {
               value = ((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) + 16;
             } else if( ((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) == 1 ) {
@@ -2927,12 +3021,13 @@ void vector_from_string_fixed(
 ) { PROFILE(VECTOR_FROM_STRING_FIXED);
 
   unsigned int width = ((vec->width >> 3) < strlen( str )) ? (vec->width >> 3) : strlen( str );
-  unsigned int pos = 0;
+  unsigned int pos   = 0;
   int          i;
+  int          num   = vector_type_sizes[vec->suppl.part.type];
 
   /* TBD - Not sure if I need to support both endianness values here */
   for( i=(width-1); i>=0; i-- ) {
-    vec->value.ul[pos>>(UL_DIV_VAL-3)][VTYPE_INDEX_VAL_VALL] |= (ulong)(str[i]) << ((pos & (UL_MOD_VAL >> 3)) << 3);
+    vec->value.ul[((pos>>(UL_DIV_VAL-3))*num)+VTYPE_INDEX_VAL_VALL] |= (ulong)(str[i]) << ((pos & (UL_MOD_VAL >> 3)) << 3);
     pos++;
   }
 
@@ -2978,13 +3073,14 @@ void vector_from_string(
 
       unsigned int pos = 0;
       int          i;
+      int          num = vector_type_sizes[VTYPE_INDEX_VAL_NUM];
 
       /* Create vector */
       *vec  = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
       *base = QSTRING;
 
       for( i=(strlen( *str ) - 1); i>=0; i-- ) {
-        (*vec)->value.ul[pos>>(UL_DIV_VAL-3)][VTYPE_INDEX_VAL_VALL] |= (ulong)((*str)[i]) << ((pos & (UL_MOD_VAL >> 3)) << 3);
+        (*vec)->value.ul[((pos>>(UL_DIV_VAL-3))*num)+VTYPE_INDEX_VAL_VALL] |= (ulong)((*str)[i]) << ((pos & (UL_MOD_VAL >> 3)) << 3);
         pos++;
       }
 
@@ -3255,9 +3351,11 @@ bool vector_bitwise_and_op(
         unsigned int src1_size = UL_SIZE(src1->width);
         unsigned int src2_size = UL_SIZE(src2->width);
         unsigned int i;
+        int          s1num     = vector_type_sizes[src1->suppl.part.type];
+        int          s2num     = vector_type_sizes[src2->suppl.part.type];
         for( i=0; i<UL_SIZE(tgt->width); i++ ) {
-          ulong* entry1 = src1->value.ul[i];
-          ulong* entry2 = src2->value.ul[i];
+          ulong* entry1 = src1->value.ul + (i*s1num);
+          ulong* entry2 = src2->value.ul + (i*s2num);
           ulong  val1_l = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALL] : 0;
           ulong  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
           ulong  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
@@ -3300,9 +3398,11 @@ bool vector_bitwise_nand_op(
         unsigned int src1_size = UL_SIZE(src1->width);
         unsigned int src2_size = UL_SIZE(src2->width);
         unsigned int i;
+        int          s1num     = vector_type_sizes[src1->suppl.part.type];
+        int          s2num     = vector_type_sizes[src2->suppl.part.type];
         for( i=0; i<UL_SIZE(tgt->width); i++ ) {
-          ulong* entry1 = src1->value.ul[i];
-          ulong* entry2 = src2->value.ul[i];
+          ulong* entry1 = src1->value.ul + (i*s1num);
+          ulong* entry2 = src2->value.ul + (i*s2num);
           ulong  val1_l = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALL] : 0;
           ulong  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
           ulong  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
@@ -3345,9 +3445,11 @@ bool vector_bitwise_or_op(
         unsigned int src1_size = UL_SIZE(src1->width);
         unsigned int src2_size = UL_SIZE(src2->width);
         unsigned int i;
+        int          s1num     = vector_type_sizes[src1->suppl.part.type];
+        int          s2num     = vector_type_sizes[src2->suppl.part.type];
         for( i=0; i<UL_SIZE(tgt->width); i++ ) {
-          ulong* entry1 = src1->value.ul[i];
-          ulong* entry2 = src2->value.ul[i];
+          ulong* entry1 = src1->value.ul + (i*s1num);
+          ulong* entry2 = src2->value.ul + (i*s2num);
           ulong  val1_l = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALL] : 0;
           ulong  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
           ulong  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
@@ -3390,9 +3492,11 @@ bool vector_bitwise_nor_op(
         unsigned int src1_size = UL_SIZE(src1->width);
         unsigned int src2_size = UL_SIZE(src2->width);
         unsigned int i;
+        int          s1num     = vector_type_sizes[src1->suppl.part.type];
+        int          s2num     = vector_type_sizes[src2->suppl.part.type];
         for( i=0; i<UL_SIZE(tgt->width); i++ ) {
-          ulong* entry1 = src1->value.ul[i];
-          ulong* entry2 = src2->value.ul[i];
+          ulong* entry1 = src1->value.ul + (i*s1num);
+          ulong* entry2 = src2->value.ul + (i*s2num);
           ulong  val1_l = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALL] : 0;
           ulong  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
           ulong  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
@@ -3435,9 +3539,11 @@ bool vector_bitwise_xor_op(
         unsigned int src1_size = UL_SIZE(src1->width);
         unsigned int src2_size = UL_SIZE(src2->width);
         unsigned int i;
+        int          s1num     = vector_type_sizes[src1->suppl.part.type];
+        int          s2num     = vector_type_sizes[src2->suppl.part.type];
         for( i=0; i<UL_SIZE(tgt->width); i++ ) {
-          ulong* entry1 = src1->value.ul[i];
-          ulong* entry2 = src2->value.ul[i];
+          ulong* entry1 = src1->value.ul + (i*s1num);
+          ulong* entry2 = src2->value.ul + (i*s2num);
           ulong  val1_l = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALL] : 0;
           ulong  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
           ulong  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
@@ -3480,9 +3586,11 @@ bool vector_bitwise_nxor_op(
         unsigned int src1_size = UL_SIZE(src1->width);
         unsigned int src2_size = UL_SIZE(src2->width);
         unsigned int i;
+        int          s1num     = vector_type_sizes[src1->suppl.part.type];
+        int          s2num     = vector_type_sizes[src2->suppl.part.type];
         for( i=0; i<UL_SIZE(tgt->width); i++ ) {
-          ulong* entry1 = src1->value.ul[i];
-          ulong* entry2 = src2->value.ul[i];
+          ulong* entry1 = src1->value.ul + (i*s1num);
+          ulong* entry2 = src2->value.ul + (i*s2num);
           ulong  val1_l = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALL] : 0;
           ulong  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
           ulong  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
@@ -3510,9 +3618,12 @@ inline static bool vector_reverse_for_cmp_ulong(
   const vector* right  /*!< Pointer to right vector that is being compared */
 ) {
 
+  int lnum = vector_type_sizes[left->suppl.part.type];
+  int rnum = vector_type_sizes[right->suppl.part.type];
+
   return( left->suppl.part.is_signed && right->suppl.part.is_signed &&
-          (((left->value.ul[UL_DIV(left->width-1)][VTYPE_INDEX_VAL_VALL]   >> UL_MOD(left->width  - 1)) & 0x1) !=
-           ((right->value.ul[UL_DIV(right->width-1)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(right->width - 1)) & 0x1)) );
+          (((left->value.ul[(UL_DIV(left->width-1)*lnum)+VTYPE_INDEX_VAL_VALL]   >> UL_MOD(left->width  - 1)) & 0x1) !=
+           ((right->value.ul[(UL_DIV(right->width-1)*rnum)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(right->width - 1)) & 0x1)) );
 
 }
 
@@ -3528,12 +3639,13 @@ inline static void vector_copy_val_and_sign_extend_ulong(
 ) {
 
   unsigned int last_index = UL_DIV(vec->width - 1);
+  int          num        = vector_type_sizes[vec->suppl.part.type];
 
   /* If we are at or exceeding the size of the current vector, it is a signed vector and the MSB is one, sign extend */
   if( (index >= last_index) && (vec->suppl.part.is_signed == 1) && msb_is_one ) {
     if( index == last_index ) {
-      *vall = vec->value.ul[index][VTYPE_INDEX_VAL_VALL] | UL_LMASK(vec->width);
-      *valh = vec->value.ul[index][VTYPE_INDEX_VAL_VALH];
+      *vall = vec->value.ul[(index*num)+VTYPE_INDEX_VAL_VALL] | UL_LMASK(vec->width);
+      *valh = vec->value.ul[(index*num)+VTYPE_INDEX_VAL_VALH];
     } else {
       *vall = UL_SET;
       *valh = 0;
@@ -3546,8 +3658,8 @@ inline static void vector_copy_val_and_sign_extend_ulong(
 
   /* Otherwise, just copy the value */
   } else {
-    *vall = vec->value.ul[index][VTYPE_INDEX_VAL_VALL];
-    *valh = vec->value.ul[index][VTYPE_INDEX_VAL_VALH];
+    *vall = vec->value.ul[(index*num)+VTYPE_INDEX_VAL_VALL];
+    *valh = vec->value.ul[(index*num)+VTYPE_INDEX_VAL_VALH];
   }
   
 }
@@ -3582,8 +3694,10 @@ bool vector_op_lt(
             int          i           = ((lsize < rsize) ? rsize : lsize);
             unsigned int lmsb        = (left->width - 1);
             unsigned int rmsb        = (right->width - 1);
-            bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
-            bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+            int          lnum        = vector_type_sizes[left->suppl.part.type];
+            int          rnum        = vector_type_sizes[right->suppl.part.type];
+            bool         lmsb_is_one = (((left->value.ul[(UL_DIV(lmsb)*lnum)+VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+            bool         rmsb_is_one = (((right->value.ul[(UL_DIV(rmsb)*rnum)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
             ulong        lvall;
             ulong        lvalh;
             ulong        rvall;
@@ -3641,8 +3755,10 @@ bool vector_op_le(
             int          i           = ((lsize < rsize) ? rsize : lsize);
             unsigned int lmsb        = (left->width - 1);
             unsigned int rmsb        = (right->width - 1);
-            bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
-            bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+            int          lnum        = vector_type_sizes[left->suppl.part.type];
+            int          rnum        = vector_type_sizes[right->suppl.part.type];
+            bool         lmsb_is_one = (((left->value.ul[(UL_DIV(lmsb)*lnum)+VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+            bool         rmsb_is_one = (((right->value.ul[(UL_DIV(rmsb)*rnum)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
             ulong        lvall;
             ulong        lvalh;
             ulong        rvall;
@@ -3700,8 +3816,10 @@ bool vector_op_gt(
             int          i           = ((lsize < rsize) ? rsize : lsize);
             unsigned int lmsb        = (left->width - 1);
             unsigned int rmsb        = (right->width - 1);
-            bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
-            bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+            int          lnum        = vector_type_sizes[left->suppl.part.type];
+            int          rnum        = vector_type_sizes[right->suppl.part.type];
+            bool         lmsb_is_one = (((left->value.ul[(UL_DIV(lmsb)*lnum)+VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+            bool         rmsb_is_one = (((right->value.ul[(UL_DIV(rmsb)*rnum)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
             ulong        lvall;
             ulong        lvalh;
             ulong        rvall;
@@ -3759,8 +3877,10 @@ bool vector_op_ge(
             int          i           = ((lsize < rsize) ? rsize : lsize);
             unsigned int lmsb        = (left->width - 1);
             unsigned int rmsb        = (right->width - 1);
-            bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
-            bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+            int          lnum        = vector_type_sizes[left->suppl.part.type];
+            int          rnum        = vector_type_sizes[right->suppl.part.type];
+            bool         lmsb_is_one = (((left->value.ul[(UL_DIV(lmsb)*lnum)+VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+            bool         rmsb_is_one = (((right->value.ul[(UL_DIV(rmsb)*rnum)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
             ulong        lvall;
             ulong        lvalh;
             ulong        rvall;
@@ -3822,8 +3942,10 @@ bool vector_op_eq(
             int          i           = ((lsize < rsize) ? rsize : lsize);
             unsigned int lmsb        = (left->width - 1);
             unsigned int rmsb        = (right->width - 1);
-            bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
-            bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+            int          lnum        = vector_type_sizes[left->suppl.part.type];
+            int          rnum        = vector_type_sizes[right->suppl.part.type];
+            bool         lmsb_is_one = (((left->value.ul[(UL_DIV(lmsb)*lnum)+VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+            bool         rmsb_is_one = (((right->value.ul[(UL_DIV(rmsb)*rnum)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
             ulong        lvall;
             ulong        lvalh;
             ulong        rvall;
@@ -3865,8 +3987,10 @@ bool vector_ceq_ulong(
   int          i           = ((lsize < rsize) ? rsize : lsize);
   unsigned int lmsb        = (left->width - 1);
   unsigned int rmsb        = (right->width - 1);
-  bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
-  bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+  int          lnum        = vector_type_sizes[left->suppl.part.type];
+  int          rnum        = vector_type_sizes[right->suppl.part.type];
+  bool         lmsb_is_one = (((left->value.ul[(UL_DIV(lmsb)*lnum)+VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+  bool         rmsb_is_one = (((right->value.ul[(UL_DIV(rmsb)*rnum)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
   ulong        lvall;
   ulong        lvalh;
   ulong        rvall;
@@ -3937,8 +4061,10 @@ bool vector_op_cxeq(
         int          i           = ((lsize < rsize) ? rsize : lsize);
         unsigned int lmsb        = (left->width - 1);
         unsigned int rmsb        = (right->width - 1);
-        bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
-        bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+        int          lnum        = vector_type_sizes[left->suppl.part.type];
+        int          rnum        = vector_type_sizes[right->suppl.part.type];
+        bool         lmsb_is_one = (((left->value.ul[(UL_DIV(lmsb)*lnum)+VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.ul[(UL_DIV(rmsb)*rnum)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
         ulong        mask        = (left->width < right->width) ? UL_HMASK(left->width - 1) : UL_HMASK(right->width - 1);
         ulong        lvall;
         ulong        lvalh;
@@ -3985,8 +4111,10 @@ bool vector_op_czeq(
         int          i           = ((lsize < rsize) ? rsize : lsize) - 1;
         unsigned int lmsb        = (left->width - 1);
         unsigned int rmsb        = (right->width - 1);
-        bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
-        bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+        int          lnum        = vector_type_sizes[left->suppl.part.type];
+        int          rnum        = vector_type_sizes[right->suppl.part.type];
+        bool         lmsb_is_one = (((left->value.ul[(UL_DIV(lmsb)*lnum)+VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.ul[(UL_DIV(rmsb)*rnum)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
         ulong        mask        = (left->width < right->width) ? UL_HMASK(left->width - 1) : UL_HMASK(right->width - 1);
         ulong        lvall;
         ulong        lvalh;
@@ -4043,8 +4171,10 @@ bool vector_op_ne(
             int          i           = ((lsize < rsize) ? rsize : lsize);
             unsigned int lmsb        = (left->width - 1);
             unsigned int rmsb        = (right->width - 1);
-            bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
-            bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+            int          lnum        = vector_type_sizes[left->suppl.part.type];
+            int          rnum        = vector_type_sizes[right->suppl.part.type];
+            bool         lmsb_is_one = (((left->value.ul[(UL_DIV(lmsb)*lnum)+VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+            bool         rmsb_is_one = (((right->value.ul[(UL_DIV(rmsb)*rnum)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
             ulong        lvall;
             ulong        lvalh;
             ulong        rvall;
@@ -4327,9 +4457,11 @@ bool vector_op_add(
         {
           ulong        vall[UL_DIV(MAX_BIT_WIDTH)];
           ulong        valh[UL_DIV(MAX_BIT_WIDTH)];
-          ulong        carry = 0;
-          bool         lmsb_is_one = (((left->value.ul[UL_DIV(left->width-1)][VTYPE_INDEX_VAL_VALL]   >> UL_MOD(left->width  - 1)) & 1) == 1);
-          bool         rmsb_is_one = (((right->value.ul[UL_DIV(right->width-1)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(right->width - 1)) & 1) == 1);
+          ulong        carry       = 0;
+          int          lnum        = vector_type_sizes[left->suppl.part.type];
+          int          rnum        = vector_type_sizes[right->suppl.part.type];
+          bool         lmsb_is_one = (((left->value.ul[(UL_DIV(left->width-1)*lnum)+VTYPE_INDEX_VAL_VALL]   >> UL_MOD(left->width  - 1)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.ul[(UL_DIV(right->width-1)*rnum)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(right->width - 1)) & 1) == 1);
           ulong        lvall, lvalh;
           ulong        rvall, rvalh;
           unsigned int i;
@@ -4390,7 +4522,7 @@ bool vector_op_negate(
       case VDATA_UL :
         {
           if( src->width <= UL_BITS ) {
-            ulong vall = ~src->value.ul[0][VTYPE_INDEX_EXP_VALL] + 1;
+            ulong vall = ~src->value.ul[0+VTYPE_INDEX_EXP_VALL] + 1;
             ulong valh = 0;
 
             retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, (tgt->width - 1) );
@@ -4401,9 +4533,10 @@ bool vector_op_negate(
             unsigned int size  = UL_SIZE( src->width );
             ulong        carry = 1;
             ulong        val;
+            int          num   = vector_type_sizes[src->suppl.part.type];
 
             for( i=0; i<(size - 1); i++ ) {
-              val     = ~src->value.ul[i][VTYPE_INDEX_EXP_VALL];
+              val     = ~src->value.ul[(i*num)+VTYPE_INDEX_EXP_VALL];
               vall[i] = 0;
               valh[i] = 0;
               for( j=0; j<UL_BITS; j++ ) {
@@ -4412,7 +4545,7 @@ bool vector_op_negate(
                 vall[i]  |= (bit & 0x1) << j;
               }
             }
-            val     = ~src->value.ul[i][VTYPE_INDEX_EXP_VALL];
+            val     = ~src->value.ul[(i*num)+VTYPE_INDEX_EXP_VALL];
             vall[i] = 0;
             valh[i] = 0;
             for( j=0; j<(tgt->width - (i << UL_DIV_VAL)); j++ ) {
@@ -4478,9 +4611,11 @@ bool vector_op_subtract(
         {
           ulong        vall[UL_DIV(MAX_BIT_WIDTH)];
           ulong        valh[UL_DIV(MAX_BIT_WIDTH)];
-          ulong        carry = 1;
-          bool         lmsb_is_one = (((left->value.ul[UL_DIV(left->width-1)][VTYPE_INDEX_VAL_VALL]   >> UL_MOD(left->width  - 1)) & 1) == 1);
-          bool         rmsb_is_one = (((right->value.ul[UL_DIV(right->width-1)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(right->width - 1)) & 1) == 1);
+          ulong        carry       = 1;
+          int          lnum        = vector_type_sizes[left->suppl.part.type];
+          int          rnum        = vector_type_sizes[right->suppl.part.type];
+          bool         lmsb_is_one = (((left->value.ul[(UL_DIV(left->width-1)*lnum)+VTYPE_INDEX_VAL_VALL]   >> UL_MOD(left->width  - 1)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.ul[(UL_DIV(right->width-1)*rnum)+VTYPE_INDEX_VAL_VALL] >> UL_MOD(right->width - 1)) & 1) == 1);
           ulong        lvall, lvalh;
           ulong        rvall, rvalh;
           unsigned int i;
@@ -4546,7 +4681,7 @@ bool vector_op_multiply(
     switch( tgt->suppl.part.data_type ) {
       case VDATA_UL :
         {
-          ulong vall = left->value.ul[0][VTYPE_INDEX_VAL_VALL] * right->value.ul[0][VTYPE_INDEX_VAL_VALL];
+          ulong vall = left->value.ul[0+VTYPE_INDEX_VAL_VALL] * right->value.ul[0+VTYPE_INDEX_VAL_VALL];
           ulong valh = 0;
           retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, (tgt->width - 1) );
         }
@@ -4600,11 +4735,11 @@ bool vector_op_divide(
         {
           ulong vall;
           ulong valh = 0;
-          ulong rval = right->value.ul[0][VTYPE_INDEX_EXP_VALL];
+          ulong rval = right->value.ul[0+VTYPE_INDEX_EXP_VALL];
           if( rval == 0 ) {
             retval = vector_set_to_x( tgt );
           } else {
-            vall = left->value.ul[0][VTYPE_INDEX_EXP_VALL] / rval;
+            vall = left->value.ul[0+VTYPE_INDEX_EXP_VALL] / rval;
             retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, (UL_BITS - 1) );
           }
         }
@@ -4658,11 +4793,11 @@ bool vector_op_modulus(
         {
           ulong vall;
           ulong valh = 0;
-          ulong rval = right->value.ul[0][VTYPE_INDEX_EXP_VALL];
+          ulong rval = right->value.ul[0+VTYPE_INDEX_EXP_VALL];
           if( rval == 0 ) {
             retval = vector_set_to_x( tgt );
           } else {
-            vall = left->value.ul[0][VTYPE_INDEX_EXP_VALL] % rval;
+            vall = left->value.ul[0+VTYPE_INDEX_EXP_VALL] % rval;
             retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, (UL_BITS - 1) );
           }
         }
@@ -4694,7 +4829,7 @@ bool vector_op_inc(
         vector* tmp1 = &(tvb->vec[tvb->index++]);
         vector* tmp2 = &(tvb->vec[tvb->index++]);
         vector_copy( tgt, tmp1 );
-        tmp2->value.ul[0][VTYPE_INDEX_VAL_VALL] = 1;
+        tmp2->value.ul[0+VTYPE_INDEX_VAL_VALL] = 1;
         (void)vector_op_add( tgt, tmp1, tmp2 );
       }
       break;
@@ -4729,7 +4864,7 @@ bool vector_op_dec(
         vector* tmp1 = &(tvb->vec[tvb->index++]);
         vector* tmp2 = &(tvb->vec[tvb->index++]);
         vector_copy( tgt, tmp1 );
-        tmp2->value.ul[0][VTYPE_INDEX_VAL_VALL] = 1;
+        tmp2->value.ul[0+VTYPE_INDEX_VAL_VALL] = 1;
         (void)vector_op_subtract( tgt, tmp1, tmp2 );
       }
     case VDATA_R64 :
@@ -4768,14 +4903,15 @@ bool vector_unary_inv(
         ulong        tvalh;
         unsigned int i;
         unsigned int size = UL_SIZE( src->width );
+        int          num  = vector_type_sizes[src->suppl.part.type];
 
         for( i=0; i<(size-1); i++ ) {
-          tvalh   = src->value.ul[i][VTYPE_INDEX_EXP_VALH];
-          vall[i] = ~tvalh & ~src->value.ul[i][VTYPE_INDEX_EXP_VALL];
+          tvalh   = src->value.ul[(i*num)+VTYPE_INDEX_EXP_VALH];
+          vall[i] = ~tvalh & ~src->value.ul[(i*num)+VTYPE_INDEX_EXP_VALL];
           valh[i] = tvalh;
         }
-        tvalh   = src->value.ul[i][VTYPE_INDEX_EXP_VALH];
-        vall[i] = ~tvalh & ~src->value.ul[i][VTYPE_INDEX_EXP_VALL] & mask;
+        tvalh   = src->value.ul[(i*num)+VTYPE_INDEX_EXP_VALH];
+        vall[i] = ~tvalh & ~src->value.ul[(i*num)+VTYPE_INDEX_EXP_VALL] & mask;
         valh[i] = tvalh & mask;
 
         retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
@@ -4810,12 +4946,13 @@ bool vector_unary_and(
         ulong        valh  = 0;
         ulong        vall  = 1;
         ulong        lmask = UL_HMASK(src->width - 1);
+        int          num   = vector_type_sizes[src->suppl.part.type];
         for( i=0; i<(ssize-1); i++ ) {
-          valh |= (src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
-          vall &= ~valh & ((src->value.ul[i][VTYPE_INDEX_VAL_VALL] == UL_SET) ? 1 : 0);
+          valh |= (src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
+          vall &= ~valh & ((src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] == UL_SET) ? 1 : 0);
         }
-        valh |= (src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
-        vall &= ~valh & ((src->value.ul[i][VTYPE_INDEX_VAL_VALL] == lmask) ? 1 : 0);
+        valh |= (src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
+        vall &= ~valh & ((src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] == lmask) ? 1 : 0);
         retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, 0 );
       }
       break;
@@ -4848,12 +4985,13 @@ bool vector_unary_nand(
         ulong        valh  = 0;
         ulong        vall  = 0;
         ulong        lmask = UL_HMASK(src->width - 1);
+        int          num   = vector_type_sizes[src->suppl.part.type];
         for( i=0; i<(ssize-1); i++ ) {
-          valh |= (src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
-          vall |= ~valh & ((src->value.ul[i][VTYPE_INDEX_VAL_VALL] == UL_SET) ? 0 : 1);
+          valh |= (src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
+          vall |= ~valh & ((src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] == UL_SET) ? 0 : 1);
         }
-        valh |= (src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
-        vall |= ~valh & ((src->value.ul[i][VTYPE_INDEX_VAL_VALL] == lmask) ? 0 : 1);
+        valh |= (src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
+        vall |= ~valh & ((src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] == lmask) ? 0 : 1);
         retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, 0 );
       }
       break;
@@ -4886,8 +5024,9 @@ bool vector_unary_or(
         unsigned int i    = 0;
         unsigned int size = UL_SIZE( src->width );
         ulong        x    = 0;
-        while( (i < size) && ((~src->value.ul[i][VTYPE_INDEX_VAL_VALH] & src->value.ul[i][VTYPE_INDEX_VAL_VALL]) == 0) ) {
-          x |= src->value.ul[i][VTYPE_INDEX_VAL_VALH];
+        int          num   = vector_type_sizes[src->suppl.part.type];
+        while( (i < size) && ((~src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] & src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL]) == 0) ) {
+          x |= src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH];
           i++;
         }
         if( i < size ) {
@@ -4929,8 +5068,9 @@ bool vector_unary_nor(
         unsigned int i    = 0;
         unsigned int size = UL_SIZE( src->width );
         ulong        x    = 0;
-        while( (i < size) && ((~src->value.ul[i][VTYPE_INDEX_VAL_VALH] & src->value.ul[i][VTYPE_INDEX_VAL_VALL]) == 0) ) {
-          x |= src->value.ul[i][VTYPE_INDEX_VAL_VALH];
+        int          num  = vector_type_sizes[src->suppl.part.type];
+        while( (i < size) && ((~src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] & src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL]) == 0) ) {
+          x |= src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH];
           i++;
         }
         if( i < size ) {
@@ -4971,13 +5111,14 @@ bool vector_unary_xor(
         ulong        valh = 0;
         unsigned int i    = 0;
         unsigned int size = UL_SIZE( src->width );
+        int          num  = vector_type_sizes[src->suppl.part.type];
         do {
-          if( src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0 ) {
+          if( src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] != 0 ) {
             vall = 0;
             valh = 1;
           } else {
             unsigned int j;
-            ulong        tval = src->value.ul[i][VTYPE_INDEX_VAL_VALL];
+            ulong        tval = src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL];
             for( j=1; j<UL_BITS; j<<=1 ) {
               tval = tval ^ (tval >> j);
             }
@@ -5016,13 +5157,14 @@ bool vector_unary_nxor(
         ulong        valh = 0;
         unsigned int i    = 0;
         unsigned int size = UL_SIZE( src->width );
+        int          num  = vector_type_sizes[src->suppl.part.type];
         do {
-          if( src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0 ) {
+          if( src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] != 0 ) {
             vall = 0;
             valh = 1;
           } else {
             unsigned int j;
-            ulong        tval = src->value.ul[i][VTYPE_INDEX_VAL_VALL];
+            ulong        tval = src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL];
             for( j=1; j<UL_BITS; j<<=1 ) {
               tval = tval ^ (tval >> j);
             }
@@ -5061,10 +5203,11 @@ bool vector_unary_not(
         ulong        valh;
         unsigned int size = UL_SIZE( src->width );
         unsigned int i    = 0;
-        while( (i < size) && (src->value.ul[i][VTYPE_INDEX_VAL_VALH] == 0) && (src->value.ul[i][VTYPE_INDEX_VAL_VALL] == 0) ) i++;
+        int          num  = vector_type_sizes[src->suppl.part.type];
+        while( (i < size) && (src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] == 0) && (src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] == 0) ) i++;
         if( i < size ) {
           vall = 0;
-          valh = (src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0);
+          valh = (src->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] != 0);
         } else {
           vall = 1;
           valh = 0;
@@ -5103,9 +5246,10 @@ bool vector_op_expand(
         unsigned int rwidth     = right->width;
         unsigned int multiplier = vector_to_int( left );
         unsigned int pos        = 0;
+        int          num        = vector_type_sizes[right->suppl.part.type];
         for( i=0; i<multiplier; i++ ) {
           for( j=0; j<rwidth; j++ ) {
-            ulong*       rval     = right->value.ul[UL_DIV(j)];
+            ulong*       rval     = right->value.ul + (UL_DIV(j)*num);
             unsigned int my_index = UL_DIV(pos);
             unsigned int offset   = UL_MOD(pos);
             if( offset == 0 ) {
@@ -5151,17 +5295,19 @@ bool vector_op_list(
         unsigned int pos    = right->width;
         unsigned int lwidth = left->width;
         unsigned int rsize  = UL_SIZE( pos );
+        int          lnum   = vector_type_sizes[left->suppl.part.type];
+        int          rnum   = vector_type_sizes[right->suppl.part.type];
 
         /* Load right vector directly */
         for( i=0; i<rsize; i++ ) {
-          ulong* rval = right->value.ul[i];
+          ulong* rval = right->value.ul + (i*rnum);
           vall[i] = rval[VTYPE_INDEX_VAL_VALL];
           valh[i] = rval[VTYPE_INDEX_VAL_VALH];
         }
 
         /* Load left vector a bit at at time */
         for( i=0; i<lwidth; i++ ) {
-          ulong*       lval     = left->value.ul[UL_DIV(i)];
+          ulong*       lval     = left->value.ul + (UL_DIV(i)*lnum);
           unsigned int my_index = UL_DIV(pos);
           unsigned int offset   = UL_MOD(pos);
           if( offset == 0 ) {
@@ -5188,19 +5334,15 @@ bool vector_op_list(
  Deallocates the value structure for the given vector.
 */
 void vector_dealloc_value(
-  vector* vec  /*!< Pointer to vector to deallocate value for */
+  vector* vec,     /*!< Pointer to vector to deallocate value for */
+  bool    use_cov  /*!< Set to TRUE when the vector should be using coverage data in the vector */
 ) { PROFILE(VECTOR_DEALLOC_VALUE);
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      {
-        unsigned int i;
-        unsigned int size = UL_SIZE( vec->width );
-
-        for( i=0; i<size; i++ ) {
-          free_safe( vec->value.ul[i], (sizeof( ulong ) * vector_type_sizes[vec->suppl.part.type]) );
-        }
-        free_safe( vec->value.ul, (sizeof( ulong* ) * size) );
+      if( !use_cov || (vec->suppl.part.type == VTYPE_VAL) ) {
+        unsigned int size = UL_SIZE( vec->width ) * vector_type_sizes[vec->suppl.part.type];
+        free_safe( vec->value.ul, (sizeof( ulong ) * size) );
         vec->value.ul = NULL;
       }
       break;

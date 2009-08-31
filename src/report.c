@@ -419,15 +419,28 @@ bool report_parse_args(
  
     } else if( (i + 1) == argc ) {
 
-      if( file_exists( argv[i] ) ) {
-     
-        input_db = strdup_safe( argv[i] );
- 
-      } else {
+      unsigned int slen;
+      unsigned int rv;
 
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find %s database file for opening", argv[i] );
+      if( strncmp( "merged", argv[i], 6 ) == 0 ) {
+        slen = strlen( get_cdd() ) + 23;
+        input_db = (char*)malloc_safe( slen );
+        rv       = snprintf( input_db, slen, "%s/cov/merged/merged.cdb", get_cdd() );
+        assert( rv < slen );
+      } else {
+        slen = strlen( get_cdd() ) + 11 + strlen( argv[i] ) + 5;
+        input_db = (char*)malloc_safe( slen );
+        rv       = snprintf( input_db, slen, "%s/cov/tests/%s.cdb", get_cdd(), argv[i] );
+        assert( rv < slen );
+      }
+
+      if( !file_exists( input_db ) ) {
+     
+        rv       = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find %s database file for opening", input_db );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        free_safe( input_db, (strlen( input_db ) + 1) );
+        input_db = NULL;
         Throw 0;
 
       }
@@ -1102,11 +1115,32 @@ void command_report(
 
         } else {
 
-          /* Read in CDD file */
-          (void)db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE), CMD_REPORT );
+          unsigned int slen;
+          char*        design_db;
+          unsigned int rv;
 
-          /* Perform binding */
-          bind_perform( TRUE, 0 );
+          /* Read in coverage file first */
+          cov_db_read( input_db );
+
+          Try {
+
+            slen      = strlen( get_cdd() ) + 11;
+            design_db = (char*)malloc_safe( slen );
+            rv        = snprintf( design_db, slen, "%s/db/cov.db", get_cdd() );
+            assert( rv < slen );
+
+            /* Read in design file second */
+            (void)db_read( design_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE), CMD_REPORT );
+
+            /* Perform binding */
+            bind_perform( TRUE, 0 );
+
+          } Catch_anonymous {
+            free_safe( design_db, slen );
+            Throw 0;
+          }
+
+          free_safe( design_db, slen );
 
           Try {
 

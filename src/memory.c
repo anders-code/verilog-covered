@@ -328,8 +328,8 @@ static void memory_get_mem_coverage(
       vector_toggle_count( vec, &tog01, &tog10 );
 
       /* Get toggle strings */
-      tog01_str = vector_get_toggle01_ulong( vec->value.ul, vec->width );
-      tog10_str = vector_get_toggle10_ulong( vec->value.ul, vec->width );
+      tog01_str = vector_get_toggle01_ulong( vec->value.ul, vec->width, vec->suppl.part.type );
+      tog10_str = vector_get_toggle10_ulong( vec->value.ul, vec->width, vec->suppl.part.type );
 
       /* Get write/read information */
       wr = 0;
@@ -962,14 +962,14 @@ static void memory_display_memory(
         assert( rv < 4096 );
 
         fprintf( ofile, "        %s  Written: %d  0->1: ", name, ((wr == 0) ? 0 : 1) );
-        vector_display_toggle01_ulong( vec->value.ul, vec->width, ofile );
+        vector_display_toggle01_ulong( vec->value.ul, vec->width, vec->suppl.part.type, ofile );
         fprintf( ofile, "\n" );
         fprintf( ofile, "        " );
         for( j=0; j<strlen( name ); j++ ) {
           fprintf( ofile, "." );
         }
         fprintf( ofile, "  Read   : %d  1->0: ", ((rd == 0) ? 0 : 1) );
-        vector_display_toggle10_ulong( vec->value.ul, vec->width, ofile );
+        vector_display_toggle10_ulong( vec->value.ul, vec->width, vec->suppl.part.type, ofile );
         fprintf( ofile, " ...\n" );
       }
 

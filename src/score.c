@@ -93,7 +93,10 @@ char* cdd_message = NULL;
 static void score_usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered score (-h | -vcd <dumpfile> | -lxt <dumpfile>) [<options>])\n" );
+  printf( "Usage:  covered score (-h | -vcd <dumpfile> | -lxt <dumpfile>) [<options>] <coverage filename>\n" );
+  printf( "\n" );
+  printf( "   The <coverage filename> represents the base name of the file that coverage information for this run will be output\n" );
+  printf( "   to.  The coverage database file will be written to %s/cov/tests/<coverage filename>.cdb.\n", get_cdd() );
   printf( "\n" );
   printf( "   Dumpfile formats:\n" );
   printf( "      Both the VCD and LXT style dumpfiles are supported by Covered.\n" );
@@ -107,7 +110,6 @@ static void score_usage() {
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -f <filename>                Name of file containing additional arguments to parse.\n" );
-  printf( "      -o <database_filename>       Name of database to write coverage information to.\n" );
   printf( "      -S                           Outputs simulation performance information after scoring has completed.  This\n" );
   printf( "                                     information is currently only useful for the developers of Covered.\n" );
   printf( "      -m <message>                 Allows the user to specify information about this CDD file.  This information can\n" );
@@ -118,7 +120,7 @@ static void score_usage() {
   printf( "   Note:\n" );
   printf( "     Any plusargs that need to be passed to the score command can be added anywhere in the score command options.\n" );
   printf( "     Example:\n" );
-  printf( "       covered score -vcd top.vcd +plusarg_option1 +plusarg_option2=13 -o top.cdd\n" );
+  printf( "       covered score -vcd top.vcd +plusarg_option1 +plusarg_option2=13 top\n" );
   printf( "\n" );
 
 }
@@ -151,26 +153,6 @@ static bool score_parse_args(
 
       score_usage();
       help_found = TRUE;
-
-    } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
-
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        if( output_db != NULL ) {
-          print_output( "Only one -o/-cdd option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
-        } else {
-          if( file_exists( argv[i] ) || is_legal_filename( argv[i] ) ) {
-            output_db = strdup_safe( argv[i] );
-          } else {
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
-            assert( rv < USER_MSG_LENGTH );
-            print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            Throw 0;
-          }
-        }
-      } else {
-        Throw 0;
-      }
 
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
@@ -290,6 +272,23 @@ static bool score_parse_args(
 
       sys_task_store_plusarg( argv[i] + 1 );
 
+    } else if( (i + 1) == argc ) {
+
+      unsigned int slen;
+      unsigned int rv;
+
+      /* If the user wants to call the coverage database "merged", it cannot as this is a reserved filename */
+      if( strncmp( "merged", argv[i], 6 ) == 0 ) {
+        print_output( "The coverage database filename \"merged\" is reserved.  Please specify a different filename to output to.", FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      }
+  
+      /* Create the output database name */
+      slen      =  strlen( argv[i] ) + 5;
+      output_db = (char*)malloc_safe( slen );
+      rv        = snprintf( output_db, slen, "%s.cdb", argv[i] );
+      assert( rv < slen );
+
     } else {
 
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
@@ -303,9 +302,14 @@ static bool score_parse_args(
 
   }
 
-  /* If the user did not specify a coverage file name, use the default */
-  if( output_db == NULL ) {
-    output_db = strdup_safe( "cov.cdb" );
+  if( !help_found ) {
+
+    /* The user must supply an output coverage filename, if they didn't output an error message */
+    if( output_db == NULL ) {
+      print_output( "Output coverage filename was not specified on the command-line", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+    }
+
   }
 
   return( help_found );

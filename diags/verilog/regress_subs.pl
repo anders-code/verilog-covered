@@ -526,8 +526,8 @@ sub regress_run {
   }
 
   # Generate reports
-  &runReportCommand( "-d v -e -m ltcfam    -o ${diagname}.rptM ${diagname}.cdd" );
-  &runReportCommand( "-d v -e -m ltcfam -i -o ${diagname}.rptI ${diagname}.cdd" );
+  &runReportCommand( "-d v -e -m ltcfam    -o ${diagname}.rptM ${diagname}" );
+  &runReportCommand( "-d v -e -m ltcfam -i -o ${diagname}.rptI ${diagname}" );
 
   if( $SIMULATOR eq "VERILATOR" ) {
     &runCommand( "mv ${diagname}.cdd  ${diagname}.verilator.cdd" );
@@ -595,9 +595,9 @@ sub regress_iv {
         &runCommand( "./vcd_diff    ${diagname}.vcd ${diagname}.vcd.1 ${diagname}.map" );
       }
       &runCommand( "rm -f ${diagname}.vcd.1" );
-      &runScoreCommand( "-vcd ${diagname}.vcd" );
+      &runScoreCommand( "-vcd ${diagname}.vcd ${diagname}" );
     } else {
-      &runScoreCommand( "-lxt ${diagname}.vcd" );
+      &runScoreCommand( "-lxt ${diagname}.vcd ${diagname}" );
     }
 
   }
@@ -640,7 +640,7 @@ sub regress_cver {
       &runCommand( "./vcd_diff    ${diagname}.vcd ${diagname}.vcd.1 ${diagname}.map" );
     }
     &runCommand( "rm -f ${diagname}.vcd.1" );
-    &runScoreCommand( "-vcd ${diagname}.vcd" );
+    &runScoreCommand( "-vcd ${diagname}.vcd ${diagname}" );
 
   }
 
@@ -692,7 +692,7 @@ sub regress_vcs {
       &runCommand( "./vcd_diff    ${diagname}.vcd ${diagname}.vcd.1 ${diagname}.map" );
     }
     &runCommand( "rm -f ${diagname}.vcd.1" );
-    &runScoreCommand( "-vcd ${diagname}.vcd" );
+    &runScoreCommand( "-vcd ${diagname}.vcd ${diagname}" );
 
   }
 
@@ -720,7 +720,7 @@ sub regress_veriwell {
     &runCommand( "./vcd_diff    ${diagname}.vcd ${diagname}.vcd.1 ${diagname}.map" );
   }
   &runCommand( "rm -f ${diagname}.vcd.1" );
-  &runScoreCommand( "-vcd ${diagname}.vcd" );
+  &runScoreCommand( "-vcd ${diagname}.vcd ${diagname}" );
 
 }
 

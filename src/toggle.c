@@ -184,8 +184,8 @@ void toggle_get_coverage(
 
   *msb      = sig->dim[0].msb;
   *lsb      = sig->dim[0].lsb; 
-  *tog01    = vector_get_toggle01_ulong( sig->value->value.ul, sig->value->width );
-  *tog10    = vector_get_toggle10_ulong( sig->value->value.ul, sig->value->width );
+  *tog01    = vector_get_toggle01_ulong( sig->value->value.ul, sig->value->width, sig->value->suppl.part.type );
+  *tog10    = vector_get_toggle10_ulong( sig->value->value.ul, sig->value->width, sig->value->suppl.part.type );
   *excluded = sig->suppl.part.excluded;
 
   /* If the toggle is currently excluded, check to see if there's a reason associated with it */
@@ -495,19 +495,19 @@ static void toggle_display_verbose(
             if( flag_output_exclusion_ids ) {
               char tmp[30];
               fprintf( ofile, "      (%s)  %-24s  0->1: ", db_gen_exclusion_id( 'T', sig->id ), pname );
-              vector_display_toggle01_ulong( sig->value->value.ul, sig->value->width, ofile );      
+              vector_display_toggle01_ulong( sig->value->value.ul, sig->value->width, sig->value->suppl.part.type, ofile );
               gen_char_string( tmp, ' ', (eid_size - 1) );
               fprintf( ofile, "\n       %s   ......................... 1->0: ", tmp );
-              vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, ofile );      
+              vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, sig->value->suppl.part.type, ofile );
               fprintf( ofile, " ...\n" );
               if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'T', sig->id, funit )) != NULL) ) {
                 report_output_exclusion_reason( ofile, (12 + (eid_size - 1)), er->reason, TRUE );
               }
             } else {
               fprintf( ofile, "      %-24s  0->1: ", pname );
-              vector_display_toggle01_ulong( sig->value->value.ul, sig->value->width, ofile );      
+              vector_display_toggle01_ulong( sig->value->value.ul, sig->value->width, sig->value->suppl.part.type, ofile );
               fprintf( ofile, "\n      ......................... 1->0: " );
-              vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, ofile );      
+              vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, sig->value->suppl.part.type, ofile );
               fprintf( ofile, " ...\n" );
               if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'T', sig->id, funit )) != NULL) ) {
                 report_output_exclusion_reason( ofile, 8, er->reason, TRUE );

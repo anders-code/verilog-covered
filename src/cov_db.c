@@ -251,8 +251,6 @@ void cov_db_add_expr(
   const expression* expr  /*!< Pointer to expression to add coverage for */
 ) { PROFILE(COV_DB_ADD_EXPR);
 
-  printf( "In cov_db_add_expr...\n" );
-
   /* Update the coverage and set the current expression's ID */
   cov_db_list[0]->u8_num++;
 
@@ -405,15 +403,9 @@ void cov_db_read(
   const char* fname  /*!< Filename of coverage database to read */
 ) { PROFILE(COV_DB_READ);
 
-  FILE*        ifile;
-  char         cdd_name[4096];
-  unsigned int rv;
+  FILE* ifile;
 
-  /* Create relative pathname */
-  rv = snprintf( cdd_name, 4096, "covered/cdb/%s", fname );
-  assert( rv < 4096 );
-
-  if( (ifile = fopen( cdd_name, "r" )) != NULL ) {
+  if( (ifile = fopen( fname, "r" )) != NULL ) {
 
     unsigned int i;
     char*        token;
@@ -447,7 +439,7 @@ void cov_db_read(
 
     } Catch_anonymous {
 
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading coverage database \"%s\" that is improperly formattted", cdd_name );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading coverage database \"%s\" that is improperly formattted", fname );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
 
@@ -469,10 +461,37 @@ void cov_db_read(
 
   } else {
 
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read coverage database file \"%s\"", fname );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read coverage database file \"%s\"", fname );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Merges all of the read-in databases on a bit-per-bit basis, storing the merged information into the coverage
+ database in the 0'th array location.
+*/
+void cov_db_merge() { PROFILE(COV_DB_MERGE);
+
+  unsigned int i;
+  ulong        j;
+
+  for( i=1; i<curr_cov_db; i++ ) {
+
+    assert( cov_db_list[0]->ul_num == cov_db_list[i]->ul_num );
+    for( j=0; j<cov_db_list[i]->ul_num; j++ ) {
+      cov_db_list[0]->ul[j] |= cov_db_list[i]->ul[j];
+    }
+
+    assert( cov_db_list[0]->u8_num == cov_db_list[i]->u8_num );
+    for( j=0; j<cov_db_list[i]->u8_num; j++ ) {
+      cov_db_list[0]->u8[j] |= cov_db_list[i]->u8[j];
+    }
 
   }
 

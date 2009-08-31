@@ -34,10 +34,15 @@
 extern const unsigned int vector_type_sizes[4];
 
 
+/*! \brief Returns the size of the given vector type */
+int vector_get_type_size(
+  uint8 type
+);
+
 /*! \brief Initializes specified vector. */
 void vector_init_ulong(
   /*@out@*/ vector* vec,
-            ulong** value,
+            ulong*  value,
             ulong   data_l,
             ulong   data_h,
             bool    owns_value,
@@ -149,52 +154,63 @@ int vector_get_eval_d(
 );
 
 /*! \brief Counts the number of eval_a/b bits set in the given vector */
-int vector_get_eval_ab_count( vector* vec );
+int vector_get_eval_ab_count(
+  vector* vec
+);
 
 /*! \brief Counts the number of eval_a/b/c bits set in the given vector */
-int vector_get_eval_abc_count( vector* vec );
+int vector_get_eval_abc_count(
+  vector* vec
+);
 
 /*! \brief Counts the number of eval_a/b/c/d bits set in the given vector */
-int vector_get_eval_abcd_count( vector* vec );
+int vector_get_eval_abcd_count(
+  vector* vec
+);
 
 /*! \brief Returns string containing toggle 0 -> 1 information in binary format */
 char* vector_get_toggle01_ulong(
-  ulong** value,
-  int     width
+  ulong* value,
+  int    width,
+  uint8  type
 );
 
 /*! \brief Returns string containing toggle 1 -> 0 information in binary format */
 char* vector_get_toggle10_ulong(
-  ulong** value,
-  int     width
+  ulong* value,
+  int    width,
+  uint8  type
 );
 
 /*! \brief Outputs the toggle01 information from the specified nibble to the specified output stream. */
 void vector_display_toggle01_ulong(
-  ulong** value,
-  int     width,
-  FILE*   ofile
+  ulong* value,
+  int    width,
+  uint8  type,
+  FILE*  ofile
 );
 
 /*! \brief Outputs the toggle10 information from the specified nibble to the specified output stream. */
 void vector_display_toggle10_ulong(
-  ulong** value,
-  int     width,
-  FILE*   ofile
+  ulong* value,
+  int    width,
+  uint8  type,
+  FILE*  ofile
 );
 
 /*! \brief Outputs the binary value of the specified nibble array to standard output */
 void vector_display_value_ulong(
-  ulong** value,
-  int     width
+  ulong* value,
+  int    width,
+  uint8  type
 );
 
 /*@-exportlocal@*/
 /*! \brief Outputs ulong vector to standard output. */
 void vector_display_ulong(
-  ulong**      value,
+  ulong*       value,
   unsigned int width,
-  unsigned int type
+  uint8        type
 );
 /*@=exportlocal@*/
 
@@ -206,8 +222,9 @@ void vector_display(
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
 bool vector_set_value_ulong(
   vector*      vec,
-  ulong**      value,
-  unsigned int width
+  ulong*       value,
+  unsigned int width,
+  uint8        type
 );
 
 /*! \brief Sets the memory read bit of the given vector. */
@@ -634,7 +651,8 @@ bool vector_op_list(
 
 /*! \brief Deallocates the value structure for the given vector. */
 void vector_dealloc_value(
-  vector* vec
+  vector* vec,
+  bool    use_cov
 );
 
 /*! \brief Deallocates all memory allocated for vector */

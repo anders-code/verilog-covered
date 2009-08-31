@@ -2330,9 +2330,9 @@ struct vector_s {
   unsigned int width;                /*!< Bit width of this vector */
   vsuppl       suppl;                /*!< Supplemental field */
   union {
-    ulong** ul;                      /*!< Machine sized unsigned integer array for value, signal, expression and memory types */
-    rv64*   r64;                     /*!< 64-bit floating point value */
-    rv32*   r32;                     /*!< 32-bit floating point value (shortreal) */
+    ulong* ul;                       /*!< Machine sized unsigned integer array for value, signal, expression and memory types */
+    rv64*  r64;                      /*!< 64-bit floating point value */
+    rv32*  r32;                      /*!< 32-bit floating point value (shortreal) */
   } value;
 };
 

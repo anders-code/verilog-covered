@@ -95,6 +95,12 @@ void cov_db_read(
   const char* fname
 );
 
+/*!
+  \brief Performs a data-for-data bit merge for all of the loaded database files, storing them in
+         the first database location.
+*/
+void cov_db_merge();
+
 /*! \brief Deallocates the given coverage database. */
 void cov_db_dealloc(
   cov_db* cdb
