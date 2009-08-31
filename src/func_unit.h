@@ -102,7 +102,8 @@ void funit_db_write(
   bool        name_diff,
   FILE*       file,
   funit_inst* inst,
-  bool        ids_issued
+  bool        ids_issued,
+  bool        scoring
 );
 
 /*! \brief Read contents of current line from specified file, creates functional unit
@@ -130,14 +131,16 @@ void funit_merge(
 void funit_db_inst_merge(
   func_unit* base,
   FILE*      file,
-  bool       same
+  bool       same,
+  bool       use_cov
 );
 
 /*! \brief Reads and merges two functional units from the same coverage database. */
 void funit_db_mod_merge(
                func_unit* base,
                FILE*      file,
-  /*@unused@*/ bool       same
+  /*@unused@*/ bool       same,
+               bool       use_cov
 );
 
 /*! \brief Flattens the functional unit name by removing all unnamed scope portions */

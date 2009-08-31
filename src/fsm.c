@@ -161,9 +161,10 @@ void fsm_create_tables(
  Outputs the contents of the specified FSM to the specified CDD file.
 */
 void fsm_db_write(
-  fsm*  table,      /*!< Pointer to FSM structure to output */
-  FILE* file,       /*!< Pointer to file output stream to write to */
-  bool  ids_issued  /*!< Set to TRUE if expression IDs were just issued */
+  fsm*  table,       /*!< Pointer to FSM structure to output */
+  FILE* file,        /*!< Pointer to file output stream to write to */
+  bool  ids_issued,  /*!< Set to TRUE if expression IDs were just issued */
+  bool  scoring      /*!< Set to TRUE if this function is being called for the score command */
 ) { PROFILE(FSM_DB_WRITE);
 
   fprintf( file, "%d %u %d %d ",
@@ -176,7 +177,7 @@ void fsm_db_write(
   /* Print set table */
   if( table->table != NULL ) {
     fprintf( file, "1 " );
-    arc_db_write( table->table, file );
+    arc_db_write( table->table, file, scoring );
 
     /* Deallocate the given table after writing it */
     if( table->table != NULL ) {
@@ -200,8 +201,9 @@ void fsm_db_write(
  FSM into the specified functional unit.
 */
 void fsm_db_read(
-  /*@out@*/ char**     line,  /*!< Pointer to current line being read from the CDD file */
-            func_unit* funit  /*!< Pointer to current functional unit */
+  /*@out@*/ char**     line,    /*!< Pointer to current line being read from the CDD file */
+            func_unit* funit,   /*!< Pointer to current functional unit */
+            bool       use_cov  /*!< Set to TRUE if the read vectors should use the coverage database information */
 ) { PROFILE(FSM_DB_READ);
 
   int          iexp_id;     /* Input expression ID */
@@ -255,7 +257,7 @@ void fsm_db_read(
         if( is_table == 1 ) {
 
           Try {
-            arc_db_read( &(table->table), line );
+            arc_db_read( &(table->table), line, use_cov );
           } Catch_anonymous {
             fsm_dealloc( table );
             Throw 0;
@@ -298,8 +300,9 @@ void fsm_db_read(
  on the FSM's tables.
 */
 void fsm_db_merge(
-  fsm*   base,  /*!< Pointer to FSM structure to merge data into */
-  char** line   /*!< Pointer to read in line from CDD file to merge */
+  fsm*   base,    /*!< Pointer to FSM structure to merge data into */
+  char** line,    /*!< Pointer to read in line from CDD file to merge */
+  bool   use_cov  /*!< Set to TRUE if the read vectors should use data from the coverage database */
 ) { PROFILE(FSM_DB_MERGE);
 
   int iid;         /* Input state variable expression ID */
@@ -317,7 +320,7 @@ void fsm_db_merge(
 
     if( is_table == 1 ) {
 
-      arc_db_merge( base->table, line );
+      arc_db_merge( base->table, line, use_cov );
           
     }
 

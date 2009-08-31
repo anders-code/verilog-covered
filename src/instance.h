@@ -141,7 +141,8 @@ void instance_db_write(
   FILE*       file,
   char*       scope,
   bool        parse_mode,
-  bool        issue_ids
+  bool        issue_ids,
+  bool        scoring
 );
 
 /*! \brief Reads in and handles an instance-only line from the database */

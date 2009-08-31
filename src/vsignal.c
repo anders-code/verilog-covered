@@ -243,8 +243,9 @@ vsignal* vsignal_duplicate(
  for this design.
 */
 void vsignal_db_write(
-  vsignal* sig,  /*!< Signal to write to file */
-  FILE*    file  /*!< Name of file to display vsignal contents to */
+  vsignal* sig,     /*!< Signal to write to file */
+  FILE*    file,    /*!< Name of file to display vsignal contents to */
+  bool     scoring  /*!< Set to TRUE if this function is called during the score command */
 ) { PROFILE(VSIGNAL_DB_WRITE);
 
   unsigned int i;  /* Loop iterator */
@@ -272,7 +273,7 @@ void vsignal_db_write(
     }
     fprintf( file, " " );
 
-    vector_db_write( sig->value, file, ((sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (sig->suppl.part.type == SSUPPL_TYPE_PARAM_REAL) || (sig->suppl.part.type == SSUPPL_TYPE_ENUM)), SIGNAL_IS_NET( sig ) );
+    vector_db_write( sig->value, file, ((sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (sig->suppl.part.type == SSUPPL_TYPE_PARAM_REAL) || (sig->suppl.part.type == SSUPPL_TYPE_ENUM)), SIGNAL_IS_NET( sig ), scoring );
 
     fprintf( file, "\n" );
 
@@ -290,8 +291,9 @@ void vsignal_db_write(
  in reading in the current line, returns FALSE; otherwise, returns TRUE.
 */
 void vsignal_db_read(
-  char**     line,       /*!< Pointer to current line from database file to parse */
-  func_unit* curr_funit  /*!< Pointer to current functional unit instantiating this vsignal */
+  char**     line,        /*!< Pointer to current line from database file to parse */
+  func_unit* curr_funit,  /*!< Pointer to current functional unit instantiating this vsignal */
+  bool       use_cov      /*!< Set to TRUE if the read vector should use the coverage database information */
 ) { PROFILE(VSIGNAL_DB_READ);
 
   char         name[256];      /* Name of current vsignal */
@@ -329,7 +331,7 @@ void vsignal_db_read(
       }
 
       /* Read in vector information */
-      vector_db_read( &vec, line );
+      vector_db_read( &vec, line, use_cov );
 
     } Catch_anonymous {
       free_safe( dim, sizeof( dim_range ) );

@@ -1897,7 +1897,7 @@ void command_exclude(
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-      (void)db_read( exclude_cdd, READ_MODE_REPORT_NO_MERGE );
+      (void)db_read( exclude_cdd, READ_MODE_REPORT_NO_MERGE, CMD_EXCLUDE );
       bind_perform( TRUE, 0 );
 
       /* Apply the specified exclusion IDs */
@@ -1905,7 +1905,7 @@ void command_exclude(
         rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing CDD file \"%s\"", exclude_cdd );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-        db_write( exclude_cdd, FALSE, FALSE );
+        db_write( exclude_cdd, FALSE, FALSE, CMD_EXCLUDE );
       }
 
     }

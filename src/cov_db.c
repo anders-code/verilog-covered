@@ -97,6 +97,11 @@ static int cov_db_yytext_size = 0;
 */
 static int cov_db_yylen = 0;
 
+/*!
+ Used by the score command to keep track of the current UL index that a vector should be using for output.
+*/
+static ulong score_ul_index = 0;
+
 
 /*!
  \return Returns pointer to allocated/initialized coverage database.
@@ -115,6 +120,42 @@ cov_db* cov_db_create() { PROFILE(COV_DB_CREATE);
   PROFILE_END;
 
   return( cdb );
+
+}
+
+/*!
+ Creates new coverage database and adds it to the coverage database array.
+*/
+void cov_db_add() { PROFILE(COV_DB_ADD);
+
+  /* Allocate new entry in coverage database array and assign a new coverage database to the open entry */
+  cov_db_list                = (cov_db**)realloc_safe( cov_db_list, (sizeof( cov_db* ) * curr_cov_db), (sizeof( cov_db* ) * (curr_cov_db + 1)) );
+  cov_db_list[curr_cov_db++] = cov_db_create();
+
+  PROFILE_END;
+
+}
+
+/*!
+ Allocates all needed memory for the coverage database in position 0.
+*/
+void cov_db_alloc() { PROFILE(COV_DB_ALLOC);
+
+  ulong i;
+
+  /* Allocate and initialize the ul array */
+  cov_db_list[0]->ul = (ulong*)malloc_safe( sizeof( ulong ) * cov_db_list[0]->ul_num );
+  for( i=0; i<cov_db_list[0]->ul_num; i++ ) {
+    cov_db_list[0]->ul[i] = 0;
+  }
+
+  /* Allocate and initialize the u8 array */
+  cov_db_list[0]->u8 = (uint8*)malloc_safe( sizeof( uint8 ) * cov_db_list[0]->u8_num );
+  for( i=0; i<cov_db_list[0]->u8_num; i++ ) {
+    cov_db_list[0]->u8[i] = 0;
+  }
+
+  PROFILE_END;
 
 }
 
@@ -140,6 +181,25 @@ ulong cov_db_get_ul_index(
 } 
 
 /*!
+ \return Returns the index to the UL array that this vector should use in outputting to the
+         design database (required since memory is not actually assigned to the vector at this
+         point in the flow).
+*/
+ulong cov_db_get_score_ul_index(
+  vector* vec  /*!< Pointer to vector to get index for */
+) { PROFILE(COV_DB_GET_SCORE_UL_INDEX);
+
+  ulong index = score_ul_index;
+
+  score_ul_index += UL_SIZE( vec->width ) * vector_type_sizes[vec->suppl.part.type];
+
+  PROFILE_END;
+
+  return( index );
+
+}
+
+/*!
  Adds coverage data to the coverage database for the specified vector.
 */
 static void cov_db_add_vector(
@@ -155,16 +215,16 @@ static void cov_db_add_vector(
 }
 
 /*!
- Resizes the given vector (occurs when an expression is resized to match signal width.
+ Resizes the given vector (occurs when an expression is resized to match signal width).
 */
 void cov_db_resize_vector(
-  unsigned int  orig_width,  /*!< Original bit width of the vector */
-  const vector* vec          /*!< Pointer to vector to add coverage information for */
+  const vector* vec,       /*!< Vector to resize for (contains old bit width information) */
+  unsigned int  new_width  /*!< New bit width of the vector */
 ) { PROFILE(COV_DB_RESIZE_VECTOR);
 
   if( (vec->suppl.part.data_type == VDATA_UL) && (vec->suppl.part.type != VTYPE_VAL) ) {
-    cov_db_list[0]->ul_num -= UL_SIZE( orig_width ) * vector_type_sizes[vec->suppl.part.type];
-    cov_db_list[0]->ul_num += UL_SIZE( vec->width ) * vector_type_sizes[vec->suppl.part.type];
+    cov_db_list[0]->ul_num -= UL_SIZE( vec->width ) * vector_type_sizes[vec->suppl.part.type];
+    cov_db_list[0]->ul_num += UL_SIZE( new_width )  * vector_type_sizes[vec->suppl.part.type];
   }
 
   PROFILE_END;
@@ -227,7 +287,7 @@ void cov_db_write(
   FILE*        ofile;
   unsigned int i;
 
-  if( (ofile = fopen( odb, "r" )) != NULL ) { 
+  if( (ofile = fopen( odb, "w" )) != NULL ) { 
 
     fprintf( ofile, "%u", cov_db_list[0]->ul_num );
 
@@ -247,6 +307,7 @@ void cov_db_write(
 
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to write coverage database file \"%s\"", odb );
     assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
 
   }
@@ -443,4 +504,25 @@ void cov_db_dealloc(
 
 }
 
+/*!
+ Deallocates all of the memory associated with the coverage databases.
+*/
+void cov_db_close() { PROFILE(COV_DB_CLOSE);
 
+  unsigned int i;
+
+  if( cov_db_list != NULL ) {
+
+    /* Deallocate each coverage database entry in the array */
+    for( i=0; i<curr_cov_db; i++ ) {
+      cov_db_dealloc( cov_db_list[i] );
+    }
+
+    /* Deallocate the coverage array */
+    free_safe( cov_db_list, (sizeof( cov_db* ) * curr_cov_db) );
+
+  }
+
+  PROFILE_END;
+
+}

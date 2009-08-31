@@ -45,15 +45,26 @@ enum cov_db_tokens {
 /*! \brief Allocates and initializes a coverage database. */
 cov_db* cov_db_create();
 
+/*! \brief Allocates a new database and adds it to the coverage database array. */
+void cov_db_add();
+
+/*! \brief Allocates memory for the coverage database at position 0 */
+void cov_db_alloc();
+
 /*! \brief Returns the index of the specified ul entry in the ul array. */
 ulong cov_db_get_ul_index(
   ulong* addr
 );
 
+/*! \brief Returns the index in the ul array that the given vector should use. */
+ulong cov_db_get_score_ul_index(
+  vector* vec
+);
+
 /*! \brief Resizes the given vector (occurs when an expression is resized to match signal width */
 void cov_db_resize_vector( 
-  unsigned int  orig_width,
-  const vector* vec
+  const vector* vec,
+  unsigned int  new_width
 );
 
 /*! \brief Adds coverage data to the coverage database for the specified FSM */
@@ -88,6 +99,9 @@ void cov_db_read(
 void cov_db_dealloc(
   cov_db* cdb
 );
+
+/*! \brief Closes out all coverage databases. */
+void cov_db_close();
 
 #endif
 

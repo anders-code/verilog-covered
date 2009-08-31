@@ -198,6 +198,23 @@
 /*! @} */
 
 /*!
+ \addtogroup cmd_types Command Types
+
+ The following defines are used to specify the current command that is being run.
+
+ @{
+*/
+
+#define CMD_GENERATE        0
+#define CMD_SCORE           1
+#define CMD_MERGE           2
+#define CMD_REPORT          3
+#define CMD_RANK            4
+#define CMD_EXCLUDE         5
+
+/*! @} */
+
+/*!
  \addtogroup db_types Database line types
 
  The following defines are used in the coverage database to indicate

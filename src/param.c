@@ -1261,7 +1261,7 @@ void param_db_write(
     iparm->sig->id = curr_sig_id++;
 
     /* Write the signal */
-    vsignal_db_write( iparm->sig, file );
+    vsignal_db_write( iparm->sig, file, FALSE );
 
   }
 

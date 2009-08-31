@@ -25,6 +25,7 @@
 
 #include "binding.h"
 #include "db.h"
+#include "cov_db.h"
 #include "defines.h"
 #include "fsm_var.h"
 #include "generate.h"
@@ -187,7 +188,7 @@ void parse_design(
     }
 
     /* Write contents to baseline database file. */
-    db_write( odb, TRUE, TRUE );
+    db_write( odb, TRUE, TRUE, CMD_GENERATE );
 
     /* Generate the needed Verilog */
     generator_output();
@@ -252,6 +253,9 @@ void parse_and_score_dumpfile(
   rv = snprintf( idb, ilen, "%s/db/cov.db", get_cdd() );
   assert( rv < ilen );
 
+  /* Allocate the coverage database */
+  cov_db_add();
+
   Try {
 
 #ifdef DEBUG_MODE
@@ -263,10 +267,13 @@ void parse_and_score_dumpfile(
 #endif
 
     /* Read in contents of specified database file */
-    (void)db_read( idb, READ_MODE_NO_MERGE );
+    (void)db_read( idb, READ_MODE_NO_MERGE, CMD_SCORE );
   
     /* Bind expressions to signals/functional units */
     bind_perform( TRUE, 0 );
+
+    /* Allocates memory for the first coverage database */
+    cov_db_alloc();
 
     /* Add static values to simulator */
     // sim_initialize();
@@ -308,10 +315,14 @@ void parse_and_score_dumpfile(
 
   } Catch_anonymous {
     sim_dealloc();
+    cov_db_close();
     free_safe( odb, olen );
     free_safe( idb, ilen );
     Throw 0;
   }
+
+  /* Close out the coverage database */
+  cov_db_close();
 
   /* Deallocate simulator stuff */
   sim_dealloc();

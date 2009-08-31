@@ -373,24 +373,25 @@ void statement_db_write_tree(
  Traverses the specified statement block, writing all expression trees to specified output file.
 */
 void statement_db_write_expr_tree(
-  statement* stmt,  /*!< Pointer to specified statement tree to display */
-  FILE*      ofile  /*!< Pointer to output file to write */
+  statement* stmt,    /*!< Pointer to specified statement tree to display */
+  FILE*      ofile,   /*!< Pointer to output file to write */
+  bool       scoring  /*!< Set to TRUE if this function is called during the score command */
 ) { PROFILE(STATEMENT_DB_WRITE_EXPR_TREE);
 
   if( stmt != NULL ) {
 
     /* Output ourselves first */
-    expression_db_write_tree( stmt->exp, ofile );
+    expression_db_write_tree( stmt->exp, ofile, scoring );
 
     /* Traverse down the rest of the statement block */
     if( (stmt->next_true == stmt->next_false) && (stmt->suppl.part.stop_true == 0) ) {
-      statement_db_write_expr_tree( stmt->next_true, ofile );
+      statement_db_write_expr_tree( stmt->next_true, ofile, scoring );
     } else {
       if( stmt->suppl.part.stop_false == 0 ) {
-        statement_db_write_expr_tree( stmt->next_false, ofile );
+        statement_db_write_expr_tree( stmt->next_false, ofile, scoring );
       }
       if( stmt->suppl.part.stop_true == 0 ) {
-        statement_db_write_expr_tree( stmt->next_true, ofile );
+        statement_db_write_expr_tree( stmt->next_true, ofile, scoring );
       }
     }
 

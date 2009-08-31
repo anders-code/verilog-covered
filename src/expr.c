@@ -135,6 +135,7 @@
 #include <assert.h>
 #include <math.h>
 
+#include "cov_db.h"
 #include "db.h"
 #include "binding.h"
 #include "defines.h"
@@ -891,6 +892,11 @@ void expression_set_value(
       default :  break;
     }
 
+    /* Resize the coverage database */
+    if( exp->value->suppl.part.data_type == VDATA_UL ) {
+      cov_db_resize_vector( exp->value, exp_width );
+    }
+
     /* Allocate a vector for this expression */
     if( exp->value->value.ul != NULL ) {
       vector_dealloc_value( exp->value );
@@ -1496,7 +1502,8 @@ void expression_db_write(
   FILE*       file,        /*!< Pointer to database file to write to */
   bool        parse_mode,  /*!< Set to TRUE when we are writing after just parsing the design (causes ulid value to be
                                 output instead of id) */
-  bool        ids_issued   /*!< Set to TRUE if IDs were issued prior to calling this function */
+  bool        ids_issued,  /*!< Set to TRUE if IDs were issued prior to calling this function */
+  bool        scoring      /*!< If we are scoring, update the coverage database after writing */
 ) { PROFILE(EXPRESSION_DB_WRITE);
 
   assert( expr != NULL );
@@ -1522,7 +1529,7 @@ void expression_db_write(
     if( parse_mode && EXPR_OWNS_VEC( expr->op ) && (expr->value->suppl.part.owns_data == 0) ) {
       expr->value->suppl.part.owns_data = 1;
     }
-    vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC), FALSE );
+    vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC), FALSE, scoring );
   }
 
   if( expr->name != NULL ) {
@@ -1533,6 +1540,11 @@ void expression_db_write(
 
   fprintf( file, "\n" );
 
+  /* If we are scoring, update the coverage database */
+  if( scoring ) {
+    cov_db_list[0]->u8[expr->id] = expr->cov.all;
+  }
+
   PROFILE_END;
 
 }
@@ -1542,20 +1554,21 @@ void expression_db_write(
  to the specified file.
 */
 void expression_db_write_tree(
-  expression* root,  /*!< Pointer to the root expression to display */
-  FILE*       ofile  /*!< Output file to write expression tree to */
+  expression* root,    /*!< Pointer to the root expression to display */
+  FILE*       ofile,   /*!< Output file to write expression tree to */
+  bool        scoring  /*!< Set to TRUE if this function is being called for the score command */
 ) { PROFILE(EXPRESSION_DB_WRITE_TREE);
 
   if( root != NULL ) {
 
     /* Print children first */
     if( EXPR_LEFT_DEALLOCABLE( root ) ) {
-      expression_db_write_tree( root->left, ofile );
+      expression_db_write_tree( root->left, ofile, scoring );
     }
-    expression_db_write_tree( root->right, ofile );
+    expression_db_write_tree( root->right, ofile, scoring );
 
     /* Now write ourselves */
-    expression_db_write( root, ofile, TRUE, TRUE );
+    expression_db_write( root, ofile, TRUE, TRUE, scoring );
 
   }
 
@@ -1574,7 +1587,8 @@ void expression_db_write_tree(
 void expression_db_read(
   char**     line,        /*!< String containing database line to read information from */
   func_unit* curr_funit,  /*!< Pointer to current functional unit that instantiates this expression */
-  bool       eval         /*!< If TRUE, evaluate expression if children are static */
+  bool       eval,        /*!< If TRUE, evaluate expression if children are static */
+  bool       use_cov      /*!< Set to TRUE if we are reading during the score command */
 ) { PROFILE(EXPRESSION_DB_READ);
 
   expression*  expr;        /* Pointer to newly created expression */
@@ -1646,7 +1660,7 @@ void expression_db_read(
         Try {
 
           /* Read in vector information */
-          vector_db_read( &vec, line );
+          vector_db_read( &vec, line, use_cov );
 
         } Catch_anonymous {
           expression_dealloc( expr, TRUE );
@@ -1699,6 +1713,11 @@ void expression_db_read(
       */
       if( eval && EXPR_IS_STATIC( expr ) && (ESUPPL_IS_LHS( suppl ) == 0) ) {
         exp_link_add( expr, &static_expr_head, &static_expr_tail );
+      }
+
+      /* If we are scoring, update the coverage database counters */
+      if( !use_cov ) {
+        cov_db_add_expr( expr );
       }
       
     }

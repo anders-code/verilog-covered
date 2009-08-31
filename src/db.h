@@ -58,13 +58,15 @@ bool db_check_for_top_module();
 void db_write(
   const char* file,
   bool        parse_mode,
-  bool        issue_ids
+  bool        issue_ids,
+  int         cmd
 );
 
 /*! \brief Reads contents of database file and stores into internal lists. */
 bool db_read(
   const char* file,
-  int         read_mode
+  int         read_mode,
+  int         cmd
 );
 
 /*! \brief Merges the current instance trees */

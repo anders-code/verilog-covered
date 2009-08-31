@@ -791,7 +791,7 @@ void gen_item_db_write(
 
     switch( type ) {
       case GI_TYPE_SIG :
-        vsignal_db_write( gi->elem.sig, ofile );
+        vsignal_db_write( gi->elem.sig, ofile, FALSE );
         break;
       case GI_TYPE_STMT :
         statement_db_write_tree( gi->elem.stmt, ofile );
@@ -818,7 +818,7 @@ void gen_item_db_write_expr_tree(
   /* Only do this for statements */
   if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->suppl.part.removed == 0) ) {
 
-    statement_db_write_expr_tree( gi->elem.stmt, ofile );
+    statement_db_write_expr_tree( gi->elem.stmt, ofile, FALSE );
 
   }
 

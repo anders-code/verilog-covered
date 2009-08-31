@@ -364,7 +364,8 @@ void vector_db_write(
   vector* vec,         /*!< Pointer to vector to display to database file */
   FILE*   file,        /*!< Pointer to coverage database file to display to */
   bool    write_data,  /*!< If set to TRUE, causes 4-state data bytes to be included */
-  bool    net          /*!< If set to TRUE, causes default value to be written as Z instead of X */
+  bool    net,         /*!< If set to TRUE, causes default value to be written as Z instead of X */
+  bool    scoring      /*!< Set to TRUE if this function is being called for the score command */
 ) { PROFILE(VECTOR_DB_WRITE);
 
   uint8 mask;   /* Mask value for vector values */
@@ -402,7 +403,17 @@ void vector_db_write(
           unsigned int i, j;
           ulong        hmask  = UL_HMASK( vec->width - 1 );
           if( vec->suppl.part.type != VTYPE_VAL ) {
-            fprintf( file, " %lx", ((vec->value.ul != NULL) ? cov_db_get_ul_index( vec->value.ul[0] ) : UL_SET) );
+            if( scoring ) {
+              ulong cov_index = cov_db_get_score_ul_index( vec );
+              fprintf( file, " %lx", cov_index );
+              for( i=0; i<(UL_SIZE(vec->width) - 1); i++ ) {
+                for( j=0; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
+                  cov_db_list[0]->ul[cov_index++] = vec->value.ul[i][j];
+                }
+              }
+            } else {
+              fprintf( file, " %lx", ((vec->value.ul != NULL) ? cov_db_get_ul_index( vec->value.ul[0] ) : UL_SET) );
+            }
           } else {
             for( i=0; i<(UL_SIZE(vec->width) - 1); i++ ) {
               fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l );
@@ -451,8 +462,9 @@ void vector_db_write(
  and returns new vector structure to calling function.
 */
 void vector_db_read(
-  vector** vec,  /*!< Pointer to vector to create */
-  char**   line  /*!< Pointer to line to parse for vector information */
+  vector** vec,     /*!< Pointer to vector to create */
+  char**   line,    /*!< Pointer to line to parse for vector information */
+  bool     use_cov  /*!< Set to TRUE if we should use the coverage data instead of creating our own */
 ) { PROFILE(VECTOR_DB_READ);
 
   unsigned int width;       /* Vector bit width */
@@ -467,7 +479,7 @@ void vector_db_read(
     *line = *line + chars_read;
 
     /* Create new vector */
-    *vec              = vector_create( width, suppl.part.type, suppl.part.data_type, TRUE );
+    *vec              = vector_create( width, suppl.part.type, suppl.part.data_type, !use_cov );
     (*vec)->suppl.all = suppl.all;
 
     if( suppl.part.owns_data == 1 ) {
@@ -539,10 +551,10 @@ void vector_db_read(
                 if( sscanf( *line, "%lx%n", &cov_index, &chars_read ) == 1 ) {
                   *line += chars_read;
                   if( cov_index != UL_SET ) {
+                    unsigned int i;
                     for( i=0; i<=((width-1)>>(info_suppl.part.vec_ul_size+3)); i++ ) {
-                      for( j=0; j<vector_type_sizes[suppl.part.type]; j++ ) {
-                        (*vec)->value.ul[i][j] = cov_db_list[0]->ul[cov_index++];
-                      }
+                      (*vec)->value.ul[i] = &(cov_db_list[0]->ul[cov_index++]);
+                      cov_index += vector_type_sizes[suppl.part.type];
                     }
                   }
                 } else {

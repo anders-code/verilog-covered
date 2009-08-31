@@ -100,13 +100,15 @@ void vector_db_write(
   vector* vec,
   FILE*   file,
   bool    write_data,
-  bool    net
+  bool    net,
+  bool    scoring
 );
 
 /*! \brief Creates and parses current file line for vector information */
 void vector_db_read(
   /*@out@*/ vector** vec,
-            char**   line
+            char**   line,
+            bool     use_cov
 );
 
 /*! \brief Reads and merges two vectors, placing the result into base vector. */

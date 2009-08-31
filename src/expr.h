@@ -98,13 +98,28 @@ statement* expression_get_root_statement( expression* exp );
 void expression_assign_expr_ids( expression* root, func_unit* funit );
 
 /*! \brief Writes this expression to the specified database file. */
-void expression_db_write( expression* expr, FILE* file, bool parse_mode, bool ids_issued );
+void expression_db_write(
+  expression* expr,
+  FILE*       file,
+  bool        parse_mode,
+  bool        ids_issued,
+  bool        scoring
+);
 
 /*! \brief Writes the entire expression tree to the specified data file. */
-void expression_db_write_tree( expression* root, FILE* file );
+void expression_db_write_tree(
+  expression* root,
+  FILE*       file,
+  bool        scoring
+);
 
 /*! \brief Reads current line of specified file and parses for expression information. */
-void expression_db_read( char** line, /*@null@*/func_unit* curr_mod, bool eval );
+void expression_db_read(
+             char**     line,
+  /*@null@*/ func_unit* curr_mod,
+             bool       eval,
+             bool       use_cov
+);
 
 /*! \brief Reads and merges two expressions and stores result in base expression. */
 void expression_db_merge(

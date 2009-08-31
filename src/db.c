@@ -309,11 +309,13 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
 void db_write(
   const char* file,        /*!< Name of database file to output contents to */
   bool        parse_mode,  /*!< Specifies if we are outputting parse data or score data */
-  bool        issue_ids    /*!< Specifies if we need to issue/reissue expression and signal IDs */
+  bool        issue_ids,   /*!< Specifies if we need to issue/reissue expression and signal IDs */
+  int         cmd          /*!< Specifies the type of command that is calling this function */
 ) { PROFILE(DB_WRITE);
 
   FILE*      db_handle;  /* Pointer to database file being written */
   inst_link* instl;      /* Pointer to current instance link */
+  bool       scoring = (cmd == CMD_SCORE);
 
   if( (db_handle = fopen( file, "w" )) != NULL ) {
 
@@ -347,7 +349,7 @@ void db_write(
           }
 
           /* Now write the instance */
-          instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, issue_ids );
+          instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, issue_ids, scoring );
 
         }
 
@@ -388,8 +390,9 @@ void db_write(
  list.
 */
 bool db_read(
-  const char* file,      /*!< Name of database file to read contents from */
-  int         read_mode  /*!< Specifies what to do with read data (see \ref read_modes for legal values) */
+  const char* file,       /*!< Name of database file to read contents from */
+  int         read_mode,  /*!< Specifies what to do with read data (see \ref read_modes for legal values) */
+  int         cmd         /*!< Specifies the type of command that is performing this read */
 ) { PROFILE(DB_READ);
 
   FILE*        db_handle;              /* Pointer to database file being read */
@@ -412,6 +415,7 @@ bool db_read(
   bool         inst_name_diff;         /* Specifies the read value of the name diff for the current instance */
   bool         stop_reading  = FALSE;
   bool         one_line_read = FALSE;
+  bool         use_cov       = ((cmd != CMD_GENERATE) && (cmd != CMD_SCORE));
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -479,14 +483,14 @@ bool db_read(
               assert( !merge_mode );
 
               /* Parse rest of line for signal info */
-              vsignal_db_read( &rest_line, curr_funit );
+              vsignal_db_read( &rest_line, curr_funit, use_cov );
  
             } else if( type == DB_TYPE_EXPRESSION ) {
 
               assert( !merge_mode );
 
               /* Parse rest of line for expression info */
-              expression_db_read( &rest_line, curr_funit, (read_mode == READ_MODE_NO_MERGE) );
+              expression_db_read( &rest_line, curr_funit, (read_mode == READ_MODE_NO_MERGE), use_cov );
   
             } else if( type == DB_TYPE_STATEMENT ) {
 
@@ -500,7 +504,7 @@ bool db_read(
               assert( !merge_mode );
 
               /* Parse rest of line for FSM info */
-              fsm_db_read( &rest_line, curr_funit );
+              fsm_db_read( &rest_line, curr_funit, use_cov );
 
             } else if( type == DB_TYPE_EXCLUDE ) {
 
@@ -566,12 +570,12 @@ bool db_read(
                     ((foundinst = inst_link_find_by_scope( funit_scope, db_list[curr_db]->inst_head, FALSE )) != NULL) ) {
                   merge_mode = TRUE;
                   curr_funit = foundinst->funit;
-                  funit_db_inst_merge( foundinst->funit, db_handle, TRUE );
+                  funit_db_inst_merge( foundinst->funit, db_handle, TRUE, use_cov );
                 } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) &&
                            ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.suppl.part.type, db_list[curr_db]->funit_head )) != NULL) ) {
                   merge_mode = TRUE;
                   curr_funit = foundfunit->funit;
-                  funit_db_mod_merge( foundfunit->funit, db_handle, FALSE );
+                  funit_db_mod_merge( foundfunit->funit, db_handle, FALSE, use_cov );
                 } else {
                   curr_funit             = funit_create();
                   curr_funit->name       = strdup_safe( funit_name );

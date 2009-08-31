@@ -359,7 +359,7 @@ void command_merge(
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in_head->str );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      if( !db_read( merge_in_head->str, READ_MODE_MERGE_NO_MERGE ) ) {
+      if( !db_read( merge_in_head->str, READ_MODE_MERGE_NO_MERGE, CMD_MERGE ) ) {
 
         /* The read in CDD was empty so mark it as such */
         merge_in_head->suppl = 2;
@@ -381,7 +381,7 @@ void command_merge(
         rv = snprintf( user_msg, USER_MSG_LENGTH, "Merging CDD file \"%s\"", strl->str );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-        if( !db_read( strl->str, READ_MODE_MERGE_NO_MERGE ) ) {
+        if( !db_read( strl->str, READ_MODE_MERGE_NO_MERGE, CMD_MERGE ) ) {
 
           /* The read in CDD was empty so mark it as such */
           merge_in_head->suppl = 2;
@@ -407,7 +407,7 @@ void command_merge(
       bind_perform( TRUE, 0 );
 
       /* Write out new database to output file */
-      db_write( merged_file, FALSE, TRUE );
+      db_write( merged_file, FALSE, TRUE, CMD_MERGE );
 
       print_output( "\n***  Merging completed successfully!  ***", NORMAL, __FILE__, __LINE__ );
 

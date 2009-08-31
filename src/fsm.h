@@ -51,19 +51,22 @@ void fsm_create_tables(
 void fsm_db_write(
   fsm*  table,
   FILE* file,
-  bool  ids_issued
+  bool  ids_issued,
+  bool  scoring
 );
 
 /*! \brief Reads in contents of specified FSM. */
 void fsm_db_read(
              char**     line,
-  /*@null@*/ func_unit* funit
+  /*@null@*/ func_unit* funit,
+             bool       use_cov
 );
 
 /*! \brief Reads and merges two FSMs, placing result into base FSM. */
 void fsm_db_merge(
   fsm*   base,
-  char** line
+  char** line,
+  bool   use_cov
 );
 
 /*! \brief Merges two FSMs, placing the result into the base FSM. */

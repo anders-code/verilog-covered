@@ -540,12 +540,13 @@ void funit_size_elements(
  returns TRUE.
 */
 void funit_db_write(
-  func_unit*  funit,        /*!< Pointer to functional unit to write to output */
-  char*       scope,        /*!< String version of functional unit scope in hierarchy */
-  bool        name_diff,    /*!< Specifies that this instance has an inaccurate way */
-  FILE*       file,         /*!< Pointer to specified output file to write contents */
-  funit_inst* inst,         /*!< Pointer to the current functional unit instance */
-  bool        ids_issued    /*!< Specifies if IDs have been issued prior to calling this function */
+  func_unit*  funit,       /*!< Pointer to functional unit to write to output */
+  char*       scope,       /*!< String version of functional unit scope in hierarchy */
+  bool        name_diff,   /*!< Specifies that this instance has an inaccurate way */
+  FILE*       file,        /*!< Pointer to specified output file to write contents */
+  funit_inst* inst,        /*!< Pointer to the current functional unit instance */
+  bool        ids_issued,  /*!< Specifies if IDs have been issued prior to calling this function */
+  bool        scoring      /*!< Set to TRUE if this function is being called during the score command */
 ) { PROFILE(FUNIT_DB_WRITE);
 
   sig_link*       curr_sig;       /* Pointer to current functional unit sig_link element */
@@ -628,7 +629,7 @@ void funit_db_write(
     /* Now print all expressions in functional unit */
     curr_exp = funit->exp_head;
     while( curr_exp != NULL ) {
-      expression_db_write( curr_exp->exp, file, (inst != NULL), ids_issued );
+      expression_db_write( curr_exp->exp, file, (inst != NULL), ids_issued, scoring );
       curr_exp = curr_exp->next;
     }
 
@@ -647,7 +648,7 @@ void funit_db_write(
     curr_sig = funit->sig_head;
     while( curr_sig != NULL ) {
       if( curr_sig->rm_sig ) {
-        vsignal_db_write( curr_sig->sig, file );
+        vsignal_db_write( curr_sig->sig, file, scoring );
       }
       curr_sig = curr_sig->next; 
     }
@@ -695,7 +696,7 @@ void funit_db_write(
     /* Now print all FSM structures in functional unit */
     curr_fsm = funit->fsm_head;
     while( curr_fsm != NULL ) {
-      fsm_db_write( curr_fsm->table, file, ids_issued );
+      fsm_db_write( curr_fsm->table, file, ids_issued, scoring );
       curr_fsm = curr_fsm->next;
     }
 
@@ -792,9 +793,10 @@ void funit_version_db_read(
  displayed to the user.
 */
 void funit_db_inst_merge(
-  func_unit* base,  /*!< Module that will merge in that data from the in functional unit */
-  FILE*      file,  /*!< Pointer to CDD file handle to read */
-  bool       same   /*!< Specifies if functional unit to be merged should match existing functional unit exactly or not */
+  func_unit* base,    /*!< Module that will merge in that data from the in functional unit */
+  FILE*      file,    /*!< Pointer to CDD file handle to read */
+  bool       same,    /*!< Specifies if functional unit to be merged should match existing functional unit exactly or not */
+  bool       use_cov  /*!< Set to TRUE to indicate that the read vectors should use the coverage database data */
 ) { PROFILE(FUNIT_DB_MERGE);
 
   exp_link*    curr_base_exp;     /* Pointer to current expression in base functional unit expression list */
@@ -930,7 +932,7 @@ void funit_db_inst_merge(
         if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
           rest_line = curr_line + chars_read;
           if( type == DB_TYPE_FSM ) {
-            fsm_db_merge( curr_base_fsm->table, &rest_line );
+            fsm_db_merge( curr_base_fsm->table, &rest_line, use_cov );
           } else {
             print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
             Throw 0;
@@ -966,9 +968,10 @@ void funit_db_inst_merge(
  displayed to the user.
 */
 void funit_db_mod_merge(
-               func_unit* base,  /*!< Module that will merge in that data from the in functional unit */
-               FILE*      file,  /*!< Pointer to CDD file handle to read */
-  /*@unused@*/ bool       same   /*!< Specifies if functional unit to be merged should match existing functional unit exactly or not */
+               func_unit* base,    /*!< Module that will merge in that data from the in functional unit */
+               FILE*      file,    /*!< Pointer to CDD file handle to read */
+  /*@unused@*/ bool       same,    /*!< Specifies if functional unit to be merged should match existing functional unit exactly or not */
+               bool       use_cov  /*!< Set to TRUE if the read vectors should use data from the coverage database */
 ) { PROFILE(FUNIT_DB_MOD_MERGE);
 
   char*        curr_line;       /* Pointer to current line being read from CDD */
@@ -1009,7 +1012,7 @@ void funit_db_mod_merge(
                 if( expl != NULL ) {
                   expression_db_merge( expl->exp, &rest_line, FALSE );
                 } else {
-                  expression_db_read( &rest_line, base, FALSE );
+                  expression_db_read( &rest_line, base, FALSE, use_cov );
                 }
               } else {
                 print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
@@ -1026,7 +1029,7 @@ void funit_db_mod_merge(
                 if( sigl != NULL ) {
                   vsignal_db_merge( sigl->sig, &rest_line, FALSE );
                 } else {
-                  vsignal_db_read( &rest_line, base );
+                  vsignal_db_read( &rest_line, base, use_cov );
                 }
               } else {
                 print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );
@@ -1058,9 +1061,9 @@ void funit_db_mod_merge(
               if( sscanf( rest_line, "%u", &line ) == 1 ) {
                 fsm_link* fsml = fsm_link_find_by_pos( line, base->fsm_head );
                 if( fsml == NULL ) {
-                  fsm_db_read( &rest_line, base );
+                  fsm_db_read( &rest_line, base, use_cov );
                 } else {
-                  fsm_db_merge( fsml->table, &rest_line );
+                  fsm_db_merge( fsml->table, &rest_line, use_cov );
                 }
               } else {
                 print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );

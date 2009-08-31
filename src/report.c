@@ -865,7 +865,7 @@ void report_read_cdd_and_ready(
 
     /* Read in database, performing instance merging */
     curr_db = 0;
-    (void)db_read( ifile, (first ? READ_MODE_REPORT_NO_MERGE : READ_MODE_MERGE_INST_MERGE) );
+    (void)db_read( ifile, (first ? READ_MODE_REPORT_NO_MERGE : READ_MODE_MERGE_INST_MERGE), CMD_REPORT );
     bind_perform( TRUE, 0 );
 
     /* Gather instance statistics */
@@ -877,7 +877,7 @@ void report_read_cdd_and_ready(
 
     /* Read in database again, performing module merging */
     curr_db = 1;
-    (void)db_read( ifile, READ_MODE_REPORT_MOD_MERGE );
+    (void)db_read( ifile, READ_MODE_REPORT_MOD_MERGE, CMD_REPORT );
     bind_perform( TRUE, 0 );
 
     /* Now merge functional units and gather module statistics */
@@ -917,7 +917,7 @@ void report_save_cdd(
   /* Write the instance database */
   curr_db = 1;
 
-  db_write( filename, FALSE, FALSE );
+  db_write( filename, FALSE, FALSE, CMD_REPORT );
 
   /* Restore the database */
   curr_db = 0;
@@ -1103,7 +1103,7 @@ void command_report(
         } else {
 
           /* Read in CDD file */
-          (void)db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE) );
+          (void)db_read( input_db, (report_instance ? READ_MODE_REPORT_NO_MERGE : READ_MODE_REPORT_MOD_MERGE), CMD_REPORT );
 
           /* Perform binding */
           bind_perform( TRUE, 0 );

@@ -83,19 +83,22 @@ void arc_get_stats(
 /*! \brief Writes specified arc array to specified CDD file. */
 void arc_db_write(
   const fsm_table* table,
-  FILE*            file
+  FILE*            file,
+  bool             scoring
 );
 
 /*! \brief Reads in arc array from CDD database string. */
 void arc_db_read(
   fsm_table** table,
-  char**      line
+  char**      line,
+  bool        use_cov
 );
 
 /*! \brief Merges contents of arc table from line to specified base array. */
 void arc_db_merge(
   fsm_table* table,
-  char**     line
+  char**     line,
+  bool       use_cov
 );
 
 /*! \brief Merges two FSM arcs, placing the results in the base arc. */
