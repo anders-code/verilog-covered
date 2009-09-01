@@ -58,19 +58,22 @@ static void usage() {
   printf( "\n" );
 #ifdef DEBUG_MODE
 #ifdef PROFILER
-  printf( "Usage:  covered (-h | -v | (-D | -Q) (-P [<file>]) (-B) <command> <command_options>))\n" );
+  printf( "Usage:  covered (-h | -v | (-D | -Q) (-P [<file>]) (-B) (-db <database_dir>) <command> <command_options>))\n" );
 #else
-  printf( "Usage:  covered (-h | -v | (-D | -Q) (-B) <command> <command_options>))\n" );
+  printf( "Usage:  covered (-h | -v | (-D | -Q) (-B) (-db <database_dir>) <command> <command_options>))\n" );
 #endif
 #else
 #ifdef PROFILER
-  printf( "Usage:  covered (-h | -v | (-Q) (-P [<file>]) (-B) <command> <command_options>))\n" );
+  printf( "Usage:  covered (-h | -v | (-Q) (-P [<file>]) (-B) (-db <database_dir>) <command> <command_options>))\n" );
 #else
-  printf( "Usage:  covered (-h | -v | (-Q) (-B) <command> <command_options>))\n" );
+  printf( "Usage:  covered (-h | -v | (-Q) (-B) (-db <database_dir>) <command> <command_options>))\n" );
 #endif
 #endif
   printf( "\n" );
   printf( "   Options:\n" );
+  printf( "      -db <database_dir>      Specifies the name of the directory that will contain the coverage database output.  If this option\n" );
+  printf( "                                is not specified, the environment variable value of COVERED_DB will be used.  If the environment\n" );
+  printf( "                                variable is not set, the default value of \"covered\" will be used.\n" );
 #ifdef DEBUG_MODE
   printf( "      -D                      Debug.  Display information helpful for debugging tool problems\n" );
 #endif
@@ -146,7 +149,23 @@ int main( int argc, const char** argv ) {
 
         do {
 
-          if( strncmp( "-Q", argv[curr_arg], 2 ) == 0 ) {
+          if( strncmp( "-db", argv[curr_arg], 3 ) == 0 ) {
+
+            curr_arg++;
+            if( (curr_arg < argc) && (argv[curr_arg][0] != '-') &&
+                (strncmp( "generate", argv[curr_arg], 8 ) != 0) &&
+                (strncmp( "score",    argv[curr_arg], 5 ) != 0) &&
+                (strncmp( "merge",    argv[curr_arg], 5 ) != 0) &&
+                (strncmp( "report",   argv[curr_arg], 6 ) != 0) &&
+                (strncmp( "rank",     argv[curr_arg], 4 ) != 0) &&
+                (strncmp( "exclude",  argv[curr_arg], 7 ) != 0)) {
+              set_db_dir( strdup_safe( argv[curr_arg] ) );
+            } else {
+              print_output( "Global option -db must specify a name", FATAL, __FILE__, __LINE__ );
+              Throw 0;
+            }
+
+          } else if( strncmp( "-Q", argv[curr_arg], 2 ) == 0 ) {
   
             set_output_suppression( TRUE );
 
@@ -184,31 +203,37 @@ int main( int argc, const char** argv ) {
           } else if( strncmp( "generate", argv[curr_arg], 8 ) == 0 ) {
 
             command_generate( argc, curr_arg, argv );
+            set_command( CMD_GENERATE );
             cmd_found = TRUE;
 
           } else if( strncmp( "score", argv[curr_arg], 5 ) == 0 ) {
 
             command_score( argc, curr_arg, argv );
+            set_command( CMD_SCORE );
             cmd_found = TRUE;
 
           } else if( strncmp( "merge", argv[curr_arg], 5 ) == 0 ) {
 
             command_merge( argc, curr_arg, argv );
+            set_command( CMD_MERGE );
             cmd_found = TRUE;
 
           } else if( strncmp( "report", argv[curr_arg], 6 ) == 0 ) {
 
             command_report( argc, curr_arg, argv );
+            set_command( CMD_REPORT );
             cmd_found = TRUE;
 
           } else if( strncmp( "rank", argv[curr_arg], 4 ) == 0 ) {
 
             command_rank( argc, curr_arg, argv );
+            set_command( CMD_RANK );
             cmd_found = TRUE;
 
           } else if( strncmp( "exclude", argv[curr_arg], 7 ) == 0 ) {
 
             command_exclude( argc, curr_arg, argv );
+            set_command( CMD_EXCLUDE );
             cmd_found = TRUE;
 
           } else {

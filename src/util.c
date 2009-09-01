@@ -101,6 +101,16 @@ int64 largest_malloc_size = 0;
 char user_msg[USER_MSG_LENGTH];
 
 /*!
+ Specifies the name of the database directory that the user specified in the global command list.
+*/
+static char* db_dirname = NULL;
+
+/*!
+ Specifies the currently running command.
+*/
+static int current_cmd;
+
+/*!
  Array of functional unit names used for output purposes.
 */
 static const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "no_score", "afunction", "atask", "named block", "UNKNOWN" };
@@ -135,6 +145,37 @@ void set_debug(
 void set_testmode() {
 
   test_mode = (getenv( "COVERED_TESTMODE" ) != NULL);
+
+}
+
+/*!
+ Called if the -db option was specified in the global option list.
+*/
+void set_db_dir(
+  char* name
+) {
+
+  db_dirname = name;
+
+}
+
+/*!
+ Sets the currently executed command to the specified value.
+*/
+void set_command(
+  int cmd  /*!< Type of command currently being executed (see \ref cmd_types for valid values) */
+) {
+
+  current_cmd = cmd;
+
+}
+
+/*!
+ \return Returns the currently running command type.
+*/
+int get_command() {
+
+  return( current_cmd );
 
 }
 
@@ -882,12 +923,13 @@ char* substitute_env_vars(
 */
 char* get_cdd() { PROFILE(GET_CDD);
 
-  static char* cdd_name      = NULL;
-  static char* dflt_cdd_name = DFLT_OUTPUT_CDD;
+  static char* cdd_name = NULL;
 
   if( cdd_name == NULL ) {
-    if( (cdd_name = getenv( "COVERED_DB_DIR" )) == NULL ) {
-      cdd_name = dflt_cdd_name;
+    if( db_dirname != NULL) {
+      cdd_name = db_dirname;
+    } else if( (cdd_name = getenv( "COVERED_DB" )) == NULL ) {
+      cdd_name = DFLT_OUTPUT_CDD;
     }
   }
 

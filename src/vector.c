@@ -418,7 +418,6 @@ void vector_db_write(
               fprintf( file, " %lx", cov_index );
               for( i=0; i<UL_SIZE(vec->width); i++ ) {
                 for( j=0; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
-                  printf( "cov_index: %ld, cov_db_list[0]->ul_num: %ld\n", cov_index, cov_db_list[0]->ul_num );
                   assert( cov_index < cov_db_list[0]->ul_num );
                   cov_db_list[0]->ul[cov_index++] = vec->value.ul[(i*num)+j];
                 }

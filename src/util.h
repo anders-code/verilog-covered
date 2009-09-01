@@ -77,6 +77,19 @@ void set_debug(
 /*! \brief Sets the testmode global variable for outputting purposes */
 void set_testmode();
 
+/*! \brief Sets the global database directory name to the given value */
+void set_db_dir(
+  char* name
+);
+
+/*! \brief Sets the current command being run. */
+void set_command(
+  int cmd
+);
+
+/*! \brief Provides the current command being executed. */
+int get_command();
+
 /*! \brief Displays error message to standard output. */
 void print_output(
   const char* msg,

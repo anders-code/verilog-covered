@@ -207,9 +207,8 @@ static void cov_db_add_vector(
   const vector* vec  /*!< Pointer to vector to add coverage information for */
 ) { PROFILE(COV_DB_ADD_VECTOR);
 
-  if( (cov_db_list != NULL) && (vec->suppl.part.data_type == VDATA_UL) && (vec->suppl.part.type != VTYPE_VAL) ) {
+  if( (cov_db_list != NULL) && (vec->suppl.part.data_type == VDATA_UL) && (vec->suppl.part.type != VTYPE_VAL) && (vec->suppl.part.owns_data == 1) ) {
     cov_db_list[0]->ul_num += UL_SIZE( vec->width ) * vector_type_sizes[vec->suppl.part.type];
-    printf( "In cov_db_add_vector, ul_num: %d\n", cov_db_list[0]->ul_num );
   }
 
   PROFILE_END;
@@ -227,7 +226,6 @@ void cov_db_resize_vector(
   if( (cov_db_list != NULL) && (vec->suppl.part.data_type == VDATA_UL) && (vec->suppl.part.type != VTYPE_VAL) ) {
     cov_db_list[0]->ul_num -= UL_SIZE( vec->width ) * vector_type_sizes[vec->suppl.part.type];
     cov_db_list[0]->ul_num += UL_SIZE( new_width )  * vector_type_sizes[vec->suppl.part.type];
-    printf( "In cov_db_resize_vector, ul_num: %d\n", cov_db_list[0]->ul_num );
   }
 
   PROFILE_END;
@@ -257,9 +255,7 @@ void cov_db_add_expr(
   /* Update the coverage and set the current expression's ID */
   cov_db_list[0]->u8_num++;
 
-  printf( "In cov_db_add_expr %s\n", expression_string( expr ) );
-
-  if( EXPR_OWNS_VEC( expr->op ) ) {
+  if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
     cov_db_add_vector( expr->value );
   }
 
@@ -273,8 +269,6 @@ void cov_db_add_expr(
 void cov_db_add_sig(
   const vsignal* sig  /*!< Pointer to signal to add coverage for */
 ) { PROFILE(COV_DB_ADD_SIG);
-
-  printf( "In cov_db_add_sig %s\n", sig->name );
 
   cov_db_add_vector( sig->value );
 

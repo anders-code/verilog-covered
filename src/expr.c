@@ -898,10 +898,12 @@ void expression_set_value(
     }
 
     /* Allocate a vector for this expression */
-    if( exp->value->value.ul != NULL ) {
+    if( (exp->value->value.ul != NULL) && (exp->value->width != exp_width) ) {
       vector_dealloc_value( exp->value );
     }
-    expression_create_value( exp, exp_width, TRUE );
+    if( exp->value->width != exp_width ) {
+      expression_create_value( exp, exp_width, TRUE );
+    }
 
   }
 
@@ -1529,7 +1531,6 @@ void expression_db_write(
     if( parse_mode && EXPR_OWNS_VEC( expr->op ) && (expr->value->suppl.part.owns_data == 0) ) {
       expr->value->suppl.part.owns_data = 1;
     }
-    printf( "In expression_db_write, %s\n", expression_string( expr ) );
     vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC), FALSE, scoring );
   }
 
@@ -1545,7 +1546,6 @@ void expression_db_write(
   if( scoring ) {
     assert( (expr->id - 1) < cov_db_list[0]->u8_num );
     cov_db_list[0]->u8[expr->id-1] = expr->cov.all;
-    // printf( "Setting coverage of %s to %d\n", expression_string( expr ), expr->cov.all );
   }
 
   PROFILE_END;
