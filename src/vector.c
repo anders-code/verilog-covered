@@ -3074,7 +3074,7 @@ void vector_from_string(
 
       unsigned int pos = 0;
       int          i;
-      int          num = vector_type_sizes[VTYPE_INDEX_VAL_NUM];
+      int          num = VTYPE_INDEX_VAL_NUM;
 
       /* Create vector */
       *vec  = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
