@@ -117,7 +117,6 @@ int  block_depth = 0;
 */
 bool in_static_expr = FALSE;
 
-
 /*!
  Pointer to head of parameter override list.
 */
@@ -137,7 +136,6 @@ sig_link* dummy_head    = NULL;
  Pointer to tail of signal list
 */
 sig_link* dummy_tail    = NULL;
-
 
 /*!
  Specifies if the current variable list is handled by Covered or not.
@@ -3356,9 +3354,6 @@ module_item
         if( stmt != NULL ) {
           if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head = 1;
-            if( info_suppl.part.scored_line ) {
-              stmt->exp->cov.part.execd = 1;
-            }
             db_add_statement( stmt, stmt );
           } else {
             db_remove_statement( stmt );
@@ -3409,9 +3404,6 @@ module_item
               } else {
                 if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
                   stmt->suppl.part.head = 1;
-                  if( info_suppl.part.scored_line ) {
-                    stmt->exp->cov.part.execd = 1;
-                  }
                   db_add_statement( stmt, stmt );
                 } else {
                   db_remove_statement( stmt );
@@ -3467,9 +3459,6 @@ module_item
               } else {
                 if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
                   stmt->suppl.part.head = 1;
-                  if( info_suppl.part.scored_line ) {
-                    stmt->exp->cov.part.execd = 1;
-                  }
                   db_add_statement( stmt, stmt );
                 } else {
                   db_remove_statement( stmt );
@@ -3511,9 +3500,6 @@ module_item
           if( stmt != NULL ) {
             if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
               stmt->suppl.part.head = 1;
-              if( info_suppl.part.scored_line ) {
-                stmt->exp->cov.part.execd = 1;
-              }
               db_add_statement( stmt, stmt );
             } else {
               db_remove_statement( stmt );
@@ -3541,9 +3527,6 @@ module_item
         if( stmt != NULL ) {
           if( (info_suppl.part.excl_init == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head = 1;
-            if( info_suppl.part.scored_line ) {
-              stmt->exp->cov.part.execd = 1;
-            }
             db_add_statement( stmt, stmt );
           } else {
             db_remove_statement( stmt );
@@ -3569,9 +3552,6 @@ module_item
           if( (info_suppl.part.excl_final == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head  = 1;
             stmt->suppl.part.final = 1;
-            if( info_suppl.part.scored_line ) {
-              stmt->exp->cov.part.execd = 1;
-            }
             db_add_statement( stmt, stmt );
           } else {
             db_remove_statement( stmt );

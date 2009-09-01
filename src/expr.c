@@ -1529,6 +1529,7 @@ void expression_db_write(
     if( parse_mode && EXPR_OWNS_VEC( expr->op ) && (expr->value->suppl.part.owns_data == 0) ) {
       expr->value->suppl.part.owns_data = 1;
     }
+    printf( "In expression_db_write, %s\n", expression_string( expr ) );
     vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC), FALSE, scoring );
   }
 
@@ -1849,7 +1850,7 @@ const char* expression_string_op(
  the given expression
 */
 char* expression_string(
-  expression* exp  /*!< Pointer to expression to display */
+  const expression* exp  /*!< Pointer to expression to display */
 ) { PROFILE(EXPRESSION_STRING);
 
   unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%d (%s line %u, %u)", exp->id, expression_string_op( exp->op ), exp->line, exp->ppfline );

@@ -1223,7 +1223,7 @@ void* malloc_safe1(
   obj = malloc( size );
 #ifdef TESTMODE
   if( test_mode ) {
-    printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, size, file, line, curr_malloc_size );
+    printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %" FMT64 "d\n", obj, (int)size, file, line, curr_malloc_size );
   }
 #endif
   assert( obj != NULL );
@@ -1260,7 +1260,7 @@ void* malloc_safe_nolimit1(
   obj = malloc( size );
 #ifdef TESTMODE
   if( test_mode ) {
-    printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, size, file, line, curr_malloc_size );
+    printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %" FMT64 "d\n", obj, (int)size, file, line, curr_malloc_size );
   }
 #endif
   assert( obj != NULL );
@@ -1308,7 +1308,7 @@ void free_safe2(
     curr_malloc_size -= size;
 #ifdef TESTMODE
     if( test_mode ) {
-      printf( "FREE (%p) %d bytes (file: %s, line: %d) - %lld\n", ptr, size, file, line, curr_malloc_size );
+      printf( "FREE (%p) %d bytes (file: %s, line: %d) - %" FMT64 "d\n", ptr, (int)size, file, line, curr_malloc_size );
     }
 #endif
     free( ptr );
@@ -1341,7 +1341,7 @@ char* strdup_safe1(
   new_str = strdup( str );
 #ifdef TESTMODE
   if( test_mode ) {
-    printf( "STRDUP (%p) %d bytes (file: %s, line: %d) - %lld\n", new_str, str_len, file, line, curr_malloc_size );
+    printf( "STRDUP (%p) %d bytes (file: %s, line: %d) - %" FMT64 "d\n", new_str, str_len, file, line, curr_malloc_size );
   }
 #endif
   assert( new_str != NULL );
@@ -1387,7 +1387,7 @@ void* realloc_safe1(
   }
 #ifdef TESTMODE
   if( test_mode ) {
-    printf( "REALLOC (%p -> %p) %d (%d) bytes (file: %s, line: %d) - %lld\n", ptr, newptr, size, old_size, file, line, curr_malloc_size );
+    printf( "REALLOC (%p -> %p) %d (%d) bytes (file: %s, line: %d) - %" FMT64 "d\n", ptr, newptr, (int)size, (int)old_size, file, line, curr_malloc_size );
   }
 #endif
 
@@ -1429,7 +1429,7 @@ void* realloc_safe_nolimit1(
   }
 #ifdef TESTMODE
   if( test_mode ) {
-    printf( "REALLOC (%p -> %p) %d (%d) bytes (file: %s, line: %d) - %lld\n", ptr, newptr, size, old_size, file, line, curr_malloc_size );
+    printf( "REALLOC (%p -> %p) %d (%d) bytes (file: %s, line: %d) - %" FMT64 "d\n", ptr, newptr, (int)size, (int)old_size, file, line, curr_malloc_size );
   }
 #endif
 
@@ -1467,7 +1467,7 @@ void* calloc_safe1(
   obj = calloc( num, size );
 #ifdef TESTMODE
   if( test_mode ) {
-    printf( "CALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, total, file, line, curr_malloc_size );
+    printf( "CALLOC (%p) %d bytes (file: %s, line: %d) - %" FMT64 "d\n", obj, (int)total, file, line, curr_malloc_size );
   }
 #endif
   assert( obj != NULL );

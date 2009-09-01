@@ -916,7 +916,11 @@ void report_read_cdd_and_ready(
 */
 void report_close_cdd() { PROFILE(REPORT_CLOSE_CDD);
 
+  /* Close the design database */
   db_close();
+
+  /* Close the coverage database(s) */
+  cov_db_close();
 
   PROFILE_END;
 
@@ -1267,8 +1271,11 @@ void command_report(
   free_safe( output_file, (strlen( output_file ) + 1) );
   free_safe( input_db, (strlen( input_db ) + 1) );
 
-  /* Close the database */
+  /* Close the design database */
   db_close();
+
+  /* Close the coverage database(s) */
+  cov_db_close();
 
   if( error ) {
     Throw 0;

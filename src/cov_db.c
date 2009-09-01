@@ -25,6 +25,7 @@
 
 #include "cov_db.h"
 #include "defines.h"
+#include "expr.h"
 #include "profiler.h"
 #include "util.h"
 #include "vector.h"
@@ -206,8 +207,9 @@ static void cov_db_add_vector(
   const vector* vec  /*!< Pointer to vector to add coverage information for */
 ) { PROFILE(COV_DB_ADD_VECTOR);
 
-  if( (vec->suppl.part.data_type == VDATA_UL) && (vec->suppl.part.type != VTYPE_VAL) ) {
+  if( (cov_db_list != NULL) && (vec->suppl.part.data_type == VDATA_UL) && (vec->suppl.part.type != VTYPE_VAL) ) {
     cov_db_list[0]->ul_num += UL_SIZE( vec->width ) * vector_type_sizes[vec->suppl.part.type];
+    printf( "In cov_db_add_vector, ul_num: %d\n", cov_db_list[0]->ul_num );
   }
 
   PROFILE_END;
@@ -222,9 +224,10 @@ void cov_db_resize_vector(
   unsigned int  new_width  /*!< New bit width of the vector */
 ) { PROFILE(COV_DB_RESIZE_VECTOR);
 
-  if( (vec->suppl.part.data_type == VDATA_UL) && (vec->suppl.part.type != VTYPE_VAL) ) {
+  if( (cov_db_list != NULL) && (vec->suppl.part.data_type == VDATA_UL) && (vec->suppl.part.type != VTYPE_VAL) ) {
     cov_db_list[0]->ul_num -= UL_SIZE( vec->width ) * vector_type_sizes[vec->suppl.part.type];
     cov_db_list[0]->ul_num += UL_SIZE( new_width )  * vector_type_sizes[vec->suppl.part.type];
+    printf( "In cov_db_resize_vector, ul_num: %d\n", cov_db_list[0]->ul_num );
   }
 
   PROFILE_END;
@@ -254,6 +257,8 @@ void cov_db_add_expr(
   /* Update the coverage and set the current expression's ID */
   cov_db_list[0]->u8_num++;
 
+  printf( "In cov_db_add_expr %s\n", expression_string( expr ) );
+
   if( EXPR_OWNS_VEC( expr->op ) ) {
     cov_db_add_vector( expr->value );
   }
@@ -268,6 +273,8 @@ void cov_db_add_expr(
 void cov_db_add_sig(
   const vsignal* sig  /*!< Pointer to signal to add coverage for */
 ) { PROFILE(COV_DB_ADD_SIG);
+
+  printf( "In cov_db_add_sig %s\n", sig->name );
 
   cov_db_add_vector( sig->value );
 
@@ -456,7 +463,7 @@ void cov_db_read(
     free_safe( cov_db_yytext, cov_db_yytext_size );
 
     /* Allocate memory for the coverage database in coverage database list and add*/
-    cov_db_list                = (cov_db**)realloc_safe( cov_db_list, (sizeof( cov_db ) * curr_cov_db), (sizeof( cov_db ) * (curr_cov_db + 1)) );
+    cov_db_list                = (cov_db**)realloc_safe( cov_db_list, (sizeof( cov_db* ) * curr_cov_db), (sizeof( cov_db* ) * (curr_cov_db + 1)) );
     cov_db_list[curr_cov_db++] = cdb;
 
   } else {

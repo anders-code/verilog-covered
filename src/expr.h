@@ -138,7 +138,9 @@ void expression_merge(
 const char* expression_string_op( int op );
 
 /*! \brief Returns user-readable version of the supplied expression. */
-char* expression_string( expression* exp );
+char* expression_string(
+  const expression* exp
+);
 
 /*! \brief Displays the specified expression information. */
 void expression_display( expression* expr );

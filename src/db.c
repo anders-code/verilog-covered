@@ -497,7 +497,7 @@ bool db_read(
               assert( !merge_mode );
 
               /* Parse rest of line for statement info */
-              statement_db_read( &rest_line, curr_funit, read_mode );
+              statement_db_read( &rest_line, curr_funit, read_mode, use_cov );
 
             } else if( type == DB_TYPE_FSM ) {
 

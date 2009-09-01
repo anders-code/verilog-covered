@@ -410,7 +410,8 @@ void statement_db_write_expr_tree(
 void statement_db_read(
   char**     line,        /*!< Pointer to current line of file being read */
   func_unit* curr_funit,  /*!< Pointer to current module */
-  int        read_mode    /*!< If set to REPORT, adds statement to head of list; otherwise, adds statement to tail */
+  int        read_mode,   /*!< If set to REPORT, adds statement to head of list; otherwise, adds statement to tail */
+  bool       use_cov      /*!< Set to TRUE if the statement expression will use data from the coverage database */
 ) { PROFILE(STATEMENT_DB_READ);
 
   int          id;          /* ID of root expression that is associated with this statement */
@@ -512,6 +513,14 @@ void statement_db_read(
         (void)sim_add_thread( NULL, stmt, curr_funit, &tmp_time );
       }
 #endif
+
+      /*
+       If the statement is a head statement in a block that is not called, set the execd bit in the
+       coverage vector of the associated expression.
+      */
+      if( !use_cov && (info_suppl.part.scored_line == 1) && (stmt->suppl.part.is_called == 0) && (stmt->suppl.part.head == 1) ) {
+        stmt->exp->cov.part.execd = 1;
+      } 
 
     }
 

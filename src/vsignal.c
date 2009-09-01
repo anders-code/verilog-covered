@@ -273,6 +273,7 @@ void vsignal_db_write(
     }
     fprintf( file, " " );
 
+    printf( "In vsignal_db_write, %s\n", sig->name );
     vector_db_write( sig->value, file, ((sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (sig->suppl.part.type == SSUPPL_TYPE_PARAM_REAL) || (sig->suppl.part.type == SSUPPL_TYPE_ENUM)), SIGNAL_IS_NET( sig ), scoring );
 
     fprintf( file, "\n" );

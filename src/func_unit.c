@@ -1046,7 +1046,7 @@ void funit_db_mod_merge(
               if( sscanf( rest_line, "%d %u %u", &id, &ppline, &first_col ) == 3 ) {
                 stmt_link* stmtl = stmt_link_find_by_pos( ppline, first_col, base->stmt_head );
                 if( stmtl == NULL ) {
-                  statement_db_read( &rest_line, base, READ_MODE_REPORT_MOD_MERGE );
+                  statement_db_read( &rest_line, base, READ_MODE_REPORT_MOD_MERGE, use_cov );
                 }
               } else {
                 print_output( "Illegal CDD file format", FATAL, __FILE__, __LINE__ );

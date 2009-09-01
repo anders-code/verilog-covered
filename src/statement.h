@@ -62,7 +62,8 @@ void statement_db_write_expr_tree(
 void statement_db_read(
              char**     line,
   /*@null@*/ func_unit* curr_funit,
-             int        read_mode
+             int        read_mode,
+             bool       use_cov
 );
 
 /*! \brief Assigns unique expression IDs to each expression in the given statement block. */
