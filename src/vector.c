@@ -564,6 +564,7 @@ void vector_db_read(
                   *line += chars_read;
                   if( cov_index != UL_SET ) {
                     (*vec)->value.ul = (cov_db_list[0]->ul + cov_index);
+                    (*vec)->suppl.part.owns_data = 0;
                   }
                 } else {
                   print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
@@ -5334,13 +5335,12 @@ bool vector_op_list(
  Deallocates the value structure for the given vector.
 */
 void vector_dealloc_value(
-  vector* vec,     /*!< Pointer to vector to deallocate value for */
-  bool    use_cov  /*!< Set to TRUE when the vector should be using coverage data in the vector */
+  vector* vec  /*!< Pointer to vector to deallocate value for */
 ) { PROFILE(VECTOR_DEALLOC_VALUE);
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      if( !use_cov || (vec->suppl.part.type == VTYPE_VAL) ) {
+      {
         unsigned int size = UL_SIZE( vec->width ) * vector_type_sizes[vec->suppl.part.type];
         free_safe( vec->value.ul, (sizeof( ulong ) * size) );
         vec->value.ul = NULL;

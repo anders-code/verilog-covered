@@ -415,7 +415,7 @@ clobber:  clean
 
 clean:
 	@rm -f $(LOGFILE)
-	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.log *.cfg
+	@rm -f a.out simv *.vcd *.log *.cfg
 	@rm -f core *.o
-	@rm -rf $(VCS_EXEC).*
+	@rm -rf simv.*
 	@rm -f tmp*

@@ -899,7 +899,7 @@ void expression_set_value(
 
     /* Allocate a vector for this expression */
     if( exp->value->value.ul != NULL ) {
-      vector_dealloc_value( exp->value, FALSE );
+      vector_dealloc_value( exp->value );
     }
     expression_create_value( exp, exp_width, TRUE );
 
@@ -1720,6 +1720,10 @@ void expression_db_read(
       /* If we are scoring, update the coverage database counters */
       if( !use_cov ) {
         cov_db_add_expr( expr );
+
+      /* Otherwise, assign the coverage data to our expression */
+      } else {
+        expr->cov.all = cov_db_list[0]->u8[expr->id-1];
       }
       
     }

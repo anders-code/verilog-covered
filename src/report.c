@@ -656,7 +656,9 @@ void report_print_header(
   FILE* ofile  /*!< Pointer to output stream to display report information to */
 ) { PROFILE(REPORT_PRINT_HEADER);
 
-  int i;  /* Loop iterator */
+  int  i;  /* Loop iterator */
+  char fname[4096];
+  char ext[4096];
 
   switch( report_comb_depth ) {
     case REPORT_SUMMARY  :
@@ -687,7 +689,9 @@ void report_print_header(
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   GENERAL INFORMATION   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
   fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
 
-  fprintf( ofile, "* Report generated from CDD file : %s\n\n", input_db );
+  scope_extract_back( get_basename( input_db ), ext, fname );
+
+  fprintf( ofile, "* Report generated from coverage file : %s\n\n", fname );
 
   /* If the CDD contains a user-supplied message output it here, formatting it as needed. */
   if( cdd_message != NULL ) {

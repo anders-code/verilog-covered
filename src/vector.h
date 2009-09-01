@@ -651,8 +651,7 @@ bool vector_op_list(
 
 /*! \brief Deallocates the value structure for the given vector. */
 void vector_dealloc_value(
-  vector* vec,
-  bool    use_cov
+  vector* vec
 );
 
 /*! \brief Deallocates all memory allocated for vector */
