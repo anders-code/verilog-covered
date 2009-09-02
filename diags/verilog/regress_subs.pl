@@ -354,7 +354,8 @@ sub checkTest {
           }
         }
       } elsif( $mode == 0 ) {
-        $check1 = 1;
+        # Skip checking the CDD file at this time - TBD - $check1 = 1;
+        $check1 = 0;
       }
 
     }

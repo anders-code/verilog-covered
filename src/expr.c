@@ -712,6 +712,8 @@ expression* expression_create(
        hold off because our vector value will be coming.
       */
       if( !vector_is_unknown( left->value ) ) {
+        expression_display( left );
+        printf( "left: %d, rwidth: %d\n", vector_to_int( left->value ), rwidth );
         expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), data );
       } else {
         expression_create_value( new_expr, 1, data );

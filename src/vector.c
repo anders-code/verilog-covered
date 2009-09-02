@@ -412,12 +412,18 @@ void vector_db_write(
           unsigned int i, j;
           ulong        hmask  = UL_HMASK( vec->width - 1 );
           int          num    = vector_type_sizes[vec->suppl.part.type];
+          for( i=0; i<(UL_SIZE(vec->width) - 1); i++ ) {
+            fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] : dflt_l );
+            fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] : dflt_h );
+          }
+          fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] : dflt_l) & hmask );
+          fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] : dflt_h) & hmask );
           if( vec->suppl.part.type != VTYPE_VAL ) {
             if( scoring ) {
               ulong cov_index = cov_db_get_score_ul_index( vec );
               fprintf( file, " %lx", cov_index );
               for( i=0; i<UL_SIZE(vec->width); i++ ) {
-                for( j=0; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
+                for( j=0; j<num; j++ ) {
                   assert( cov_index < cov_db_list[0]->ul_num );
                   cov_db_list[0]->ul[cov_index++] = vec->value.ul[(i*num)+j];
                 }
@@ -425,13 +431,6 @@ void vector_db_write(
             } else {
               fprintf( file, " %lx", ((vec->value.ul != NULL) ? cov_db_get_ul_index( vec->value.ul ) : UL_SET) );
             }
-          } else {
-            for( i=0; i<(UL_SIZE(vec->width) - 1); i++ ) {
-              fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] : dflt_l );
-              fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] : dflt_h );
-            }
-            fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALL] : dflt_l) & hmask );
-            fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[(i*num)+VTYPE_INDEX_VAL_VALH] : dflt_h) & hmask );
           }
         }
         break;
@@ -490,7 +489,7 @@ void vector_db_read(
     *line = *line + chars_read;
 
     /* Create new vector */
-    *vec              = vector_create( width, suppl.part.type, suppl.part.data_type, (!use_cov || (suppl.part.type == VTYPE_VAL)) );
+    *vec              = vector_create( width, suppl.part.type, suppl.part.data_type, TRUE );
     (*vec)->suppl.all = suppl.all;
 
     if( suppl.part.owns_data == 1 ) {
@@ -501,70 +500,76 @@ void vector_db_read(
           case VDATA_UL :
             {
               unsigned int i, j;
-              if( suppl.part.type == VTYPE_VAL ) {
-                int num = vector_type_sizes[suppl.part.type];
-                for( i=0; i<=((width-1)>>(info_suppl.part.vec_ul_size+3)); i++ ) {
-                  for( j=0; j<num; j++ ) {
-                    /* If the CDD vector size and our size are the same, just do a direct read */
+              int          num = vector_type_sizes[suppl.part.type];
+              for( i=0; i<=((width-1)>>(info_suppl.part.vec_ul_size+3)); i++ ) {
+                for( j=0; j<2; j++ ) {
+                  /* If the CDD vector size and our size are the same, just do a direct read */
 #if SIZEOF_LONG == 4
-                    if( info_suppl.part.vec_ul_size == 2 ) {
+                  if( info_suppl.part.vec_ul_size == 2 ) {
 #elif SIZEOF_LONG == 8
-                    if( info_suppl.part.vec_ul_size == 3 ) {
+                  if( info_suppl.part.vec_ul_size == 3 ) {
 #else
 #error "Unsupported long size"
 #endif
-                      if( sscanf( *line, "%lx%n", ((*vec)->value.ul + ((i*num)+j)), &chars_read ) == 1 ) {
-                        *line += chars_read;
-                      } else {
-                        print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                        Throw 0;
-                      }
-
-#if SIZEOF_LONG == 8
-                    /* If the CDD file size is 32-bit and we are 64-bit, store two elements to our one */
-                    } else if( info_suppl.part.vec_ul_size == 2 ) {
-                      uint32 val;
-                      if( sscanf( *line, "%x%n", &val, &chars_read ) == 1 ) {
-                        *line += chars_read;
-                        if( i == 0 ) {
-                          (*vec)->value.ul[((i/2)*num)+j] = (ulong)val;
-                        } else {
-                          (*vec)->value.ul[((i/2)*num)+j] |= ((ulong)val << 32);
-                        }
-                      } else {
-                        print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                        Throw 0;
-                      }
-
-#elif SIZEOF_LONG == 4
-                    /* If the CDD file size is 64-bit and we are 32-bit, store one elements to our two */
-                    } else if( info_suppl.part.vec_ul_size == 3 ) {
-                      unsigned long long val;
-                      /*@-duplicatequals +ignorequals@*/
-                      if( sscanf( *line, "%llx%n", &val, &chars_read ) == 1 ) {
-                      /*@=duplicatequals =ignorequals@*/
-                        *line += chars_read;
-                        (*vec)->value.ul[(((i*2)+0)*num)+j] = (ulong)(val & 0xffffffffLL);
-                        (*vec)->value.ul[(((i*2)+1)*num)+j] = (ulong)((val >> 32) & 0xffffffffLL);
-                      } else {
-                        print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                        Throw 0;
-                      }
-#endif
-                    /* Otherwise, we don't know how to convert the value, so flag an error */
+                    if( sscanf( *line, "%lx%n", ((*vec)->value.ul + ((i*num)+j)), &chars_read ) == 1 ) {
+                      *line += chars_read;
                     } else {
                       print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
                       Throw 0;
                     }
+
+#if SIZEOF_LONG == 8
+                  /* If the CDD file size is 32-bit and we are 64-bit, store two elements to our one */
+                  } else if( info_suppl.part.vec_ul_size == 2 ) {
+                    uint32 val;
+                    if( sscanf( *line, "%x%n", &val, &chars_read ) == 1 ) {
+                      *line += chars_read;
+                      if( i == 0 ) {
+                        (*vec)->value.ul[((i/2)*num)+j] = (ulong)val;
+                      } else {
+                        (*vec)->value.ul[((i/2)*num)+j] |= ((ulong)val << 32);
+                      }
+                    } else {
+                      print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                      Throw 0;
+                    }
+
+#elif SIZEOF_LONG == 4
+                  /* If the CDD file size is 64-bit and we are 32-bit, store one elements to our two */
+                  } else if( info_suppl.part.vec_ul_size == 3 ) {
+                    unsigned long long val;
+                    /*@-duplicatequals +ignorequals@*/
+                    if( sscanf( *line, "%llx%n", &val, &chars_read ) == 1 ) {
+                    /*@=duplicatequals =ignorequals@*/
+                      *line += chars_read;
+                      (*vec)->value.ul[(((i*2)+0)*num)+j] = (ulong)(val & 0xffffffffLL);
+                      (*vec)->value.ul[(((i*2)+1)*num)+j] = (ulong)((val >> 32) & 0xffffffffLL);
+                    } else {
+                      print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                      Throw 0;
+                    }
+#endif
+                  /* Otherwise, we don't know how to convert the value, so flag an error */
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                    Throw 0;
                   }
                 }
-              } else {
+              }
+              if( suppl.part.type != VTYPE_VAL ) {
                 ulong cov_index;
                 if( sscanf( *line, "%lx%n", &cov_index, &chars_read ) == 1 ) {
                   *line += chars_read;
                   if( cov_index != UL_SET ) {
+                    ulong* ul = (*vec)->value.ul;
                     (*vec)->value.ul = (cov_db_list[0]->ul + cov_index);
                     (*vec)->suppl.part.owns_data = 0;
+                    for( i=0; i<UL_SIZE( (*vec)->width ); i++ ) {
+                      for( j=0; j<2; j++ ) {
+                        (*vec)->value.ul[(i*num)+j] = ul[(i*2)+j];
+                      }
+                    }
+                    free_safe( ul, (sizeof( ulong ) * (UL_SIZE( (*vec)->width ) * num)) );
                   }
                 } else {
                   print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
@@ -694,6 +699,8 @@ void vector_db_merge(
   unsigned int width;       /* Width of read vector */
   vsuppl       suppl;       /* Supplemental value of vector */
   int          chars_read;  /* Number of characters read */
+
+  printf( "HERE?\n" );
 
   assert( base != NULL );
 
