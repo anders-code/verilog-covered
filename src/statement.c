@@ -408,10 +408,10 @@ void statement_db_write_expr_tree(
  a statement structure to hold the contents.
 */
 void statement_db_read(
-  char**     line,        /*!< Pointer to current line of file being read */
-  func_unit* curr_funit,  /*!< Pointer to current module */
-  int        read_mode,   /*!< If set to REPORT, adds statement to head of list; otherwise, adds statement to tail */
-  bool       use_cov      /*!< Set to TRUE if the statement expression will use data from the coverage database */
+               char**     line,        /*!< Pointer to current line of file being read */
+               func_unit* curr_funit,  /*!< Pointer to current module */
+  /*@unused@*/ int        read_mode,   /*!< If set to REPORT, adds statement to head of list; otherwise, adds statement to tail */
+               bool       use_cov      /*!< Set to TRUE if the statement expression will use data from the coverage database */
 ) { PROFILE(STATEMENT_DB_READ);
 
   int          id;          /* ID of root expression that is associated with this statement */

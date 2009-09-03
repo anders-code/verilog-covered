@@ -1889,7 +1889,8 @@ void expression_display(
     right_id = expr->right->id;
   }
 
-  printf( "  Expression (%p) =>  id: %d, op: %s, line: %u, ppfline: %u, pplline: %u, col: %x, suppl: %x, cov: %x, left: %d, right: %d, ", 
+  /*@-formatcode@*/
+  printf( "  Expression (%p) =>  id: %d, op: %s, line: %u, ppfline: %u, pplline: %u, col: %" FMT32 "x, suppl: %x, cov: %" FMT8 "x, left: %d, right: %d, ", 
           expr,
           expr->id,
           expression_string_op( expr->op ),
@@ -1901,6 +1902,7 @@ void expression_display(
           expr->cov.all,
           left_id, 
           right_id );
+  /*@=formatcode@*/
 
   if( expr->value->value.ul == NULL ) {
     printf( "NO DATA VECTOR" );

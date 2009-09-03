@@ -3346,9 +3346,9 @@ bool db_do_timestep(
   if( (timestep_update > 0) && ((time - last_sim_update) >= timestep_update) && !debug_mode && !final ) {
     unsigned int rv;
     last_sim_update = time;
-    /*@-formattype -duplicatequals@*/
+    /*@-formattype -duplicatequals -formatcode@*/
     printf( "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bPerforming timestep %10" FMT64 "u", time );
-    /*@=formattype =duplicatequals@*/
+    /*@=formattype =duplicatequals =formatcode@*/
     rv = fflush( stdout );
     assert( rv == 0 );
   }

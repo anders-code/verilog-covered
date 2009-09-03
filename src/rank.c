@@ -1370,10 +1370,10 @@ static void rank_perform(
   unranked_merged = (uint16*)malloc_safe_nolimit( sizeof( uint16 ) * total );
 
   if( rank_verbose ) {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     rv = snprintf( user_msg, USER_MSG_LENGTH, "\nRanking %u CDD files with %" FMT64 "u coverage points (%" FMT64 "u line, %" FMT64 "u toggle, %" FMT64 "u memory, %" FMT64 "u logic, %" FMT64 "u FSM, %" FMT64 "u assertion)",
               comp_cdd_num, total, num_cps[CP_TYPE_LINE], num_cps[CP_TYPE_TOGGLE], num_cps[CP_TYPE_MEM], num_cps[CP_TYPE_LOGIC], num_cps[CP_TYPE_FSM], num_cps[CP_TYPE_ASSERT] );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
   }
@@ -1401,9 +1401,9 @@ static void rank_perform(
 
   if( rank_verbose ) {
     total_hitable = rank_count_cps( unranked_merged, total ); 
-    /*@-duplicatequals +ignorequals@*/
+    /*@-duplicatequals +ignorequals -formatcode@*/
     rv = snprintf( user_msg, USER_MSG_LENGTH, "Ignoring %" FMT64 "u coverage points that were not hit by any CDD file", (total - total_hitable) );
-    /*@=duplicatequals =ignorequals@*/
+    /*@=duplicatequals =ignorequals =formatcode@*/
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
@@ -1428,9 +1428,9 @@ static void rank_perform(
     rv = snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total ranked: %u, Remaining: %u)", next_cdd, next_cdd, (comp_cdd_num - next_cdd) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     rv = snprintf( user_msg, USER_MSG_LENGTH, "  %" FMT64 "u points covered, %" FMT64 "u points remaining", ranked_cps, (total_hitable - ranked_cps) );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     rv = snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 1 in %s", timer_to_string( atimer ) );
@@ -1465,9 +1465,9 @@ static void rank_perform(
     rv = snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total ranked: %u, Remaining: %u)", (next_cdd - count), next_cdd, (comp_cdd_num - next_cdd) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     rv = snprintf( user_msg, USER_MSG_LENGTH, "  %" FMT64 "u points covered, %" FMT64 "u points remaining", ranked_cps, (total_hitable - ranked_cps) );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     rv = snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 2 in %s", timer_to_string( atimer ) );
@@ -1493,9 +1493,9 @@ static void rank_perform(
     rv = snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total ranked: %u, Eliminated: %u)", cdds_ranked, (count + cdds_ranked), (comp_cdd_num - (count + cdds_ranked)) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     rv = snprintf( user_msg, USER_MSG_LENGTH, "  %" FMT64 "u points covered, %" FMT64 "u points remaining", ranked_cps, (total_hitable - ranked_cps) );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     rv = snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 3 in %s", timer_to_string( atimer ) );
@@ -1624,11 +1624,11 @@ static void rank_output(
         }
 
         /* Figure out the largest number for the first column */
-        /*@-duplicatequals -formattype@*/
+        /*@-duplicatequals -formattype -formatcode@*/
         rv = snprintf( str, 30, "%" FMT64 "u", total_timesteps );   col1 = strlen( str );
         assert( rv < 30 );
         rv = snprintf( str, 30, "%" FMT64 "u", ranked_timesteps );  col2 = strlen( str );
-        /*@=duplicatequals =formattype@*/
+        /*@=duplicatequals =formattype =formatcode@*/
         assert( rv < 30 );
 
         /* Create line for CDD files */
@@ -1776,10 +1776,10 @@ void command_rank(
       /* Output the results */
       rank_output( comp_cdds, comp_cdd_num );
 
-      /*@-duplicatequals -formattype@*/
+      /*@-duplicatequals -formattype -formatcode@*/
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %" FMT64 "u bytes", largest_malloc_size );
       assert( rv < USER_MSG_LENGTH );
-      /*@=duplicatequals =formattype@*/
+      /*@=duplicatequals =formattype =formatcode@*/
       print_output( "", NORMAL, __FILE__, __LINE__ );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       print_output( "", NORMAL, __FILE__, __LINE__ );

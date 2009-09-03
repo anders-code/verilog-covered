@@ -236,7 +236,7 @@ void cov_db_resize_vector(
  Adds coverage data to the coverage database for the specified FSM.
 */
 void cov_db_add_fsm(
-  const fsm* table  /*!< Pointer to FSM structure to parse */
+  /*@unused@*/ const fsm* table  /*!< Pointer to FSM structure to parse */
 ) { PROFILE(COV_DB_ADD_FSM);
 
   /* TBD */
@@ -297,7 +297,9 @@ void cov_db_write(
     fprintf( ofile, "\n%u", cov_db_list[0]->u8_num );
 
     for( i=0; i<cov_db_list[0]->u8_num; i++ ) {
+      /*@-formatcode@*/
       fprintf( ofile, " %" FMT8 "x", cov_db_list[0]->u8[i] );
+      /*@=formatcode@*/
     }
 
     fprintf( ofile, "\n" );

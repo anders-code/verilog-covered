@@ -340,8 +340,10 @@ void ovl_display_verbose(
                 }
               }
             } else if( stmt->exp->cov.part.execd && (rtype == RPT_TYPE_HIT) ) {
-              fprintf( ofile, "      %-26s  %-22s  \"%-38s\"  %9u\n",
+              /*@-formatcode@*/
+              fprintf( ofile, "      %-26s  %-22s  \"%-38s\"  %9" FMT8 "u\n",
                        obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point, stmt->exp->cov.part.execd );
+              /*@=formatcode@*/
             }
 
             /* Deallocate the coverage point */

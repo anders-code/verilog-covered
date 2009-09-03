@@ -1265,7 +1265,9 @@ void* malloc_safe1(
   obj = malloc( size );
 #ifdef TESTMODE
   if( test_mode ) {
+    /*@-formatcode@*/
     printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %" FMT64 "d\n", obj, (int)size, file, line, curr_malloc_size );
+    /*@=formatcode@*/
   }
 #endif
   assert( obj != NULL );
@@ -1302,7 +1304,9 @@ void* malloc_safe_nolimit1(
   obj = malloc( size );
 #ifdef TESTMODE
   if( test_mode ) {
+    /*@-formatcode@*/
     printf( "MALLOC (%p) %d bytes (file: %s, line: %d) - %" FMT64 "d\n", obj, (int)size, file, line, curr_malloc_size );
+    /*@=formatcode@*/
   }
 #endif
   assert( obj != NULL );
@@ -1350,7 +1354,9 @@ void free_safe2(
     curr_malloc_size -= size;
 #ifdef TESTMODE
     if( test_mode ) {
+      /*@-formatcode@*/
       printf( "FREE (%p) %d bytes (file: %s, line: %d) - %" FMT64 "d\n", ptr, (int)size, file, line, curr_malloc_size );
+      /*@=formatcode@*/
     }
 #endif
     free( ptr );
@@ -1383,7 +1389,9 @@ char* strdup_safe1(
   new_str = strdup( str );
 #ifdef TESTMODE
   if( test_mode ) {
+    /*@-formatcode@*/
     printf( "STRDUP (%p) %d bytes (file: %s, line: %d) - %" FMT64 "d\n", new_str, str_len, file, line, curr_malloc_size );
+    /*@=formatcode@*/
   }
 #endif
   assert( new_str != NULL );
@@ -1429,7 +1437,9 @@ void* realloc_safe1(
   }
 #ifdef TESTMODE
   if( test_mode ) {
+    /*@-formatcode@*/
     printf( "REALLOC (%p -> %p) %d (%d) bytes (file: %s, line: %d) - %" FMT64 "d\n", ptr, newptr, (int)size, (int)old_size, file, line, curr_malloc_size );
+    /*@=formatcode@*/
   }
 #endif
 
@@ -1471,7 +1481,9 @@ void* realloc_safe_nolimit1(
   }
 #ifdef TESTMODE
   if( test_mode ) {
+    /*@-formatcode@*/
     printf( "REALLOC (%p -> %p) %d (%d) bytes (file: %s, line: %d) - %" FMT64 "d\n", ptr, newptr, (int)size, (int)old_size, file, line, curr_malloc_size );
+    /*@=formatcode@*/
   }
 #endif
 
@@ -1509,7 +1521,9 @@ void* calloc_safe1(
   obj = calloc( num, size );
 #ifdef TESTMODE
   if( test_mode ) {
+    /*@-formatcode@*/
     printf( "CALLOC (%p) %d bytes (file: %s, line: %d) - %" FMT64 "d\n", obj, (int)total, file, line, curr_malloc_size );
+    /*@=formatcode@*/
   }
 #endif
   assert( obj != NULL );
@@ -1638,35 +1652,35 @@ char* timer_to_string(
 #else
   /* If the time is less than a minute, output the seconds and milliseconds */
   if( tm->total < 10 ) {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     unsigned int rv = snprintf( str, 33, "0.00000%1" FMT64 "u seconds", tm->total );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < 33 );
   } else if( tm->total < 100 ) {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     unsigned int rv = snprintf( str, 33, "0.0000%1" FMT64 "u seconds", (tm->total / 10) ); 
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < 33 );
   } else if( tm->total < 1000 ) {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     unsigned int rv = snprintf( str, 33, "0.000%1" FMT64 "u seconds", (tm->total / 100) );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < 33 );
   } else if( tm->total < 60000000 ) {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     unsigned int rv = snprintf( str, 33, "%2" FMT64 "u.%03" FMT64 "u seconds", (tm->total / 1000000), ((tm->total % 1000000) / 1000) );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < 33 );
   } else if( tm->total < 3600000000LL ) {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     unsigned int rv = snprintf( str, 33, "%2" FMT64 "u minutes, %2" FMT64 "u seconds", (tm->total / 60000000), ((tm->total % 60000000) / 1000000) );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < 33 );
   } else {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     unsigned int rv = snprintf( str, 33, "%2llu hours, %2llu minutes, %2" FMT64 "u seconds", 
                                 (tm->total / 3600000000LL), ((tm->total % 3600000000LL) / 60000000), ((tm->total % 60000000) / 1000000) );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < 33 );
   }
 #endif

@@ -472,9 +472,9 @@ void vector_db_write(
  and returns new vector structure to calling function.
 */
 void vector_db_read(
-  vector** vec,     /*!< Pointer to vector to create */
-  char**   line,    /*!< Pointer to line to parse for vector information */
-  bool     use_cov  /*!< Set to TRUE if we should use the coverage data instead of creating our own */
+               vector** vec,     /*!< Pointer to vector to create */
+               char**   line,    /*!< Pointer to line to parse for vector information */
+  /*@unused@*/ bool     use_cov  /*!< Set to TRUE if we should use the coverage data instead of creating our own */
 ) { PROFILE(VECTOR_DB_READ);
 
   unsigned int width;       /* Vector bit width */
@@ -980,7 +980,7 @@ int vector_get_eval_d(
     case VDATA_UL  :
       {
         int num = vector_type_sizes[vec->suppl.part.type];
-        retval  = (vec->value.ul[(UL_DIV(index)*num)+VTYPE_INDEX_EXP_EVAL_D] >> UL_MOD(index)) & 0x1;  break;
+        retval  = (vec->value.ul[(UL_DIV(index)*num)+VTYPE_INDEX_EXP_EVAL_D] >> UL_MOD(index)) & 0x1;
       }
       break;
     case VDATA_R64 :  retval = 0;

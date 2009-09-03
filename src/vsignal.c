@@ -512,11 +512,11 @@ void vsignal_propagate(
  Finally, calls the simulator expr_changed function for each expression.
 */
 void vsignal_vcd_assign(
-  vsignal*        sig,    /*!< Pointer to vsignal to assign VCD value to */
-  const char*     value,  /*!< String version of VCD value */
-  unsigned int    msb,    /*!< Most significant bit to assign to */
-  unsigned int    lsb,    /*!< Least significant bit to assign to */
-  const sim_time* time    /*!< Current simulation time signal is being assigned */
+               vsignal*        sig,    /*!< Pointer to vsignal to assign VCD value to */
+               const char*     value,  /*!< String version of VCD value */
+               unsigned int    msb,    /*!< Most significant bit to assign to */
+               unsigned int    lsb,    /*!< Least significant bit to assign to */
+  /*@unused@*/ const sim_time* time    /*!< Current simulation time signal is being assigned */
 ) { PROFILE(VSIGNAL_VCD_ASSIGN);
 
   bool vec_changed;  /* Specifies if assigned value differed from original value */
