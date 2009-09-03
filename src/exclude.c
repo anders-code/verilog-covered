@@ -42,11 +42,6 @@
 
 
 /*!
- Name of CDD file that will be read, modified with exclusion modifications and written back.
-*/
-static char* exclude_cdd = NULL;
-
-/*!
  Pointer to the head of the list of exclusion IDs to toggle exclusion/inclusion mode of.
 */
 static str_link* excl_ids_head = NULL;
@@ -757,7 +752,7 @@ void exclude_set_assert_exclude(
 static void exclude_usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered exclude (-h | ([<options>] <exclusion_ids>+ <database_file>)\n" );
+  printf( "Usage:  covered exclude (-h | ([<options>] <exclusion_ids>+)\n" );
   printf( "\n" );
   printf( "   -h                           Displays this help information.\n" );
   printf( "\n" );
@@ -841,23 +836,6 @@ static bool exclude_parse_args(
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       Throw 0;
-
-    } else if( (i + 1) == argc ) {
-
-      /* Check to make sure that the user has specified at least one exclusion ID */
-      if( excl_ids_head == NULL ) {
-        print_output( "At least one exclusion ID must be specified", FATAL, __FILE__, __LINE__ );
-        Throw 0;
-      }
-
-      if( file_exists( argv[i] ) ) {
-        exclude_cdd = strdup_safe( argv[i] );
-      } else {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified CDD file (%s) does not exist", argv[i] );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        Throw 0;
-      }
 
     } else {
 
@@ -1879,11 +1857,17 @@ void command_exclude(
   comp_cdd_cov** comp_cdds    = NULL;
   unsigned int   comp_cdd_num = 0;
   bool           error        = FALSE;
+  unsigned int   ilen         = strlen( get_cdd() ) + 11;
+  char*          idb          = (char*)malloc_safe( ilen );
 
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+  /* Create input database name */
+  rv = snprintf( idb, ilen, "%s/db/cov.db", get_cdd() );
+  assert( rv < ilen );
 
   Try {
 
@@ -1893,19 +1877,19 @@ void command_exclude(
     if( !exclude_parse_args( argc, last_arg, argv ) ) {
 
       /* Read in database */
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", exclude_cdd );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading in database \"%s\"", idb );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-      (void)db_read( exclude_cdd, READ_MODE_REPORT_NO_MERGE, CMD_EXCLUDE );
+      (void)db_read( idb, READ_MODE_REPORT_NO_MERGE, CMD_EXCLUDE );
       bind_perform( TRUE, 0 );
 
       /* Apply the specified exclusion IDs */
       if( exclude_apply_exclusions() ) {
-        rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing CDD file \"%s\"", exclude_cdd );
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing database \"%s\"", idb );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-        db_write( exclude_cdd, FALSE, FALSE, CMD_EXCLUDE );
+        db_write( idb, FALSE, FALSE, CMD_EXCLUDE );
       }
 
     }
@@ -1919,7 +1903,7 @@ void command_exclude(
     
   /* Deallocate other allocated variables */
   str_link_delete_list( excl_ids_head );
-  free_safe( exclude_cdd, (strlen( exclude_cdd ) + 1) );
+  free_safe( idb, ilen );
 
   if( error ) {
     Throw 0;

@@ -9,7 +9,7 @@ require "../verilog/regress_subs.pl";
 &initialize( "exclude12", 1, @ARGV );
 
 # Perform generate command
-&runGenerateCommand( "-t main -v exclude12.v" );
+&runGenerateCommand( "-t main -v exclude12.v -D DUMP" );
 
 # Simulate and get coverage information
 if( $SIMULATOR eq "IV" ) {

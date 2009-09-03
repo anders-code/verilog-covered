@@ -252,11 +252,15 @@ void cov_db_add_expr(
   const expression* expr  /*!< Pointer to expression to add coverage for */
 ) { PROFILE(COV_DB_ADD_EXPR);
 
-  /* Update the coverage and set the current expression's ID */
-  cov_db_list[0]->u8_num++;
+  if( cov_db_list != NULL ) {
 
-  if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
-    cov_db_add_vector( expr->value );
+    /* Update the coverage and set the current expression's ID */
+    cov_db_list[0]->u8_num++;
+
+    if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
+      cov_db_add_vector( expr->value );
+    }
+
   }
 
   PROFILE_END;

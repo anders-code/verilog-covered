@@ -415,7 +415,7 @@ bool db_read(
   bool         inst_name_diff;         /* Specifies the read value of the name diff for the current instance */
   bool         stop_reading  = FALSE;
   bool         one_line_read = FALSE;
-  bool         use_cov       = ((cmd != CMD_GENERATE) && (cmd != CMD_SCORE));
+  bool         use_cov       = ((cmd != CMD_GENERATE) && (cmd != CMD_SCORE) && (cmd != CMD_EXCLUDE));
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {

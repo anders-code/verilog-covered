@@ -472,9 +472,9 @@ void vector_db_write(
  and returns new vector structure to calling function.
 */
 void vector_db_read(
-               vector** vec,     /*!< Pointer to vector to create */
-               char**   line,    /*!< Pointer to line to parse for vector information */
-  /*@unused@*/ bool     use_cov  /*!< Set to TRUE if we should use the coverage data instead of creating our own */
+  vector** vec,     /*!< Pointer to vector to create */
+  char**   line,    /*!< Pointer to line to parse for vector information */
+  bool     use_cov  /*!< Set to TRUE if we should use the coverage data instead of creating our own */
 ) { PROFILE(VECTOR_DB_READ);
 
   unsigned int width;       /* Vector bit width */
@@ -560,7 +560,7 @@ void vector_db_read(
                 ulong cov_index;
                 if( sscanf( *line, "%lx%n", &cov_index, &chars_read ) == 1 ) {
                   *line += chars_read;
-                  if( cov_index != UL_SET ) {
+                  if( (cov_index != UL_SET) && use_cov ) {
                     ulong* ul = (*vec)->value.ul;
                     (*vec)->value.ul = (cov_db_list[0]->ul + cov_index);
                     (*vec)->suppl.part.owns_data = 0;
