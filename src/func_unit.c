@@ -974,8 +974,8 @@ void funit_db_mod_merge(
                bool       use_cov  /*!< Set to TRUE if the read vectors should use data from the coverage database */
 ) { PROFILE(FUNIT_DB_MOD_MERGE);
 
-  char*        curr_line;       /* Pointer to current line being read from CDD */
-  unsigned int curr_line_size;  /* Number of bytes allocated for curr_line */
+  char*        curr_line       = NULL;   /* Pointer to current line being read from CDD */
+  unsigned int curr_line_size  = 0;      /* Number of bytes allocated for curr_line */
   bool         new_funit_found = FALSE;
 
   assert( base != NULL );
@@ -1097,10 +1097,10 @@ void funit_db_mod_merge(
 
     }
 
-    /* Deallocate the current line string */
-    free_safe( curr_line, curr_line_size );
-
   }
+
+  /* Deallocate the current line string */
+  free_safe( curr_line, curr_line_size );
 
   PROFILE_END;
 

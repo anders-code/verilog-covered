@@ -700,8 +700,6 @@ void vector_db_merge(
   vsuppl       suppl;       /* Supplemental value of vector */
   int          chars_read;  /* Number of characters read */
 
-  printf( "HERE?\n" );
-
   assert( base != NULL );
 
   /*@-formatcode@*/
