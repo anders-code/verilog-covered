@@ -1546,8 +1546,10 @@ void expression_db_write(
 
   /* If we are scoring, update the coverage database */
   if( scoring ) {
-    assert( (expr->id - 1) < cov_db_list[0]->u8_num );
-    cov_db_list[0]->u8[expr->id-1] = expr->cov.all;
+    int id = expression_get_id( expr, ids_issued );
+    printf( "id: %d, u8_num: %u\n", id, cov_db_list[0]->u8_num );
+    assert( (id - 1) < cov_db_list[0]->u8_num );
+    cov_db_list[0]->u8[id - 1] = expr->cov.all;
   }
 
   PROFILE_END;
