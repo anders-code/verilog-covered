@@ -14,7 +14,6 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -34,7 +33,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = scripts
+subdir = doc/docbook
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -47,29 +46,6 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
 DIST_SOURCES =
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
-am__install_max = 40
-am__nobase_strip_setup = \
-  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
-am__nobase_strip = \
-  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
-am__nobase_list = $(am__nobase_strip_setup); \
-  for p in $$list; do echo "$$p $$p"; done | \
-  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
-  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
-    if (++n[$$2] == $(am__install_max)) \
-      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
-    END { for (dir in files) print dir, files[dir] }'
-am__base_list = \
-  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
-  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__installdirs = "$(DESTDIR)$(cfgdir)" "$(DESTDIR)$(tcldir)"
-DATA = $(cfg_DATA) $(tcl_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -196,39 +172,6 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 use_tcltk = @use_tcltk@
-tcldir = $(datadir)/covered/scripts
-tcl_DATA = assert.tcl \
-           balloon.tcl \
-           banner.gif \
-           cdd_view.tcl \
-           checked.gif \
-           clear.gif \
-           comb.tcl \
-           cov_create.tcl \
-           cov_icon.gif \
-           exclude.tcl \
-           find.gif \
-           fsm.tcl \
-           gen_new.tcl \
-           gen_rank.tcl \
-           gen_report.tcl \
-           help.tcl \
-           left_arrow.gif \
-           main_view.tcl \
-           memory.tcl \
-           menu_create.tcl \
-           preferences.tcl \
-           process_file.tcl \
-           right_arrow.gif \
-           summary.tcl \
-           toggle.tcl \
-           unchecked.gif \
-           verilog.tcl \
-           viewer.tcl \
-           wizard.tcl
-
-cfgdir = $(datadir)/covered
-cfg_DATA = .coveredrc
 all: all-am
 
 .SUFFIXES:
@@ -241,9 +184,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu scripts/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu doc/docbook/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu scripts/Makefile
+	  $(AUTOMAKE) --gnu doc/docbook/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -262,46 +205,6 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-install-cfgDATA: $(cfg_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(cfgdir)" || $(MKDIR_P) "$(DESTDIR)$(cfgdir)"
-	@list='$(cfg_DATA)'; test -n "$(cfgdir)" || list=; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(cfgdir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(cfgdir)" || exit $$?; \
-	done
-
-uninstall-cfgDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(cfg_DATA)'; test -n "$(cfgdir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(cfgdir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(cfgdir)" && rm -f $$files
-install-tclDATA: $(tcl_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(tcldir)" || $(MKDIR_P) "$(DESTDIR)$(tcldir)"
-	@list='$(tcl_DATA)'; test -n "$(tcldir)" || list=; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(tcldir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(tcldir)" || exit $$?; \
-	done
-
-uninstall-tclDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(tcl_DATA)'; test -n "$(tcldir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(tcldir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(tcldir)" && rm -f $$files
 tags: TAGS
 TAGS:
 
@@ -341,11 +244,8 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(DATA)
+all-am: Makefile
 installdirs:
-	for dir in "$(DESTDIR)$(cfgdir)" "$(DESTDIR)$(tcldir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -383,15 +283,13 @@ dvi: dvi-am
 
 dvi-am:
 
-html: html-am
-
 html-am:
 
 info: info-am
 
 info-am:
 
-install-data-am: install-cfgDATA install-tclDATA
+install-data-am:
 
 install-dvi: install-dvi-am
 
@@ -435,22 +333,22 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-cfgDATA uninstall-tclDATA
+uninstall-am:
 
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic distclean \
 	distclean-generic distdir dvi dvi-am html html-am info info-am \
-	install install-am install-cfgDATA install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip install-tclDATA \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am uninstall uninstall-am uninstall-cfgDATA \
-	uninstall-tclDATA
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am
 
+html:   
+	XML_CATALOG_FILES="catalog.xml" xsltproc covered.xsl covered_doc.xml
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
