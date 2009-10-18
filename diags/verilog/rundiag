@@ -1,0 +1,11 @@
+#!/usr/bin/perl
+
+# Name:     rundiag
+# Author:   Trevor Williams  <phase1geo(gmail.com)>
+# Date:     8/26/2009
+# Usage:    rundiag <diagname>
+
+require "regress_subs.pl";
+
+&regress_run( @ARGV );
+
