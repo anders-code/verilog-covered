@@ -1141,8 +1141,15 @@ func_unit* db_add_instance(
 
   } else {
 
-    /* Add new functional unit to functional unit list. */
-    funit_link_add( funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
+    /* If the functional unit already exists, use it instead of the intermediate functional unit */
+    if( found_funit_link != NULL ) {
+      funit_dealloc( funit );
+      funit = found_funit_link->funit;
+
+    /* Otherwise, add new functional unit to functional unit list. */
+    } else {
+      funit_link_add( funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
+    }
 
     /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
     if( generate_top_mode > 0 ) {
