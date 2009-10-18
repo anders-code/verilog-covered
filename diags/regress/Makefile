@@ -269,7 +269,7 @@ IVVCSDIAGS1   = afunc1           atask1           define3          delay3       
                 generate12       generate15       generate15.1     generate15.2     generate15.3 \
                 generate15.4     generate15.5     generate16.1     generate16.2     generate16.3 \
                 generate17       generate19       generate19.1     generate19.2     generate21 \
-                generate22       generate22.1     generate22.3     hier3            ifdef3 \
+                generate22       generate22.1     generate22.3     generate23       hier3            ifdef3 \
                 ifndef2          localparam1      localparam1.1    localparam1.2    localparam1.3 \
                 localparam2      localparam3      mbit_sel5        mbit_sel5.1      mbit_sel5.2 \
                 mbit_sel5.3      mbit_sel6        mbit_sel6.1      mbit_sel6.2      mbit_sel6.3 \
