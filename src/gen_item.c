@@ -920,12 +920,13 @@ static void gen_item_resolve(
 
 #ifdef DEBUG_MODE 
     if( debug_mode ) {
-      char         str[USER_MSG_LENGTH];
+      char*        str = (char*)malloc_safe( USER_MSG_LENGTH );
       unsigned int rv;
       gen_item_stringify( gi, str, USER_MSG_LENGTH );
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Resolving generate item, %s for inst: %s", str, obf_inst( inst->name ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+      free_safe( str, USER_MSG_LENGTH );
     }
 #endif
 
@@ -976,7 +977,7 @@ static void gen_item_resolve(
 
       case GI_TYPE_TFN :
         if( gi->varname != NULL ) {
-          char         inst_name[4096];
+          char*        inst_name = (char*)malloc_safe( 4096 );
           vsignal*     genvar;
           func_unit*   found_funit;
           unsigned int rv;
@@ -995,13 +996,15 @@ static void gen_item_resolve(
           if( (child = instance_find_scope( inst, inst_name, TRUE )) != NULL ) {
             inst_parm_add_genvar( genvar, child );
           }
+          free_safe( inst_name, 4096 );
         } else {
-          char         inst_name[4096];
+          char*        inst_name = (char*)malloc_safe( 4096 );
           unsigned int rv;
           (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE, FALSE, TRUE );
           rv = snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
           assert( rv < 4096 );
           child = instance_find_scope( inst, inst_name, TRUE );
+          free_safe( inst_name, 4096 );
         }
         if( child != NULL ) {
           param_resolve_inst( child );
