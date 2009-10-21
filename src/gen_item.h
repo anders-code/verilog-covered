@@ -37,7 +37,7 @@ void gen_item_display(
 /*@=exportlocal@*/
 
 /*! \brief Displays an entire generate block */
-void gen_item_display_block(
+int gen_item_display_block(
   gen_item* root
 );
 
@@ -45,6 +45,13 @@ void gen_item_display_block(
 gen_item* gen_item_find(
   gen_item* root,
   gen_item* gi
+);
+
+/*! \brief Searches the given generate item block for an INST type that contains a functional unit
+           that matches the given functional unit name. */
+gen_item* gen_item_find_funit(
+  gen_item*   root,
+  const char* name
 );
 
 /*! \brief Searches for an expression in the generate list that calls the given statement */

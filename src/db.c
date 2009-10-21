@@ -1083,10 +1083,13 @@ func_unit* db_add_instance(
 
   } else {
 
+    bool clear_funit = FALSE;
+
     /* If a matching functional unit link was found, use it instead of the intermediate functional unit */
-    if( found_funit_link != NULL ) {
+    if( (found_funit_link != NULL) && (gen_item_find_funit( curr_gi_block, found_funit_link->funit->name ) != NULL) ) {
       funit_dealloc( funit );
-      funit = found_funit_link->funit;
+      funit       = found_funit_link->funit;
+      clear_funit = TRUE;
 
     /* Otherwise, add new functional unit to functional unit list. */
     } else {
@@ -1116,6 +1119,10 @@ func_unit* db_add_instance(
 
     if( (type == FUNIT_MODULE) && score && (str_link_find( name, modlist_head ) == NULL) ) {
       (void)str_link_add( strdup_safe( name ), &modlist_head, &modlist_tail );
+    }
+
+    if( clear_funit ) {
+      funit = NULL;
     }
       
   }

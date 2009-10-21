@@ -657,7 +657,7 @@ fsm_link* fsm_link_find(
 fsm_link* fsm_link_find_by_pos(
   int       line,  /*!< Line number */
   fsm_link* head   /*!< Pointer to head of fsm_link list to search */
-) { PROFILE(FSM_LINK_FIND);
+) { PROFILE(FSM_LINK_FIND_BY_POS);
 
   fsm_link* curr;  /* Pointer to current fsm_link element */
 

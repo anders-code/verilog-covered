@@ -180,9 +180,11 @@ static void gen_item_display_block_helper(
 }
 
 /*!
+ \return Returns a value of 1 so that this function can be called within an expression.
+
  Displays an entire generate block to standard output (used for debugging purposes).
 */
-void gen_item_display_block(
+int gen_item_display_block(
   gen_item* root  /*!< Pointer to starting generate item to display */
 ) { PROFILE(GEN_ITEM_DISPLAY_BLOCK);
 
@@ -191,6 +193,8 @@ void gen_item_display_block(
   gen_item_display_block_helper( root );
 
   PROFILE_END;
+
+  return( 1 );
 
 }
 
@@ -263,6 +267,58 @@ gen_item* gen_item_find(
 
         if( root->suppl.part.stop_false == 0 ) {
           found = gen_item_find( root->next_false, gi );
+        }
+
+      }
+
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( found );
+
+}
+
+/*!
+ \return Returns a pointer to the generate item that contains a functional unit that matches
+         the given functional unit name.  If no matching generate item exists, returns NULL.
+*/
+gen_item* gen_item_find_funit(
+  gen_item*   root,  /*!< Pointer to root of generate item block to search in */
+  const char* name   /*!< Name of functional unit to find */
+) { PROFILE(GEN_ITEM_FIND_INST);
+
+  gen_item* found = NULL;
+
+  printf( "IN gen_item_find_funit...\n" );
+
+  if( root != NULL ) {
+
+    printf( "HERE A (%p), name: %s (%s)\n", root->elem.inst->funit, ((root->elem.inst->funit != NULL) ? root->elem.inst->funit->name : "NONE" ), name );
+    gen_item_display( root );
+
+    /* If we found a matching generate item, return */
+    if( (root->suppl.part.type == GI_TYPE_INST) && (root->elem.inst->funit != NULL) && (strcmp( root->elem.inst->funit->name, name ) == 0) ) {
+
+      printf( "Found matching functional unit!\n" );
+      found = root;
+
+    } else {
+
+      /* If both true and false paths lead to same item, just traverse the true path */
+      if( root->next_true == root->next_false ) {
+
+        if( root->suppl.part.stop_true == 0 ) {
+          found = gen_item_find_funit( root->next_true, name );
+        }
+
+      /* Otherwise, traverse both true and false paths */
+      } else if( (root->suppl.part.stop_true == 0) && ((found = gen_item_find_funit( root->next_true, name )) == NULL) ) {
+
+        if( root->suppl.part.stop_false == 0 ) {
+          found = gen_item_find_funit( root->next_false, name );
         }
 
       }
