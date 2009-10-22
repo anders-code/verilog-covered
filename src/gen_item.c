@@ -974,7 +974,13 @@ static void gen_item_resolve(
         {
           funit_inst* tinst;
           funit_link* found_funit_link;
-          if( (found_funit_link = funit_link_find( gi->elem.inst->funit->name, gi->elem.inst->funit->type, db_list[curr_db]->funit_head )) != NULL ) {
+          if( ((found_funit_link = funit_link_find( gi->elem.inst->funit->name, gi->elem.inst->funit->type, db_list[curr_db]->funit_head )) != NULL) &&
+              (gi->elem.inst->funit != found_funit_link->funit) ) {
+            /* Make sure that any instances in the tree that point to the functional unit being replaced are pointing to the new functional unit */
+            int ignore = 0;
+            while( (tinst = inst_link_find_by_funit( gi->elem.inst->funit, db_list[curr_db]->inst_head, &ignore )) != NULL ) {
+              tinst->funit = found_funit_link->funit;
+            }
             funit_dealloc( gi->elem.inst->funit );
             gi->elem.inst->funit = found_funit_link->funit;
           }

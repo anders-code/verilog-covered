@@ -1083,8 +1083,8 @@ func_unit* db_add_instance(
 
   } else {
 
-    /* Add new functional unit to functional unit list. */
-    if( found_funit_link == NULL ) {
+    /* Add new functional unit to functional unit list if we are not within a generate block. */
+    if( (found_funit_link == NULL) || (funit->type != FUNIT_MODULE) ) {
       funit_link_add( funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
     }
 
@@ -2643,8 +2643,6 @@ void db_gen_item_connect(
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
-
-  gen_item_display_block( gi1 );
 
   /* Connect generate items */
   rv = gen_item_connect( gi1, gi2, gi_conn_id, FALSE );
