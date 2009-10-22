@@ -1083,16 +1083,8 @@ func_unit* db_add_instance(
 
   } else {
 
-    bool clear_funit = FALSE;
-
-    /* If a matching functional unit link was found, use it instead of the intermediate functional unit */
-    if( (found_funit_link != NULL) && (gen_item_find_funit( curr_gi_block, found_funit_link->funit->name ) != NULL) ) {
-      funit_dealloc( funit );
-      funit       = found_funit_link->funit;
-      clear_funit = TRUE;
-
-    /* Otherwise, add new functional unit to functional unit list. */
-    } else {
+    /* Add new functional unit to functional unit list. */
+    if( found_funit_link == NULL ) {
       funit_link_add( funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
     }
 
@@ -1121,10 +1113,6 @@ func_unit* db_add_instance(
       (void)str_link_add( strdup_safe( name ), &modlist_head, &modlist_tail );
     }
 
-    if( clear_funit ) {
-      funit = NULL;
-    }
-      
   }
 
   PROFILE_END;
@@ -2655,6 +2643,8 @@ void db_gen_item_connect(
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
+
+  gen_item_display_block( gi1 );
 
   /* Connect generate items */
   rv = gen_item_connect( gi1, gi2, gi_conn_id, FALSE );

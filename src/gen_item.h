@@ -47,13 +47,6 @@ gen_item* gen_item_find(
   gen_item* gi
 );
 
-/*! \brief Searches the given generate item block for an INST type that contains a functional unit
-           that matches the given functional unit name. */
-gen_item* gen_item_find_funit(
-  gen_item*   root,
-  const char* name
-);
-
 /*! \brief Searches for an expression in the generate list that calls the given statement */
 void gen_item_remove_if_contains_expr_calling_stmt(
   gen_item*  gi,

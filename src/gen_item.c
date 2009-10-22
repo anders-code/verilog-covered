@@ -282,58 +282,6 @@ gen_item* gen_item_find(
 }
 
 /*!
- \return Returns a pointer to the generate item that contains a functional unit that matches
-         the given functional unit name.  If no matching generate item exists, returns NULL.
-*/
-gen_item* gen_item_find_funit(
-  gen_item*   root,  /*!< Pointer to root of generate item block to search in */
-  const char* name   /*!< Name of functional unit to find */
-) { PROFILE(GEN_ITEM_FIND_INST);
-
-  gen_item* found = NULL;
-
-  printf( "IN gen_item_find_funit...\n" );
-
-  if( root != NULL ) {
-
-    printf( "HERE A (%p), name: %s (%s)\n", root->elem.inst->funit, ((root->elem.inst->funit != NULL) ? root->elem.inst->funit->name : "NONE" ), name );
-    gen_item_display( root );
-
-    /* If we found a matching generate item, return */
-    if( (root->suppl.part.type == GI_TYPE_INST) && (root->elem.inst->funit != NULL) && (strcmp( root->elem.inst->funit->name, name ) == 0) ) {
-
-      printf( "Found matching functional unit!\n" );
-      found = root;
-
-    } else {
-
-      /* If both true and false paths lead to same item, just traverse the true path */
-      if( root->next_true == root->next_false ) {
-
-        if( root->suppl.part.stop_true == 0 ) {
-          found = gen_item_find_funit( root->next_true, name );
-        }
-
-      /* Otherwise, traverse both true and false paths */
-      } else if( (root->suppl.part.stop_true == 0) && ((found = gen_item_find_funit( root->next_true, name )) == NULL) ) {
-
-        if( root->suppl.part.stop_false == 0 ) {
-          found = gen_item_find_funit( root->next_false, name );
-        }
-
-      }
-
-    }
-
-  }
-
-  PROFILE_END;
-
-  return( found );
-
-}
-
-/*!
  Removes the given generate item if it contains an expressions that calls a statement.
 */
 void gen_item_remove_if_contains_expr_calling_stmt(
@@ -1025,6 +973,11 @@ static void gen_item_resolve(
       case GI_TYPE_INST :
         {
           funit_inst* tinst;
+          funit_link* found_funit_link;
+          if( (found_funit_link = funit_link_find( gi->elem.inst->funit->name, gi->elem.inst->funit->type, db_list[curr_db]->funit_head )) != NULL ) {
+            funit_dealloc( gi->elem.inst->funit );
+            gi->elem.inst->funit = found_funit_link->funit;
+          }
           if( (tinst = instance_copy( gi->elem.inst, inst, gi->elem.inst->name, gi->elem.inst->range, FALSE )) != NULL ) {
             param_resolve_inst( tinst );
           }
