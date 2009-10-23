@@ -107,7 +107,7 @@ mod_parm* mod_parm_find(
 
   assert( name != NULL );
 
-  while( (parm != NULL) && ((parm->name == NULL) || (strcmp( parm->name, name ) != 0)) ) {
+  while( (parm != NULL) && ((parm->name == NULL) || (strcmp( parm->name, name ) != 0) || ((parm->suppl.part.type != PARAM_TYPE_DECLARED) && (parm->suppl.part.type != PARAM_TYPE_DECLARED_LOCAL))) ) {
     parm = parm->next;
   }
 
