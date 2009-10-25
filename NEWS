@@ -1,6 +1,20 @@
 Covered-Related NEWS
 ====================
 
+    * 10/24/2009
+
+Stable release covered-0.7.7 made.  This is a bug fix release only.
+
+  - Fixed compilation warnings when compiling on 64-bit Mac OS X and Debian-based platforms.
+  - Updates to build scripts to help downstream Debian releases builds.
+  - Fixed bug 2880705.  $Id: keywords containing newlines are now handled properly.  Additionally, fixing issues
+    with multiply instantiated modules within a generate block.
+  - Fixed bug 2881869.  Fixed a stack overflow issue in the gen_item_resolve function that would cause segmentation
+    faults when too many items were being generated within a single generate block.
+  - Fixed bug 2882433.  Fixed the "ERROR! Parameter used in expression but not defined in current module" error
+    when a generated module instance has a parameter override of a parameter with the same name as the parameter
+    within the module that contains the generate block.
+ 
     * 8/24/2009
 
 Stable release covered-0.7.6 made.  This is a bug fix release only.

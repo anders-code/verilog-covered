@@ -1,168 +1,99 @@
+2009-10-24 00:47  phase1geo
+
+	* Updates for new 0.7.7 stable release.
+
+2009-10-23 14:25  phase1geo
+
+	* Regression updates.  Full regression passes.
+
+2009-10-23 09:02  phase1geo
+
+	* Applying patch for bug 2882433.
+
+2009-10-22 23:01  phase1geo
+
+	* Last fix for regression issues.  Full regression passes.
+
+2009-10-22 17:41  phase1geo
+
+	* Anticipated fix for generate block issues.  Currently running VCS
+	  regressions with this change.  Checkpointing.
+
+2009-10-22 09:17  phase1geo
+
+	* Attempting to fix outstanding issue with generate blocks but this
+	  code is currently broken.  Checkpointing.
+
+2009-10-21 18:03  phase1geo
+
+	* Partial fix for current generate23 bug.  Still need to figure out
+	  how to properly keep around the current generate item block.
+	  Checkpointing.
+
+2009-10-21 02:16  phase1geo
+
+	* Fixing bug 2882433.  Added generate24 to regression suite to
+	  verify the fix.
+
+2009-10-21 02:16  phase1geo
+
+	* file generate24.cdd was added on branch stable-0_7-branch on
+	  2009-10-23 19:25:07 +0000
+
+2009-10-21 02:16  phase1geo
+
+	* file generate24.cfg was added on branch stable-0_7-branch on
+	  2009-10-23 19:25:07 +0000
+
+2009-10-21 02:16  phase1geo
+
+	* file generate24.rptI was added on branch stable-0_7-branch on
+	  2009-10-23 19:25:07 +0000
+
+2009-10-21 02:16  phase1geo
+
+	* file generate24.rptM was added on branch stable-0_7-branch on
+	  2009-10-23 19:25:07 +0000
+
+2009-10-21 02:16  phase1geo
+
+	* file generate24.v was added on branch stable-0_7-branch on
+	  2009-10-23 19:25:07 +0000
+
+2009-10-20 00:20  phase1geo
+
+	* Fixing bug 2881869.
+
+2009-10-17 21:26  phase1geo
+
+	* Fixing bug 2880705.  Adding generate23 diagnostic to replicate
+	  issue.  Also fixed issue with $Id: parsing.
+
+2009-10-16 08:50  phase1geo
+
+	* Updating build scripts per request from Ubuntu downstream.
+
+2009-09-12 00:16  phase1geo
+
+	* Fixing compilation warning.  Fixing build issues for Debian.
+
+2009-08-30 17:33  phase1geo
+
+	* Fixing compile warnings on 64-bit Mac OS X.
+
+2009-08-24 09:12  phase1geo
+
+	* Updates for new 0.7.6 stable release.
+
 2009-08-24 09:08  phase1geo
 
-	Fixing splint warnings.
+	* Fixing splint warnings.
 
 2009-08-24 08:33  phase1geo
 
-	Fixing CDD difference utility to conform to the new CDD format.
+	* Fixing CDD difference utility to conform to the new CDD format.
 
 2009-08-24 00:09  phase1geo
 
-	Updating VCS regressions.  All tests fully pass.
-
-2009-08-23 23:35  phase1geo
-
-	Missed a couple of files.
-
-2009-08-23 23:22  phase1geo
-
-	file generate22.2.v was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 23:22  phase1geo
-
-	file generate22.2.rptI was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 23:22  phase1geo
-
-	file generate22.3.v was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 23:22  phase1geo
-
-	file generate22.3.cfg was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 23:22  phase1geo
-
-	file generate22.2.rptM was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 23:22  phase1geo
-
-	file generate22.2.cfg was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 23:22  phase1geo
-
-	file generate22.3.rptI was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 23:22  phase1geo
-
-	file generate22.3.rptM was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 23:22  phase1geo
-
-	file generate22.3.cdd was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 23:22  phase1geo
-
-	file generate22.2.cdd was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 23:22  phase1geo
-
-	Fixing race condition and FSM merging.	Updating regression files.
-
-2009-08-23 08:41  phase1geo
-
-	file generate22.1.v was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 08:41  phase1geo
-
-	file generate22.1.cfg was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 08:41  phase1geo
-
-	file generate22.1.rptI was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 08:41  phase1geo
-
-	file generate22.1.rptM was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 08:40  phase1geo
-
-	file generate22.1.cdd was initially added on branch
-	stable-0_7-branch.
-
-2009-08-23 08:40  phase1geo
-
-	Fixing issues with the last checkin.  Full IV and Cver regressions
-	now pass.  Added diagnostic to verify signal merging works
-	properly.  Still need to finish race condition and FSM merging.
-
-2009-08-21 08:20  phase1geo
-
-	file generate22.rptI was initially added on branch
-	stable-0_7-branch.
-
-2009-08-21 08:20  phase1geo
-
-	file generate22.rptM was initially added on branch
-	stable-0_7-branch.
-
-2009-08-21 08:20  phase1geo
-
-	Last change needed to fix merging dissimilar functional units that
-	have different statements/expressions.	This should also work for
-	dissimilar signals too.  Need to add support for merging dissimilar
-	FSMs.  Also need to change CDD version number and update all
-	regression files.  Checkpointing.
-
-2009-08-21 08:20  phase1geo
-
-	file generate22.cdd was initially added on branch
-	stable-0_7-branch.
-
-2009-08-21 00:06  phase1geo
-
-	More updates to fix module merging.
-
-2009-08-20 17:24  phase1geo
-
-	Fixing regression issues and updating regression files.  IV and
-	Cver regressions have been updated to this point.
-
-2009-08-20 15:30  phase1geo
-
-	Fixing segmentation faults.
-
-2009-08-20 00:04  phase1geo
-
-	Fixing compilation issues with VPI library builds.
-
-2009-08-20 00:01  phase1geo
-
-	file generate22.v was initially added on branch stable-0_7-branch.
-
-2009-08-20 00:01  phase1geo
-
-	file generate22.cfg was initially added on branch
-	stable-0_7-branch.
-
-2009-08-20 00:01  phase1geo
-
-	Starting to work on converting stmt_iter to stmt_link (to match
-	development release version).  Starting to update regression files.
-	 Still have some work to do here.  Checkpointing.
-
-2009-08-04 20:51  phase1geo
-
-	Fixing typo in report generator.
-
-2009-08-02 14:57  phase1geo
-
-	Updates for 0.7.5 stable release.
-
-2009-08-02 08:12  phase1geo
-
-	Fixing splint warnings.
+	* Updating VCS regressions.  All tests fully pass.
 
