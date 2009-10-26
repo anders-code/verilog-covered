@@ -1043,17 +1043,35 @@ void generator_add_to_work_code(
 
     long replace_offset = strlen( work_buffer );
 
-    /* If something is stored in the look-ahead buffer, add it to the work buffer first */
-    if( strlen( lahead_buffer ) > 0 ) {
+    /* Only append the look-ahead buffer contents if the string is coming from the code */
+    if( from_code ) {
 
-      assert( (strlen( work_buffer ) + strlen( lahead_buffer)) < 4095 );
-      strcat( work_buffer, lahead_buffer );
-      lahead_buffer[0] = '\0';
+      /* If something is stored in the look-ahead buffer, add it to the work buffer first */
+      if( strlen( lahead_buffer ) > 0 ) {
 
-    } else {
+        assert( (strlen( work_buffer ) + strlen( lahead_buffer)) < 4095 );
+        strcat( work_buffer, lahead_buffer );
+        lahead_buffer[0] = '\0';
 
-      /* Set the last_token index to the replace_offset */
-      last_token_index = replace_offset;
+      } else {
+
+        if( work_buffer[0] == '\0' ) {
+
+          /* Set the last_token index */
+          last_token_index = 0;
+
+        } else {
+
+          /* Make sure any leading whitespace is included with a held token */
+          char* ptr = work_buffer + (strlen( work_buffer ) - 1);
+          while( (ptr > work_buffer) && ((*ptr == ' ') || (*ptr == '\t') || (*ptr == '\b')) ) ptr--;
+
+          /* Set the last_token index */
+          last_token_index = ptr - work_buffer;
+
+        }
+
+      }
 
     }
 
@@ -1170,6 +1188,12 @@ void generator_flush_work_code1(
   /* Clear replacement pointers */
   if( strlen( lahead_buffer ) == 0 ) {
     generator_clear_replace_ptrs();
+  } else {
+    char* ptr = lahead_buffer;
+    while( (*ptr != '\0') && ((*ptr == ' ') || (*ptr == '\t') || (*ptr == '\b')) ) ptr++;
+    if( *ptr == '\0' ) {
+      generator_clear_replace_ptrs();
+    }
   }
 
   PROFILE_END;
@@ -3402,9 +3426,14 @@ void generator_hold_last_token() { PROFILE(GENERATOR_HOLD_LAST_TOKEN);
   /* Find the last token and store it into the look-ahead buffer */
   if( strlen( work_buffer ) > 0 ) {
 
-    strcpy( lahead_buffer, (work_buffer + last_token_index) );
-    work_buffer[last_token_index] = '\0';
-    replace_last.word_ptr = work_buffer + (last_token_index - 1);
+    /* Skip whitespace */
+    char* ptr = work_buffer + last_token_index;
+
+    if( *ptr != '\0' ) {
+      strcpy( lahead_buffer, ptr );
+      work_buffer[last_token_index] = '\0';
+      replace_last.word_ptr = work_buffer + (last_token_index - 1);
+    }
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
