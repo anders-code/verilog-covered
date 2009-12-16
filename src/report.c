@@ -131,7 +131,7 @@ bool report_exclusions = FALSE;
  If set to a boolean value of TRUE, displays GUI report viewer instead of generating text
  report files.
 */
-bool report_gui = FALSE;
+static bool report_gui = FALSE;
 
 /*!
  If set to a boolean value of TRUE, displays all vector combinational logic on a bitwise
@@ -185,7 +185,7 @@ bool flag_output_exclusion_ids = FALSE;
 /*!
  TCL interpreter for this application.
 */
-Tcl_Interp* interp;
+Tcl_Interp* interp = NULL;
 #endif
 
 /*!
@@ -325,10 +325,10 @@ bool report_parse_args(
     } else if( strncmp( "-view", argv[i], 5 ) == 0 ) {
 
 #ifdef HAVE_TCLTK
-      report_gui          = TRUE;
-      report_comb_depth   = REPORT_VERBOSE;
-      report_assertion    = TRUE;
-      report_memory       = TRUE;
+      report_gui        = TRUE;
+      report_comb_depth = REPORT_VERBOSE;
+      report_assertion  = TRUE;
+      report_memory     = TRUE;
 #else
       print_output( "The -view option is not available with this build", FATAL, __FILE__, __LINE__ );
       Throw 0;

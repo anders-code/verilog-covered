@@ -53,7 +53,6 @@
 #include "profiler.h"
 #include "vpi.h"
 
-extern bool        report_gui;
 extern bool        flag_use_command_line_debug;
 #ifndef VPI_ONLY
 #ifdef DEBUG_MODE
@@ -62,8 +61,13 @@ extern bool        cli_debug_mode;
 #endif
 #ifdef HAVE_TCLTK
 extern Tcl_Interp* interp;
+#else
+static const char* interp = NULL;
 #endif
+#else
+static const char* interp = NULL;
 #endif
+
 
 #ifndef CLI_DEBUG_MODE_EXISTS
 static bool cli_debug_mode = FALSE;
@@ -181,7 +185,7 @@ void print_output(
       break;
     case WARNING:
       if( !output_suppressed && !warnings_suppressed ) {
-        if( report_gui ) {
+        if( interp != NULL ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s\n", msg );
           assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
@@ -193,7 +197,7 @@ void print_output(
           fprintf( outf, "    WARNING!  %s\n", msg );
         }
       } else if( debug_mode ) {
-        if( report_gui ) {
+        if( interp != NULL ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
           assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
@@ -208,7 +212,7 @@ void print_output(
       break;
     case WARNING_WRAP:
       if( (!output_suppressed && !warnings_suppressed) || debug_mode ) {
-        if( report_gui ) {
+        if( interp != NULL ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "              %s\n", msg );
           assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
@@ -224,7 +228,7 @@ void print_output(
     case FATAL:
       (void)fflush( outf );
       if( debug_mode ) {
-        if( report_gui ) {
+        if( interp != NULL ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "%s (file: %s, line: %d)\n", msg, file, line );
           assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
@@ -237,7 +241,7 @@ void print_output(
           fprintf( stderr, "ERROR!  %s (file: %s, line: %d)\n", msg, obf_file( file ), line );
         }
       } else {
-        if( report_gui ) {
+        if( interp != NULL ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
           assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
@@ -252,7 +256,7 @@ void print_output(
       }
       break;
     case FATAL_WRAP:
-      if( report_gui ) {
+      if( interp != NULL ) {
         unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
         assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY

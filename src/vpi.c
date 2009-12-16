@@ -61,7 +61,6 @@ sym_value* sv_head       = NULL;   /*!< Pointer to head of sym_value list */
 sym_value* sv_tail       = NULL;   /*!< Pointer to tail of sym_value list */
 
 /* These are needed for compile purposes only */
-bool   report_gui          = FALSE;
 int    timestep_update     = 0;
 bool   report_covered      = FALSE;
 bool   flag_use_line_width = FALSE;
