@@ -47,6 +47,7 @@ set main_start_search_index 1.0
 set curr_uncov_index        ""
 set prev_uncov_index        ""
 set next_uncov_index        ""
+
 array set tablelistopts {
   selectbackground   RoyalBlue1
   selectforeground   white
@@ -706,7 +707,16 @@ read_coveredrc
 # Display main window
 main_view
 
-# Display the wizard, if the configuration option is set
-if {$show_wizard} {
-  create_wizard
+# If an input CDD(s) was specified, load them now
+if {$input_cdd ne ""} {
+
+  open_files $input_cdd
+
+} else {
+
+  # Display the wizard, if the configuration option is set
+  if {$show_wizard} {
+    create_wizard
+  }
+
 }

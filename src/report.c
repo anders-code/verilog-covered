@@ -195,7 +195,7 @@ static void report_usage() {
 
   printf( "\n" );
 #ifdef HAVE_TCLTK
-  printf( "Usage:  covered report (-h | -view | [<options>] <database_file>)\n" );
+  printf( "Usage:  covered report (-h | -view [<database_file>] | [<options>] <database_file>)\n" );
   printf( "\n" );
   printf( "   -view                        Uses the graphical report viewer for viewing reports.  If this\n" );
   printf( "                                 option is not specified, the text report will be generated.\n" );
@@ -1158,10 +1158,6 @@ void command_report(
 
           unsigned int rv;
 
-          if( input_db != NULL ) {
-            report_read_cdd_and_ready( input_db );
-          }
-
           /* Initialize the Tcl/Tk interpreter */
           interp = Tcl_CreateInterp();
           assert( interp );
@@ -1198,7 +1194,7 @@ void command_report(
           user_home       = getenv( "HOME" );
 
           /* Initialize TCL */
-          tcl_func_initialize( interp, argv[0], user_home, covered_home, covered_version, covered_browser );
+          tcl_func_initialize( interp, argv[0], user_home, covered_home, covered_version, covered_browser, input_db );
 
           /* Call the top-level Tcl file */
           slen      = strlen( covered_home ) + 30;
