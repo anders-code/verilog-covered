@@ -2336,7 +2336,7 @@ expr_primary
     }
   | '(' expression ')'
     {
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
         $2->suppl.part.parenthesis = 1;
         $$ = $2;
       } else {
