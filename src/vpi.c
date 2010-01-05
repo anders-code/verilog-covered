@@ -26,6 +26,9 @@
 #ifdef CVER
 #include "cv_vpi_user.h"
 #endif
+#ifdef NCV
+#include "vpi_user_cds.h"
+#endif
 
 #include "binding.h"
 #include "db.h"
@@ -850,8 +853,9 @@ PLI_INT32 covered_sim_calltf( char* name ) {
 }
 
 void covered_register() {
-
   s_vpi_systf_data tf_data;
+
+  vpi_printf("VPI: Registering covered_sim system_task");
 
   tf_data.type      = vpiSysTask;
   tf_data.tfname    = "$covered_sim";
@@ -859,9 +863,16 @@ void covered_register() {
   tf_data.compiletf = 0;
   tf_data.sizetf    = 0;
   tf_data.user_data = "$covered_sim";
+
   vpi_register_systf( &tf_data );
+  if (vpi_chk_error(NULL)) {
+    vpi_printf("Error occured while setting up user %s\n",
+               "defined system tasks and functions.");
+    return;
+  }
 
 }
+
 
 #ifndef VCS
 void (*vlog_startup_routines[])() = {
