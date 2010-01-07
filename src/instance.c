@@ -463,9 +463,8 @@ expression* instance_find_expression_by_exclusion_id(
     
   if( root != NULL ) {
 
-    assert( root->funit != NULL );
- 
-    if( (root->funit->exp_head != NULL) && 
+    if( (root->funit != NULL) &&
+        (root->funit->exp_head != NULL) && 
         (root->funit->exp_head->exp->id <= id) && 
         (root->funit->exp_tail->exp->id >= id) ) {
 
