@@ -337,7 +337,7 @@ static_expr* static_expr_gen(
         right->num--;
       }
     } else {
-      right->exp = expression_create( NULL, left->exp, op, FALSE, curr_expr_id, line, first, last, TRUE );
+      right->exp = expression_create( NULL, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
       curr_expr_id++;
     }
 
