@@ -512,7 +512,7 @@ int instance_find_fsm_arc_index_by_exclusion_id(
     fsm_link* fsml;
 
     if( root->funit != NULL ) {
-      fsm_link* fsml = root->funit->fsm_head;
+      fsml = root->funit->fsm_head;
       while( (fsml != NULL) && ((arc_index = arc_find_arc_by_exclusion_id( fsml->table->table, id )) == -1) ) {
         fsml = fsml->next;
       }
