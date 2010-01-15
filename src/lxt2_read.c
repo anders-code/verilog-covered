@@ -1767,18 +1767,18 @@ int lxt2_rd_iter_blocks(
         Try {
           (void)lxt2_rd_process_block( lt, b );
         } Catch_anonymous {
-          free_safe( b->mem, 0 );  /* TBD */
+          free_safe( b->mem, b->uncompressed_siz );
           Throw 0;
         }
 
         if( striped_kill ) {
-          free_safe( b->mem, 0 );  /* TBD */
+          free_safe( b->mem, b->uncompressed_siz );
           b->mem = NULL;
           b->uncompressed_siz = real_uncompressed_siz;
         } else if( lt->numblocks > 1 ) {	/* no sense freeing up the single block case */
           if( lt->block_mem_consumed > lt->block_mem_max ) {
             lt->block_mem_consumed -= b->uncompressed_siz;
-            free_safe( b->mem, 0 );  /* TBD */
+            free_safe( b->mem, b->uncompressed_siz );
             b->mem = NULL;
           }
         }
