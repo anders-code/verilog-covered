@@ -1,8 +1,8 @@
 /*
- Name:        mbit_sel1.1.v
+ Name:        mbit_sel5.5.v
  Author:      Trevor Williams  (phase1geo@gmail.com)
- Date:        01/21/2010
- Purpose:     Verifies interesting RHS multi-bit scenarios.
+ Date:        02/10/2010
+ Purpose:     Verifies interesting RHS multi-bit pos scenarios.
 */
 
 module main;
@@ -19,6 +19,7 @@ reg [128:0]   j;
 reg [156:0]   k;
 reg [135:0]   l;
 reg [200:0]   m;
+reg [15:0]    n;
 
 initial begin
   w = 72'hdc__cdef_89ab_4567_0123;
@@ -37,25 +38,27 @@ initial begin
   k = 157'h0;
   l = 136'h0;
   m = 201'h0;
+  n = 16'h0;
   #5;
-  a = z[80:65];
-  b = y[70:55];
-  c = z[80:16];
-  d = y[80:16];
-  e = z[135:71];
-  f = y[64:0];
-  g = y[136:63];
-  h = y[200:63];
-  i = y[137:0];
-  j = z[144:16];
-  k = x[157:1];
-  l = w[136:1];
-  m = w[201:1];
+  a = z[65+:16];
+  b = y[55+:16];
+  c = z[16+:65];
+  d = y[16+:65];
+  e = z[71+:65];
+  f = y[0+:65];
+  g = y[63+:74];
+  h = y[63+:138];
+  i = y[0+:138];
+  j = z[16+:129];
+  k = x[1+:157];
+  l = w[1+:136];
+  m = w[1+:201];
+  n = w[1+:16];
 end
 
 initial begin
 `ifdef DUMP
-        $dumpfile( "mbit_sel1.1.vcd" );
+        $dumpfile( "mbit_sel5.5.vcd" );
         $dumpvars( 0, main );
 `endif
         #10;
