@@ -38,7 +38,8 @@ extern char           user_msg[USER_MSG_LENGTH];
 extern const exp_info exp_op_info[EXP_OP_NUM];
 extern db**           db_list;
 extern uint64         num_timesteps;
-extern bool           output_suppressed;
+extern bool           quiet_mode;
+extern bool           terse_mode;
 extern bool           debug_mode;
 extern int64          largest_malloc_size;
 extern bool           report_line;
@@ -1149,7 +1150,7 @@ static void rank_selected_cdd_cov(
   comp_cdd_cov*       tmp;
 
   /* Output status indicator, if necessary */
-  if( (!output_suppressed || debug_mode) && !rank_verbose ) {
+  if( ((!quiet_mode && !terse_mode) || debug_mode) && !rank_verbose ) {
     while( ((unsigned int)(((next_cdd + 1) / (float)comp_cdd_num) * 100) - (dots_output * 10)) >= 10 ) { 
       unsigned int rv;
       printf( "." );
@@ -1187,7 +1188,7 @@ static void rank_selected_cdd_cov(
     }
   }
 
-  if( (!output_suppressed || debug_mode) && !rank_verbose ) {
+  if( ((!quiet_mode && !terse_mode) || debug_mode) && !rank_verbose ) {
     if( (next_cdd + 1) == comp_cdd_num ) {
       unsigned int rv;
       if( dots_output < 10 ) {
@@ -1365,7 +1366,7 @@ static void rank_perform(
   timer*       atimer       = NULL;
   unsigned int rv;
 
-  if( (!output_suppressed || debug_mode) && !rank_verbose ) {
+  if( ((!quiet_mode && !terse_mode) || debug_mode) && !rank_verbose ) {
     printf( "Ranking CDD files " );
     rv = fflush( stdout );
     assert( rv == 0 );
@@ -1734,7 +1735,7 @@ void command_rank(
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
   assert( rv < USER_MSG_LENGTH );
-  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+  print_output( user_msg, HEADER, __FILE__, __LINE__ );
 
   Try {
 

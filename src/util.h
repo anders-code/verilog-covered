@@ -52,8 +52,11 @@
 #endif
 
 
-/*! \brief Sets error suppression to specified value */
-void set_output_suppression( bool value );
+/*! \brief Sets quiet output variable to specified value */
+void set_quiet( bool value );
+
+/*! \brief Sets terse output variable to specified value */
+void set_terse( bool value );
 
 /*! \brief Sets global debug flag to specified value */
 void set_debug( bool value );
