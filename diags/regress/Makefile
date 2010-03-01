@@ -45,10 +45,10 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 compx1.3        concat1         concat2         concat3         concat4.1 \
                 concat4.2       concat5         concat6         concat7         concat8 \
                 concat10        concat10.1      concat10.2      cond1           cond2 \
-                cond3           cond3.1         cond3.2 \
-                cond3.3         delay1          delay2          define1         define1.1 \
-                define1.2       define2         define2.1       define4         define5 \
-                define6         define6.1       disable1        disable1.1      disable2 \
+                cond3           cond3.1         cond3.2         cond3.3         delay1 \
+                delay2          define1         define1.1       define1.2       define2 \
+                define2.1       define4         define5         define6         define6.1 \
+                define7         disable1        disable1.1      disable2 \
                 disable2.1      disable3        display1        div1            dly_assign1 \
                 endian1         endian2         endian3         endian4         event1 \
                 event1.1        exclude1        exclude2        exclude3        exclude4 \
