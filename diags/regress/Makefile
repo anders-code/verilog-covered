@@ -60,7 +60,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 exclude11       exclude12       exclude12.1     exclude12.2     exclude12.3 \
                 exclude12.4     exclude12.6     exclude13       exclude14       expand1 \
                 expand2         expand3         expand4         expand4.1       expand4.2 \
-                expand4.3       expand4.4       fdisplay1       finish1         for1 \
+                expand4.3       expand4.4       expand6         expand6.1       expand6.2 \
+                expand6.3       fdisplay1       finish1         for1 \
                 for2            forever1        fork1           fork2           fsm3 \
                 fsm4            fsm4.1          fsm5            fsm5.1          fsm5.2 \
                 fsm5.3          fsm11           fstrobe1        func1           func2 \

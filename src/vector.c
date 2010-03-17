@@ -81,7 +81,7 @@ void vector_init_ulong(
   vec->suppl.all            = 0;
   vec->suppl.part.type      = type;
   vec->suppl.part.data_type = VDATA_UL;
-  vec->suppl.part.owns_data = owns_value;
+  vec->suppl.part.owns_data = owns_value & (width != 0);
   vec->value.ul             = value;
 
   if( value != NULL ) {
@@ -201,15 +201,13 @@ vector* vector_create(
 
   vector* new_vec;  /* Pointer to newly created vector */
 
-  assert( width > 0 );
-
   new_vec = (vector*)malloc_safe( sizeof( vector ) );
 
   switch( data_type ) {
     case VDATA_UL :
       {
         ulong** value = NULL;
-        if( data == TRUE ) {
+        if( (data == TRUE) && (width > 0) ) {
           int          num  = vector_type_sizes[type];
           unsigned int size = UL_SIZE(width);
           unsigned int i;
@@ -376,7 +374,6 @@ void vector_db_write(
   uint8 mask;   /* Mask value for vector values */
 
   assert( vec != NULL );
-  assert( vec->width > 0 );
 
   /* Calculate vector data mask */
   mask = write_data ? 0xff : 0xfc;
@@ -398,6 +395,8 @@ void vector_db_write(
 
   /* Only write our data if we own it */
   if( vec->suppl.part.owns_data == 1 ) {
+
+    assert( vec->width > 0 );
 
     /* Output value based on data type */
     switch( vec->suppl.part.data_type ) {
@@ -636,7 +635,6 @@ void vector_db_read(
         Throw 0;
       }
 
-    /* Otherwise, deallocate the vector data */
     } else {
 
       vector_dealloc_value( *vec );
@@ -5175,7 +5173,7 @@ bool vector_op_list(
         unsigned int i;
         unsigned int pos    = right->width;
         unsigned int lwidth = left->width;
-        unsigned int rsize  = UL_SIZE( pos );
+        unsigned int rsize  = (pos == 0) ? 0 : UL_SIZE( pos );
 
         /* Load right vector directly */
         for( i=0; i<rsize; i++ ) {
@@ -5197,7 +5195,7 @@ bool vector_op_list(
           valh[my_index] |= ((lval[VTYPE_INDEX_EXP_VALH] >> UL_MOD(i)) & 0x1) << offset;
           pos++;
         }
-        retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, ((left->width + right->width) - 1) );
+        retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, ((lwidth + right->width) - 1) );
       }
       break;
     default :  assert( 0 );  break;
@@ -5291,7 +5289,7 @@ void vector_dealloc_value(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      {
+      if( vec->width > 0 ) {
         unsigned int i;
         unsigned int size = UL_SIZE( vec->width );
 
