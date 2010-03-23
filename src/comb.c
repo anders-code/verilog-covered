@@ -427,22 +427,24 @@ void combination_get_tree_stats(
                   (*ulid)++;
                 }
               } else {
-                if( report_bitwise ) {
-                  *total  = *total + (2 * exp->value->width);
-                  num_hit = vector_get_eval_ab_count( exp->value );
-                } else {
-                  *total  = *total + 2;
-                  num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
-                }
-                if( excluded ) {
-                  *hit      += 2;
-                  *excludes += 2;
-                } else {
-                  *hit += num_hit;
-                }
-                if( (num_hit != 2) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
-                  exp->ulid = *ulid;
-                  (*ulid)++;
+                if( (exp->op != EXP_OP_EXPAND) || (exp->value->width > 0) ) {
+                  if( report_bitwise ) {
+                    *total  = *total + (2 * exp->value->width);
+                    num_hit = vector_get_eval_ab_count( exp->value );
+                  } else {
+                    *total  = *total + 2;
+                    num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
+                  }
+                  if( excluded ) {
+                    *hit      += 2;
+                    *excludes += 2;
+                  } else {
+                    *hit += num_hit;
+                  }
+                  if( (num_hit != 2) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
+                    exp->ulid = *ulid;
+                    (*ulid)++;
+                  }
                 }
               }
             }
