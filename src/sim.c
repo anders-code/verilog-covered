@@ -203,9 +203,9 @@ void sim_display_thread(
     printf( "    " );
   }
 
-  /*@-duplicatequals -formattype@*/
+  /*@-duplicatequals -formatcode -formattype@*/
   printf( "time %" FMT64 "u, ", thr->curr_time.full );
-  /*@=duplicatequals =formattype@*/
+  /*@=duplicatequals =formatcode =formattype@*/
 
   if( thr->curr == NULL ) {
     printf( "stmt NONE, " );

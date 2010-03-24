@@ -440,7 +440,7 @@ void gitem_link_display(
 
   curr = head;
   while( curr != NULL ) {
-    gen_item_display_block( curr->gi );
+    (void)gen_item_display_block( curr->gi );
     curr = curr->next;
   }
 

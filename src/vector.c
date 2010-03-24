@@ -1195,7 +1195,7 @@ void vector_display_value_ulong(
 /*!
  Displays the binary value of the specified ulong values to standard output.
 */
-static void vector_display_value_ulongs(
+static void /*@unused@*/ vector_display_value_ulongs(
   ulong* vall,  /*!< Array of lower values */
   ulong* valh,  /*!< Array of upper values */
   int    width  /*!< Number of bits to display */
