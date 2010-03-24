@@ -593,10 +593,12 @@ void fsm_get_coverage(
   /*@out@*/ unsigned int* output_size          /*!< Pointer to the number of elements stored in the output state array */
 ) { PROFILE(FSM_GET_COVERAGE);
 
-  fsm_link* curr_fsm;     /* Pointer to current FSM link */
-  int*      tmp_ids;      /* Temporary integer array */
-  int*      tmp;          /* Temporary integer array */
-  char**    tmp_reasons;  /* Temporary reason array */
+  fsm_link*    curr_fsm;
+  int*         tmp_ids;
+  int*         tmp;
+  char**       tmp_reasons;
+  unsigned int fr_width;
+  unsigned int to_width;
 
   curr_fsm = funit->fsm_head;
   while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
@@ -605,13 +607,16 @@ void fsm_get_coverage(
 
   assert( curr_fsm != NULL );
 
+  fr_width = curr_fsm->table->from_state->value->width;
+  to_width = curr_fsm->table->to_state->value->width;
+
   /* Get state information */
-  arc_get_states( total_fr_states, total_fr_state_num, total_to_states, total_to_state_num, curr_fsm->table->table, TRUE, TRUE ); 
-  arc_get_states( hit_fr_states,   hit_fr_state_num,   hit_to_states,   hit_to_state_num,   curr_fsm->table->table, TRUE, FALSE );
+  arc_get_states( total_fr_states, total_fr_state_num, total_to_states, total_to_state_num, curr_fsm->table->table, TRUE, TRUE,  fr_width, to_width ); 
+  arc_get_states( hit_fr_states,   hit_fr_state_num,   hit_to_states,   hit_to_state_num,   curr_fsm->table->table, TRUE, FALSE, fr_width, to_width );
 
   /* Get state transition information */
-  arc_get_transitions( total_from_arcs, total_to_arcs, total_ids, excludes, reasons,      total_arc_num, curr_fsm->table->table, funit, TRUE, TRUE );
-  arc_get_transitions( hit_from_arcs,   hit_to_arcs,   &tmp_ids,  &tmp,     &tmp_reasons, hit_arc_num,   curr_fsm->table->table, funit, TRUE, FALSE );
+  arc_get_transitions( total_from_arcs, total_to_arcs, total_ids, excludes, reasons,      total_arc_num, curr_fsm->table->table, funit, TRUE, TRUE,  fr_width, to_width );
+  arc_get_transitions( hit_from_arcs,   hit_to_arcs,   &tmp_ids,  &tmp,     &tmp_reasons, hit_arc_num,   curr_fsm->table->table, funit, TRUE, FALSE, fr_width, to_width );
 
   /* Get input state code */
   codegen_gen_expr( curr_fsm->table->from_state, curr_fsm->table->from_state->op, input_state, input_size, NULL );
@@ -871,7 +876,8 @@ static void fsm_display_state_verbose(
   fprintf( ofile, "          ======\n" );
 
   /* Get all of the states in string form */
-  arc_get_states( &fr_states, &fr_state_size, &to_states, &to_state_size, table->table, (report_covered || trans_unknown), FALSE );
+  arc_get_states( &fr_states, &fr_state_size, &to_states, &to_state_size, table->table, (report_covered || trans_unknown), FALSE,
+                  table->from_state->value->width, table->to_state->value->width );
 
   /* Display all of the found states */
   for( i=0; i<fr_state_size; i++ ) {
@@ -973,7 +979,8 @@ static bool fsm_display_arc_verbose(
   fprintf( ofile, fstr, spaces, "==========", "  ", "==========" );
 
   /* Get the state transition information */
-  arc_get_transitions( &from_states, &to_states, &ids, &excludes, &reasons, &arc_size, table->table, funit, ((rtype == RPT_TYPE_HIT) || trans_unknown), FALSE );
+  arc_get_transitions( &from_states, &to_states, &ids, &excludes, &reasons, &arc_size, table->table, funit, ((rtype == RPT_TYPE_HIT) || trans_unknown), FALSE,
+                       table->from_state->value->width, table->to_state->value->width );
 
   /* Output the information to the specified output stream */
   for( i=0; i<arc_size; i++ ) {
