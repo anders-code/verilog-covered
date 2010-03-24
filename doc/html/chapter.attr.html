@@ -130,6 +130,12 @@
                   and defines that equate to one of these two types of values).
                 </p></li><li><p>
                   Each transition that is specified is a unique value in the attribute list.
+                </p></li><li><p>
+                  You may optionally add characters after the "trans" keyword and before the '=' character (with the
+                  exception of the '=' character) to make each transition parameter name unique.  Covered will ignore
+                  these extra characters, but this can be useful to avoid warning messages that may get emitted from
+                  your Verilog compiler when these attributes are parsed (some compilers expect each parameter name
+                  in an attribute list to have a unique name).  This feature was put in the 0.7.8 stable release.
                 </p></li></ul></div><p>
           </p></li></ol></div><p>
     </p><p>
