@@ -1,99 +1,586 @@
+2010-03-24 21:14  phase1geo
+
+	Updating copyright date in user guide.
+
+2010-03-24 13:56  phase1geo
+
+	file fsm13.v was initially added on branch stable-0_7-branch.
+
+2010-03-24 13:56  phase1geo
+
+	file fsm13.cfg was initially added on branch stable-0_7-branch.
+
+2010-03-24 13:56  phase1geo
+
+	file fsm13.rptI was initially added on branch stable-0_7-branch.
+
+2010-03-24 13:56  phase1geo
+
+	file fsm13.rptM was initially added on branch stable-0_7-branch.
+
+2010-03-24 13:56  phase1geo
+
+	file fsm13.cdd was initially added on branch stable-0_7-branch.
+
+2010-03-24 13:56  phase1geo
+
+	Handles feature request 2976039.  Updated user guide and added
+	fsm13 to verify the feature.
+
+2010-03-24 12:59  phase1geo
+
+	Cleaning up splint warnings.
+
+2010-03-23 23:41  phase1geo
+
+	file fsm12.v was initially added on branch stable-0_7-branch.
+
+2010-03-23 23:41  phase1geo
+
+	file fsm12.cfg was initially added on branch stable-0_7-branch.
+
+2010-03-23 23:41  phase1geo
+
+	file fsm12.rptI was initially added on branch stable-0_7-branch.
+
+2010-03-23 23:41  phase1geo
+
+	file fsm12.rptM was initially added on branch stable-0_7-branch.
+
+2010-03-23 23:41  phase1geo
+
+	file fsm12.cdd was initially added on branch stable-0_7-branch.
+
+2010-03-23 23:41  phase1geo
+
+	Fixing bug 2974860.  Added fsm12 diagnostic to regression suite to
+	verify the fix.
+
+2010-03-22 21:14  phase1geo
+
+	Applying second fix for reporting issues linked with bug 2958529. 
+	Updating regression files as well.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.2.cfg was initially added on branch stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.1.rptM was initially added on branch
+	stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.1.v was initially added on branch stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.3.rptI was initially added on branch
+	stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.rptI was initially added on branch stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.2.v was initially added on branch stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.3.rptM was initially added on branch
+	stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.3.cfg was initially added on branch stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.2.rptM was initially added on branch
+	stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.2.rptI was initially added on branch
+	stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.rptM was initially added on branch stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.3.v was initially added on branch stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.1.rptI was initially added on branch
+	stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.1.cfg was initially added on branch stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.2.cdd was initially added on branch stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.1.cdd was initially added on branch stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.3.cdd was initially added on branch stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	file expand6.cdd was initially added on branch stable-0_7-branch.
+
+2010-03-16 23:06  phase1geo
+
+	Fix for bug 2958529.  Also added diagnostics to regression suite to
+	verify the bug fix.
+
+2010-02-28 23:20  phase1geo
+
+	Adding diagnostic to test fix for bug 2958529.
+
+2010-02-28 23:20  phase1geo
+
+	file expand6.cfg was initially added on branch stable-0_7-branch.
+
+2010-02-28 23:20  phase1geo
+
+	file expand6.v was initially added on branch stable-0_7-branch.
+
+2010-02-28 22:09  phase1geo
+
+	Fixing bug 2960887.
+
+2010-02-28 22:04  phase1geo
+
+	file define7.cdd was initially added on branch stable-0_7-branch.
+
+2010-02-28 22:04  phase1geo
+
+	file define7.v was initially added on branch stable-0_7-branch.
+
+2010-02-28 22:04  phase1geo
+
+	Add define7 that verifies the bug fix for 2960887.
+
+2010-02-28 22:04  phase1geo
+
+	file define7.rptI was initially added on branch stable-0_7-branch.
+
+2010-02-28 22:04  phase1geo
+
+	file define7.cfg was initially added on branch stable-0_7-branch.
+
+2010-02-28 22:04  phase1geo
+
+	file define7.rptM was initially added on branch stable-0_7-branch.
+
+2010-02-22 22:06  phase1geo
+
+	Add for feature 2952492.  The new global -T option provides "terse"
+	output from any given command.
+
+2010-02-22 17:00  phase1geo
+
+	Updating documentation for the new -T global option.
+
+2010-02-19 00:20  phase1geo
+
+	Integrating bug fix for exclusion bug.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel6.5.cfg was initially added on branch
+	stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel5.5.cfg was initially added on branch
+	stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel1.1.rptI was initially added on branch
+	stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel6.5.v was initially added on branch stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel5.5.rptI was initially added on branch
+	stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel5.5.rptM was initially added on branch
+	stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel1.1.rptM was initially added on branch
+	stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel6.5.rptM was initially added on branch
+	stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel6.5.rptI was initially added on branch
+	stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel5.5.v was initially added on branch stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel5.5.cdd was initially added on branch
+	stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel6.5.cdd was initially added on branch
+	stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	file mbit_sel1.1.cdd was initially added on branch
+	stable-0_7-branch.
+
+2010-02-10 22:56  phase1geo
+
+	Fixing bug 2933112.  Added diagnostics to enhance coverage of this
+	issue.
+
+2010-01-22 09:20  phase1geo
+
+	file mbit_sel1.1.v was initially added on branch stable-0_7-branch.
+
+2010-01-22 09:20  phase1geo
+
+	Working on new diagnostic to verify out-of-bounds for multi-bit
+	part selects.
+
+2010-01-22 09:20  phase1geo
+
+	file mbit_sel1.1.cfg was initially added on branch
+	stable-0_7-branch.
+
+2010-01-21 18:08  phase1geo
+
+	Diagnostic updates.
+
+2010-01-20 17:07  phase1geo
+
+	Adding more cases to verify out-of-bounds handling for multi-bit
+	part selects.
+
+2010-01-15 12:46  phase1geo
+
+	file clog2.6.cfg was initially added on branch stable-0_7-branch.
+
+2010-01-15 12:46  phase1geo
+
+	file clog2.6.v was initially added on branch stable-0_7-branch.
+
+2010-01-15 12:46  phase1geo
+
+	file clog2.7.cfg was initially added on branch stable-0_7-branch.
+
+2010-01-15 12:46  phase1geo
+
+	file clog2.7.v was initially added on branch stable-0_7-branch.
+
+2010-01-15 12:46  phase1geo
+
+	file clog2.7.err was initially added on branch stable-0_7-branch.
+
+2010-01-15 12:46  phase1geo
+
+	file clog2.6.err was initially added on branch stable-0_7-branch.
+
+2010-01-15 12:46  phase1geo
+
+	Third portion of fix for bug 2929935.  Adding extra diagnostics to
+	regression suite to verify this fix.
+
+2010-01-14 21:55  phase1geo
+
+	Fixing memory leak issue with LXT2 reader.
+
+2010-01-13 09:04  phase1geo
+
+	Removing clog2 diagnostics from general regression list since they
+	don't work with cver.
+
+2010-01-13 00:28  phase1geo
+
+	file clog2.5.cdd was initially added on branch stable-0_7-branch.
+
+2010-01-13 00:28  phase1geo
+
+	file clog2.5.rptM was initially added on branch stable-0_7-branch.
+
+2010-01-13 00:28  phase1geo
+
+	file clog2.5.cfg was initially added on branch stable-0_7-branch.
+
+2010-01-13 00:28  phase1geo
+
+	file clog2.5.v was initially added on branch stable-0_7-branch.
+
+2010-01-13 00:28  phase1geo
+
+	Second fix for the $clog2 support.
+
+2010-01-13 00:28  phase1geo
+
+	file clog2.5.rptI was initially added on branch stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.v was initially added on branch stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.2.v was initially added on branch stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.1.v was initially added on branch stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.1.cfg was initially added on branch
+	stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.2.cfg was initially added on branch
+	stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.1.rptI was initially added on branch
+	stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.2.rptI was initially added on branch
+	stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.cfg was initially added on branch stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.2.rptM was initially added on branch
+	stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.rptI was initially added on branch stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.rptM was initially added on branch stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.1.rptM was initially added on branch
+	stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.cdd was initially added on branch stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.1.cdd was initially added on branch
+	stable-0_7-branch.
+
+2010-01-13 00:19  phase1geo
+
+	Fixing bug 2929948.  Added new regression diagnostics to verify
+	this fixes the issue in all of its various flavors.
+
+2010-01-13 00:19  phase1geo
+
+	file concat10.2.cdd was initially added on branch
+	stable-0_7-branch.
+
+2010-01-12 22:24  phase1geo
+
+	file clog2.4.cfg was initially added on branch stable-0_7-branch.
+
+2010-01-12 22:24  phase1geo
+
+	file clog2.3.v was initially added on branch stable-0_7-branch.
+
+2010-01-12 22:24  phase1geo
+
+	file clog2.3.cfg was initially added on branch stable-0_7-branch.
+
+2010-01-12 22:24  phase1geo
+
+	file clog2.3.rptM was initially added on branch stable-0_7-branch.
+
+2010-01-12 22:24  phase1geo
+
+	file clog2.4.rptI was initially added on branch stable-0_7-branch.
+
+2010-01-12 22:24  phase1geo
+
+	file clog2.4.cdd was initially added on branch stable-0_7-branch.
+
+2010-01-12 22:24  phase1geo
+
+	file clog2.4.rptM was initially added on branch stable-0_7-branch.
+
+2010-01-12 22:24  phase1geo
+
+	file clog2.4.v was initially added on branch stable-0_7-branch.
+
+2010-01-12 22:24  phase1geo
+
+	file clog2.3.rptI was initially added on branch stable-0_7-branch.
+
+2010-01-12 22:24  phase1geo
+
+	file clog2.3.cdd was initially added on branch stable-0_7-branch.
+
+2010-01-12 22:24  phase1geo
+
+	Added $clog2 functionality.  Added more regression diagnostics to
+	verify the fix.
+
+2010-01-12 08:54  phase1geo
+
+	file clog2.2.rptI was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:54  phase1geo
+
+	file clog2.2.v was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:54  phase1geo
+
+	file clog2.2.rptM was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:54  phase1geo
+
+	file clog2.2.cfg was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:54  phase1geo
+
+	file clog2.2.cdd was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:54  phase1geo
+
+	Adding another clog2 diagnostic.
+
+2010-01-12 08:53  phase1geo
+
+	file clog2.rptI was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:53  phase1geo
+
+	file clog2.rptM was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:53  phase1geo
+
+	file clog2.v was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:53  phase1geo
+
+	file clog2.1.cfg was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:53  phase1geo
+
+	file clog2.1.v was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:53  phase1geo
+
+	file clog2.1.rptI was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:53  phase1geo
+
+	file clog2.1.rptM was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:53  phase1geo
+
+	file clog2.cfg was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:53  phase1geo
+
+	file clog2.cdd was initially added on branch stable-0_7-branch.
+
+2010-01-12 08:53  phase1geo
+
+	Adding clog2 diagnostics.
+
+2010-01-12 08:53  phase1geo
+
+	file clog2.1.cdd was initially added on branch stable-0_7-branch.
+
+2010-01-07 17:14  phase1geo
+
+	Fixing issue with FSM exclusion that is similar to the issue with
+	bug 2927285.
+
+2010-01-07 17:02  phase1geo
+
+	Fixing bug 2927285.
+
+2010-01-06 01:49  phase1geo
+
+	Fixing bug 2926579.  Updated regressions per this change.
+
+2010-01-05 00:49  phase1geo
+
+	Integrating changes for NC-Verilog VPI support.
+
+2010-01-04 16:05  phase1geo
+
+	Updating copyright dates to include 2010.  Updating files for 0.7.8
+	stable release (this won't be happening for a bit).
+
+2010-01-04 13:01  phase1geo
+
+	Fixing bug 2925756.
+
+2009-12-16 20:53  phase1geo
+
+	Providing code support for feature request 2912698.  Updating
+	documentation per this change and updating versions from 0.7.7 to
+	0.7.8 for the upcoming stable release.
+
+2009-12-15 22:20  phase1geo
+
+	Fixing bug 2912679.
+
+2009-12-12 08:25  phase1geo
+
+	Patching in fix for bug 2912587.
+
+2009-10-24 23:31  phase1geo
+
+	Updating for upcoming stable 0.7.7 release.
+
 2009-10-24 00:47  phase1geo
 
-	* Updates for new 0.7.7 stable release.
-
-2009-10-23 14:25  phase1geo
-
-	* Regression updates.  Full regression passes.
-
-2009-10-23 09:02  phase1geo
-
-	* Applying patch for bug 2882433.
-
-2009-10-22 23:01  phase1geo
-
-	* Last fix for regression issues.  Full regression passes.
-
-2009-10-22 17:41  phase1geo
-
-	* Anticipated fix for generate block issues.  Currently running VCS
-	  regressions with this change.  Checkpointing.
-
-2009-10-22 09:17  phase1geo
-
-	* Attempting to fix outstanding issue with generate blocks but this
-	  code is currently broken.  Checkpointing.
-
-2009-10-21 18:03  phase1geo
-
-	* Partial fix for current generate23 bug.  Still need to figure out
-	  how to properly keep around the current generate item block.
-	  Checkpointing.
-
-2009-10-21 02:16  phase1geo
-
-	* Fixing bug 2882433.  Added generate24 to regression suite to
-	  verify the fix.
-
-2009-10-21 02:16  phase1geo
-
-	* file generate24.cdd was added on branch stable-0_7-branch on
-	  2009-10-23 19:25:07 +0000
-
-2009-10-21 02:16  phase1geo
-
-	* file generate24.cfg was added on branch stable-0_7-branch on
-	  2009-10-23 19:25:07 +0000
-
-2009-10-21 02:16  phase1geo
-
-	* file generate24.rptI was added on branch stable-0_7-branch on
-	  2009-10-23 19:25:07 +0000
-
-2009-10-21 02:16  phase1geo
-
-	* file generate24.rptM was added on branch stable-0_7-branch on
-	  2009-10-23 19:25:07 +0000
-
-2009-10-21 02:16  phase1geo
-
-	* file generate24.v was added on branch stable-0_7-branch on
-	  2009-10-23 19:25:07 +0000
-
-2009-10-20 00:20  phase1geo
-
-	* Fixing bug 2881869.
-
-2009-10-17 21:26  phase1geo
-
-	* Fixing bug 2880705.  Adding generate23 diagnostic to replicate
-	  issue.  Also fixed issue with $Id: parsing.
-
-2009-10-16 08:50  phase1geo
-
-	* Updating build scripts per request from Ubuntu downstream.
-
-2009-09-12 00:16  phase1geo
-
-	* Fixing compilation warning.  Fixing build issues for Debian.
-
-2009-08-30 17:33  phase1geo
-
-	* Fixing compile warnings on 64-bit Mac OS X.
-
-2009-08-24 09:12  phase1geo
-
-	* Updates for new 0.7.6 stable release.
-
-2009-08-24 09:08  phase1geo
-
-	* Fixing splint warnings.
-
-2009-08-24 08:33  phase1geo
-
-	* Fixing CDD difference utility to conform to the new CDD format.
-
-2009-08-24 00:09  phase1geo
-
-	* Updating VCS regressions.  All tests fully pass.
+	Updates for new 0.7.7 stable release.
 
