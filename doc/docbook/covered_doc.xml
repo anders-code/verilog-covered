@@ -38,7 +38,7 @@
 <book>
   <bookinfo>
     <mediaobject><imageobject><imagedata fileref="img/banner.gif" format="GIF"/></imageobject></mediaobject>
-    <title>Covered</title>
+    <title>Covered User's Guide - 0.7.9</title>
     <subtitle>Verilog Code Coverage Analyzer</subtitle>
     <author>
       <firstname>Trevor</firstname>
@@ -49,6 +49,7 @@
         </address>
       </affiliation>
     </author>
+    <edition>0.7.9</edition>
     <copyright>
       <year>2008-2010</year>
       <holder role="mailto:phase1geo@gmail.com">Trevor Williams</holder>
