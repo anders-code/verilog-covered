@@ -35,6 +35,7 @@
 #include "db.h"
 #include "defines.h"
 #include "enumerate.h"
+#include "exclude.h"
 #include "expr.h"
 #include "fsm.h"
 #include "func_unit.h"
@@ -731,7 +732,7 @@ bool db_read(
 void db_merge_instance_trees() { PROFILE(DB_MERGE_INSTANCE_TREES);
 
   funit_inst* base  = NULL;
-  inst_link*  instl = db_list[curr_db]->inst_head;
+  inst_link*  instl;
   bool        done  = FALSE;
 
   if( db_list != NULL ) {
@@ -1314,8 +1315,6 @@ void db_add_declared_param(
   bool         local       /*!< If TRUE, specifies that this parameter is a local parameter */
 ) { PROFILE(DB_ADD_DECLARED_PARAM);
 
-  mod_parm* mparm;  /* Pointer to added module parameter */
-
   assert( name != NULL );
 
   /* If a parameter value type is not supported, don't create this parameter */
@@ -1332,7 +1331,7 @@ void db_add_declared_param(
     if( mod_parm_find( name, curr_funit->param_head ) == NULL ) {
 
       /* Add parameter to module parameter list */
-      mparm = mod_parm_add( name, msb, lsb, is_signed, expr, (local ? PARAM_TYPE_DECLARED_LOCAL : PARAM_TYPE_DECLARED), curr_funit, NULL );
+      (void)mod_parm_add( name, msb, lsb, is_signed, expr, (local ? PARAM_TYPE_DECLARED_LOCAL : PARAM_TYPE_DECLARED), curr_funit, NULL );
 
     }
 
@@ -1352,8 +1351,6 @@ void db_add_override_param(
   char*       param_name  /*!< Name of parameter being overridden (for parameter_value_byname syntax) */
 ) { PROFILE(DB_ADD_OVERRIDE_PARAM);
 
-  mod_parm* mparm;  /* Pointer to module parameter added to current module */
-
 #ifdef DEBUG_MODE
   if( debug_mode ) {
     unsigned int rv;
@@ -1369,7 +1366,7 @@ void db_add_override_param(
 #endif
 
   /* Add override parameter to module parameter list */
-  mparm = mod_parm_add( param_name, NULL, NULL, FALSE, expr, PARAM_TYPE_OVERRIDE, curr_funit, inst_name );
+  (void)mod_parm_add( param_name, NULL, NULL, FALSE, expr, PARAM_TYPE_OVERRIDE, curr_funit, inst_name );
 
   PROFILE_END;
 
@@ -1486,6 +1483,8 @@ void db_add_signal(
       /* For normal signals just make the width a value of 1 for now -- it will be resized during funit_resize_elements */
       sig = vsignal_create( name, type, 1, line, col );
     }
+
+    assert( sig != NULL );
 
   /* If the signal has currently existed, check to see if the signal is unsized, and, if so, size it now */
   } else if( sigl->sig->suppl.part.implicit_size ) {
@@ -1986,6 +1985,7 @@ expression* db_create_expression(
       (expr->op == EXP_OP_DLY_ASSIGN) ) {
     vector_dealloc( expr->value );
     expr->suppl.part.owns_vec = 0;
+    assert( right != NULL );
     expr->value = right->value;
   }
 
@@ -2700,6 +2700,7 @@ bool db_statement_connect(
   */
   if( !(retval = statement_connect( curr_stmt, next_stmt, stmt_conn_id )) ) {
 
+    assert( next_stmt != NULL );
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unreachable statement found starting at line %d in file %s.  Ignoring...",
                                 next_stmt->exp->line, obf_file( curr_funit->filename ) );
     assert( rv < USER_MSG_LENGTH );

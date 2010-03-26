@@ -22,15 +22,20 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "binding.h"
 #include "comb.h"
+#include "db.h"
 #include "defines.h"
 #include "expr.h"
 #include "fsm.h"
 #include "func_iter.h"
+#include "func_unit.h"
 #include "link.h"
 #include "profiler.h"
 #include "rank.h"
+#include "report.h"
 #include "util.h"
+#include "vector.h"
 #include "vsignal.h"
 
 
@@ -667,6 +672,7 @@ static void rank_check_index(
 
   if( index >= num_cps[type] ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Last read in CDD file is incompatible with previously read in CDD files.  Exiting..." );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, line );
     Throw 0;
   }
@@ -1066,7 +1072,7 @@ static void rank_read_cdd(
   /*@out@*/ unsigned int*   comp_cdd_num  /*!< Number of compressed CDD structures in comp_cdds array */
 ) { PROFILE(RANK_READ_CDD);
 
-  comp_cdd_cov* comp_cov;
+  comp_cdd_cov* comp_cov = NULL;
 
   Try {
 

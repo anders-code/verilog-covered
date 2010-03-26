@@ -527,7 +527,6 @@ static void race_check_one_block_assignment(
   exp_link*  expl;                /* Pointer to current expression */
   statement* curr_stmt;           /* Pointer to current statement */
   int        sig_stmt;            /* Index of base signal statement in statement block array */
-  bool       race_found = FALSE;  /* Specifies if at least one race condition was found for this signal */
   bool       curr_race  = FALSE;  /* Set to TRUE if race condition was found in current iteration */
   int        lval;                /* Left expression value */
   int        rval;                /* Right expression value */
@@ -673,7 +672,6 @@ static void race_check_one_block_assignment(
   
                 race_handle_race_condition( expl->exp, mod, curr_stmt, sb[sig_stmt].stmt, RACE_TYPE_ASSIGN_IN_ONE_BLOCK1 );
                 sb[sig_stmt].remove = TRUE;
-                race_found = TRUE;
   
               }
   

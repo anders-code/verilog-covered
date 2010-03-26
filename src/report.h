@@ -63,10 +63,10 @@ void report_save_cdd(
 
 /*! \brief Outputs the given exclusion reason to the given output stream */
 void report_output_exclusion_reason(
-  FILE* ofile,
-  int   leading_spaces,
-  char* msg,
-  bool  header
+  FILE*       ofile,
+  int         leading_spaces,
+  const char* msg,
+  bool        header
 );
 
 #endif

@@ -403,20 +403,6 @@ int sys_task_rtoi(
 }
 
 /*!
- \return Returns a 64-bit value that is the log2 value of the specified value.
-*/
-uint64 sys_task_clog2(
-  const vector* vec  /*!< clog2 argument value */
-) { PROFILE(SYS_TASK_CLOG2);
-
-  uint64 bits;
-  uint64 value = vector_to_uint64( vec );
-
-  PROFILE_END;
-
-}
-
-/*!
  This function is called by the score command argument parser or the VPI command-line parser and
  performs the task of adding plusarg options from the score command or VPI for later usage during
  simulation.

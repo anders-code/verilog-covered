@@ -1263,7 +1263,7 @@ typedef enum rpt_type_e {
 /*!
  Mask for signal supplemental field when writing to CDD file.
 */
-#define VSUPPL_MASK               0x7f
+#define VSUPPL_MASK               (unsigned char)0x7f
 
 /*!
  \addtogroup expression_types Expression Types

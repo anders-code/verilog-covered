@@ -521,10 +521,10 @@ void fsm_var_remove(
 */
 void fsm_var_cleanup() { PROFILE(FSM_VAR_CLEANUP);
 
-  fsm_var* curr_fv;  /* Pointer to the current fsm_var structure */
-  fsm_var* tmp_fv;   /* Temporary pointer */
-  fv_bind* curr_fvb = fsm_var_bind_head;  /* Pointer to the current fv_bind structure */ 
-  fv_bind* tmp_fvb;                       /* Temporary pointer */
+  fsm_var* curr_fv;   /* Pointer to the current fsm_var structure */
+  fsm_var* tmp_fv;    /* Temporary pointer */
+  fv_bind* curr_fvb;  /* Pointer to the current fv_bind structure */ 
+  fv_bind* tmp_fvb;   /* Temporary pointer */
 
   /* Deallocate fsm_var list */
   curr_fv = fsm_var_head;

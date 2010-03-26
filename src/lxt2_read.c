@@ -839,7 +839,6 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
   } else {
 
     lxtint16_t   id = 0, version = 0;
-    lxtint16_t   foo;
     unsigned int rv;
 
     /* Cutoff after this number of bytes and force flush */
@@ -853,7 +852,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
     (void)fread( &version, 2, 1, lt->handle );
     (void)fread( &lt->granule_size, 1, 1, lt->handle );
 	
-    if( (foo = lxt2_rd_get_16( &id, 0 )) != LXT2_RD_HDRID ) {
+    if( lxt2_rd_get_16( &id, 0 ) != LXT2_RD_HDRID ) {
 
       print_output( "File specified with -lxt is not an LXT formatted dumpfile", FATAL, __FILE__, __LINE__ );
       lxt2_rd_close( lt );
@@ -1701,11 +1700,11 @@ int lxt2_rd_iter_blocks(
               strm.next_in   = zbuff + 10;
               strm.next_out  = pnt;
 
-              rc = inflateInit2( &strm, -MAX_WBITS );
+              (void)inflateInit2( &strm, -MAX_WBITS );
 
-              while (Z_OK == (rc = inflate( &strm, Z_NO_FLUSH )) );
+              while (Z_OK == (inflate( &strm, Z_NO_FLUSH )) );
 
-              rc = inflateEnd( &strm );
+              (void)inflateEnd( &strm );
 
               if( strm.total_out != unclen ) {
                 unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Short read on subblock %lu vs %u (expected), ignoring...",

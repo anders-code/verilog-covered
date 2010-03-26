@@ -86,6 +86,20 @@ void funit_version_db_read(
   char**     line
 );
 
+/*! \brief Performs an instance merge with the given base functional unit */
+void funit_db_inst_merge(
+  func_unit* base,
+  FILE*      file,
+  bool       same
+);
+
+/*! \brief Performs a module merge with the given base functional unit */
+void funit_db_mod_merge(
+               func_unit* base,
+               FILE*      file,
+  /*@unused@*/ bool       same
+);
+
 /*! \brief Merges two functional units into the base functional unit. */
 void funit_merge(
   func_unit* base,

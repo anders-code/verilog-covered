@@ -366,7 +366,6 @@ void arc_add(
       table->arcs[table->num_arcs]->suppl.part.excluded = exclude;
       table->arcs[table->num_arcs]->from                = from_index;
       table->arcs[table->num_arcs]->to                  = to_index;
-      arcs_index = table->num_arcs;
       table->num_arcs++;
 
     /* Otherwise, adjust hit and exclude information */

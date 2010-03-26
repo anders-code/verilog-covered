@@ -1010,10 +1010,10 @@ char* report_format_exclusion_reason(
  Outputs the given exclude report message to the specified output stream, handling the appropriate formatting.
 */
 void report_output_exclusion_reason(
-  FILE* ofile,           /*!< Output file stream */
-  int   leading_spaces,  /*!< Number of leading spaces (for formatting purposes) */
-  char* msg,             /*!< Message to display (no newlines and only one space between each word) */
-  bool  header           /*!< If set to TRUE, display a header before outputting; otherwise, avoid the header */
+  FILE*       ofile,           /*!< Output file stream */
+  int         leading_spaces,  /*!< Number of leading spaces (for formatting purposes) */
+  const char* msg,             /*!< Message to display (no newlines and only one space between each word) */
+  bool        header           /*!< If set to TRUE, display a header before outputting; otherwise, avoid the header */
 ) { PROFILE(REPORT_OUTPUT_EXCLUSION_REASON);
 
   char* msg_cpy;
@@ -1083,8 +1083,8 @@ void command_report(
   FILE*        ofile           = NULL;  /* Pointer to output stream */
 #ifdef HAVE_TCLTK
   char*        covered_home    = NULL;  /* Pathname to Covered's home installation directory */
-  char*        covered_browser;         /* Name of browser to use for GUI help pages */
-  char*        covered_version;         /* String version of current Covered version */
+  char*        covered_browser = NULL;  /* Name of browser to use for GUI help pages */
+  char*        covered_version = NULL;  /* String version of current Covered version */
   char*        main_file       = NULL;  /* Name of main TCL file to interpret */ 
   char*        user_home;               /* HOME environment variable */
 #endif
@@ -1204,6 +1204,7 @@ void command_report(
           rv = Tcl_EvalFile( interp, main_file );
           if( rv != TCL_OK ) {
             rv = snprintf( user_msg, USER_MSG_LENGTH, "TCL/TK: %s\n", Tcl_ErrnoMsg( Tcl_GetErrno() ) );
+            assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             Throw 0;
           }

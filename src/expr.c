@@ -1705,6 +1705,7 @@ void expression_db_read(
           (op == EXP_OP_WHILE)      ||
           (op == EXP_OP_DIM) ) {
 
+        assert( right != NULL );
         vector_dealloc( expr->value );
         expr->value = right->value;
 
@@ -2910,8 +2911,11 @@ bool expression_op_func__time(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__TIME);
 
-  uint64 curr_time = (thr == NULL) ? time->full : thr->curr_time.full;
-  bool   retval = vector_from_uint64( expr->value, (curr_time / thr->funit->timescale) );
+  bool retval;
+
+  assert( thr != NULL );
+
+  retval = vector_from_uint64( expr->value, (thr->curr_time.full / thr->funit->timescale) );
 
   PROFILE_END;
 
@@ -5050,19 +5054,9 @@ bool expression_op_func__mbit_pos(
 
   bool     retval   = FALSE;  /* Return value for this function */
   exp_dim* dim      = (expr->suppl.part.nba == 0) ? expr->elem.dim : expr->elem.dim_nba->dim;
-  int      curr_lsb = 0;
-  int      vwidth;
   int      intval   = (vector_to_int( expr->left->value ) - dim->dim_lsb) * dim->dim_width;
   int      prev_lsb = ((ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr)) ? expr->parent->expr->left->elem.dim->curr_lsb : 0;
-
-  /* Calculate starting bit position */
-  if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-    vwidth = expr->parent->expr->left->value->width;
-  } else {
-    vwidth = expr->sig->value->width;
-  }
-
-  curr_lsb = (prev_lsb + intval);
+  int      curr_lsb = (prev_lsb + intval);
 
   /* If this is the last dimension, perform the assignment */
   if( dim->last ) {
@@ -5096,23 +5090,10 @@ bool expression_op_func__mbit_neg(
 
   bool     retval   = FALSE;  /* Return value for this function */
   exp_dim* dim      = (expr->suppl.part.nba == 0) ? expr->elem.dim : expr->elem.dim_nba->dim;
-  int      curr_lsb;
-  int      vwidth;
   int      intval1  = vector_to_int( expr->left->value ) - dim->dim_lsb;
   int      intval2  = vector_to_int( expr->right->value );
   int      prev_lsb = ((ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr)) ? expr->parent->expr->left->elem.dim->curr_lsb : 0;
-
-  /* Calculate starting bit position */
-  if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-    vwidth = expr->parent->expr->left->value->width;
-  } else {
-    vwidth = expr->sig->value->width;
-  }
-
-  intval1 = vector_to_int( expr->left->value ) - dim->dim_lsb;
-  intval2 = vector_to_int( expr->right->value );
-
-  curr_lsb = (prev_lsb + ((intval1 - intval2) + 1));
+  int      curr_lsb = (prev_lsb + ((intval1 - intval2) + 1));
 
   /* If this is the last dimension, perform the assignment */
   if( dim->last ) { 
@@ -5932,6 +5913,7 @@ void expression_assign(
 
     switch( lhs->op ) {
       case EXP_OP_SIG      :
+        assert( lhs->sig != NULL );
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( nb ) {
             if( lhs->suppl.part.nba == 1 ) {
@@ -5953,6 +5935,8 @@ void expression_assign(
         *lsb += lhs->value->width;
         break;
       case EXP_OP_SBIT_SEL :
+        assert( lhs->sig != NULL );
+        assert( dim != NULL );
         if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
           (void)sim_expression( lhs->left, thr, time, TRUE );
         }
@@ -5994,6 +5978,8 @@ void expression_assign(
         }
         break;
       case EXP_OP_MBIT_SEL :
+        assert( lhs->sig != NULL );
+        assert( dim != NULL );
         if( lhs->sig->suppl.part.assigned == 1 ) {
           bool changed = FALSE;
           int  intval  = ((dim->dim_be ? vector_to_int( lhs->left->value ) : vector_to_int( lhs->right->value )) - dim->dim_lsb) * dim->dim_width;
@@ -6030,6 +6016,7 @@ void expression_assign(
         break;
 #ifdef NOT_SUPPORTED
       case EXP_OP_MBIT_POS :
+        assert( lhs->sig != NULL );
         if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
           (void)sim_expression( lhs->left, thr, time, TRUE );
         }
@@ -6065,6 +6052,7 @@ void expression_assign(
         }
         break;
       case EXP_OP_MBIT_NEG :
+        assert( lhs->sig != NULL );
         if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
           (void)sim_expression( lhs->left, thr, time, TRUE );
         }
@@ -6148,13 +6136,10 @@ void expression_dealloc(
   bool        exp_only  /*!< Removes only the specified expression and not its children */
 ) { PROFILE(EXPRESSION_DEALLOC);
 
-  int        op;        /* Temporary operation holder */
   exp_link*  tmp_expl;  /* Temporary pointer to expression list */
   statement* tmp_stmt;  /* Temporary pointer to statement */
 
   if( expr != NULL ) {
-
-    op = expr->op;
 
     if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
 

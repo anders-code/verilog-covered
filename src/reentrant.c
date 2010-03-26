@@ -23,6 +23,7 @@
 
 #include "defines.h"
 #include "reentrant.h"
+#include "sys_tasks.h"
 #include "util.h"
 
 

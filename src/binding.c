@@ -449,7 +449,7 @@ bool bind_signal(
         Throw 0;
 
       /* Otherwise, implicitly create the signal and bind to it if the signal exists on the LHS of the equation */
-      } else if( ESUPPL_IS_LHS( exp->suppl ) == 1 ) {
+      } else if( (exp != NULL) && (ESUPPL_IS_LHS( exp->suppl ) == 1) ) {
         rv = snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", obf_sig( name ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING, __FILE__, __LINE__ );
@@ -494,6 +494,8 @@ bool bind_signal(
 
       /* Bind signal and expression if we are not clearing or this is an MBA */
       if( !clear_assigned ) {
+
+        assert( exp != NULL );
 
         /* Add expression to signal expression list */
         exp_link_add( exp, &(found_sig->exp_head), &(found_sig->exp_tail) );
@@ -820,6 +822,7 @@ void bind_perform(
 
             /* If an FSM expression is attached, size it now */
             if( curr_eb->fsm != NULL ) {
+              assert( curr_eb->exp != NULL );
               curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, VTYPE_EXP, VDATA_UL, TRUE );
             }
 

@@ -379,14 +379,12 @@ void merged_cdd_db_read(
 
   if( sscanf( *line, "%s %s%n", tmp1, tmp2, &chars_read ) == 2 ) {
 
-    str_link* strl;
-
     *line = *line + chars_read;
 
     /* Add merged file */
-    if( (strl = str_link_find( tmp1, merge_in_head)) == NULL ) {
+    if( str_link_find( tmp1, merge_in_head) == NULL ) {
 
-      strl = str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
+      str_link* strl = str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
       strl->suppl = 1;
       merge_in_num++;
 

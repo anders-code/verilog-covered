@@ -636,18 +636,15 @@ vsignal* vsignal_from_string(
   int      left;            /* Left selection value of the signal */
   int      right;           /* Right selection value of the signal */
   int      width;           /* Width of the signal */
-  int      lsb;             /* LSB of the signal */
   int      big_endian = 0;  /* Endianness of the signal */
   int      chars_read;      /* Number of characters read from string */
 
   if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]%n", name, &left, &right, &chars_read ) == 3 ) {
     if( right > left ) {
       width      = (right - left) + 1;
-      lsb        = left;
       big_endian = 1;
     } else {
       width      = (left - right) + 1;
-      lsb        = right;
       big_endian = 0;
     }
     sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, width, 0, 0 );

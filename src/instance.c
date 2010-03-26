@@ -426,6 +426,7 @@ vsignal* instance_find_signal_by_exclusion_id(
       while( (sigl != NULL) && (sigl->sig->id != id) ) {
         sigl = sigl->next;
       }
+      assert( sigl != NULL );
       assert( sigl->sig != NULL );
       sig          = sigl->sig;
       *found_funit = root->funit;
@@ -473,6 +474,7 @@ expression* instance_find_expression_by_exclusion_id(
       while( (expl != NULL) && (expl->exp->id != id) ) {
         expl = expl->next;           
       }
+      assert( expl != NULL );
       assert( expl->exp != NULL );
       exp          = expl->exp;
       *found_funit = root->funit;
@@ -1129,14 +1131,14 @@ bool instance_merge_two_trees(
     /* We've already merged so we don't have anything else to do */
 
   /* Check to see if the module pointed to by tinst1 exists within the tree of tinst2 */
-  } else if( (root2 = instance_find_by_funit_name_if_one( tinst2, tinst1->funit->name )) != NULL ) {
+  } else if( (tinst1->funit != NULL) && ((root2 = instance_find_by_funit_name_if_one( tinst2, tinst1->funit->name )) != NULL) ) {
 
     bool rv = instance_merge_tree( tinst1, root2 );
     assert( rv );
     instance_mark_lhier_diffs( tinst1, root2 );
 
   /* Check to see if the module pointed to by tinst2 exists within the tree of tinst1 */
-  } else if( (root1 = instance_find_by_funit_name_if_one( tinst1, tinst2->funit->name )) != NULL ) {
+  } else if( (tinst2->funit != NULL) && ((root1 = instance_find_by_funit_name_if_one( tinst1, tinst2->funit->name )) != NULL) ) {
 
     bool rv = instance_merge_tree( root1, tinst2 );
     assert( rv );

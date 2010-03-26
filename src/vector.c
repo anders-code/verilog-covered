@@ -851,7 +851,7 @@ int vector_get_eval_a(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL  :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_A] >> UL_MOD(index)) & 0x1;  break;
-    case VDATA_R64 :  retval = 0;
+    case VDATA_R64 :  retval = 0;  break;
     default        :  assert( 0 );  break;
   }
 
@@ -876,7 +876,7 @@ int vector_get_eval_b(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL  :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_B] >> UL_MOD(index)) & 0x1;  break;
-    case VDATA_R64 :  retval = 0;
+    case VDATA_R64 :  retval = 0;  break;
     default        :  assert( 0 );  break;
   }
 
@@ -901,7 +901,7 @@ int vector_get_eval_c(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL  :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_C] >> UL_MOD(index)) & 0x1;  break;
-    case VDATA_R64 :  retval = 0;
+    case VDATA_R64 :  retval = 0;  break;
     default        :  assert( 0 );  break;
   }
 
@@ -926,7 +926,7 @@ int vector_get_eval_d(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL  :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_D] >> UL_MOD(index)) & 0x1;  break;
-    case VDATA_R64 :  retval = 0;
+    case VDATA_R64 :  retval = 0;  break;
     default        :  assert( 0 );  break;
   }
 
@@ -1801,7 +1801,6 @@ static void vector_lshift_ulong(
 
       unsigned int mask_bits1  = UL_MOD(from_msb);
       unsigned int shift_bits1 = mask_bits1 - UL_MOD(msb);
-      ulong        mask1       = UL_SET << mask_bits1;
       ulong        mask2       = UL_SET >> (UL_BITS - shift_bits1);
       ulong        mask3       = ~mask2;
       ulong        uset        = xfill ? ~UL_LMASK(lsb) : 0;

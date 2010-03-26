@@ -1651,8 +1651,8 @@ static void combination_unary(
     } else {
 
       length = 16 + strlen( spaces );
-      (*info)[2] = (char*)malloc_safe( length );  rv = snprintf( (*info)[2], length, "%s         E | E ", spaces );
-      (*info)[3] = (char*)malloc_safe( length );  rv = snprintf( (*info)[3], length, "%s        =0=|=1=", spaces );
+      (*info)[2] = (char*)malloc_safe( length );  rv = snprintf( (*info)[2], length, "%s         E | E ", spaces );  assert( rv < length );
+      (*info)[3] = (char*)malloc_safe( length );  rv = snprintf( (*info)[3], length, "%s        =0=|=1=", spaces );  assert( rv < length );
 
       length = 15 + strlen( spaces );
       (*info)[4] = (char*)malloc_safe( length );
@@ -2369,7 +2369,7 @@ static void combination_multi_vars(
           case EXP_OP_OR   :  tmp = strdup_safe( "        ^^^^^^^^^^^^^ - |" );   break;
           case EXP_OP_LAND :  tmp = strdup_safe( "        ^^^^^^^^^^^^^ - &&" );  break;
           case EXP_OP_LOR  :  tmp = strdup_safe( "        ^^^^^^^^^^^^^ - ||" );  break;
-          default          :  break;
+          default          :  assert( 0 );  break;
         }
         size = strlen( tmp ) + (eid_size - 1) + 5;
         gen_char_string( spaces, ' ', (eid_size - 1) );
@@ -2385,7 +2385,7 @@ static void combination_multi_vars(
           case EXP_OP_OR   :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - |" );   break;
           case EXP_OP_LAND :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - &&" );  break;
           case EXP_OP_LOR  :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - ||" );  break;
-          default          :  break;
+          default          :  assert( 0 );  break;
         }
       }
 

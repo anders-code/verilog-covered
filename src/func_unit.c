@@ -980,9 +980,7 @@ void funit_db_mod_merge(
   /*@unused@*/ bool       same   /*!< Specifies if functional unit to be merged should match existing functional unit exactly or not */
 ) { PROFILE(FUNIT_DB_MOD_MERGE);
 
-  stmt_link*   curr_base_stmt;  /* Statement list iterator */
   fsm_link*    curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
-  race_blk*    curr_base_race;  /* Pointer to current race condition block in base module list  */
   char*        curr_line;       /* Pointer to current line being read from CDD */
   unsigned int curr_line_size;  /* Number of bytes allocated for curr_line */
   char*        rest_line;       /* Pointer to rest of read line */
@@ -994,9 +992,7 @@ void funit_db_mod_merge(
   assert( base->name != NULL );
 
   /* Initialize pointers */
-  curr_base_stmt = base->stmt_head;
   curr_base_fsm  = base->fsm_head;
-  curr_base_race = base->race_head;
 
   /* Parse the current functional unit in the CDD file */
   while( !new_funit_found && util_readline( file, &curr_line, &curr_line_size ) ) {

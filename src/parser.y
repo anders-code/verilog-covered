@@ -43,6 +43,7 @@
 #include "profiler.h"
 #include "statement.h"
 #include "static.h"
+#include "stmt_blk.h"
 #include "util.h"
 #include "vector.h"
 #include "vsignal.h"

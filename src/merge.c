@@ -33,6 +33,7 @@
 #include "db.h"
 #include "defines.h"
 #include "info.h"
+#include "link.h"
 #include "merge.h"
 #include "sim.h"
 #include "util.h"

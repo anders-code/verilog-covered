@@ -344,14 +344,13 @@ static inst_parm* inst_parm_add(
   funit_inst*  inst        /*!< Pointer to current functional unit instance */
 ) { PROFILE(INST_PARM_ADD);
 
-  inst_parm* iparm;           /* Temporary pointer to instance parameter */
-  int        sig_width;       /* Width of this parameter signal */
-  int        sig_lsb;         /* LSB of this parameter signal */
-  int        sig_be;          /* Big endianness of this parameter signal */
-  int        sig_type;        /* Type of signal parameter to create */
-  int        left_val  = 31;  /* Value of left (msb) static expression */
-  int        right_val = 0;   /* Value of right (lsb) static expression */
-  exp_link*  expl;            /* Pointer to current expression link */
+  inst_parm* iparm     = NULL;  /* Temporary pointer to instance parameter */
+  int        sig_width;         /* Width of this parameter signal */
+  int        sig_be;            /* Big endianness of this parameter signal */
+  int        sig_type;          /* Type of signal parameter to create */
+  int        left_val  = 31;    /* Value of left (msb) static expression */
+  int        right_val = 0;     /* Value of right (lsb) static expression */
+  exp_link*  expl;              /* Pointer to current expression link */
   
   assert( value != NULL );
   assert( ((msb == NULL) && (lsb == NULL)) || ((msb != NULL) && (lsb != NULL)) );
@@ -393,18 +392,15 @@ static inst_parm* inst_parm_add(
 
         /* Calculate LSB and width information */
         if( right_val > left_val ) {
-          sig_lsb   = left_val;
           sig_width = (right_val - left_val) + 1;
           sig_be    = 1;
         } else {
-          sig_lsb   = right_val;
           sig_width = (left_val - right_val) + 1;
           sig_be    = 0;
         }
 
       } else {
 
-        sig_lsb   = 0;
         sig_width = value->width;
         sig_be    = 0;
 
