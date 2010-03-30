@@ -137,20 +137,20 @@ proc create_fsm_window {expr_id} {
     wm title .fsmwin "FSM State/State Transition Coverage - Verbose"
 
     # Create all frames for window
-    panedwindow .fsmwin.pw -width 500 -height 350 -sashwidth 4 -sashrelief raised -orient vertical
-    frame .fsmwin.pw.io     -relief raised -borderwidth 1
-    frame .fsmwin.pw.t      -relief raised -borderwidth 1
+    ttk::panedwindow .fsmwin.pw    -width 500 -height 350 -orient vertical
+    ttk::frame       .fsmwin.pw.io -relief raised -borderwidth 1
+    ttk::frame       .fsmwin.pw.t  -relief raised -borderwidth 1
 
     # Add movable frames to panedwindow
     .fsmwin.pw add .fsmwin.pw.io
     .fsmwin.pw add .fsmwin.pw.t
 
     # Create input/output expression frame components
-    label .fsmwin.pw.io.l -anchor w -text "FSM Input/Output State Expressions"
+    ttk::label .fsmwin.pw.io.l -anchor w -text "FSM Input/Output State Expressions"
     text .fsmwin.pw.io.t -height 4 -width 60 -xscrollcommand ".fsmwin.pw.io.hb set" \
                         -yscrollcommand ".fsmwin.pw.io.vb set" -wrap none -state disabled
-    scrollbar .fsmwin.pw.io.hb -orient horizontal -command ".fsmwin.pw.io.t xview"
-    scrollbar .fsmwin.pw.io.vb -command ".fsmwin.pw.io.t yview"
+    ttk::scrollbar .fsmwin.pw.io.hb -orient horizontal -command ".fsmwin.pw.io.t xview"
+    ttk::scrollbar .fsmwin.pw.io.vb -command ".fsmwin.pw.io.t yview"
 
     # Pack the input/output expression frame
     grid rowconfigure    .fsmwin.pw.io 1 -weight 1
@@ -161,10 +161,10 @@ proc create_fsm_window {expr_id} {
     grid .fsmwin.pw.io.hb  -row 2 -column 0 -sticky news
 
     # Create FSM tablelist frame
-    label .fsmwin.pw.t.l -anchor w -text "FSM State and State Transition Table"
+    ttk::label .fsmwin.pw.t.l -anchor w -text "FSM State and State Transition Table"
     tablelist::tablelist .fsmwin.pw.t.tl -titlecolumns 1 -xscrollcommand {.fsmwin.pw.t.hb set} -yscrollcommand {.fsmwin.pw.t.vb set} -showseparators 1 -resizablecolumns 0 -selecttype cell -stripebg #EDF3FE -bg white -tooltipaddcommand fsm_arc_show_tooltip -tooltipdelcommand fsm_arc_hide_tooltip
-    scrollbar .fsmwin.pw.t.hb -command {.fsmwin.pw.t.tl xview} -orient horizontal
-    scrollbar .fsmwin.pw.t.vb -command {.fsmwin.pw.t.tl yview} 
+    ttk::scrollbar .fsmwin.pw.t.hb -command {.fsmwin.pw.t.tl xview} -orient horizontal
+    ttk::scrollbar .fsmwin.pw.t.vb -command {.fsmwin.pw.t.tl yview} 
 
     bind .fsmwin.pw.t.tl <<TablelistSelect>> {fsm_tablelist_selected}
 
@@ -178,15 +178,15 @@ proc create_fsm_window {expr_id} {
 
     # Create the button frame
     frame .fsmwin.bf -relief raised -borderwidth 1
-    button .fsmwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -state disabled -command {
+    ttk::button .fsmwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled -command {
       display_fsm $prev_fsm_index
     }
     set_balloon .fsmwin.bf.prev "Click to view the previous uncovered FSM in this window"
-    button .fsmwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -state disabled -command {
+    ttk::button .fsmwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled -command {
       display_fsm $next_fsm_index
     }
     set_balloon .fsmwin.bf.prev "Click to view the next uncovered FSM in this window"
-    button .fsmwin.bf.close -text "Close" -width 10 -command {
+    ttk::button .fsmwin.bf.close -text "Close" -width 10 -command {
       destroy .fsmwin
     }
     help_button .fsmwin.bf.help chapter.gui.fsm
@@ -198,7 +198,7 @@ proc create_fsm_window {expr_id} {
     pack .fsmwin.bf.close -side right -padx 8 -pady 4
 
     # Create general information window
-    label .fsmwin.info -anchor w -relief raised -borderwidth 1 -width 60
+    ttk::label .fsmwin.info -anchor w -relief raised -width 60
 
     # Pack frames into window
     pack .fsmwin.pw   -fill both -expand yes

@@ -24,31 +24,31 @@ proc create_wizard {} {
     toplevel .wizwin
     wm title .wizwin "Covered Wizard"
 
-    frame .wizwin.f -relief raised -borderwidth 1 
+    ttk::frame .wizwin.f -relief raised -borderwidth 1 
 
     # Add banner
-    label .wizwin.f.banner -image [image create photo -file [file join $HOME scripts banner.gif]]
+    ttk::label .wizwin.f.banner -image [image create photo -file [file join $HOME scripts banner.gif]]
 
     # Create buttons
-    button .wizwin.f.new   -text "Generate New CDD File" -relief flat -command {
+    ttk::button .wizwin.f.new   -text "Generate New CDD File" -command {
       destroy .wizwin
       create_new_cdd
     }
-    button .wizwin.f.open  -text "Open/Merge CDD File(s)" -relief flat -command {
+    ttk::button .wizwin.f.open  -text "Open/Merge CDD File(s)" -command {
       destroy .wizwin
       .menubar.file invoke 0
     }
-    button .wizwin.f.grade -text "Rank CDD Coverage" -relief flat -command {
+    ttk::button .wizwin.f.grade -text "Rank CDD Coverage" -command {
       destroy .wizwin
       create_rank_cdds
     }
-    button .wizwin.f.help  -text "View Help Manual" -relief flat -command {
+    ttk::button .wizwin.f.help  -text "View Help Manual" -command {
       destroy .wizwin
       help_show_manual part.gui 
     }
 
     # Checkbutton to disable this window
-    checkbutton .wizwin.f.show -text "Display this window at startup of Covered" -variable show_wizard -onvalue true -offvalue false -command {
+    ttk::checkbutton .wizwin.f.show -text "Display this window at startup of Covered" -variable show_wizard -onvalue true -offvalue false -command {
       write_coveredrc 0
     }
 

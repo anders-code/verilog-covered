@@ -60,15 +60,15 @@ proc create_cdd_viewer {} {
     wm title .cddwin "CDD File Viewer"
 
     # Create frame to hold listbox
-    frame .cddwin.f -relief raised -borderwidth 1
+    ttk::frame .cddwin.f -relief raised -borderwidth 1
 
     # Create listbox/scrollbar that will contain the opened/merged CDD file names
-    label .cddwin.f.l -text "Opened/Merged CDD Files"
+    ttk::label .cddwin.f.l -text "Opened/Merged CDD Files"
     listbox .cddwin.f.lb -yscrollcommand ".cddwin.f.vb set" -xscrollcommand ".cddwin.f.hb set" -relief flat -width 30 -height 20 -selectborderwidth 0
     .cddwin.f.lb configure -selectbackground [.cddwin.f.lb cget -background]
     .cddwin.f.lb configure -selectforeground [.cddwin.f.lb cget -foreground]
-    scrollbar .cddwin.f.vb -command ".cddwin.f.lb yview"
-    scrollbar .cddwin.f.hb -orient horizontal -command ".cddwin.f.lb xview"
+    ttk::scrollbar .cddwin.f.vb -command ".cddwin.f.lb yview"
+    ttk::scrollbar .cddwin.f.hb -orient horizontal -command ".cddwin.f.lb xview"
 
     # Pack the widgets into the bottom frame
     grid rowconfigure    .cddwin.f 0 -weight 0
@@ -85,9 +85,9 @@ proc create_cdd_viewer {} {
     # Create Close buttons #
     ########################
 
-    frame .cddwin.bf -relief raised -borderwidth 1
+    ttk::frame .cddwin.bf -relief raised -borderwidth 1
 
-    button .cddwin.bf.close -width 10 -text "Close" -command {
+    ttk::button .cddwin.bf.close -width 10 -text "Close" -command {
       destroy .cddwin
     }
 

@@ -70,16 +70,16 @@ proc create_memory_window {signal} {
     wm title .memwin "Memory Coverage - Verbose"
 
     # Create upper frame
-    frame .memwin.f
+    ttk::frame .memwin.f
 
     # Add addressable memory elements selector widgets
-    frame .memwin.f.fae -relief raised -borderwidth 1
-    label .memwin.f.fae.l -anchor w -text "Addressable Memory Elements"
+    ttk::frame .memwin.f.fae -relief raised -borderwidth 1
+    ttk::label .memwin.f.fae.l -anchor w -text "Addressable Memory Elements"
     text .memwin.f.fae.t -height 10 -xscrollcommand ".memwin.f.fae.hb set" -wrap none -state disabled
-    scrollbar .memwin.f.fae.hb -orient horizontal -command ".memwin.f.fae.t"
+    ttk::scrollbar .memwin.f.fae.hb -orient horizontal -command ".memwin.f.fae.t"
 
     # Create exclude checkbutton
-    checkbutton .memwin.f.fae.excl -text "Excluded" -variable memory_excluded -command {
+    ttk::checkbutton .memwin.f.fae.excl -text "Excluded" -variable memory_excluded -command {
       set memory_reason "" 
       if {$exclude_reasons_enabled == 1 && $memory_excluded == 1} {
         set memory_reason [get_exclude_reason .memwin]
@@ -107,21 +107,21 @@ proc create_memory_window {signal} {
     grid .memwin.f.fae.hb   -row 2 -column 0 -columnspan 2 -sticky ew 
 
     # Add memory toggle widgets
-    frame .memwin.f.ft -relief raised -borderwidth 1
-    label .memwin.f.ft.l -anchor w -text "Element Coverage"
-    label .memwin.f.ft.l_01 -anchor w -text "Toggle 0->1"
-    label .memwin.f.ft.l_10 -anchor w -text "Toggle 1->0"
+    ttk::frame .memwin.f.ft -relief raised -borderwidth 1
+    ttk::label .memwin.f.ft.l -anchor w -text "Element Coverage"
+    ttk::label .memwin.f.ft.l_01 -anchor w -text "Toggle 0->1"
+    ttk::label .memwin.f.ft.l_10 -anchor w -text "Toggle 1->0"
     text  .memwin.f.ft.t -height 2 -width 40 -xscrollcommand ".memwin.f.ft.hb set" -wrap none -spacing1 2 -spacing3 3 -state disabled
-    scrollbar .memwin.f.ft.hb -orient horizontal -command ".memwin.f.ft.t xview"
+    ttk::scrollbar .memwin.f.ft.hb -orient horizontal -command ".memwin.f.ft.t xview"
 
     # Create bottom information bar
-    label .memwin.f.ft.info -anchor e
+    ttk::label .memwin.f.ft.info -anchor e
 
     # Add memory write/read widgets
-    label .memwin.f.ft.l_wr -anchor w -text "Written:"
-    label .memwin.f.ft.l_wv -anchor w -width 3
-    label .memwin.f.ft.l_rd -anchor w -text "Read:"
-    label .memwin.f.ft.l_rv -anchor w -width 3
+    ttk::label .memwin.f.ft.l_wr -anchor w -text "Written:"
+    ttk::label .memwin.f.ft.l_wv -anchor w -width 3
+    ttk::label .memwin.f.ft.l_rd -anchor w -text "Read:"
+    ttk::label .memwin.f.ft.l_rv -anchor w -width 3
 
     # Pack the toggle/write/read widgets
     grid columnconfigure .memwin.f.ft 0 -weight 1
@@ -137,17 +137,17 @@ proc create_memory_window {signal} {
     grid .memwin.f.ft.l_rv -row 5 -column 4 -sticky new
 
     # Create bottom button bar
-    frame .memwin.bf -relief raised -borderwidth 1
-    button .memwin.bf.close -text "Close" -width 10 -command {
+    ttk::frame .memwin.bf -relief raised -borderwidth 1
+    ttk::button .memwin.bf.close -text "Close" -width 10 -command {
       rm_pointer curr_memory_ptr
       destroy .memwin
     }
     help_button .memwin.bf.help chapter.gui.memory ""
-    button .memwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
+    ttk::button .memwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -command {
       display_memory $prev_memory_index
     }
     set_balloon .memwin.bf.prev "Click to view the previous uncovered memory in this window"
-    button .memwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
+    ttk::button .memwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -command {
       display_memory $next_memory_index
     }
     set_balloon .memwin.bf.next "Click to view the next uncovered memory in this window"

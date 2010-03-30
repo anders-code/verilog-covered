@@ -463,8 +463,8 @@ proc create_preferences {start_index} {
     wm geometry .prefwin =600x500
 
     # Create listbox frame
-    frame .prefwin.lbf -relief raised -borderwidth 1
-    label .prefwin.lbf.l -text "Option Categories"
+    ttk::frame .prefwin.lbf -relief raised -borderwidth 1
+    ttk::label .prefwin.lbf.l -text "Option Categories"
     listbox .prefwin.lbf.lb
     bind .prefwin.lbf.lb <<ListboxSelect>> populate_pref
 
@@ -480,28 +480,28 @@ proc create_preferences {start_index} {
     pack .prefwin.lbf.lb -fill y -expand 1
 
     # Create preference frame
-    frame .prefwin.pf -relief raised -borderwidth 1
-    frame .prefwin.pf.f
-    label .prefwin.pf.f.l -text "- Select an option category on the left to view/edit.\n\n- Click the \"Apply button\" to apply all preference options\nto the rest of the GUI.\n\n- Click the \"OK\" button to apply and save the changes to\nthe Covered configuration file and exit this window.\n\n- Click the \"Cancel\" button to forget all preference changes\nmade the exit this window.\n\n- Click the \"Help\" button to get help for the shown option window." -justify left
+    ttk::frame .prefwin.pf -relief raised -borderwidth 1
+    ttk::frame .prefwin.pf.f
+    ttk::label .prefwin.pf.f.l -text "- Select an option category on the left to view/edit.\n\n- Click the \"Apply button\" to apply all preference options\nto the rest of the GUI.\n\n- Click the \"OK\" button to apply and save the changes to\nthe Covered configuration file and exit this window.\n\n- Click the \"Cancel\" button to forget all preference changes\nmade the exit this window.\n\n- Click the \"Help\" button to get help for the shown option window." -justify left
     pack .prefwin.pf.f.l -fill y -padx 8 -pady 10 
     pack .prefwin.pf.f -fill both
 
     # Create button frame
-    frame .prefwin.bf -relief raised -borderwidth 1
-    button .prefwin.bf.apply -width 10 -text "Apply" -command {
+    ttk::frame .prefwin.bf -relief raised -borderwidth 1
+    ttk::button .prefwin.bf.apply -width 10 -text "Apply" -command {
       apply_preferences
     }
-    button .prefwin.bf.ok -width 10 -text "OK" -command {
+    ttk::button .prefwin.bf.ok -width 10 -text "OK" -command {
       if {[apply_preferences] == 1} {
         write_coveredrc 0
       }
       destroy .prefwin
     }
-    button .prefwin.bf.cancel -width 10 -text "Cancel" -command {
+    ttk::button .prefwin.bf.cancel -width 10 -text "Cancel" -command {
       destroy .prefwin
     }
     help_button .prefwin.bf.help ""
-    .prefwin.bf.help configure -command {
+    bind .prefwin.bf.help <Button-1> {
       switch [.prefwin.lbf.lb curselection] {
         0 { help_show_manual chapter.gui.preferences "section.gui.pref.general" }
         1 { help_show_manual chapter.gui.preferences "section.gui.pref.color" }
@@ -865,16 +865,16 @@ proc create_general_pref {} {
   global tmp_show_wizard tmp_save_gui_on_exit tmp_show_tooltips
 
   # Create main frame
-  labelframe .prefwin.pf.f -labelanchor nw -text "General Options" -pady 6 -padx 4
+  ttk::labelframe .prefwin.pf.f -labelanchor nw -text "General Options"
 
   # Create "Show Wizard" checkbutton
-  checkbutton .prefwin.pf.f.wiz -text "Show wizard window on startup" -variable tmp_show_wizard -onvalue true -offvalue false -anchor w
+  ttk::checkbutton .prefwin.pf.f.wiz -text "Show wizard window on startup" -variable tmp_show_wizard -onvalue true -offvalue false
 
   # Create checkbutton for saving GUI elements to configuration file upon exit
-  checkbutton .prefwin.pf.f.save_gui_on_exit -text "Save state of GUI when exiting the application" -variable tmp_save_gui_on_exit -onvalue true -offvalue false -anchor w
+  ttk::checkbutton .prefwin.pf.f.save_gui_on_exit -text "Save state of GUI when exiting the application" -variable tmp_save_gui_on_exit -onvalue true -offvalue false
 
   # Create checkbutton for displayint tooltips
-  checkbutton .prefwin.pf.f.show_tooltips -text "Show tooltips" -variable tmp_show_tooltips -onvalue true -offvalue false -anchor w
+  ttk::checkbutton .prefwin.pf.f.show_tooltips -text "Show tooltips" -variable tmp_show_tooltips -onvalue true -offvalue false
 
   # Pack main frame
   grid .prefwin.pf.f.wiz              -row 0 -column 0 -sticky news -padx 4
@@ -893,40 +893,40 @@ proc create_color_pref {} {
   global race_fgColor  race_bgColor  tmp_race_fgColor  tmp_race_bgColor
 
   # Create main frame
-  labelframe .prefwin.pf.f -labelanchor nw -text "Set Highlight Color (F=Change Foreground, B=Change Background)" -pady 6 -padx 4
+  ttk::labelframe .prefwin.pf.f -labelanchor nw -text "Set Highlight Color (F=Change Foreground, B=Change Background)"
 
   # Uncovered selectors
-  button .prefwin.pf.f.ufb -text "F" -relief groove -command {
+  ttk::button .prefwin.pf.f.ufb -text "F" -command {
     set tmp_uncov_fgColor \
         [pref_set_label_color .prefwin.pf.f.ul fg $tmp_uncov_fgColor "Choose Uncovered Foreground"]
   }
-  button .prefwin.pf.f.ubb -text "B" -relief groove -command {
+  ttk::button .prefwin.pf.f.ubb -text "B" -command {
     set tmp_uncov_bgColor \
         [pref_set_label_color .prefwin.pf.f.ul bg $tmp_uncov_bgColor "Choose Uncovered Background"]
   }
-  label .prefwin.pf.f.ul -bg $tmp_uncov_bgColor -fg $tmp_uncov_fgColor -text "Uncovered Sample"
+  ttk::label .prefwin.pf.f.ul -background $tmp_uncov_bgColor -foreground $tmp_uncov_fgColor -text "Uncovered Sample"
 
   # Covered selectors
-  button .prefwin.pf.f.cfb -text "F" -relief groove -command {
+  ttk::button .prefwin.pf.f.cfb -text "F" -command {
     set tmp_cov_fgColor \
         [pref_set_label_color .prefwin.pf.f.cl fg $tmp_cov_fgColor "Choose Covered Foreground"]
   }
-  button .prefwin.pf.f.cbb -text "B" -relief groove -command {
+  ttk::button .prefwin.pf.f.cbb -text "B" -command {
     set tmp_cov_bgColor \
         [pref_set_label_color .prefwin.pf.f.cl bg $tmp_cov_bgColor "Choose Covered Background"]
   }
-  label .prefwin.pf.f.cl -bg $tmp_cov_bgColor -fg $tmp_cov_fgColor -text "Covered Sample"
+  ttk::label .prefwin.pf.f.cl -background $tmp_cov_bgColor -foreground $tmp_cov_fgColor -text "Covered Sample"
 
   # Race selectors
-  button .prefwin.pf.f.rfb -text "F" -relief groove -command {
+  ttk::button .prefwin.pf.f.rfb -text "F" -command {
     set tmp_race_fgColor \
         [pref_set_label_color .prefwin.pf.f.rl fg $tmp_race_fgColor "Choose Race Condition Foreground"]
   }
-  button .prefwin.pf.f.rbb -text "B" -relief groove -command {
+  ttk::button .prefwin.pf.f.rbb -text "B" -command {
     set tmp_race_bgColor \
         [pref_set_label_color .prefwin.pf.f.rl bg $tmp_race_bgColor "Choose Race Condition Background"]
   }
-  label .prefwin.pf.f.rl -bg $tmp_race_bgColor -fg $tmp_race_fgColor -text "Race Condition Sample"
+  ttk::label .prefwin.pf.f.rl -background $tmp_race_bgColor -foreground $tmp_race_fgColor -text "Race Condition Sample"
 
   # Pack the color widgets into the color frame
   grid columnconfigure .prefwin.pf.f 3 -weight 1
@@ -950,24 +950,24 @@ proc create_cov_goal_pref {} {
   global tmp_line_low_limit tmp_toggle_low_limit tmp_memory_low_limit tmp_comb_low_limit tmp_fsm_low_limit tmp_assert_low_limit
 
   # Create widgets
-  labelframe .prefwin.pf.f -labelanchor nw -text "Set Acceptable Coverage Goals" -padx 4 -pady 6
+  ttk::labelframe .prefwin.pf.f -labelanchor nw -text "Set Acceptable Coverage Goals"
 
-  label .prefwin.pf.f.ll -anchor e -text "Line Coverage %:"
+  ttk::label .prefwin.pf.f.ll -anchor e -text "Line Coverage %:"
   percent_spinner .prefwin.pf.f.ls $tmp_line_low_limit
 
-  label .prefwin.pf.f.tl -anchor e -text "Toggle Coverage %:"
+  ttk::label .prefwin.pf.f.tl -anchor e -text "Toggle Coverage %:"
   percent_spinner .prefwin.pf.f.ts $tmp_toggle_low_limit
 
-  label .prefwin.pf.f.ml -anchor e -text "Memory Coverage %:"
+  ttk::label .prefwin.pf.f.ml -anchor e -text "Memory Coverage %:"
   percent_spinner .prefwin.pf.f.ms $tmp_memory_low_limit
 
-  label .prefwin.pf.f.cl -anchor e -text "Combinational Logic Coverage %:"
+  ttk::label .prefwin.pf.f.cl -anchor e -text "Combinational Logic Coverage %:"
   percent_spinner .prefwin.pf.f.cs $tmp_comb_low_limit
 
-  label .prefwin.pf.f.fl -anchor e -text "FSM State/Arc Coverage %:"
+  ttk::label .prefwin.pf.f.fl -anchor e -text "FSM State/Arc Coverage %:"
   percent_spinner .prefwin.pf.f.fs $tmp_fsm_low_limit
 
-  label .prefwin.pf.f.al -anchor e -text "Assertion Coverage %:"
+  ttk::label .prefwin.pf.f.al -anchor e -text "Assertion Coverage %:"
   percent_spinner .prefwin.pf.f.as $tmp_assert_low_limit
 
   # Pack widgets into grid
@@ -1002,45 +1002,45 @@ proc create_syntax_pref {} {
   global hl_mode
 
   # Create widgets
-  labelframe .prefwin.pf.f -labelanchor nw -text "Set Syntax Highlighting Options" -padx 4 -pady 6
+  ttk::labelframe .prefwin.pf.f -labelanchor nw -text "Set Syntax Highlighting Options"
 
-  checkbutton .prefwin.pf.f.mcb -variable tmp_vlog_hl_mode -onvalue on -offvalue off -anchor w \
+  ttk::checkbutton .prefwin.pf.f.mcb -variable tmp_vlog_hl_mode -onvalue on -offvalue off \
                                   -text "Turn on syntax highlighting mode" -command {
     synchronize_syntax_widgets $tmp_vlog_hl_mode
   }
 
-  label .prefwin.pf.f.ppcl -bg $vlog_hl_ppkeyword_color -anchor e -text "Preprocessor keyword highlight color:"
-  button .prefwin.pf.f.ppcb -text "Change" -command {
+  ttk::label .prefwin.pf.f.ppcl -background $vlog_hl_ppkeyword_color -anchor e -text "Preprocessor keyword highlight color:"
+  ttk::button .prefwin.pf.f.ppcb -text "Change" -command {
     set tmp_vlog_hl_ppkeyword_color \
         [pref_set_label_color .prefwin.pf.f.ppcl bg $tmp_vlog_hl_ppkeyword_color "Choose Preprocessor Keyword Highlight Color"]
   }
 
-  label .prefwin.pf.f.pcl -bg $vlog_hl_keyword_color -anchor e -text "Keyword highlight color:"
-  button .prefwin.pf.f.pcb -text "Change" -command {
+  ttk::label .prefwin.pf.f.pcl -background $vlog_hl_keyword_color -anchor e -text "Keyword highlight color:"
+  ttk::button .prefwin.pf.f.pcb -text "Change" -command {
     set tmp_vlog_hl_keyword_color \
         [pref_set_label_color .prefwin.pf.f.pcl bg $tmp_vlog_hl_keyword_color "Choose Keyword Highlight Color"]
   }
 
-  label .prefwin.pf.f.ccl -bg $vlog_hl_comment_color -anchor e -text "Comment highlight color:"
-  button .prefwin.pf.f.ccb -text "Change" -command {
+  ttk::label .prefwin.pf.f.ccl -background $vlog_hl_comment_color -anchor e -text "Comment highlight color:"
+  ttk::button .prefwin.pf.f.ccb -text "Change" -command {
     set tmp_vlog_hl_comment_color \
         [pref_set_label_color .prefwin.pf.f.ccl bg $tmp_vlog_hl_comment_color "Choose Comment Highlight Color"]
   }
 
-  label .prefwin.pf.f.vcl -bg $vlog_hl_value_color -anchor e -text "Value highlight color:"
-  button .prefwin.pf.f.vcb -text "Change" -command {
+  ttk::label .prefwin.pf.f.vcl -background $vlog_hl_value_color -anchor e -text "Value highlight color:"
+  ttk::button .prefwin.pf.f.vcb -text "Change" -command {
     set tmp_vlog_hl_value_color \
         [pref_set_label_color .prefwin.pf.f.vcl bg $tmp_vlog_hl_value_color "Choose Value Highlight Color"]
   }
 
-  label .prefwin.pf.f.stcl -bg $vlog_hl_string_color -anchor e -text "String highlight color:"
-  button .prefwin.pf.f.stcb -text "Change" -command {
+  ttk::label .prefwin.pf.f.stcl -background $vlog_hl_string_color -anchor e -text "String highlight color:"
+  ttk::button .prefwin.pf.f.stcb -text "Change" -command {
     set tmp_vlog_hl_string_color \
         [pref_set_label_color .prefwin.pf.f.stcl bg $tmp_vlog_hl_string_color "Choose String Highlight Color"]
   }
 
-  label .prefwin.pf.f.sycl -bg $vlog_hl_symbol_color -anchor e -text "Symbol highlight color:"
-  button .prefwin.pf.f.sycb -text "Change" -command {
+  ttk::label .prefwin.pf.f.sycl -background $vlog_hl_symbol_color -anchor e -text "Symbol highlight color:"
+  ttk::button .prefwin.pf.f.sycb -text "Change" -command {
     set tmp_vlog_hl_symbol_color \
         [pref_set_label_color .prefwin.pf.f.sycl bg $tmp_vlog_hl_symbol_color "Choose Symbol Highlight Color"]
   }
@@ -1080,18 +1080,18 @@ proc create_exclusion_pref {} {
   global tmp_exclude_reasons_enabled tmp_exclude_reasons
 
   # Create widgets
-  frame .prefwin.pf.f
+  ttk::frame .prefwin.pf.f
 
   # Create checkbutton for turning exclusion reason support on/off
-  labelframe  .prefwin.pf.f.ecf    -text "Exclusion Options"
-  checkbutton .prefwin.pf.f.ecf.cb -text "Enable exclusion reason support when items are excluded" -variable tmp_exclude_reasons_enabled -anchor w
+  ttk::labelframe  .prefwin.pf.f.ecf    -text "Exclusion Options"
+  ttk::checkbutton .prefwin.pf.f.ecf.cb -text "Enable exclusion reason support when items are excluded" -variable tmp_exclude_reasons_enabled
   pack .prefwin.pf.f.ecf.cb -fill x -padx 3 -pady 3
 
   # Create labelframe for creating general reasons for exclusion
-  labelframe .prefwin.pf.f.elf -labelanchor nw -text "Create General Exclusion Reasons" -padx 4 -pady 6
+  ttk::labelframe .prefwin.pf.f.elf -labelanchor nw -text "Create General Exclusion Reasons"
 
   # Create tablelist frame
-  frame .prefwin.pf.f.elf.lf
+  ttk::frame .prefwin.pf.f.elf.lf
   tablelist::tablelist .prefwin.pf.f.elf.lf.tl -columns "0 {Exclusion Reason}" -stretch all \
     -xscrollcommand {.prefwin.pf.f.elf.lf.hb set} -yscrollcommand {.prefwin.pf.f.elf.lf.vb set} -movablerows 1 -selectmode single
   foreach {key value} [array get tablelistopts] {
@@ -1106,8 +1106,8 @@ proc create_exclusion_pref {} {
       .prefwin.pf.f.elf.bf.del configure -state normal
     }
   }
-  scrollbar .prefwin.pf.f.elf.lf.hb -command {.prefwin.pf.f.elf.lf.tl xview} -orient horizontal
-  scrollbar .prefwin.pf.f.elf.lf.vb -command {.prefwin.pf.f.elf.lf.tl yview}
+  ttk::scrollbar .prefwin.pf.f.elf.lf.hb -command {.prefwin.pf.f.elf.lf.tl xview} -orient horizontal
+  ttk::scrollbar .prefwin.pf.f.elf.lf.vb -command {.prefwin.pf.f.elf.lf.tl yview}
   grid rowconfigure    .prefwin.pf.f.elf.lf 0 -weight 1
   grid columnconfigure .prefwin.pf.f.elf.lf 0 -weight 1
   grid .prefwin.pf.f.elf.lf.tl -row 0 -column 0 -sticky news
@@ -1115,9 +1115,9 @@ proc create_exclusion_pref {} {
   grid .prefwin.pf.f.elf.lf.hb -row 1 -column 0 -sticky ew
 
   # Create button frame
-  frame  .prefwin.pf.f.elf.bf
+  ttk::frame  .prefwin.pf.f.elf.bf
   set plus [image create bitmap -data "#define plus_width 18\n#define plus_height 18\nstatic unsigned char plus_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0xf0, 0x3f, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"]
-  button .prefwin.pf.f.elf.bf.add -image $plus -state disabled -command {
+  ttk::button .prefwin.pf.f.elf.bf.add -image $plus -state disabled -command {
     .prefwin.pf.f.elf.lf.tl  insert end [string trim [string map {\n { } \r { } \t { }} [list [.prefwin.pf.f.elf.tf.t get 1.0 end]]]]
     .prefwin.pf.f.elf.tf.t   delete 1.0 end
     .prefwin.pf.f.elf.bf.add configure -state disabled
@@ -1125,7 +1125,7 @@ proc create_exclusion_pref {} {
   }
   set_balloon .prefwin.pf.f.elf.bf.add "Adds the reason to the list"
   set minus [image create bitmap -data "#define minus_width 18\n#define minus_height 18\nstatic unsigned char minus_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x3f, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"]
-  button .prefwin.pf.f.elf.bf.del -image $minus -state disabled -command {
+  ttk::button .prefwin.pf.f.elf.bf.del -image $minus -state disabled -command {
     .prefwin.pf.f.elf.lf.tl  delete [.prefwin.pf.f.elf.lf.tl curselection]
     .prefwin.pf.f.elf.tf.t   delete 1.0 end
     .prefwin.pf.f.elf.bf.add configure -state disabled
@@ -1137,8 +1137,8 @@ proc create_exclusion_pref {} {
   pack .prefwin.pf.f.elf.bf.del -side left -padx 3 -pady 3
 
   # Create text frame
-  frame .prefwin.pf.f.elf.tf
-  text  .prefwin.pf.f.elf.tf.t -wrap word -yscrollcommand {.prefwin.pf.f.elf.tf.vb set} -height 6
+  ttk::frame .prefwin.pf.f.elf.tf
+  text       .prefwin.pf.f.elf.tf.t -wrap word -yscrollcommand {.prefwin.pf.f.elf.tf.vb set} -height 6
   bind .prefwin.pf.f.elf.tf.t <KeyRelease> {
     if {[%W count -chars 1.0 end] < 2} {
       .prefwin.pf.f.elf.bf.add configure -state disabled
@@ -1146,7 +1146,7 @@ proc create_exclusion_pref {} {
       .prefwin.pf.f.elf.bf.add configure -state normal
     }
   }
-  scrollbar .prefwin.pf.f.elf.tf.vb -command {.prefwin.pf.f.elf.tf.t yview}
+  ttk::scrollbar .prefwin.pf.f.elf.tf.vb -command {.prefwin.pf.f.elf.tf.t yview}
   grid columnconfigure .prefwin.pf.f.elf.tf 0 -weight 1
   grid .prefwin.pf.f.elf.tf.t  -row 0 -column 0 -sticky news
   grid .prefwin.pf.f.elf.tf.vb -row 0 -column 1 -sticky ns
@@ -1175,15 +1175,15 @@ proc create_merging_pref {} {
   global tmp_exclude_resolution
 
   # Create widgets
-  frame .prefwin.pf.f
+  ttk::frame .prefwin.pf.f
 
   # Create the exclusion reason conflict resolution frame
-  labelframe .prefwin.pf.f.ecr -text "Exclusion Reason Conflict Resolution"
-  radiobutton .prefwin.pf.f.ecr.first -text "Use the first reason"  -anchor w -variable tmp_exclude_resolution -value first
-  radiobutton .prefwin.pf.f.ecr.last  -text "Use the last reason"   -anchor w -variable tmp_exclude_resolution -value last
-  radiobutton .prefwin.pf.f.ecr.new   -text "Use the newest reason" -anchor w -variable tmp_exclude_resolution -value new
-  radiobutton .prefwin.pf.f.ecr.old   -text "Use the oldest reason" -anchor w -variable tmp_exclude_resolution -value old
-  radiobutton .prefwin.pf.f.ecr.all   -text "Merge all reasons"     -anchor w -variable tmp_exclude_resolution -value all
+  ttk::labelframe .prefwin.pf.f.ecr -text "Exclusion Reason Conflict Resolution"
+  ttk::radiobutton .prefwin.pf.f.ecr.first -text "Use the first reason"  -variable tmp_exclude_resolution -value first
+  ttk::radiobutton .prefwin.pf.f.ecr.last  -text "Use the last reason"   -variable tmp_exclude_resolution -value last
+  ttk::radiobutton .prefwin.pf.f.ecr.new   -text "Use the newest reason" -variable tmp_exclude_resolution -value new
+  ttk::radiobutton .prefwin.pf.f.ecr.old   -text "Use the oldest reason" -variable tmp_exclude_resolution -value old
+  ttk::radiobutton .prefwin.pf.f.ecr.all   -text "Merge all reasons"     -variable tmp_exclude_resolution -value all
 
   pack .prefwin.pf.f.ecr.first -anchor w -padx 3 -pady 3
   pack .prefwin.pf.f.ecr.last  -anchor w -padx 3 -pady 3

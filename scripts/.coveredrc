@@ -1,0 +1,172 @@
+# Covered GUI Configuration File
+#--------------------------------
+# All variable assignments below are in the form of "variable = value"
+# where whitespace must be present between the variable, the "=" character
+# and the value.  Comment lines start with the "#" character.
+
+# If set to true, causes the wizard window to be displayed on GUI startup.
+# If set to false, the wizard window is suppressed.
+
+ShowWizardOnStartup = true
+
+# If set to true, causes various GUI elements to be saved when exiting the application
+# which will be used when the application is restarted at a later time.  Set to false
+# to cause the Covered GUI to use the default values.
+
+SaveGuiOnExit = true
+
+# If set to true, causes tooltips to be used for many widgets within the GUI.  If set
+# to false, causes all tooltip support to be disabled.
+ShowTooltips = true
+
+# Sets the foreground color for all source code that is found
+# to be uncovered during simulation.  The value can be any legal color
+# value accepted by Tcl.
+
+UncoveredForegroundColor = #000000
+
+# Sets the background color for all source code that is found
+# to be uncovered during simulation.  The value can be any legal color
+# value accepted by Tcl.
+
+UncoveredBackgroundColor = #a14756
+
+# Sets the foreground color for all source code that is found
+# to be covered during simulation.  The value can be any legal color value
+# accepted by Tcl.
+
+CoveredForegroundColor = black
+
+# Sets the background color for all source code that is found
+# to be covered during simulation.  The value can be any legal color value.
+# accepted by Tcl.
+
+CoveredBackgroundColor = #90ee90
+
+# Sets the foreground color for all source code that has been detected as
+# containing a race condition situation.  This code is not analyzed by Covered.
+# The value can be any legal color value accepted by Tcl.
+
+RaceConditionForegroundColor = white
+
+# Sets the background color for all source code that has been detected as
+# containing a race condition situation.  This code is not analyzed by Covered.
+# The value can be any legal color value accepted by Tcl.
+
+RaceConditionBackgroundColor = blue
+
+# Causes the summary color for a module/instance that has achieved a line
+# coverage percentage greater than or equal to this value (but not 100%) to be
+# colored "yellow", indicating that the line coverage can possibly be deemed
+# "good enough".  This value must be in the range of 0 - 100.
+
+AcceptableLinePercentage = 90
+
+# Causes the summary color for a module/instance that has achieved a toggle
+# coverage percentage greater than or equal to this value (but not 100%) to be
+# colored "yellow", indicating that the toggle coverage can possibly be deemed
+# "good enough".  This value must be in the range of 0 - 100.
+
+AcceptableTogglePercentage = 90
+
+# Causes the summary color for a module/instance that has achieved a memory
+# coverage percentage greater than or equal to this value (but not 100%) to be
+# colored "yellow", indicating that the memory coverage can possibly be deemed
+# "good enough".  This value must be in the range of 0 - 100.
+
+AcceptableMemoryPercentage = 90
+
+# Causes the summary color for a module/instance that has achieved a combinational
+# logic coverage percentage greater than or equal to this value (but not 100%) to be
+# colored "yellow", indicating that the combinational logic coverage can possibly be
+# deemed "good enough".  This value must be in the range of 0 - 100.
+
+AcceptableCombinationalLogicPercentage = 90
+
+# Causes the summary color for a module/instance that has achieved an FSM state/arc
+# coverage percentage greater than or equal to this value (but not 100%) to be
+# colored "yellow", indicating that the FSM coverage can possibly be deemed
+# "good enough".  This value must be in the range of 0 - 100.
+
+AcceptableFsmPercentage = 90
+
+# Causes the summary color for a module/instance that has achieved an assertion
+# coverage percentage greater than or equal to this value (but not 100%) to be
+# colored "yellow", indicating that the assertion coverage can possibly be deemed
+# "good enough".  This value must be in the range of 0 - 100.
+
+AcceptableAssertionPercentage = 90
+
+# Causes syntax highlighting to be turned on or off.  This value should either be
+# 'on' or 'off'.
+
+HighlightingMode = on
+
+# When the syntax highlighting mode is on, causes the preprocessor directive keywords
+# to be highlighted with the specified color.  The value may be any color value that
+# is acceptable to Tk.
+
+HighlightPreprocessorKeywordColor = ForestGreen
+
+# When the syntax highlighting mode is on, causes the Verilog keywords to be highlighted
+# with the specified color.  The value may be any color value that is acceptable to Tk.
+
+HighlightKeywordColor = purple
+
+# When the syntax highlighting mode is on, causes any single or multi-line comments to
+# be highlighted with the specified color.  The value may be any color value that is
+# acceptable to Tk.
+
+HighlightCommentColor = blue
+
+# When the syntax highlighting mode is on, causes any defined, binary, octal, decimal or
+# hexidecimal value to be highlighted with the specified color.  The value may be any
+# color value that is acceptable to Tk.
+
+HighlightValueColor = red
+
+# When the syntax highlighting mode is on, causes any quoted string to be highlighted with
+# the specified color.  The value may be any color value that is acceptable to Tk.
+
+HighlightStringColor = red
+
+# When the syntax highlighting mode is on, causes any Verilog symbol to be highlighted with
+# the specified color.  The value may be any color value that is acceptable to Tk.
+
+HighlightSymbolColor = coral
+
+# If this value is set to true, a popup dialog box will be created whenever the user excludes a coverage
+# point, allowing for the creation of a reason for the exclusion.  If this value is set to false, no popup
+# box will be displayed when a coverage point is marked for exclusion.  The exclusion reason information
+# is saved to the CDD (if specified from the GUI).
+
+EnableExclusionReasons = 1
+
+# This string specifies default reasons for exclusion.  These reasons may be used wherever
+# a coverage point is excluded (or the user may specify a unique reason).
+
+ExclusionReasons = {Logic is obsolete but will not be removed for future enhancement possibilities. }
+
+# This value specifies how to handle exclusion reason conflicts that arise when two or more CDD files
+# are merged that contain mismatching exclusion reasons for identical coverage points.  The valid
+# values are the following:
+#   first - Use the exclusion reason from the first CDD file read in that contains the reason
+#   last  - Use the exclusion reason from the last CDD file read in that contains the reason
+#   all   - Merge all exclusion reasons into one
+#   new   - Use the newest exclusion reason specified
+#   old   - Use the oldest exclusion reason specified
+
+ExclusionReasonConflictResolution = all
+
+# THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!
+
+MainWindowGeometry                = 1000x548+201+484
+ToggleWindowGeometry              = 366x125+435+411
+MemoryWindowGeometry              = 481x381+8+46
+CombWindowGeometry                = 915x637+8+46
+FsmWindowGeometry                 = 627x480+4+23
+AssertWindowGeometry              = 
+ModuleInstanceType                = Module
+ModuleInstanceTableListWidth      = 184
+ModuleInstanceTableListColumns    = 0:Instance Name:left:0:Module Name:left:0:Hit:right:0:Miss:right:0:Excluded:right:0:Total:right:0:Hit %:right:0:Index:left
+ModuleInstanceTableListInitHidden = 1:0:0:0:0:0:0

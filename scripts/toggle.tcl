@@ -62,19 +62,19 @@ proc create_toggle_window {signal} {
     toplevel .togwin
     wm title .togwin "Toggle Coverage - Verbose"
 
-    frame .togwin.f -relief raised -borderwidth 1
+    ttk::frame .togwin.f -relief raised -borderwidth 1
 
     # Add toggle information
-    label .togwin.f.l_01 -anchor w -text "Toggle 0->1"
-    label .togwin.f.l_10 -anchor w -text "Toggle 1->0"
-    text  .togwin.f.t -height 2 -width 40 -xscrollcommand ".togwin.f.hb set" -wrap none -spacing1 2 -spacing3 3
-    scrollbar .togwin.f.hb -orient horizontal -command ".togwin.f.t xview"
+    ttk::label     .togwin.f.l_01 -anchor w -text "Toggle 0->1"
+    ttk::label     .togwin.f.l_10 -anchor w -text "Toggle 1->0"
+    text           .togwin.f.t -height 2 -width 40 -xscrollcommand ".togwin.f.hb set" -wrap none -spacing1 2 -spacing3 3
+    ttk::scrollbar .togwin.f.hb -orient horizontal -command ".togwin.f.t xview"
 
     # Create bottom information bar
-    label .togwin.f.info -anchor e
+    ttk::label .togwin.f.info -anchor e
 
     # Create exclude checkbutton
-    checkbutton .togwin.f.excl -text "Exclude" -variable toggle_excluded -command {
+    ttk::checkbutton .togwin.f.excl -text "Exclude" -variable toggle_excluded -command {
       set toggle_reason ""
       if {$exclude_reasons_enabled == 1 && $toggle_excluded == 1} {
         set toggle_reason [get_exclude_reason .togwin]
@@ -93,17 +93,17 @@ proc create_toggle_window {signal} {
     set_balloon .togwin.f.excl "If set, excludes this signal from toggle coverage consideration"
 
     # Create bottom button bar
-    frame .togwin.bf -relief raised -borderwidth 1
-    button .togwin.bf.close -text "Close" -width 10 -command {
+    ttk::frame .togwin.bf -relief raised -borderwidth 1
+    ttk::button .togwin.bf.close -text "Close" -width 10 -command {
       rm_pointer curr_toggle_ptr
       destroy .togwin
     }
     help_button .togwin.bf.help chapter.gui.toggle ""
-    button .togwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
+    ttk::button .togwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -command {
       display_toggle $prev_toggle_index
     }
     set_balloon .togwin.bf.prev "Click to view the previous uncovered signal in this window"
-    button .togwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
+    ttk::button .togwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -command {
       display_toggle $next_toggle_index
     }
     set_balloon .togwin.bf.next "Click to view the next uncovered signal in this window"

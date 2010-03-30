@@ -31,11 +31,11 @@ proc get_exclude_reason {w} {
 
   # Create top- and bottom-most frame
   panedwindow .exclwin.pw -orient vertical
-  .exclwin.pw add [frame .exclwin.pw.top -relief raised -borderwidth 1]
-  .exclwin.pw add [frame .exclwin.pw.bot -relief raised -borderwidth 1] -hide true
+  .exclwin.pw add [ttk::frame .exclwin.pw.top -relief raised -borderwidth 1]
+  .exclwin.pw add [ttk::frame .exclwin.pw.bot -relief raised -borderwidth 1] -hide true
 
   # Populate the textbox pane
-  frame     .exclwin.pw.top.t
+  ttk::frame     .exclwin.pw.top.t
   text      .exclwin.pw.top.t.t -wrap word -yscrollcommand {.exclwin.pw.top.t.vb set} -height 10 -width 50
   bind .exclwin.pw.top.t.t <KeyRelease> {
     if {[.exclwin.pw.top.t.t count -chars 1.0 end] < 2} {
@@ -44,22 +44,22 @@ proc get_exclude_reason {w} {
       .exclwin.pw.top.bf.save configure -state normal
     }
   }
-  scrollbar .exclwin.pw.top.t.vb -command {.exclwin.pw.top.t.t yview}
+  ttk::scrollbar .exclwin.pw.top.t.vb -command {.exclwin.pw.top.t.t yview}
   grid columnconfigure .exclwin.pw.top.t 0 -weight 1
   grid .exclwin.pw.top.t.t  -row 0 -column 0 -sticky news
   grid .exclwin.pw.top.t.vb -row 0 -column 1 -sticky ns
 
   # Create button frame
-  frame  .exclwin.pw.top.bf
-  button .exclwin.pw.top.bf.save -text "OK" -width 10 -state disabled -command {
+  ttk::frame  .exclwin.pw.top.bf
+  ttk::button .exclwin.pw.top.bf.save -text "OK" -width 10 -state disabled -command {
     set exclude_reason [string trim [string map {\n { } \r { } \t { }} [.exclwin.pw.top.t.t get 1.0 end]]]
     destroy .exclwin
   } 
-  button .exclwin.pw.top.bf.close -text "Cancel" -width 10 -command {
+  ttk::button .exclwin.pw.top.bf.close -text "Cancel" -width 10 -command {
     destroy .exclwin
   }
-  frame  .exclwin.pw.top.bf.ibf
-  button .exclwin.pw.top.bf.ibf.more -image $more_dn_img -command {
+  ttk::frame  .exclwin.pw.top.bf.ibf
+  ttk::button .exclwin.pw.top.bf.ibf.more -image $more_dn_img -command {
     if {[.exclwin.pw panecget .exclwin.pw.bot -hide]} {
       .exclwin.pw paneconfigure .exclwin.pw.bot -hide false
       .exclwin.pw.top.bf.ibf.more configure -image $more_up_img
@@ -82,7 +82,7 @@ proc get_exclude_reason {w} {
   grid .exclwin.pw.top.bf -row 0 -column 1 -sticky ns
 
   # Populate the listbox pane
-  frame .exclwin.pw.bot.l
+  ttk::frame .exclwin.pw.bot.l
   tablelist::tablelist .exclwin.pw.bot.l.tl -columns {0 "Default Exclusion Reasons"} -labelcommand tablelist::sortByColumn \
     -yscrollcommand {.exclwin.pw.bot.l.vb set} -stretch all -movablecolumns 1
   foreach {key value} [array get tablelistopts] {
@@ -94,7 +94,7 @@ proc get_exclude_reason {w} {
     .exclwin.pw.top.t.t insert end [.exclwin.pw.bot.l.tl getcells [list $row,0]]
     .exclwin.pw.top.bf.save configure -state normal
   }
-  scrollbar .exclwin.pw.bot.l.vb -command {.exclwin.pw.bot.l.tl yview}
+  ttk::scrollbar .exclwin.pw.bot.l.vb -command {.exclwin.pw.bot.l.tl yview}
 
   grid columnconfigure .exclwin.pw.bot.l 0 -weight 1
   grid .exclwin.pw.bot.l.tl -row 0 -column 0 -sticky news
