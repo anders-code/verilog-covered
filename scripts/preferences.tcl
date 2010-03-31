@@ -22,6 +22,7 @@ set main_geometry           ""
 set show_wizard             true
 set save_gui_on_exit        false
 set show_tooltips           true
+set ttk_style               "clam"
 set saved_gui               0
 set uncov_fgColor           blue
 set uncov_bgColor           yellow
@@ -59,7 +60,7 @@ for {set i 100} {$i >= 0} {incr i -1} {
 
 proc read_coveredrc {} {
 
-  global show_wizard save_gui_on_exit show_tooltips
+  global show_wizard save_gui_on_exit show_tooltips ttk_style
   global uncov_fgColor uncov_bgColor
   global cov_fgColor   cov_bgColor
   global race_fgColor  race_bgColor
@@ -109,6 +110,8 @@ proc read_coveredrc {} {
           set save_gui_on_exit $value
         } elseif {$field == "ShowTooltips"} {
           set show_tooltips $value
+        } elseif {$field == "TtkStyle"} {
+          set ttk_style $value
         } elseif {$field == "UncoveredForegroundColor"} {
           set uncov_fgColor $value
         } elseif {$field == "UncoveredBackgroundColor"} {
@@ -191,7 +194,7 @@ proc read_coveredrc {} {
 
 proc write_coveredrc {exiting} {
 
-  global show_wizard save_gui_on_exit show_tooltips
+  global show_wizard save_gui_on_exit show_tooltips ttk_style
   global uncov_fgColor uncov_bgColor
   global cov_fgColor   cov_bgColor
   global race_fgColor  race_bgColor
@@ -229,6 +232,10 @@ proc write_coveredrc {exiting} {
     puts $rc "# to false, causes all tooltip support to be disabled."
 
     puts $rc "ShowTooltips = $show_tooltips\n"
+
+    puts $rc "# Specifies the ttk style type to use for the GUI.\n"
+
+    puts $rc "TtkStyle = $ttk_style\n"
 
     puts $rc "# Sets the foreground color for all source code that is found"
     puts $rc "# to be uncovered during simulation.  The value can be any legal color"
@@ -402,6 +409,7 @@ proc create_preferences {start_index} {
   global show_wizard      tmp_show_wizard
   global save_gui_on_exit tmp_save_gui_on_exit
   global show_tooltips    tmp_show_tooltips
+  global ttk_style        tmp_ttk_style
   global cov_fgColor   cov_bgColor   tmp_cov_fgColor   tmp_cov_bgColor
   global uncov_fgColor uncov_bgColor tmp_uncov_fgColor tmp_uncov_bgColor
   global race_fgColor  race_bgColor  tmp_race_fgColor  tmp_race_bgColor
@@ -430,6 +438,7 @@ proc create_preferences {start_index} {
     set tmp_show_wizard             $show_wizard
     set tmp_save_gui_on_exit        $save_gui_on_exit
     set tmp_show_tooltips           $show_tooltips
+    set tmp_ttk_style               $ttk_style
     set tmp_cov_fgColor             $cov_fgColor
     set tmp_cov_bgColor             $cov_bgColor
     set tmp_uncov_fgColor           $uncov_fgColor
@@ -578,6 +587,7 @@ proc apply_preferences {} {
   global show_wizard      tmp_show_wizard
   global save_gui_on_exit tmp_save_gui_on_exit
   global show_tooltips    tmp_show_tooltips
+  global ttk_style        tmp_ttk_style
   global cov_fgColor      tmp_cov_fgColor
   global cov_bgColor      tmp_cov_bgColor
   global uncov_fgColor    tmp_uncov_fgColor
@@ -618,6 +628,11 @@ proc apply_preferences {} {
   }
   if {$show_tooltips != $tmp_show_tooltips} {
     set show_tooltips $tmp_show_tooltips
+    set changed 1
+  }
+  if {$ttk_style != $tmp_ttk_style} {
+    set ttk_style $tmp_ttk_style
+    ttk::style theme use $ttk_style
     set changed 1
   }
   if {$cov_fgColor != $tmp_cov_fgColor} {
@@ -862,7 +877,7 @@ proc populate_pref {} {
 
 proc create_general_pref {} {
 
-  global tmp_show_wizard tmp_save_gui_on_exit tmp_show_tooltips
+  global tmp_show_wizard tmp_save_gui_on_exit tmp_show_tooltips tmp_ttk_style
 
   # Create main frame
   ttk::labelframe .prefwin.pf.f -labelanchor nw -text "General Options"
@@ -876,10 +891,19 @@ proc create_general_pref {} {
   # Create checkbutton for displayint tooltips
   ttk::checkbutton .prefwin.pf.f.show_tooltips -text "Show tooltips" -variable tmp_show_tooltips -onvalue true -offvalue false
 
+  # Create ttk style frame
+  ttk::frame     .prefwin.pf.f.tf
+  ttk::label     .prefwin.pf.f.tf.l -text "Select a GUI theme:"
+  ttk_optionMenu .prefwin.pf.f.tf.om tmp_ttk_style alt clam classic default
+
+  pack .prefwin.pf.f.tf.l  -side left -padx 4
+  pack .prefwin.pf.f.tf.om -side left -padx 4
+
   # Pack main frame
   grid .prefwin.pf.f.wiz              -row 0 -column 0 -sticky news -padx 4
   grid .prefwin.pf.f.save_gui_on_exit -row 1 -column 0 -sticky news -padx 4
   grid .prefwin.pf.f.show_tooltips    -row 2 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.tf               -row 3 -column 0 -sticky news -padx 4
 
   # Pack the frame
   pack .prefwin.pf.f -fill both

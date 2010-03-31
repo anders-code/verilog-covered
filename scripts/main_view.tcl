@@ -726,7 +726,7 @@ read_coveredrc
 main_view
 
 # Set the theme to the clam theme
-ttk::style theme use clam
+ttk::style theme use $ttk_style
 
 # If an input CDD(s) was specified, load them now
 if {$input_cdd ne ""} {

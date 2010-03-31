@@ -19,6 +19,10 @@ SaveGuiOnExit = true
 # to false, causes all tooltip support to be disabled.
 ShowTooltips = true
 
+# Specifies the ttk style type to use for the GUI.
+
+TtkStyle = clam
+
 # Sets the foreground color for all source code that is found
 # to be uncovered during simulation.  The value can be any legal color
 # value accepted by Tcl.
@@ -160,13 +164,13 @@ ExclusionReasonConflictResolution = all
 
 # THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!
 
-MainWindowGeometry                = 1000x548+289+484
+MainWindowGeometry                = 1000x548+305+484
 ToggleWindowGeometry              = 366x125+435+411
 MemoryWindowGeometry              = 481x381+8+46
 CombWindowGeometry                = 915x637+8+46
 FsmWindowGeometry                 = 627x480+4+23
 AssertWindowGeometry              = 
-ModuleInstanceType                = Instance
+ModuleInstanceType                = Module
 ModuleInstanceTableListWidth      = 186
 ModuleInstanceTableListColumns    = 0:Instance Name:left:0:Module Name:left:0:Hit:right:0:Miss:right:0:Excluded:right:0:Total:right:0:Hit %:right:0:Index:left
-ModuleInstanceTableListInitHidden = 0:0:0:0:0:0:0
+ModuleInstanceTableListInitHidden = 1:0:0:0:0:0:0
