@@ -89,7 +89,7 @@ proc menu_create {} {
   # FILE - entry 0
   $tfm add command -label "Open/Merge CDDs..." -accelerator "Ctrl-o" -underline 0 -command {
     # Get a list of files to open
-    set fnames [tk_getOpenFile -multiple 1 -filetypes $file_types]
+    set fnames [tk_getOpenFile -multiple 1 -filetypes $file_types -parent .]
     if {$fnames ne ""} {
       open_files $fnames
     }
@@ -102,7 +102,7 @@ proc menu_create {} {
   $tfm add separator
   # FILE - entry 3
   $tfm add command -label "Save CDD..." -accelerator "Ctrl-s" -state disabled -underline 0 -command {
-    set save_name [tk_getSaveFile -filetypes $file_types -initialfile [file tail $cdd_name] -title "Save CDD As"]
+    set save_name [tk_getSaveFile -filetypes $file_types -initialfile [file tail $cdd_name] -title "Save CDD As" -parent .]
     if {$save_name != ""} {
       if {[file extension $save_name] != ".cdd"} {
         set save_name "$save_name.cdd"

@@ -521,10 +521,10 @@ proc create_preferences {start_index} {
         default { help_show_manual chapter.gui.preferences "" }
       }
     }
-    pack .prefwin.bf.help   -side right -pady 4
-    pack .prefwin.bf.cancel -side right -padx 8 -pady 4
-    pack .prefwin.bf.ok     -side right -padx 8 -pady 4
-    pack .prefwin.bf.apply  -side right -padx 8 -pady 4
+    pack .prefwin.bf.help   -side right -padx 4 -pady 4
+    pack .prefwin.bf.cancel -side right -padx 4 -pady 4
+    pack .prefwin.bf.ok     -side right -padx 4 -pady 4
+    pack .prefwin.bf.apply  -side right -padx 4 -pady 4
 
     # Pack frames
     grid rowconfigure    .prefwin 0 -weight 1

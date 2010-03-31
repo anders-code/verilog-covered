@@ -462,9 +462,9 @@ proc create_rank_cdds_source {w} {
     setup_cdd_rank_options $w
     goto_next_pane $w
   "
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.next   -side right -padx 3 -pady 3
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
 
   # Pack top-level frames
   pack $w.f  -fill both -expand yes
@@ -605,10 +605,10 @@ proc create_rank_cdds_options {w} {
   ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   ttk::button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w"
   ttk::button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack   $w.bf.help   -side right -pady 3
-  pack   $w.bf.cancel -side right -padx 3 -pady 3
-  pack   $w.bf.next   -side right -padx 3 -pady 3
-  pack   $w.bf.prev   -side left  -padx 3 -pady 3
+  pack   $w.bf.help   -side right -padx 4 -pady 4
+  pack   $w.bf.cancel -side right -padx 4 -pady 4
+  pack   $w.bf.next   -side right -padx 4 -pady 4
+  pack   $w.bf.prev   -side left  -padx 4 -pady 4
 
   $w.ff.e configure -validatecommand "handle_rank_cdds_filename $w"
 
@@ -912,10 +912,10 @@ proc create_rank_cdds_files {w} {
   ttk::button $w.bf.cancel   -width 10 -text "Cancel"   -command "destroy [winfo toplevel $w]"
   ttk::button $w.bf.generate -width 10 -text "Generate" -state disabled -command "generate_rank_cdd_file $w"
   ttk::button $w.bf.prev     -width 10 -text "Back"     -command "goto_prev_pane $w"
-  pack   $w.bf.help     -side right -pady 3
-  pack   $w.bf.cancel   -side right -padx 3 -pady 3
-  pack   $w.bf.generate -side right -padx 3 -pady 3
-  pack   $w.bf.prev     -side left  -padx 3 -pady 3
+  pack   $w.bf.help     -side right -padx 4 -pady 4
+  pack   $w.bf.cancel   -side right -padx 4 -pady 4
+  pack   $w.bf.generate -side right -padx 4 -pady 4
+  pack   $w.bf.prev     -side left  -padx 4 -pady 4
   
   # Pack top-level frames
   pack $w.f    -padx 3 -pady 3 -fill both -expand yes
@@ -963,9 +963,9 @@ proc create_rank_cdds_output {w} {
   help_button $w.bf.help chapter.gui.rank section.gui.rank.output
   ttk::button $w.bf.finish -width 10 -text "Finish" -command "destroy [winfo toplevel $w]"
   ttk::button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack   $w.bf.help   -side right -pady 3
-  pack   $w.bf.finish -side right -padx 3 -pady 3
-  pack   $w.bf.prev   -side left  -padx 3 -pady 3
+  pack   $w.bf.help   -side right -padx 4 -pady 4
+  pack   $w.bf.finish -side right -padx 4 -pady 4
+  pack   $w.bf.prev   -side left  -padx 4 -pady 4
 
   # Pack frames
   pack $w.f    -fill both -expand 1

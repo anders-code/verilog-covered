@@ -683,9 +683,9 @@ proc create_new_cdd_source {w} {
     setup_cdd_generate_options $w
     goto_next_pane $w
   "
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.next   -side right -padx 3 -pady 3
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
 
   # Pack top-level frames
   pack $w.f  -fill both -expand yes
@@ -748,10 +748,10 @@ proc create_new_cdd_name {w} {
   ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   ttk::button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
   ttk::button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.next   -side right -padx 3 -pady 3
-  pack $w.bf.prev   -side left  -padx 3 -pady 3
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
+  pack $w.bf.prev   -side left  -padx 4 -pady 4
 
   $w.cdd.e configure -validatecommand "create_new_cdd_name_update_next $w"
 
@@ -917,10 +917,10 @@ proc create_new_cdd_dump {w} {
   ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   ttk::button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
   ttk::button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.next   -side right -padx 3 -pady 3
-  pack $w.bf.prev   -side left  -padx 3 -pady 3
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
+  pack $w.bf.prev   -side left  -padx 4 -pady 4
 
   # Pack frames
   pack $w.fu   -fill both -expand 1
@@ -1047,10 +1047,10 @@ proc create_new_cdd_parse {w} {
   ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   ttk::button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
   ttk::button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.next   -side right -padx 3 -pady 3
-  pack $w.bf.prev   -side left  -padx 3 -pady 3
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
+  pack $w.bf.prev   -side left  -padx 4 -pady 4
 
   $w.parse.top_e configure -validatecommand "handle_new_cdd_parse_top_name_cmd $w"
 
@@ -1405,10 +1405,10 @@ proc create_new_cdd_parse2 {w} {
   ttk::button $w.bf.cancel -width 10 -text "Cancel"   -command "destroy [winfo toplevel $w]"
   ttk::button $w.bf.gen    -width 10 -text "Generate" -command "generate_new_cdd $w"
   ttk::button $w.bf.prev   -width 10 -text "Back"     -command "goto_prev_pane $w" 
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.gen    -side right -padx 3 -pady 3
-  pack $w.bf.prev   -side left  -padx 3 -pady 3
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.gen    -side right -padx 4 -pady 4
+  pack $w.bf.prev   -side left  -padx 4 -pady 4
 
   # Pack frames
   pack $w.opts -fill both -expand 1
@@ -1541,9 +1541,9 @@ proc get_module_generation {modname gen} {
     destroy .mgenwin
   }
   bind .mgenwin.bf.cancel <Return> {%W invoke}
-  pack .mgenwin.bf.help   -side right -pady 3
-  pack .mgenwin.bf.cancel -side right -padx 3 -pady 3
-  pack .mgenwin.bf.ok     -side right -padx 3 -pady 3
+  pack .mgenwin.bf.help   -side right -padx 4 -pady 4
+  pack .mgenwin.bf.cancel -side right -padx 4 -pady 4
+  pack .mgenwin.bf.ok     -side right -padx 4 -pady 4
 
   # Add functionality for entry
   .mgenwin.f.e configure -validatecommand {
@@ -1601,9 +1601,9 @@ proc get_module_exclusion {modname} {
     destroy .mexclwin
   }
   bind .mexclwin.bf.cancel <Return> {%W invoke}
-  pack .mexclwin.bf.help   -side right -pady 3
-  pack .mexclwin.bf.cancel -side right -padx 3 -pady 3
-  pack .mexclwin.bf.ok     -side right -padx 3 -pady 3
+  pack .mexclwin.bf.help   -side right -padx 4 -pady 4
+  pack .mexclwin.bf.cancel -side right -padx 4 -pady 4
+  pack .mexclwin.bf.ok     -side right -padx 4 -pady 4
 
   # Provide functionality for the entry
   .mexclwin.f.e configure -validatecommand {
@@ -1745,9 +1745,9 @@ proc get_library_extensions {extensions} {
     set lib_ext_retval ""
     destroy .lextwin
   }
-  pack .lextwin.bf.help   -side right -pady 3
-  pack .lextwin.bf.cancel -side right -padx 3 -pady 3
-  pack .lextwin.bf.ok     -side right -padx 3 -pady 3
+  pack .lextwin.bf.help   -side right -padx 4 -pady 4
+  pack .lextwin.bf.cancel -side right -padx 4 -pady 4
+  pack .lextwin.bf.ok     -side right -padx 4 -pady 4
 
   # Pack the window
   pack .lextwin.f  -fill both -expand 1
@@ -1848,9 +1848,9 @@ proc get_define {defname value} {
     destroy .defwin
   }
   bind .defwin.bf.cancel <Return> {%W invoke}
-  pack .defwin.bf.help   -side right -pady 3
-  pack .defwin.bf.cancel -side right -padx 3 -pady 3
-  pack .defwin.bf.ok     -side right -padx 3 -pady 3
+  pack .defwin.bf.help   -side right -padx 4 -pady 4
+  pack .defwin.bf.cancel -side right -padx 4 -pady 4
+  pack .defwin.bf.ok     -side right -padx 4 -pady 4
 
   # Provide functionality for entries
   .defwin.f.e configure -validatecommand { return [define_update_state] }
@@ -1955,9 +1955,9 @@ proc get_plusarg {plusname value} {
     destroy .pluswin
   }
   bind .pluswin.bf.cancel <Return> {%W invoke}
-  pack .pluswin.bf.help   -side right -pady 3
-  pack .pluswin.bf.cancel -side right -padx 3 -pady 3
-  pack .pluswin.bf.ok     -side right -padx 3 -pady 3
+  pack .pluswin.bf.help   -side right -padx 4 -pady 4
+  pack .pluswin.bf.cancel -side right -padx 4 -pady 4
+  pack .pluswin.bf.ok     -side right -padx 4 -pady 4
 
   # Provide functionality for entries
   .pluswin.f.e configure -validatecommand { return [plusarg_update_state] }
@@ -2034,9 +2034,9 @@ proc get_parameter_override {parmname value} {
     destroy .parmwin
   }
   bind .parmwin.bf.cancel <Return> {%W invoke}
-  pack .parmwin.bf.help   -side right -pady 3
-  pack .parmwin.bf.cancel -side right -padx 3 -pady 3
-  pack .parmwin.bf.ok     -side right -padx 3 -pady 3
+  pack .parmwin.bf.help   -side right -padx 4 -pady 4
+  pack .parmwin.bf.cancel -side right -padx 4 -pady 4
+  pack .parmwin.bf.ok     -side right -padx 4 -pady 4
 
   # Provide entry functionality
   .parmwin.f.e configure -validatecommand { return [parameter_update_state] }
@@ -2125,9 +2125,9 @@ proc get_fsm {modname input output} {
     destroy .fsmdwin
   }
   bind .fsmdwin.bf.cancel <Return> {%W invoke}
-  pack .fsmdwin.bf.help   -side right -pady 3
-  pack .fsmdwin.bf.cancel -side right -padx 3 -pady 3
-  pack .fsmdwin.bf.ok     -side right -padx 3 -pady 3
+  pack .fsmdwin.bf.help   -side right -padx 4 -pady 4
+  pack .fsmdwin.bf.cancel -side right -padx 4 -pady 4
+  pack .fsmdwin.bf.ok     -side right -padx 4 -pady 4
 
   # Provide functionality for entries
   .fsmdwin.f.e  configure -validatecommand { return [fsmd_update_state] }

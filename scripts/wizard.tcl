@@ -61,7 +61,7 @@ proc create_wizard {} {
     grid .wizwin.f.grade  -row 2 -column 1 -sticky news -padx 4 -pady 4
     grid .wizwin.f.help   -row 3 -column 1 -sticky news -padx 4 -pady 4
     grid .wizwin.f.show   -row 4 -column 0 -sticky news -padx 4 -pady 4
-    grid .wizwin.f.hb     -row 4 -column 1 -sticky e -pady 4
+    grid .wizwin.f.hb     -row 4 -column 1 -sticky e    -padx 4 -pady 4
 
     # Pack the frame
     pack .wizwin.f -fill both -expand yes

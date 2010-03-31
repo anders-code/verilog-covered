@@ -309,9 +309,9 @@ proc create_report_generation_source {w} {
     setup_report_selection_options
     goto_next_pane $w
   "
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.next   -side right -padx 3 -pady 3
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
   
   # Pack top-level frames
   pack $w.f  -fill both -expand yes
@@ -455,10 +455,10 @@ proc create_report_generation_options {w} {
   ttk::button $w.bf.create -width 10 -text "Create" -command "create_report $w"
   ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   help_button $w.bf.help chapter.gui.genreport section.gui.genreport.options
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.create -side right -padx 3 -pady 3
-  pack $w.bf.back   -side left  -padx 3 -pady 3
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.create -side right -padx 4 -pady 4
+  pack $w.bf.back   -side left  -padx 4 -pady 4
 
   # Now pack all of the frames
   pack $w.f     -fill both -side top

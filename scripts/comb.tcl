@@ -636,8 +636,8 @@ proc create_comb_window {expr_id sline} {
     # Pack the button widgets into button frame
     pack .combwin.bf.prev  -side left
     pack .combwin.bf.next  -side left
-    pack .combwin.bf.help  -side right -pady 4
-    pack .combwin.bf.close -side right -padx 8 -pady 4
+    pack .combwin.bf.help  -side right -padx 4 -pady 4
+    pack .combwin.bf.close -side right -padx 4 -pady 4
 
     # Pack the widgets into the top frame
     grid rowconfigure    .combwin.pw.top 1 -weight 1

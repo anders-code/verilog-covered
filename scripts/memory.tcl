@@ -155,8 +155,8 @@ proc create_memory_window {signal} {
     # Pack the buttons into the button frame
     pack .memwin.bf.prev  -side left
     pack .memwin.bf.next  -side left
-    pack .memwin.bf.help  -side right -pady 4
-    pack .memwin.bf.close -side right -padx 8 -pady 4
+    pack .memwin.bf.help  -side right -padx 4 -pady 4
+    pack .memwin.bf.close -side right -padx 4 -pady 4
 
     # Pack the upper frames
     pack .memwin.f.fae -fill both -expand yes

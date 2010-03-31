@@ -194,8 +194,8 @@ proc create_fsm_window {expr_id} {
     # Pack the buttons into the button frame
     pack .fsmwin.bf.prev  -side left
     pack .fsmwin.bf.next  -side left
-    pack .fsmwin.bf.help  -side right -padx 8 -pady 4
-    pack .fsmwin.bf.close -side right -padx 8 -pady 4
+    pack .fsmwin.bf.help  -side right -padx 4 -pady 4
+    pack .fsmwin.bf.close -side right -padx 4 -pady 4
 
     # Create general information window
     ttk::label .fsmwin.info -anchor w -relief raised -width 60

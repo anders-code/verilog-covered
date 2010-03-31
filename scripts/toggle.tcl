@@ -111,8 +111,8 @@ proc create_toggle_window {signal} {
     # Pack the buttons into the button frame
     pack .togwin.bf.prev  -side left
     pack .togwin.bf.next  -side left
-    pack .togwin.bf.help  -side right -pady 4
-    pack .togwin.bf.close -side right -padx 8 -pady 4
+    pack .togwin.bf.help  -side right -padx 4 -pady 4
+    pack .togwin.bf.close -side right -padx 4 -pady 4
 
     # Pack the widgets into the bottom frame
     grid rowconfigure    .togwin.f 3 -weight 1
