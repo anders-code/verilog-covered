@@ -13,6 +13,23 @@
 # if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
 ################################################################################################
 
+proc ttk_optionMenu {w v args} {
+
+  global $v
+
+  ttk::menubutton $w -textvariable $v
+  $w configure -menu [menu $w.m -tearoff 0]
+
+  foreach value $args {
+    $w.m add radiobutton -variable $v -label $value -value $value
+  }
+
+  set $v [lindex $args 0]
+
+  return $w
+
+}
+
 # Include the necessary auxiliary files 
 source [file join $HOME scripts menu_create.tcl]
 source [file join $HOME scripts cov_create.tcl]

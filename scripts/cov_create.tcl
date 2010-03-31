@@ -22,10 +22,10 @@ proc cov_create {f} {
   global mod_inst_type
 
   # Create option menus
-  tk_optionMenu $f.mod_inst mod_inst_type Module Instance
+  ttk_optionMenu $f.mod_inst mod_inst_type Module Instance
   set_balloon $f.mod_inst "Selects the coverage accumulated by module or instance"
 
-  tk_optionMenu $f.metrics cov_rb Line Toggle Memory Logic FSM Assert
+  ttk_optionMenu $f.metrics cov_rb Line Toggle Memory Logic FSM Assert
   set_balloon $f.metrics "Selects the current coverage metric to examine"
 
   $f.mod_inst configure -width 8

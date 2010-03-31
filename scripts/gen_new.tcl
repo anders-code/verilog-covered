@@ -873,16 +873,16 @@ proc create_new_cdd_dump {w} {
   }
   ttk::radiobutton   $w.dump.rv -text "VPI Module:" -variable dump_vpi_none -value "vpi" -command "handle_new_cdd_dump_states $w"
     ttk::entry         $w.dump.ev -textvariable vpi_file -state disabled -validate all -validatecommand "handle_new_cdd_dump_states $w"
-  tk_optionMenu $w.dump.mv simulator {Icarus Verilog} {Cver} {VCS}
+  ttk_optionMenu $w.dump.mv simulator {Icarus Verilog} {Cver} {VCS}
   ttk::radiobutton   $w.dump.rp -text "Dumpvars Module:" -variable dump_vpi_none -value "dumpvars" -command "handle_new_cdd_dump_states $w"
   ttk::entry         $w.dump.ep -textvariable dumpvars_file -state disabled -validate all -validatecommand "handle_new_cdd_dump_states $w"
   ttk::frame         $w.dump.ts
   ttk::checkbutton   $w.dump.ts.cb -text "Set Top Module Timescale:" -variable top_ts -state disabled -command "handle_new_cdd_dump_top_timescale $w"
-  tk_optionMenu $w.dump.ts.n1 top_ts_num1   {1} {10} {100}
-  tk_optionMenu $w.dump.ts.s1 top_ts_scale1 {s} {ms} {us} {ns} {ps} {fs}
+  ttk_optionMenu $w.dump.ts.n1 top_ts_num1   {1} {10} {100}
+  ttk_optionMenu $w.dump.ts.s1 top_ts_scale1 {s} {ms} {us} {ns} {ps} {fs}
   ttk::label         $w.dump.ts.l  -text "/" -state disabled
-  tk_optionMenu $w.dump.ts.n2 top_ts_num2   {1} {10} {100}
-  tk_optionMenu $w.dump.ts.s2 top_ts_scale2 {s} {ms} {us} {ns} {ps} {fs}
+  ttk_optionMenu $w.dump.ts.n2 top_ts_num2   {1} {10} {100}
+  ttk_optionMenu $w.dump.ts.s2 top_ts_scale2 {s} {ms} {us} {ns} {ps} {fs}
   pack $w.dump.ts.cb -side left -padx 3 -pady 3
   pack $w.dump.ts.n1 -side left -padx 3 -pady 3
   pack $w.dump.ts.s1 -side left -padx 3 -pady 3
@@ -992,18 +992,18 @@ proc create_new_cdd_parse {w} {
   
   # Add delay specification
   ttk::label         $w.parse.delay_l -text "Delay Type:"
-  tk_optionMenu $w.parse.delay_m delay_type None Min Typ Max
+  ttk_optionMenu $w.parse.delay_m delay_type None Min Typ Max
   
   # Add race condition option
   ttk::label         $w.parse.race_l  -text "Race Condition Action:"
-  tk_optionMenu $w.parse.race_m race_cond None Silent Warning Error Ignore
+  ttk_optionMenu $w.parse.race_m race_cond None Silent Warning Error Ignore
   ttk::checkbutton   $w.parse.race_cb -text "Use embedded race condition pragmas" -variable race_cond_pragma
   ttk::entry         $w.parse.race_e  -state disabled -textvariable race_cond_pragma_name
   $w.parse.race_cb configure -command "create_new_cdd_parse_race_pragma_name_cmd $w"
   
   # Add generation options
   ttk::label         $w.parse.gen_l -text "Default Verilog Generation:"
-  tk_optionMenu $w.parse.gen_m design_generation {Verilog 1995} {Verilog 2001} {System Verilog}
+  ttk_optionMenu $w.parse.gen_m design_generation {Verilog 1995} {Verilog 2001} {System Verilog}
 
   # Add assertion options
   ttk::checkbutton $w.parse.assert_ovl -text "Include OVL Assertions" -variable assert_ovl
@@ -1517,7 +1517,7 @@ proc get_module_generation {modname gen} {
   ttk::frame .mgenwin.f -relief raised
   ttk::label .mgenwin.f.l -text "Module name:"
   ttk::entry .mgenwin.f.e -textvariable mod_gen_modname -validate all
-  tk_optionMenu .mgenwin.f.m modgen "Verilog 1995" "Verilog 2001" "System Verilog"
+  ttk_optionMenu .mgenwin.f.m modgen "Verilog 1995" "Verilog 2001" "System Verilog"
   pack .mgenwin.f.l -side left  -padx 8 -pady 4 -fill x
   pack .mgenwin.f.e -side left  -padx 8 -pady 4 -fill x -expand 1
   pack .mgenwin.f.m -side right -padx 8 -pady 4 -fill x
