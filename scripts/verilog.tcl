@@ -63,28 +63,35 @@ proc load_verilog {fname pp} {
   set cwd [pwd]
 
   # Set current working directory to the score directory
-  cd [tcl_func_get_score_path]
+  if {[catch "cd [tcl_func_get_score_path]" eid]} {
 
-  if {[catch {set fileText $fileContent($fname)}]} {
-    if {$pp} {
-      set tmpname [tcl_func_preprocess_verilog $fname]
-    } else {
-      set tmpname $fname
+    tk_messageBox -default ok -icon error -message $eid -parent . -type ok
+    set retval 0
+
+  } else {
+
+    if {[catch {set fileText $fileContent($fname)}]} {
+      if {$pp} {
+        set tmpname [tcl_func_preprocess_verilog $fname]
+      } else {
+        set tmpname $fname
+      }
+      if {[catch {set fp [open $tmpname "r"]}]} {
+        tk_messageBox -message "File $fname Not Found!" -title "No File" -icon error
+        set retval 0
+      }
+      set fileContent($fname) [read $fp]
+      close $fp
+      if {$pp} {
+        file delete -force $tmpname
+      }
+      postprocess_verilog $fname
     }
-    if {[catch {set fp [open $tmpname "r"]}]} {
-      tk_messageBox -message "File $fname Not Found!" -title "No File" -icon error
-      set retval 0
-    }
-    set fileContent($fname) [read $fp]
-    close $fp
-    if {$pp} {
-      file delete -force $tmpname
-    }
-    postprocess_verilog $fname
+
+    # Return current working directory
+    cd $cwd
+
   }
-
-  # Return current working directory
-  cd $cwd
 
   return $retval
 
