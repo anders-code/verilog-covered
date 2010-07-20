@@ -1,0 +1,5 @@
+ERROR!  syntax error, unexpected K_generate,
+        File: gen1.2.v, Line: 3, Column: 4
+ERROR!  Syntax error in reg variable list,
+        File: gen1.2.v, Line: 3, Column: 12
+ERROR!  Error in parsing design

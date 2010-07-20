@@ -45,6 +45,7 @@ pulsestyle_onevent,  K_pulsestyle_onevent
 pulsestyle_ondetect, K_pulsestyle_ondetect
 showcancelled,       K_showcancelled
 use,                 K_use
+uwire,               K_uwire
 %%
 
 int lexer_keyword_2001_code(

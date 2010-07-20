@@ -289,7 +289,7 @@ int yydebug = 1;
 %token K_specparam K_strong0 K_strong1 K_supply0 K_supply1 K_table K_task
 %token K_time K_tran K_tranif0 K_tranif1 K_tri K_tri0 K_tri1 K_triand
 %token K_trior K_trireg K_vectored K_wait K_wand K_weak0 K_weak1
-%token K_while K_wire
+%token K_while K_wire K_uwire
 %token K_wor K_xnor K_xor
 %token K_Shold K_Speriod K_Srecovery K_Ssetup K_Swidth K_Ssetuphold
 %token S_user S_ignore S_allow S_finish S_stop S_time S_random S_srandom S_dumpfile S_urandom S_urandom_range
@@ -320,7 +320,7 @@ int yydebug = 1;
 
 %type <num>       number
 %type <logical>   automatic_opt block_item_decls_opt
-%type <integer>   net_type net_type_sign_range_opt var_type data_type_opt
+%type <integer>   net_type net_type_sign_range_opt var_type data_type_opt primitive_type primitive_type_opt
 %type <text>      identifier begin_end_id
 %type <statexp>   static_expr static_expr_primary static_expr_port_list
 %type <expr>      expr_primary expression_list expression expression_port_list expression_systask_list
@@ -715,22 +715,22 @@ port_declaration
         }
       }
     }
-  | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER
+  | attribute_list_opt K_output var_type primitive_type_opt signed_opt range_opt IDENTIFIER
     { PROFILE(PARSER_PORT_DECLARATION_B);
       port_info* pi;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
-        FREE_TEXT( $6 );
+        FREE_TEXT( $7 );
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
-          db_add_signal( $6, SSUPPL_TYPE_OUTPUT_REG, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
+          db_add_signal( $7, SSUPPL_TYPE_OUTPUT_REG, &curr_prange, NULL, curr_signed, FALSE, @7.first_line, @7.first_column, TRUE );
           pi = (port_info*)malloc_safe( sizeof( port_info ) );
           pi->type      = SSUPPL_TYPE_OUTPUT_REG;
           pi->is_signed = curr_signed;
           pi->prange    = parser_copy_curr_range( TRUE );
           pi->urange    = parser_copy_curr_range( FALSE );
-          FREE_TEXT( $6 );
+          FREE_TEXT( $7 );
           $$ = pi;
         } else {
           $$ = NULL;
@@ -738,22 +738,22 @@ port_declaration
       }
     }
   /* We just need to parse the static register assignment as this signal will get its value from the dumpfile */
-  | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER '=' ignore_more static_expr ignore_less
+  | attribute_list_opt K_output var_type primitive_type_opt signed_opt range_opt IDENTIFIER '=' ignore_more static_expr ignore_less
     { PROFILE(PARSER_PORT_DECLARATION_C);
       port_info* pi;
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
-        FREE_TEXT( $6 );
+        FREE_TEXT( $7 );
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
-          db_add_signal( $6, SSUPPL_TYPE_OUTPUT_REG, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
+          db_add_signal( $7, SSUPPL_TYPE_OUTPUT_REG, &curr_prange, NULL, curr_signed, FALSE, @7.first_line, @7.first_column, TRUE );
           pi = (port_info*)malloc_safe( sizeof( port_info ) );
           pi->type       = SSUPPL_TYPE_OUTPUT_REG;
           pi->is_signed  = curr_signed;
           pi->prange     = parser_copy_curr_range( TRUE );
           pi->urange     = parser_copy_curr_range( FALSE );
-          FREE_TEXT( $6 );
+          FREE_TEXT( $7 );
           $$ = pi;
         } else {
           $$ = NULL;
@@ -769,7 +769,7 @@ port_declaration
       }
       $$ = NULL;
     }
-  | attribute_list_opt K_output var_type signed_opt range_opt error
+  | attribute_list_opt K_output var_type primitive_type_opt signed_opt range_opt error
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {
         VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
@@ -3512,11 +3512,11 @@ module_item_list
 
 module_item
   : attribute_list_opt
-    net_type signed_opt range_opt list_of_variables ';'
+    net_type primitive_type_opt signed_opt range_opt list_of_variables ';'
   | attribute_list_opt
-    net_type signed_opt range_opt net_decl_assigns ';'
+    net_type primitive_type_opt signed_opt range_opt net_decl_assigns ';'
   | attribute_list_opt
-    net_type drive_strength
+    net_type primitive_type_opt drive_strength
     {
       if( (ignore_mode == 0) && ($2 == 1) ) {
         parser_implicitly_set_curr_range( 0, 0, TRUE );
@@ -5746,7 +5746,7 @@ block_item_decls
      integers. This rule matches those declarations. The containing
      rule has presumably set up the scope. */
 block_item_decl
-  : attribute_list_opt K_reg signed_opt range_opt
+  : attribute_list_opt K_reg primitive_type_opt signed_opt range_opt
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
@@ -6437,7 +6437,42 @@ task_item_list
 
 task_item
   : block_item_decl
-  | port_type range_opt
+  | port_type signed_opt range_opt
+    {
+      curr_signed  = FALSE;
+      curr_mba     = FALSE;
+      curr_handled = TRUE;
+    }
+    list_of_variables ';'
+  | port_type K_reg signed_opt range_opt
+    {
+      curr_signed  = FALSE;
+      curr_mba     = FALSE;
+      curr_handled = TRUE;
+    }
+    list_of_variables ';'
+  | port_type K_integer
+    {
+      curr_signed  = FALSE;
+      curr_mba     = FALSE;
+      curr_handled = TRUE;
+    }
+    list_of_variables ';'
+  | port_type K_time
+    {
+      curr_signed  = FALSE;
+      curr_mba     = FALSE;
+      curr_handled = TRUE;
+    }
+    list_of_variables ';'
+  | port_type K_real
+    {
+      curr_signed  = FALSE;
+      curr_mba     = FALSE;
+      curr_handled = TRUE;
+    }
+    list_of_variables ';'
+  | port_type K_realtime
     {
       curr_signed  = FALSE;
       curr_mba     = FALSE;
@@ -6468,71 +6503,76 @@ unsigned_opt
    as this will already be filled in by the port_type rule.
   */
 net_type_sign_range_opt
-  : K_wire signed_opt range_opt
+  : K_wire primitive_type_opt signed_opt range_opt
     {
       curr_mba     = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_tri signed_opt range_opt
+  | K_tri primitive_type_opt signed_opt range_opt
     {
       curr_mba     = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_tri1 signed_opt range_opt
+  | K_tri1 primitive_type_opt signed_opt range_opt
     {
       curr_mba     = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_supply0 signed_opt range_opt
+  | K_supply0 primitive_type_opt signed_opt range_opt
     {
       curr_mba     = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_wand signed_opt range_opt
+  | K_wand primitive_type_opt signed_opt range_opt
     {
       curr_mba     = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_triand signed_opt range_opt
+  | K_triand primitive_type_opt signed_opt range_opt
     {
       curr_mba     = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_tri0 signed_opt range_opt
+  | K_tri0 primitive_type_opt signed_opt range_opt
     {
       curr_mba     = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_supply1 signed_opt range_opt
+  | K_supply1 primitive_type_opt signed_opt range_opt
     {
       curr_mba     = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_wor signed_opt range_opt
+  | K_wor primitive_type_opt signed_opt range_opt
     {
       curr_mba     = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_trior signed_opt range_opt
+  | K_trior primitive_type_opt signed_opt range_opt
     {
       curr_mba     = FALSE;
       curr_handled = TRUE;
       $$ = 1;
     }
-  | K_logic signed_opt range_opt
+  | K_logic primitive_type_opt signed_opt range_opt
     {
       curr_mba     = FALSE;
       curr_handled = TRUE;
       $$ = 1;
+    }
+  | K_uwire primitive_type_opt signed_opt range_opt
+    {
+      curr_mba     = FALSE;
+      curr_handled = TRUE;
     }
   | TYPEDEF_IDENTIFIER
     {
@@ -6547,6 +6587,29 @@ net_type_sign_range_opt
     {
       curr_mba     = FALSE;
       curr_handled = TRUE;
+      $$ = 0;
+    }
+  ;
+
+primitive_type
+  : K_logic { $$ = 1; }
+  | K_real  {
+      int real_size = sizeof( double ) * 8;
+      curr_signed   = TRUE;
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECL_REAL;
+      parser_implicitly_set_curr_range( (real_size - 1), 0, TRUE );
+      $$ = 1;
+    }
+  ;
+
+primitive_type_opt
+  : primitive_type
+    {
+      $$ = $1;
+    }
+  | {
       $$ = 0;
     }
   ;
@@ -6625,6 +6688,14 @@ net_type
       $$ = 1;
     }
   | K_trior
+    {
+      curr_mba      = FALSE;
+      curr_sig_type = SSUPPL_TYPE_DECL_NET;
+      curr_signed   = FALSE;
+      curr_handled  = TRUE;
+      $$ = 1;
+    }
+  | K_uwire
     {
       curr_mba      = FALSE;
       curr_sig_type = SSUPPL_TYPE_DECL_NET;
