@@ -2030,7 +2030,7 @@ bool vector_part_select_pull(
           } else {
             int i;
             src->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= UL_LMASK(lsb);
-            for( i=(UL_DIV(lsb) + 1); i<UL_DIV(msb); i++ ) {
+            for( i=(UL_DIV(lsb) + 1); i<=UL_DIV(msb); i++ ) {
               src->value.ul[UL_DIV(msb)][VTYPE_INDEX_MEM_RD] = UL_SET;
             }
             src->value.ul[UL_DIV(msb)][VTYPE_INDEX_MEM_RD] |= UL_HMASK(msb);

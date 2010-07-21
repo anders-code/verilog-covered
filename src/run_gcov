@@ -18,7 +18,9 @@ foreach $file (@files) {
 
 foreach $file (sort @files_to_check) {
   $gcov_output = `gcov $file`;
-  if( $gcov_output =~ /Lines executed:(\d+\.\d+%)/ ) {
+  @gcov_output = split( /\n/, $gcov_output );
+  $gcov_output = join( ' ', @gcov_output );
+  if( $gcov_output =~ /\'$file\' Lines executed:(\d+\.\d+%)/ ) {
     $percent = $1;
     print "$file:" . " " x (($largest - length( $file )) + (7 - length( $percent ))) . " $percent\n";
   }
