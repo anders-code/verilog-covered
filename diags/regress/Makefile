@@ -127,9 +127,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 timescale2.5    timescale2.8    toggle          toggle2         toggle2.1 \
                 toggle2.2       toggle2.3       tri             tri0            tri1 \
                 triand          trigger1        trior           unary2          unary3 \
-                unsigned1       uwire1          version1        version1.1      wait1 \
+                unsigned1       version1        version1.1      wait1 \
                 wait1.1         wait2           wand            while1          while1.1 \
-                wirereal1       wor             write1
+                wor             write1
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
@@ -214,7 +214,7 @@ IVONLYDIAGS1  = always5.1         assign1           assign2.8         example   
                 fsm9              fsm9.1            fsm9.2            fsm10             fsm10.1 \
                 fsm10.2           generate1         hier2             ifdef1.1          implicit2 \
                 profile_err1      real1.1           report4           report4.1         static2 \
-                static2.1         static2.2         unary1
+                static2.1         static2.2         unary1            wirereal1
 IVONLYDIAGS2  = 
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
@@ -289,7 +289,7 @@ IVVCSDIAGS1   = afunc1           atask1           clog2            clog2.1      
                 timescale4.8     timescale4.17    timescale4.18    timescale4.19    timescale4.20 \
                 timescale4.21    urandom1         urandom1.1       urandom2         urandom2.1 \
                 urandom3         urandom3.1       urandom_range1.1 urandom_range1.2 urandom_range2.1 \
-                urandom_range2.2 urandom_range3
+                urandom_range2.2 urandom_range3   uwire1
 IVVCSDIAGS2   =
 IVVCSDIAGS3   =
 IVVCSDIAGS4   =

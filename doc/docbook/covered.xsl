@@ -51,6 +51,7 @@
   <!-- Customize each page with the Covered banner -->
   <xsl:template name="user.head.content">
     <center><img src="img/banner.jpg"/></center>
+    <hr/>
   </xsl:template>
 
 </xsl:stylesheet>
