@@ -95,7 +95,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 param6.1        param7          param8          param8.1        param9 \
                 param9.1        param9.2        param10         param10.2       param10.3 \
                 param10.4       param11         param13         param13.1       param14 \
-                param15         param16         param17         param17.1       pedge1 \
+                param15         param16         param17         param17.1       param18 \
+                pedge1 \
                 port1           port3           printtimescale1 pulldown1       pullup1 \
                 random1         random1.1       random2         random2.1       random3 \
                 random3.1       rassign1        rassign2        real1           real2 \
@@ -105,7 +106,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 real5.5         real5.6         real5.7         real5.8         real5.9 \
                 real5.10        real6           real6.1         real6.2         real6.3 \
                 real6.4         real6.5         real6.6         real6.7         real6.8 \
-                real6.9         real7           repeat1         repeat2         repeat3 \
+                real6.9         real7           real9           repeat1         repeat2         repeat3 \
                 report1         report2         report3         report3.1       report4.2 \
                 report5         report6         report7         report7.1       report8 \
                 rshift1         rshift1.1       rshift1.2       rshift1.3       rshift2 \

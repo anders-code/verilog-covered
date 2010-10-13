@@ -5843,7 +5843,7 @@ block_item_decl
       curr_sig_type = SSUPPL_TYPE_DECL_REAL;
       parser_implicitly_set_curr_range( (real_size - 1), 0, TRUE );
     }
-    list_of_variables ';'
+    register_variable_list ';'
   | attribute_list_opt K_realtime
     {
       int real_size = sizeof( double ) * 8;
@@ -5853,7 +5853,7 @@ block_item_decl
       curr_sig_type = SSUPPL_TYPE_DECL_REAL;
       parser_implicitly_set_curr_range( (real_size - 1), 0, TRUE );
     }
-    list_of_variables ';'
+    register_variable_list ';'
   | attribute_list_opt K_shortreal
     {
       int real_size = sizeof( float ) * 8;
@@ -5863,7 +5863,10 @@ block_item_decl
       curr_sig_type = SSUPPL_TYPE_DECL_SREAL;
       parser_implicitly_set_curr_range( (real_size - 1), 0, TRUE );
     }
+    register_variable_list ';'
   | attribute_list_opt K_parameter parameter_assign_decl ';'
+  | attribute_list_opt K_parameter K_integer parameter_assign_decl ';'
+  | attribute_list_opt K_parameter K_real parameter_assign_decl ';'
   | attribute_list_opt K_localparam
     {
       if( !parser_check_generation( GENERATION_2001 ) ) {

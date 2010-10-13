@@ -41,6 +41,7 @@ dumpon,         S_allow
 fdisplay,       S_allow
 fmonitor,       S_allow
 fopen,          S_ignore
+fopenw,         S_ignore
 fstrobe,        S_allow
 fwrite,         S_allow
 finish,         S_finish
