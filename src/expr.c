@@ -2941,7 +2941,6 @@ bool expression_op_func__realtime(
   
   assert( thr != NULL );
 
-  printf( "curr_time: %lld, timescale: %lld, realtime: %lf\n", thr->curr_time.full, thr->funit->timescale, ((real64)thr->curr_time.full / thr->funit->timescale) );
   retval = vector_from_real64( expr->value, ((real64)thr->curr_time.full / thr->funit->timescale) );
 
   PROFILE_END;
