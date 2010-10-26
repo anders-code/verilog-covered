@@ -261,6 +261,7 @@ profiler profiles[NUM_PROFILES] = {
   {"expression_op_func__arshift", NULL, 0, 0, 0, TRUE},
   {"expression_op_func__arshift_a", NULL, 0, 0, 0, TRUE},
   {"expression_op_func__time", NULL, 0, 0, 0, TRUE},
+  {"expression_op_func__realtime", NULL, 0, 0, 0, TRUE},
   {"expression_op_func__random", NULL, 0, 0, 0, TRUE},
   {"expression_op_func__sassign", NULL, 0, 0, 0, TRUE},
   {"expression_op_func__srandom", NULL, 0, 0, 0, TRUE},

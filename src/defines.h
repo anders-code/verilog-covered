@@ -907,6 +907,7 @@ typedef enum exp_op_type_e {
   EXP_OP_SSIGNED,         /*!< 120:0x78.  Specifies the $signed system call */
   EXP_OP_SUNSIGNED,       /*!< 121:0x79.  Specifies the $unsigned system call */
   EXP_OP_SCLOG2,          /*!< 122:0x7a.  Specifies the $clog2 system call */
+  EXP_OP_SREALTIME,       /*!< 123:0x7b.  Specifies the $realtime system call */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 

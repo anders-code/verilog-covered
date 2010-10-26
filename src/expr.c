@@ -252,6 +252,7 @@ static bool expression_op_func__lshift_a( expression*, thread*, const sim_time* 
 static bool expression_op_func__rshift_a( expression*, thread*, const sim_time* );
 static bool expression_op_func__arshift_a( expression*, thread*, const sim_time* );
 static bool expression_op_func__time( expression*, thread*, const sim_time* );
+static bool expression_op_func__realtime( expression*, thread*, const sim_time* );
 static bool expression_op_func__random( expression*, thread*, const sim_time* );
 static bool expression_op_func__sassign( expression*, thread*, const sim_time* );
 static bool expression_op_func__srandom( expression*, thread*, const sim_time* );
@@ -398,6 +399,7 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",               
                                            {"SSIGNED",        "$signed",          expression_op_func__signed,          {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"SUNSIGNED",      "$unsigned",        expression_op_func__unsigned,        {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"SCLOG2",         "$clog2",           expression_op_func__clog2,           {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
+                                           {"SREALTIME",      "$realtime",        expression_op_func__realtime,        {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
  };
 
 
@@ -724,8 +726,8 @@ expression* expression_create(
         expression_create_value( new_expr, 1, data );
       }
 
-    /* $time, $realtobits, $bitstoreal, $itor and $rtoi expressions are always 64-bits wide */
-    } else if( (op == EXP_OP_STIME) || (op == EXP_OP_SR2B) || (op == EXP_OP_SB2R) || (op == EXP_OP_SI2R) || (op == EXP_OP_SR2I) ) {
+    /* $time, $realtime, $realtobits, $bitstoreal, $itor and $rtoi expressions are always 64-bits wide */
+    } else if( (op == EXP_OP_STIME) || (op == EXP_OP_SREALTIME) || (op == EXP_OP_SR2B) || (op == EXP_OP_SB2R) || (op == EXP_OP_SI2R) || (op == EXP_OP_SR2I) ) {
 
       expression_create_value( new_expr, 64, data );
 
@@ -1033,6 +1035,7 @@ void expression_resize(
       case EXP_OP_LAST           :
       case EXP_OP_DIM            :
       case EXP_OP_STIME          :
+      case EXP_OP_SREALTIME      :
       case EXP_OP_SRANDOM        :
       case EXP_OP_SURANDOM       :
       case EXP_OP_SURAND_RANGE   :
@@ -2919,6 +2922,30 @@ bool expression_op_func__time(
 
   PROFILE_END;
 
+  return( retval );
+
+}
+
+/*!         
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs the $realtime system call.
+*/
+bool expression_op_func__realtime(
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__REALTIME);
+
+  bool retval;
+  
+  assert( thr != NULL );
+
+  printf( "curr_time: %lld, timescale: %lld, realtime: %lf\n", thr->curr_time.full, thr->funit->timescale, ((real64)thr->curr_time.full / thr->funit->timescale) );
+  retval = vector_from_real64( expr->value, ((real64)thr->curr_time.full / thr->funit->timescale) );
+
+  PROFILE_END;
+  
   return( retval );
 
 }
@@ -6014,27 +6041,25 @@ void expression_assign(
           *lsb += lhs->value->width;
         }
         break;
-#ifdef NOT_SUPPORTED
       case EXP_OP_MBIT_POS :
         assert( lhs->sig != NULL );
+        assert( dim != NULL );
         if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
           (void)sim_expression( lhs->left, thr, time, TRUE );
         }
         if( lhs->sig->suppl.part.assigned == 1 ) {
-          if( !lhs->left->value->suppl.part.unknown ) {
-            intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
-            intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
-            assert( intval1 >= 0 );
-            assert( ((intval1 + intval2) - 1) < lhs->sig->value->width );
-            lhs->value->value.ul = vstart + intval1;
+          int intval;
+          if( !vector_is_unknown( lhs->left->value ) ) {
+            intval        = (vector_to_int( lhs->left->value ) - dim->dim_lsb) * dim->dim_width;
+            dim->curr_lsb = (prev_lsb + intval);
           }
-          if( assign ) {
+          if( dim->last ) {
             if( nb ) {
               if( lhs->suppl.part.nba == 1 ) {
                 sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
               }
             } else {
-              bool changed = vector_set_value( lhs->value, rhs->value->value.ul, intval2, *lsb, 0 );
+              bool changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, (rhs->value->width - 1), FALSE );
               lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
               if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -6053,24 +6078,24 @@ void expression_assign(
         break;
       case EXP_OP_MBIT_NEG :
         assert( lhs->sig != NULL );
+        assert( dim != NULL );
         if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
           (void)sim_expression( lhs->left, thr, time, TRUE );
         }
         if( lhs->sig->suppl.part.assigned == 1 ) {
-          if( !lhs->left->value->part.unknown ) {
-            intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
-            intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
-            assert( intval1 < lhs->sig->value->width );
-            assert( ((intval1 - intval2) + 1) >= 0 );
-            lhs->value->value.ul = vstart + ((intval1 - intval2) + 1);
+          int intval1, intval2;
+          if( !vector_is_unknown( lhs->left->value ) ) {
+            intval1       = vector_to_int( lhs->left->value ) - dim->dim_lsb;
+            intval2       = vector_to_int( lhs->right->value );
+            dim->curr_lsb = (prev_lsb + ((intval1 - intval2) + 1));
           }
-          if( assign ) {
+          if( dim->last ) {
             if( nb ) {
               if( lhs->suppl.part.nba == 1 ) {
                 sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
               }
             } else {
-              bool changed = vector_set_value( lhs->value, rhs->value->value.ul, intval2, *lsb, 0 );
+              bool changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, (rhs->value->width - 1), FALSE );
               lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
               if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -6083,11 +6108,10 @@ void expression_assign(
             }
           }
         }
-        if( assign ) {
+        if( (dim != NULL) && dim->last ) {
           *lsb = *lsb + lhs->value->width;
         }
         break;
-#endif
       case EXP_OP_CONCAT   :
       case EXP_OP_LIST     :
         expression_assign( lhs->right, rhs, lsb, thr, time, eval_lhs, nb );
@@ -6102,7 +6126,6 @@ void expression_assign(
         break;
       default:
         /* This is an illegal expression to have on the left-hand-side of an expression */
-#ifdef NOT_SUPPORTED
         assert( (lhs->op == EXP_OP_SIG)      ||
                 (lhs->op == EXP_OP_SBIT_SEL) ||
                 (lhs->op == EXP_OP_MBIT_SEL) ||
@@ -6111,14 +6134,6 @@ void expression_assign(
                 (lhs->op == EXP_OP_CONCAT)   ||
                 (lhs->op == EXP_OP_LIST)     ||
                 (lhs->op == EXP_OP_DIM) );
-#else
-	assert( (lhs->op == EXP_OP_SIG)      ||
-	        (lhs->op == EXP_OP_SBIT_SEL) ||
-		(lhs->op == EXP_OP_MBIT_SEL) ||
-		(lhs->op == EXP_OP_CONCAT)   ||
-		(lhs->op == EXP_OP_LIST)     ||
-                (lhs->op == EXP_OP_DIM) );
-#endif
         break;
     }
 

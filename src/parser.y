@@ -292,7 +292,7 @@ int yydebug = 1;
 %token K_while K_wire K_uwire
 %token K_wor K_xnor K_xor
 %token K_Shold K_Speriod K_Srecovery K_Ssetup K_Swidth K_Ssetuphold
-%token S_user S_ignore S_allow S_finish S_stop S_time S_random S_srandom S_dumpfile S_urandom S_urandom_range
+%token S_user S_ignore S_allow S_finish S_stop S_time S_realtime S_random S_srandom S_dumpfile S_urandom S_urandom_range
 %token S_realtobits S_bitstoreal S_rtoi S_itor S_shortrealtobits S_bitstoshortreal S_testargs S_valargs
 %token S_signed S_unsigned S_clog2
 
@@ -2018,6 +2018,19 @@ expr_primary
       if( ignore_mode == 0 ) {
         Try {
           $$ = db_create_expression( NULL, NULL, EXP_OP_STIME, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        } Catch_anonymous {
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        $$ = NULL;
+      }
+    }
+  | S_realtime
+    {
+      if( ignore_mode == 0 ) {
+        Try {
+          $$ = db_create_expression( NULL, NULL, EXP_OP_SREALTIME, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
           error_count++;
           $$ = NULL;

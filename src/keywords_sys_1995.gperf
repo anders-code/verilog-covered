@@ -62,7 +62,7 @@ printtimescale, S_allow
 random,         S_random
 readmemb,       S_ignore
 readmemh,       S_ignore
-realtime,       S_ignore
+realtime,       S_realtime
 realtobits,     S_realtobits
 reset,          S_ignore
 reset_count,    S_ignore
