@@ -1110,7 +1110,6 @@ int tcl_func_get_comb_expression(
   combination_get_expression( expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size, &excludes, &reasons, &exclude_size );
 
   for( i=0; i<code_size; i++ ) {
-    printf( "%d, i: %d, comb_code: %s, uline_groups: %d\n", code_size, i, code[i], uline_groups[i] );
     Tcl_SetVar( tcl, "comb_code", code[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     snprintf( tmp, 20, "%d", uline_groups[i] );
     Tcl_SetVar( tcl, "comb_uline_groups", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
@@ -1118,20 +1117,11 @@ int tcl_func_get_comb_expression(
   }
 
   for( i=0; i<uline_size; i++ ) {
-    printf( "%d, i: %d, ulines: %s\n", uline_size, i, ulines[i] );
     Tcl_SetVar( tcl, "comb_ulines", ulines[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     free_safe( ulines[i], (strlen( ulines[i] ) + 1) );
   }
 
   for( i=0; i<exclude_size; i++ ) {
-    printf( "reasons[%d]: %p\n", i, reasons[i] );
-    if( reasons[i] != NULL ) {
-      printf( "%d, i: %d\n", exclude_size, i );
-      printf( "  excludes: %d\n", excludes[i] );
-      printf( "  reasons: %s\n", reasons[i] );
-    } else {
-      printf( "%d, i: %d, excludes: %d, reasons: {}\n", exclude_size, i, excludes[i] );
-    }
     snprintf( tmp, 20, "%d", excludes[i] );
     Tcl_SetVar( tcl, "comb_exp_excludes", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     Tcl_SetVar( tcl, "comb_exp_reasons", ((reasons[i] != NULL) ? reasons[i] : "{}"), (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
