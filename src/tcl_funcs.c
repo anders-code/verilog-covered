@@ -1139,6 +1139,7 @@ int tcl_func_get_comb_expression(
 
   if( exclude_size > 0 ) {
     free_safe( excludes, (sizeof( int ) * exclude_size) );
+    free_safe( reasons,  (sizeof( char* ) * exclude_size) );
   }
 
   return( retval );
