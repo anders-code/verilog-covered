@@ -766,8 +766,8 @@ proc display_comb_cov {} {
             set cmd_button [concat $cmd_button [lindex $entry 0] "$sline.end"]
             set cmd_leave  [concat $cmd_leave  [lindex $entry 0] "$sline.end"]
             for {set i [expr $sline + 1]} {$i <= $eline} {incr i} {
-              set line       [.bot.right.txt get "$i.7" end]
-              set line_diff  [expr [expr [string length $line] - [string length [string trimleft $line]]] + 7]
+              set line       [.bot.right.txt get $i.14 $i.end]
+              set line_diff  [expr ([string length $line] - [string length [string trimleft $line]]) + 14]
               if {$i == $eline} {
                 set cmd_enter  [concat $cmd_enter  "$i.$line_diff" [lindex $entry 1]]
                 set cmd_button [concat $cmd_button "$i.$line_diff" [lindex $entry 1]]
