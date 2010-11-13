@@ -1239,7 +1239,7 @@ static void combination_underline_tree(
               /*@=unreachable@*/
   
           }
-  
+
         }
 
         /* Calculate ulid */
@@ -1370,7 +1370,6 @@ static void combination_underline_tree(
   }
 
   /* Deallocate the code_fmt string */
-  printf( "code_fmt: %s\n", code_fmt );
   free_safe( code_fmt, 300 );
 
   PROFILE_END;
@@ -2859,14 +2858,13 @@ static void combination_get_exclude_list(
 
       exclude_reason* er;
      
-      if( (exp->ulid > 0) && ((unsigned int)exp->ulid > *exclude_size) ) {
+      if( (exp->ulid > 0) && ((unsigned int)exp->ulid >= *exclude_size) ) {
         int i;
         *excludes     = (int*)realloc_safe( *excludes, (sizeof( int ) * exp->ulid), (sizeof( int ) * (exp->ulid + 1)) );
         *reasons      = (char**)realloc_safe( *reasons, (sizeof( int ) * exp->ulid), (sizeof( int ) * (exp->ulid + 1)) );
         for( i=*exclude_size; i<=exp->ulid; i++ ) {
           (*excludes)[i] = 0;
           (*reasons)[i]  = NULL;
-          printf( "Initializing reasons[%d] to NULL\n", i );
         }
         *exclude_size = exp->ulid + 1;
       }
@@ -2876,10 +2874,8 @@ static void combination_get_exclude_list(
       /* If the expression is currently excluded, check to see if there's a reason associated with it */
       if( (ESUPPL_EXCLUDED( exp->suppl ) == 1) && ((er = exclude_find_exclude_reason( 'E', exp->id, funit )) != NULL) ) {
         (*reasons)[exp->ulid] = strdup_safe( er->reason );
-        printf( "Setting reasons[%d] to %s\n", exp->ulid, er->reason );
       } else {
         (*reasons)[exp->ulid] = NULL;
-        printf( "Setting reasons[%d] to NULL\n", exp->ulid );
       }
 
     }
