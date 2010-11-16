@@ -27,6 +27,7 @@
 #include "db.h"
 #include "defines.h"
 #include "fsm_var.h"
+#include "fst.h"
 #include "info.h"
 #include "link.h"
 #include "lxt.h"
@@ -274,7 +275,8 @@ void parse_and_score_dumpfile(
     switch( dump_mode ) {
       case DUMP_FMT_VCD :  vcd_parse( dump_file );  break;
       case DUMP_FMT_LXT :  lxt_parse( dump_file );  break;
-      default           :  assert( (dump_mode == DUMP_FMT_VCD) || (dump_mode == DUMP_FMT_LXT) );
+      case DUMP_FMT_FST :  fst_parse( dump_file );  break;
+      default           :  assert( (dump_mode == DUMP_FMT_VCD) || (dump_mode == DUMP_FMT_LXT) || (dump_mode == DUMP_FMT_FST) );
     }
     
     /* Flush any pending statement trees that are waiting for delay */
