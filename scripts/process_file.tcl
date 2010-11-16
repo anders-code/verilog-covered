@@ -753,12 +753,14 @@ proc display_comb_cov {} {
         set cmd_leave   ".bot.right.txt tag add uncov_leave"
         set cmd_ucov_hl ".bot.right.txt tag add uncov_highlight"
         set cmd_excl_hl ".bot.right.txt tag add excl_highlight"
+        set cmd_lookup  ".bot.right.txt tag add uncov_lookup"
         foreach entry $uncovered_combs {
           if {[lindex $entry 3] == 0} {
             set cmd_ucov_hl [concat $cmd_ucov_hl [lindex $entry 0] [lindex $entry 1]]
           } else {
             set cmd_excl_hl [concat $cmd_excl_hl [lindex $entry 0] [lindex $entry 1]]
           }
+          set cmd_lookup [concat $cmd_lookup [lindex $entry 0] [lindex $entry 1]]
           set sline [lindex [split [lindex $entry 0] .] 0]
           set eline [lindex [split [lindex $entry 1] .] 0]
           if {$sline != $eline} {
@@ -787,6 +789,7 @@ proc display_comb_cov {} {
         eval $cmd_enter
         eval $cmd_button
         eval $cmd_leave
+        eval $cmd_lookup
         if {[llength $cmd_ucov_hl] > 4} {
           eval $cmd_ucov_hl
           .bot.right.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor

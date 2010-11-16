@@ -498,6 +498,8 @@ proc goto_uncov {curr_index} {
   # Calculate the name of the tag to use
   if {$cov_rb == "Line"} {
     set tag_name "uncov_colorMap"
+  } elseif {$cov_rb == "Logic"} {
+    set tag_name "uncov_lookup"
   } else {
     set tag_name "uncov_button"
   }

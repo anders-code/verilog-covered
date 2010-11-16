@@ -525,27 +525,24 @@ proc display_comb {curr_index} {
   global uncovered_combs start_line
 
   # Calculate expression ID and line number
-  set all_ranges [.bot.right.txt tag ranges uncov_button]
-  set my_range   [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
+  set all_ranges [.bot.right.txt tag ranges uncov_lookup]
+  set my_range   [.bot.right.txt tag prevrange uncov_lookup "$curr_index + 1 chars"]
   set index      [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
   set expr_id    [lindex [lindex $uncovered_combs $index] 2]
   set sline      [expr [lindex [split [lindex $my_range 0] "."] 0] + $start_line - 1]
 
   # Get range of current signal
-  set curr_range [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
-
-  # Calculate the current signal string
-  set curr_signal [string trim [lindex [split [.bot.right.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
+  set curr_range [.bot.right.txt tag prevrange uncov_lookup "$curr_index + 1 chars"]
 
   # Make sure that the selected signal is visible in the text box and is shown as selected
   set_pointer curr_comb_ptr [lindex [split [lindex $my_range 0] .] 0]
   goto_uncov [lindex $my_range 0]
 
   # Get range of previous signal
-  set prev_comb_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
+  set prev_comb_index [lindex [.bot.right.txt tag prevrange uncov_lookup [lindex $curr_index 0]] 0]
 
   # Get range of next signal
-  set next_comb_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
+  set next_comb_index [lindex [.bot.right.txt tag nextrange uncov_lookup [lindex $curr_range 1]] 0]
 
   # Now create the toggle window
   create_comb_window $expr_id $sline
