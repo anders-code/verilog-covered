@@ -41,7 +41,7 @@ $CHECK_MEM = "./check_mem";
 # Specifies which simulator should be used for simulating the design (IV, CVER, VCS)
 $SIMULATOR = "IV";
 
-# Specifies the type of dumpfile that should be used by the score command (VCD, LXT)
+# Specifies the type of dumpfile that should be used by the score command (VCD, LXT, FST)
 $DUMPTYPE = "VCD";
 
 # Specifies if the VPI mode of operation should be used for this simulation (0, 1)
@@ -115,6 +115,8 @@ sub initialize {
         $SIMULATOR = "VCS";
       } elsif( $varname eq "LXT" ) {
         $DUMPTYPE = "LXT";
+      } elsif( $varname eq "FST" ) {
+        $DUMPTYPE = "FST";
       } elsif( $varname eq "VPI" ) {
         $USE_VPI  = 1;
         $DUMPTYPE = "VPI";
@@ -161,15 +163,32 @@ sub runScoreCommand {
 
   my( $score_args ) = $_[0];
 
-  # If the -vcd option was used but the user specified the LXT dumpfile format should be used,
+  # If the -vcd option was used but the user specified a different dumpfile format,
   # perform the substitution.
-  if( ($score_args =~ /^(.*)\s+-vcd\s+(\w+)\s+(.*)$/) && ($dumptype eq "LXT") ) {
-    $score_args = "$1 -lxt $2 $3";
+  if( $score_args =~ /^(.*)\s+-vcd\s+(\w+)\s+(.*)$/ ) {
+    if( $dumptype eq "LXT" ) {
+      $score_args = "$1 -lxt $2 $3";
+    } elsif( $dumptype eq "FST" ) {
+      $score_args = "$1 -fst $2 $3";
+    }
 
-  # Otherwise, if the -lxt option was used by the user specified the VCD dumpfile format should be used,
+  # Otherwise, if the -lxt option was used but the user specified a different dumpfile format,
   # perform the substitution
-  } elsif( ($score_args =~ /^(.*)\s+-lxt\s+(\w+)\s+(.*)$/) && ($dumptype eq "VCD") ) {
-    $score_args = "$1 -vcd $2 $3";
+  } elsif( $score_args =~ /^(.*)\s+-lxt\s+(\w+)\s+(.*)$/ ) {
+    if( $dumptype eq "VCD" ) {
+      $score_args = "$1 -vcd $2 $3";
+    } elsif( $dumptype eq "FST" ) {
+      $score_args = "$1 -fst $2 $3";
+    }
+
+  # Otherwise, if the -fst option was used but the user specified a different dumpfile format, perform
+  # the substitution.
+  } elsif( $score_args =~ /^(.*)\s+-fst\s+(\w+)\s+(.*)$/ ) {
+    if( $dumptype eq "VCD" ) {
+      $score_args = "$1 -vcd $2 $3";
+    } elsif( $dumptype eq "LXT" ) {
+      $score_args = "$1 -lxt $2 $3";
+    }
   }
 
   # Create score command
@@ -245,7 +264,7 @@ sub runCommand {
 #          mode 2:  Skipped diagnostic (no check but increment PASSED count)
 #          mode 3:  Finish run (removes all *.done files if FAILED count == 0)
 #          mode 4:  Finish run but leave *.done files
-#          mode 5:  Run report file diagnostic error check (for use with LXT/VPI dump verification)
+#          mode 5:  Run report file diagnostic error check (for use with LXT/FST/VPI dump verification)
 #          mode 6:  Remove CDD files only (that match)
 sub checkTest {
  

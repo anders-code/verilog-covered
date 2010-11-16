@@ -1,0 +1,11 @@
+#!/usr/bin/perl
+
+#	Name:	  convert_cfg
+#	Author:   Trevor Williams  (phase1geo<gmail.com>)
+#	Date:     10/20/2006
+#	Purpose:  Converts *.cfg files for VCD, LXT, FST or VPI testing
+#	Usage:    convert_cfg (vcd|lxt|fst|vpi) <cfg_filename>
+
+require "regress_subs.pl";
+
+&convertCfg( @ARGV );
