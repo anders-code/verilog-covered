@@ -277,6 +277,8 @@ void fst_parse(
 
   struct fstReaderContext *xc;
 
+  printf( "fst_file: %s\n", fst_file );
+
   /* Open LXT file for opening and extract members */
   if( (xc = fstReaderOpen( fst_file )) != NULL ) {
 

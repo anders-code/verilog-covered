@@ -50,6 +50,13 @@ sub parse_cdd {
 
       $line[1] = "dir";
 
+      # Replace any -lxt or -fst options replaced with -vcd
+      for( $i=0; $i<@line; $i++ ) {
+        if( ($line[$i] eq "-lxt") || ($line[$i] eq "-fst") ) {
+          $line[$i] = "-vcd";
+        }
+      }
+
     # Signal
     } elsif( $line[0] eq "1" ) {
 

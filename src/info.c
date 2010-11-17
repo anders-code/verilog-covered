@@ -88,6 +88,7 @@ void score_add_args(
   bool      done   = FALSE;
   bool      nondup = ((strncmp( arg1, "-vpi", 4 ) == 0) ||
                       (strncmp( arg1, "-lxt", 4 ) == 0) ||
+                      (strncmp( arg1, "-fst", 4 ) == 0) ||
                       (strncmp( arg1, "-vcd", 4 ) == 0) ||
                       (strncmp( arg1, "-t",   2 ) == 0) ||
                       (strncmp( arg1, "-i",   2 ) == 0) ||
