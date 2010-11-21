@@ -14,7 +14,7 @@ Requires: tcl >= 8.5
 Requires: tk >= 8.5
 
 %description
-Covered is a Verilog code-coverage utility using VCD/LXT style dumpfiles and the
+Covered is a Verilog code-coverage utility using VCD/LXT/FST style dumpfiles and the
 design to generate line, toggle, memory, combinational logic, FSM state/arc and
 assertion coverage reports. Covered also contains a built-in race condition checker
 and GUI report viewer.
