@@ -2700,8 +2700,10 @@ bool db_statement_connect(
   */
   if( !(retval = statement_connect( curr_stmt, next_stmt, stmt_conn_id )) ) {
 
+    unsigned int rv;
+
     assert( next_stmt != NULL );
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unreachable statement found starting at line %d in file %s.  Ignoring...",
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Unreachable statement found starting at line %d in file %s.  Ignoring...",
                                 next_stmt->exp->line, obf_file( curr_funit->filename ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );

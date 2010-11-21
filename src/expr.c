@@ -2909,9 +2909,9 @@ bool expression_op_func__arshift_a(
  Performs the $time system call.
 */
 bool expression_op_func__time(
-  expression*     expr,  /*!< Pointer to expression to perform operation on */
-  thread*         thr,   /*!< Pointer to thread containing this expression */
-  const sim_time* time   /*!< Pointer to current simulation time */
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+               thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__TIME);
 
   bool retval;
@@ -2932,9 +2932,9 @@ bool expression_op_func__time(
  Performs the $realtime system call.
 */
 bool expression_op_func__realtime(
-  expression*     expr,  /*!< Pointer to expression to perform operation on */
-  thread*         thr,   /*!< Pointer to thread containing this expression */
-  const sim_time* time   /*!< Pointer to current simulation time */
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+               thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__REALTIME);
 
   bool retval;
