@@ -56,15 +56,15 @@
       This page is used to specify what type of CDD file to create. The four types of CDD files that can be created are:
     </p><p>
       </p><div class="orderedlist"><ol type="1"><li><p>
-            An unscored CDD file that was created by parsing the design. This CDD file can later be scored via a VCD or
-            LXT2 dumpfile.
+            An unscored CDD file that was created by parsing the design. This CDD file can later be scored via a VCD,
+            LXT2 or FST dumpfile.
           </p><p>
             This option can be chosen by selecting the <span class="bold"><strong>Parse Design Only</strong></span> radiobutton.
           </p></li><li><p>
-            A scored CDD file created from the design and from a previously created VCD or LXT2 dumpfile.
+            A scored CDD file created from the design and from a previously created VCD, LXT2 or FST dumpfile.
           </p><p>
             This option can be chosen by selecting the <span class="bold"><strong>Dumpfile:</strong></span> option. If this option
-            is chosen, a VCD or LXT2 dumpfile is required to be specified before the next option page can be used. Either
+            is chosen, a VCD, LXT2 or FST dumpfile is required to be specified before the next option page can be used. Either
             specify this dumpfile name by typing in an existing dumpfile name in the entry field or use the
             <span class="bold"><strong>Browse...</strong></span> button to select a dumpfile.
           </p></li><li><p>
@@ -81,13 +81,13 @@
             top of the generated module.
           </p></li><li><p>
             An unscored CDD file and a top-level Verilog file containing the necessary $dumpfile/$dumpvars calls to score
-            the design.  This module can be compiled as a top-level module along with the design to produce a VCD/LXT2
+            the design.  This module can be compiled as a top-level module along with the design to produce a VCD/LXT2/FST
             dumpfile to be used for coverage scoring.  See <a href="chapter.start.html#section.start.dump.selecting" title="Selecting What to Dump">the section called &#8220;Selecting What to Dump&#8221;</a> for
             details on how to use these files for simulation/scoring purposes.
           </p><p>
             This option can be chosen by selecting the <span class="bold"><strong>Dumpvars Module:</strong></span> radiobutton. If this
             option is chosen, the name specified will be the name of the module file created (the basename will be the name
-            of the module and the basename of the VCD/LXT2 dumpfile created from the simulation) that will contain the
+            of the module and the basename of the VCD/LXT2/FST dumpfile created from the simulation) that will contain the
             $dumpfile/$dumpvars calls needed to score the design.
           </p></li></ol></div><p>
     </p><p>
