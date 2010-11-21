@@ -52,8 +52,9 @@ sub parse_cdd {
 
       # Replace any -lxt or -fst options replaced with -vcd
       for( $i=0; $i<@line; $i++ ) {
-        if( ($line[$i] eq "-lxt") || ($line[$i] eq "-fst") ) {
-          $line[$i] = "-vcd";
+        if( ($line[$i] eq "-vcd") || ($line[$i] eq "-lxt") || ($line[$i] eq "-fst") || ($line[$i] eq "-vpi") ) {
+          $line[$i]   = "-vcd";
+          $line[$i+1] = "";
         }
       }
 

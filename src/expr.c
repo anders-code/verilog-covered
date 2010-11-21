@@ -6048,17 +6048,30 @@ void expression_assign(
         }
         if( lhs->sig->suppl.part.assigned == 1 ) {
           int intval;
+          int tgt_lsb, tgt_msb;
+          int src_lsb, src_msb;
           if( !vector_is_unknown( lhs->left->value ) ) {
             intval        = (vector_to_int( lhs->left->value ) - dim->dim_lsb) * dim->dim_width;
             dim->curr_lsb = (prev_lsb + intval);
           }
-          if( dim->last ) {
+          if( dim->curr_lsb >= 0 ) {
+            tgt_lsb = dim->curr_lsb;
+            src_lsb = *lsb;
+          } else if( (0 - dim->curr_lsb) < lhs->value->width ) {
+            tgt_lsb = 0;
+            src_lsb = *lsb + (0 - dim->curr_lsb);
+          } else {
+            tgt_lsb = -1;
+          }
+          tgt_msb = (dim->curr_lsb + lhs->value->width) - 1;
+          src_msb = (*lsb + rhs->value->width) - 1;
+          if( dim->last && (tgt_lsb != -1) ) {
             if( nb ) {
               if( lhs->suppl.part.nba == 1 ) {
-                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
+                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, tgt_lsb, tgt_msb, src_lsb, src_msb );
               }
             } else {
-              bool changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, (rhs->value->width - 1), FALSE );
+              bool changed = vector_part_select_push( lhs->sig->value, tgt_lsb, tgt_msb, rhs->value, src_lsb, src_msb, FALSE );
               lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
               if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -6083,18 +6096,31 @@ void expression_assign(
         }
         if( lhs->sig->suppl.part.assigned == 1 ) {
           int intval1, intval2;
+          int tgt_lsb, tgt_msb;
+          int src_lsb, src_msb;
           if( !vector_is_unknown( lhs->left->value ) ) {
             intval1       = vector_to_int( lhs->left->value ) - dim->dim_lsb;
             intval2       = vector_to_int( lhs->right->value );
             dim->curr_lsb = (prev_lsb + ((intval1 - intval2) + 1));
           }
+          if( dim->curr_lsb >= 0 ) {
+            tgt_lsb = dim->curr_lsb;
+            src_lsb = *lsb;
+          } else if( (0 - dim->curr_lsb) < lhs->value->width ) {
+            tgt_lsb = 0;
+            src_lsb = *lsb + (0 - dim->curr_lsb);
+          } else {
+            tgt_lsb = -1;
+          }
+          tgt_msb = (dim->curr_lsb + lhs->value->width) - 1;
+          src_msb = (*lsb + rhs->value->width) - 1;
           if( dim->last ) {
             if( nb ) {
               if( lhs->suppl.part.nba == 1 ) {
-                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
+                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, tgt_lsb, tgt_msb, src_lsb, src_msb );
               }
             } else {
-              bool changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, (rhs->value->width - 1), FALSE );
+              bool changed = vector_part_select_push( lhs->sig->value, tgt_lsb, tgt_msb, rhs->value, src_lsb, src_msb, FALSE );
               lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
               if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {

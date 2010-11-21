@@ -281,7 +281,8 @@ IVVCSDIAGS1   = afunc1           atask1           clog2            clog2.1      
                 hier3            ifdef3           ifndef2          localparam1      localparam1.1 \
                 localparam1.2    localparam1.3    localparam2      localparam3      mbit_sel1 \
                 mbit_sel1.1      mbit_sel5        mbit_sel5.1      mbit_sel5.2      mbit_sel5.3 \
-                mbit_sel5.5      mbit_sel6        mbit_sel6.1      mbit_sel6.2      mbit_sel6.3      mbit_sel6.5 \
+                mbit_sel5.5      mbit_sel6        mbit_sel6.1      mbit_sel6.2      mbit_sel6.3 \
+                mbit_sel6.5      mbit_sel10       mbit_sel10.1 \
                 mem4             mem4.1           nand1            nor1             ovl1 \
                 ovl1.1           ovl1.2           ovl1.3           param10.1        param10.5 \
                 port2            timescale1.1     timescale1.2     timescale1.3     timescale1.4 \
