@@ -1,31 +1,8 @@
 Covered-Related NEWS
 ====================
 
-    * 11/21/2010
+    * 12/2/2010
 
-Stable release covered-0.7.9 made.  This release is a bug fix and minor feature enhancement release.  Here are the details:
+Stable release covered-0.7.10 made.  This release updates the FST library to the latest version which contains some fixes and
+enhancements.
 
-  - Cleaned up error messages emitted from the clang utility.
-  - Updated GUI to use the ttk styled widgets for a more uniform look and allows the user to change the overall look of
-    the GUI using a preference item.
-  - Handling issue where a CDD file was created in a different directory and we attempt to load it in a different environment.
-    Previously, a stack trace was emitted rather than just the user error message.
-  - Updated copyright dates to include 2010
-  - Added FST dumpfile scoring (new -fst option added to the score command to accommodate this option).
-  - Adding support for "wire real" and associated code to Verilog parser.
-  - Fixing issue with memory coverage.
-  - Fixing bug 3054545.  When a merged CDD file was used in an exclude command, a segmentation fault would occur.
-  - Added support for constant assignment to reals.
-  - Added support for "parameter integer" and "parameter real".
-  - Added parsing support for the $fopenw system task.
-  - Added support for performing +: and -: part selection on the left-hand-side of assignment expressions.
-  - Fixed various memory overrun and memory leak issues that caused instability issues within the GUI.
-  - Fixed GUI combinational logic issue where incorrect highlighting/underlining was occurring for uncovered expressions.
-  - Fixed GUI issue with next/previous button traversal for combinational logic.
-  - Enhanced the regression suite to verify all of the new features mentioned above.
-  - Updated user guide HTML output to include the Covered banner to the top of each page.
-  - User guide and man pages have been updated per these changes.
-
-On a side note, active work on Covered's development branch(es) has stopped indefinitely.  I plan to support the current
-feature set in the 0.7.x branch with possible minor enhancements as requested.  Please feel free to continue to send me e-mail
-and/or submit bug reports against the 0.7.x stable releases.
