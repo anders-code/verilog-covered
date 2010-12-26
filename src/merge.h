@@ -25,7 +25,11 @@
 
 
 /*! \brief Parses command-line for merge options and performs merge command. */
-void command_merge( int argc, int last_arg, const char** argv );
+void command_merge(
+  int          argc,
+  int          last_arg,
+  const char** argv
+);
 
 #endif
 

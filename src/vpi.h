@@ -24,7 +24,9 @@
 */
 
 /*! \brief Displays the given message to standard output */
-void vpi_print_output( const char* msg );
+void vpi_print_output(
+  const char* msg
+);
 
 #endif
 

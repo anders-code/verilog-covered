@@ -60,22 +60,40 @@ extern void VLwarn( char* msg );
 extern unsigned error_count;
 
 /*! \brief Deallocates the curr_sig_width variable if it has been previously set */
-void parser_dealloc_sig_range( sig_range* range, bool rm_ptr );
+void parser_dealloc_sig_range(
+  sig_range* range,
+  bool       rm_ptr
+);
 
 /*! \brief Creates a copy of the curr_range variable */
-sig_range* parser_copy_curr_range( bool packed );
+sig_range* parser_copy_curr_range(
+  bool packed
+);
 
 /*! \brief Copies specifies static expressions to the current range */
-void parser_copy_range_to_curr_range( sig_range* range, bool packed );
+void parser_copy_range_to_curr_range(
+  sig_range* range,
+  bool       packed
+);
 
 /*! \brief Deallocates and sets the curr_range variable from explicitly set values */
-void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bool packed );
+void parser_explicitly_set_curr_range(
+  static_expr* left,
+  static_expr* right,
+  bool         packed
+);
 
 /*! \brief Deallocates and sets the curr_range variable from implicitly set values */
-void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed );
+void parser_implicitly_set_curr_range(
+  int  left_num,
+  int  right_num,
+  bool packed
+);
 
 /*! \brief Checks the specified generation value to see if it holds in the specified module */
-bool parser_check_generation( unsigned int gen );
+bool parser_check_generation(
+  unsigned int gen
+);
 
 /*! \brief Adds the specified case statement item to the statement tree. */
 void parser_handle_case_statement(

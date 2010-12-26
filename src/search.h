@@ -31,19 +31,29 @@
 void search_init();
 
 /*! \brief Adds an include directory to the list of directories to search for `include directives. */
-void search_add_include_path( const char* path );
+void search_add_include_path(
+  const char* path
+);
 
 /*! \brief Adds a directory to the list of directories to find unspecified Verilog modules. */
-void search_add_directory_path( const char* path );
+void search_add_directory_path(
+  const char* path
+);
 
 /*! \brief Adds a specific Verilog module to the list of modules to score. */
-void search_add_file( const char* file );
+void search_add_file(
+  const char* file
+);
 
 /*! \brief Adds specified functional unit to list of functional units not to score. */
-void search_add_no_score_funit( const char* funit );
+void search_add_no_score_funit(
+  const char* funit
+);
 
 /*! \brief Adds specified extensions to allowed file extension list. */
-void search_add_extensions( const char* ext_list );
+void search_add_extensions(
+  const char* ext_list
+);
 
 /*! \brief Deallocates all used memory for search lists. */
 void search_free_lists();

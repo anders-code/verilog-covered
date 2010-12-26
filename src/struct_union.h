@@ -27,28 +27,53 @@
 
 
 /*! \brief Allocates, initializes and adds a new void member to the given struct/union */
-su_member* struct_union_add_member_void( struct_union* su );
+su_member* struct_union_add_member_void(
+  struct_union* su
+);
 
 /*! \brief Allocates, initializes and adds a new signal member to the given struct/union */
-su_member* struct_union_add_member_sig( struct_union* su, vsignal* sig );
+su_member* struct_union_add_member_sig(
+  struct_union* su,
+  vsignal*      sig
+);
 
 /*! \brief Allocates, initializes and adds a new typedef member to the given struct/union */
-su_member* struct_union_add_member_typedef( struct_union* su, typedef_item* tdi );
+su_member* struct_union_add_member_typedef(
+  struct_union* su,
+  typedef_item* tdi
+);
 
 /*! \brief Allocates, initializes and adds a new enum member to the given struct/union */
-su_member* struct_union_add_member_enum( struct_union* su, enum_item* ei );
+su_member* struct_union_add_member_enum(
+  struct_union* su,
+  enum_item*    ei
+);
 
 /*! \brief Allocates, initializes and adds a new struct/union member to the given struct/union */
-su_member* struct_union_add_member_struct_union( struct_union* su, struct_union* sui );
+su_member* struct_union_add_member_struct_union(
+  struct_union* su,
+  struct_union* sui
+);
 
 /*! \brief Allocates, initializes and adds a new enumerated item to the given functional unit */
-struct_union* struct_union_create( const char* name, /*@unused@*/ sig_range* range, int type, bool packed, bool is_signed, func_unit* funit );
+struct_union* struct_union_create(
+               const char* name,
+  /*@unused@*/ sig_range*  range,
+               int         type,
+               bool        packed,
+               bool        is_signed,
+               func_unit*  funit
+);
 
 /*! \brief Deallocates given struct/union */
-void struct_union_dealloc( struct_union* su );
+void struct_union_dealloc(
+  struct_union* su
+);
 
 /*! \brief Deallocates struct/union list from given functional unit */
-void struct_union_dealloc_list( func_unit* funit );
+void struct_union_dealloc_list(
+  func_unit* funit
+);
 
 #endif
 

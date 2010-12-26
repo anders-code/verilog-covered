@@ -59,16 +59,24 @@ extern bool profiling_mode;
 
 
 /*! \brief Sets the current profiling mode to the given value. */
-void profiler_set_mode( bool value );
+void profiler_set_mode(
+  bool value
+);
 
 /*! \brief Sets the profiling output file to the given value. */
-void profiler_set_filename( const char* fname );
+void profiler_set_filename(
+  const char* fname
+);
 
 /*! \brief Function to be called whenever a new function is entered. */
-void profiler_enter( unsigned int index );
+void profiler_enter(
+  unsigned int index
+);
 
 /*! \brief Function to be called whenever a timed function is exited. */
-void profiler_exit( unsigned int index );
+void profiler_exit(
+  unsigned int index
+);
 
 /*! \brief Output profiler report. */
 void profiler_report();

@@ -30,7 +30,9 @@
 /*!
  \brief Generates a performance report on an instance basis to the specified output file.
 */
-void perf_output_inst_report( FILE* ofile );
+void perf_output_inst_report(
+  FILE* ofile
+);
 
 #endif
 

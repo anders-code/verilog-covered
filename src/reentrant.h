@@ -27,10 +27,16 @@
 
 
 /*! \brief Allocates and initializes the reentrant structure for the given functional unit */
-reentrant* reentrant_create( func_unit* funit );
+reentrant* reentrant_create(
+  func_unit* funit
+);
 
 /*! \brief Deallocates all memory associated with the given reentrant structure */
-void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr );
+void reentrant_dealloc(
+  reentrant*  ren,
+  func_unit*  funit,
+  expression* expr
+);
 
 #endif
 

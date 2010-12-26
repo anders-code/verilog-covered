@@ -25,7 +25,11 @@
 
 
 /*! \brief Parses command-line for rank options and performs rank command. */
-void command_rank( int argc, int last_arg, const char** argv );
+void command_rank(
+  int          argc,
+  int          last_arg,
+  const char** argv
+);
 
 #endif
 

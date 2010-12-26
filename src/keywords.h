@@ -24,22 +24,40 @@
 */
 
 /*! \brief Returns the defined value of the keyword or IDENTIFIER if this is not a Verilog keyword. */
-extern int lexer_keyword_1995_code( const char* str, int length );
+extern int lexer_keyword_1995_code(
+  const char* str,
+  int         length
+);
 
 /*! \brief Returns the defined value of the system task keyword or S_user if this is not a Verilog system task keyword. */
-extern int lexer_keyword_sys_1995_code( const char* str, int length );
+extern int lexer_keyword_sys_1995_code(
+  const char* str,
+  int         length
+);
 
 /*! \brief Returns the defined value of the keyword or IDENTIFIER if this is not a Verilog keyword. */
-extern int lexer_keyword_2001_code( const char* str, int length );
+extern int lexer_keyword_2001_code(
+  const char* str,
+  int         length
+);
 
 /*! \brief Returns the defined value of the system task keyword or S_user if this is not a Verilog system task keyword. */
-extern int lexer_keyword_sys_2001_code( const char* str, int length );
+extern int lexer_keyword_sys_2001_code(
+  const char* str,
+  int         length
+);
 
 /*! \brief Returns the defined value of the keyword or IDENTIFIER if this is not a Verilog keyword. */
-extern int lexer_keyword_sv_code( const char* str, int length );
+extern int lexer_keyword_sv_code(
+  const char* str,
+  int         length
+);
 
 /*! \brief Returns the defined value of the system task keyword or S_user if this is not a Verilog system task keyword. */
-extern int lexer_keyword_sys_sv_code( const char* str, int length );
+extern int lexer_keyword_sys_sv_code(
+  const char* str,
+  int         length
+);
 
 #endif
 

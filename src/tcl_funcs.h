@@ -32,7 +32,12 @@
 #include <tk.h>
 
 /*! \brief Gathers the list of all functional units within the design */
-int tcl_func_get_funit_list( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] );
+int tcl_func_get_funit_list(
+  ClientData  d,
+  Tcl_Interp* tcl,
+  int         argc,
+  const char* argv[]
+);
 
 /*! \brief Initializes TCL interface */
 void tcl_func_initialize(

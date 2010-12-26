@@ -33,10 +33,16 @@
 void race_check_modules();
 
 /*! \brief Writes contents of specified race condition block to specified file output */
-void race_db_write( race_blk* head, FILE* file );
+void race_db_write(
+  race_blk* head,
+  FILE*     file
+);
 
 /*! \brief Reads contents from specified line for a race condition block and assigns the new block to the curr_mod */
-void race_db_read( char** line, /*@null@*/func_unit* curr_mod );
+void race_db_read(
+             char**     line,
+  /*@null@*/ func_unit* curr_mod
+);
 
 /*! \brief Get statistic information for the specified race condition block list */
 void race_get_stats(
@@ -46,7 +52,10 @@ void race_get_stats(
 );
 
 /*! \brief Displays report information for race condition blocks in design */
-void race_report( FILE* ofile, bool verbose );
+void race_report(
+  FILE* ofile,
+  bool  verbose
+);
 
 /*! \brief Collects all of the lines in the specified module that were not verified due to race condition breach */
 void race_collect_lines(
@@ -58,7 +67,9 @@ void race_collect_lines(
 );
 
 /*! \brief Deallocates the specified race condition block from memory */
-void race_blk_delete_list( race_blk* rb );
+void race_blk_delete_list(
+  race_blk* rb
+);
 
 #endif
 

@@ -34,37 +34,73 @@ statement* statement_create(
 );
 
 /*! \brief Sizes all expressions for the given statement block */
-void statement_size_elements( statement* stmt, func_unit* funit );
+void statement_size_elements(
+  statement* stmt,
+  func_unit* funit
+);
 
 /*! \brief Writes specified statement to the specified output file. */
-void statement_db_write( statement* stmt, FILE* ofile, bool ids_issued );
+void statement_db_write(
+  statement* stmt,
+  FILE*      ofile,
+  bool       ids_issued
+);
 
 /*! \brief Writes specified statement tree to the specified output file. */
-void statement_db_write_tree( statement* stmt, FILE* ofile );
+void statement_db_write_tree(
+  statement* stmt,
+  FILE*      ofile
+);
 
 /*! \brief Writes specified expression trees for given statement block to specified output file. */
-void statement_db_write_expr_tree( statement* stmt, FILE* ofile );
+void statement_db_write_expr_tree(
+  statement* stmt,
+  FILE*      ofile
+);
 
 /*! \brief Reads in statement line from specified string and stores statement in specified functional unit. */
-void statement_db_read( char** line, /*@null@*/func_unit* curr_funit, int read_mode );
+void statement_db_read(
+             char**     line,
+  /*@null@*/ func_unit* curr_funit,
+             int        read_mode
+);
 
 /*! \brief Assigns unique expression IDs to each expression in the given statement block. */
-void statement_assign_expr_ids( statement* stmt, func_unit* funit );
+void statement_assign_expr_ids(
+  statement* stmt,
+  func_unit* funit
+);
 
 /*! \brief Connects statement sequence to next statement and sets stop bit. */
-bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id );
+bool statement_connect(
+  statement* curr_stmt,
+  statement* next_stmt,
+  int        conn_id
+);
 
 /*! \brief Calculates the last line of the specified statement tree. */
-int statement_get_last_line( statement* stmt );
+int statement_get_last_line(
+  statement* stmt
+);
 
 /*! \brief Creates a list of all signals on the RHS of expressions in the given statement block */
-void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail );
+void statement_find_rhs_sigs(
+  statement* stmt,
+  str_link** head,
+  str_link** tail
+);
 
 /*! \brief Searches for statement with ID in the given statement block */
-statement* statement_find_statement( statement* curr, int id );
+statement* statement_find_statement(
+  statement* curr,
+  int        id
+);
 
 /*! \brief Searches the specified statement block for expression that calls the given stmt */
-bool statement_contains_expr_calling_stmt( statement* curr, statement* stmt );
+bool statement_contains_expr_calling_stmt(
+  statement* curr,
+  statement* stmt
+);
 
 /*! \brief Recursively deallocates specified statement tree. */
 void statement_dealloc_recursive(
@@ -73,7 +109,9 @@ void statement_dealloc_recursive(
 );
 
 /*! \brief Deallocates statement memory and associated expression tree from the heap. */
-void statement_dealloc( statement* stmt );
+void statement_dealloc(
+  statement* stmt
+);
 
 #endif
 

@@ -30,16 +30,28 @@
 symtable* symtable_create();
 
 /*! \brief Creates a new symtable entry and adds it to the specified symbol table. */
-void symtable_add( const char* sym, vsignal* sig, int msb, int lsb );
+void symtable_add(
+  const char* sym,
+  vsignal*    sig,
+  int         msb,
+  int         lsb
+);
 
 /*! \brief Sets all matching symtable entries to specified value */
-void symtable_set_value( const char* sym, const char* value );
+void symtable_set_value(
+  const char* sym,
+  const char* value
+);
 
 /*! \brief Assigns stored values to all associated signals stored in specified symbol table. */
-void symtable_assign( const sim_time* time );
+void symtable_assign(
+  const sim_time* time
+);
 
 /*! \brief Deallocates all symtable entries for specified symbol table. */
-void symtable_dealloc( symtable* symtab );
+void symtable_dealloc(
+  symtable* symtab
+);
 
 #endif
 

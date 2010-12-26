@@ -50,10 +50,15 @@ extern bool obf_mode;
 
 
 /*! \brief Sets the global 'obf_mode' variable to the specified value */
-void obfuscate_set_mode( bool value );
+void obfuscate_set_mode(
+  bool value
+);
 
 /*! \brief Gets an obfuscated name for the given actual name */
-/*@shared@*/ char* obfuscate_name( const char* real_name, char prefix );
+/*@shared@*/ char* obfuscate_name(
+  const char* real_name,
+  char        prefix
+);
 
 /*! \brief Deallocates all memory associated with obfuscation */
 void obfuscate_dealloc();

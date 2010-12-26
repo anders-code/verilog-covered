@@ -37,10 +37,17 @@ fsm_var* fsm_var_add(
 );
 
 /*! \brief Adds specified signal and expression to binding list. */
-void fsm_var_bind_add( char* sig_name, expression* expr, char* funit_name );
+void fsm_var_bind_add(
+  char*       sig_name,
+  expression* expr,
+  char*       funit_name
+);
 
 /*! \brief Add specified functional unit and statement to binding list. */
-void fsm_var_stmt_add( statement* stmt, char* funit_name );
+void fsm_var_stmt_add(
+  statement* stmt,
+  char*      funit_name
+);
 
 /*! \brief Performs FSM signal/expression binding process. */
 void fsm_var_bind();

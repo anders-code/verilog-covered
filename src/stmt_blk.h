@@ -30,7 +30,9 @@
  \brief Adds the statement block containing the specified statement to the list of statement
         blocks to remove after parsing, binding and race condition checking has occurred.
 */
-void stmt_blk_add_to_remove_list( statement* stmt );
+void stmt_blk_add_to_remove_list(
+  statement* stmt
+);
 
 /*!
  \brief Removes all statement blocks listed for removal.

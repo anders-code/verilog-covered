@@ -27,13 +27,19 @@
 
 
 /*! \brief Creates and initializes a new statistic structure. */
-void statistic_create( statistic** stat );
+void statistic_create(
+  statistic** stat
+);
 
 /*! \brief Returns TRUE if the given statistic structure contains no coverage information */
-bool statistic_is_empty( statistic* stat );
+bool statistic_is_empty(
+  statistic* stat
+);
 
 /*! \brief Deallocates memory for a statistic structure. */
-void statistic_dealloc( statistic* stat );
+void statistic_dealloc(
+  statistic* stat
+);
 
 #endif
 

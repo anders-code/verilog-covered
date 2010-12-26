@@ -30,7 +30,9 @@
 
 
 /*! \brief Parses -A command-line option to score command */
-void assertion_parse( const char* arg );
+void assertion_parse(
+  const char* arg
+);
 
 /*! \brief Parses an in-line attribute for assertion coverage information */
 void assertion_parse_attr(
@@ -49,7 +51,10 @@ void assertion_get_stats(
 );
 
 /*! \brief Generates report output for assertion coverage */
-void assertion_report( FILE* ofile, bool verbose );
+void assertion_report(
+  FILE* ofile,
+  bool  verbose
+);
 
 /*! \brief Retrieves the total and hit counts of assertions for the specified functional unit */
 void assertion_get_funit_summary(

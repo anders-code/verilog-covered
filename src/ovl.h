@@ -28,13 +28,19 @@
 
 
 /*! \brief Returns TRUE if specified functional unit is an OVL assertion module. */
-bool ovl_is_assertion_module( const func_unit* funit );
+bool ovl_is_assertion_module(
+  const func_unit* funit
+);
 
 /*! \brief Returns TRUE if specified expression corresponds to a functional coverage point. */
-bool ovl_is_coverage_point( const expression* exp );
+bool ovl_is_coverage_point(
+  const expression* exp
+);
 
 /*! \brief Adds all assertion modules to no score list */
-void ovl_add_assertions_to_no_score_list( bool rm_tasks );
+void ovl_add_assertions_to_no_score_list(
+  bool rm_tasks
+);
 
 /*! \brief Gathers the OVL assertion coverage summary statistics for the given functional unit. */
 void ovl_get_funit_stats(

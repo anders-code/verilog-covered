@@ -47,40 +47,69 @@ mod_parm* mod_parm_add(
 );
 
 /*! \brief Outputs contents of module parameter list to standard output. */
-void mod_parm_display( mod_parm* mparm );
+void mod_parm_display(
+  mod_parm* mparm
+);
 
 /*! \brief Creates a new instance parameter for a generate variable */
-void inst_parm_add_genvar( vsignal* sig, funit_inst* inst );
+void inst_parm_add_genvar(
+  vsignal*    sig,
+  funit_inst* inst
+);
 
 /*! \brief Performs bind of signal and expressions for the given instance parameter. */
-void inst_parm_bind( inst_parm* iparm );
+void inst_parm_bind(
+  inst_parm* iparm
+);
 
 /*! \brief Adds parameter override to defparam list. */
-void defparam_add( const char* scope, vector* expr );
+void defparam_add(
+  const char* scope,
+  vector*     expr
+);
 
 /*! \brief Deallocates all memory associated with defparam storage from command-line */
 void defparam_dealloc();
 
 /*! \brief Sets the specified signal size according to the specified instance parameter */
-void param_set_sig_size( vsignal* sig, inst_parm* icurr );
+void param_set_sig_size(
+  vsignal*   sig,
+  inst_parm* icurr
+);
 
 /*! \brief Evaluates parameter expression for the given instance. */
-void param_expr_eval( expression* expr, funit_inst* inst );
+void param_expr_eval(
+  expression* expr,
+  funit_inst* inst
+);
 
 /*! \brief Resolves all parameters for the specified instance. */
-void param_resolve_inst( funit_inst* inst );
+void param_resolve_inst(
+  funit_inst* inst
+);
 
 /*! \brief Resolves all parameters for the specified instance tree. */
-void param_resolve( funit_inst* inst );
+void param_resolve(
+  funit_inst* inst
+);
 
 /*! \brief Outputs specified instance parameter to specified output stream. */
-void param_db_write( inst_parm* iparm, FILE* file );
+void param_db_write(
+  inst_parm* iparm,
+  FILE*      file
+);
 
 /*! \brief Deallocates specified module parameter and possibly entire module parameter list. */
-void mod_parm_dealloc( mod_parm* parm, bool recursive );
+void mod_parm_dealloc(
+  mod_parm* parm,
+  bool      recursive
+);
 
 /*! \brief Deallocates specified instance parameter and possibly entire instance parameter list. */
-void inst_parm_dealloc( inst_parm* parm, bool recursive );
+void inst_parm_dealloc(
+  inst_parm* parm,
+  bool       recursive
+);
 
 #endif
 

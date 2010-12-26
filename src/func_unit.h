@@ -32,34 +32,61 @@
 func_unit* funit_create();
 
 /*! \brief Returns the parent module of the given functional unit. */
-func_unit* funit_get_curr_module( func_unit* funit );
+func_unit* funit_get_curr_module(
+  func_unit* funit
+);
 
 /*! \brief Returns the parent module of the given functional unit (returning a const version). */
-const func_unit* funit_get_curr_module_safe( const func_unit* funit );
+const func_unit* funit_get_curr_module_safe(
+  const func_unit* funit
+);
 
 /*! \brief Returns the parent function of the given functional unit (if there is one) */
-func_unit* funit_get_curr_function( func_unit* funit );
+func_unit* funit_get_curr_function(
+  func_unit* funit
+);
 
 /*! \brief Returns the parent task of the given functional unit (if there is one) */
-func_unit* funit_get_curr_task( func_unit* funit );
+func_unit* funit_get_curr_task(
+  func_unit* funit
+);
 
 /*! \brief Returns the number of input, output and inout ports in the specified functional unit */
-int funit_get_port_count( func_unit* funit );
+int funit_get_port_count(
+  func_unit* funit
+);
 
 /*! \brief Finds specified module parameter given the current functional unit and its scope */
-mod_parm* funit_find_param( char* name, func_unit* funit );
+mod_parm* funit_find_param(
+  char*      name,
+  func_unit* funit
+);
 
 /*! \brief Finds specified signal given in the current functional unit */
-vsignal* funit_find_signal( char* name, func_unit* funit );
+vsignal* funit_find_signal(
+  char*      name,
+  func_unit* funit
+);
 
 /*! \brief Finds all expressions that call the given statement */
-void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt );
+void funit_remove_stmt_blks_calling_stmt(
+  func_unit* funit,
+  statement* stmt
+);
 
 /*! \brief Generates the internally used task/function/named-block name for the specified functional unit */
-char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* parent );
+char* funit_gen_task_function_namedblock_name(
+  char*      orig_name,
+  func_unit* parent
+);
 
 /*! \brief Sizes all elements for the current functional unit from the given instance */
-void funit_size_elements( func_unit* funit, funit_inst* inst, bool gen_all, bool alloc_exprs );
+void funit_size_elements(
+  func_unit*  funit,
+  funit_inst* inst,
+  bool        gen_all,
+  bool        alloc_exprs
+);
 
 /*! \brief Writes contents of provided functional unit to specified output. */
 void funit_db_write(
@@ -114,28 +141,46 @@ void funit_db_merge(
 );
 
 /*! \brief Flattens the functional unit name by removing all unnamed scope portions */
-/*@shared@*/ char* funit_flatten_name( func_unit* funit );
+/*@shared@*/ char* funit_flatten_name(
+  func_unit* funit
+);
 
 /*! \brief Finds the functional unit that contains the given statement/expression ID */
-func_unit* funit_find_by_id( int id );
+func_unit* funit_find_by_id(
+  int id
+);
 
 /*! \brief Returns TRUE if the given functional unit does not contain any input, output or inout ports. */
-bool funit_is_top_module( func_unit* funit );
+bool funit_is_top_module(
+  func_unit* funit
+);
 
 /*! \brief Returns TRUE if the given functional unit is an unnamed scope. */
-bool funit_is_unnamed( func_unit* funit );
+bool funit_is_unnamed(
+  func_unit* funit
+);
 
 /*! \brief Returns TRUE if the specified "parent" functional unit is a parent of the "child" functional unit */
-bool funit_is_unnamed_child_of( func_unit* parent, func_unit* child );
+bool funit_is_unnamed_child_of(
+  func_unit* parent,
+  func_unit* child
+);
 
 /*! \brief Returns TRUE if the specified "parent" functional unit is a parent of the "child" functional unit */
-bool funit_is_child_of( func_unit* parent, func_unit* child );
+bool funit_is_child_of(
+  func_unit* parent,
+  func_unit* child
+);
 
 /*! \brief Displays signals stored in this functional unit. */
-void funit_display_signals( func_unit* funit );
+void funit_display_signals(
+  func_unit* funit
+);
 
 /*! \brief Displays expressions stored in this functional unit. */
-void funit_display_expressions( func_unit* funit );
+void funit_display_expressions(
+  func_unit* funit
+);
 
 /*! \brief Adds given thread to functional unit's thread pointer/thread pointer list */
 void funit_add_thread(
@@ -169,7 +214,9 @@ bool funit_is_one_signal_assigned(
 );
 
 /*! \brief Deallocates functional unit element from heap. */
-void funit_dealloc( func_unit* funit );
+void funit_dealloc(
+  func_unit* funit
+);
 
 #endif
 

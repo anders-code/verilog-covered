@@ -25,13 +25,21 @@
 
 
 /*! \brief Creates a module that contains all of the signals to dump from the design for coverage purposes. */
-void score_generate_top_dumpvars_module( const char* dumpvars_file );
+void score_generate_top_dumpvars_module(
+  const char* dumpvars_file
+);
 
 /*! \brief Parses the specified define from the command-line */
-void score_parse_define( const char* def );
+void score_parse_define(
+  const char* def
+);
 
 /*! \brief Parses score command-line and performs score. */
-void command_score( int argc, int last_arg, const char** argv );
+void command_score(
+  int          argc,
+  int          last_arg,
+  const char** argv
+);
 
 #endif
 

@@ -26,16 +26,29 @@
 #include "defines.h"
 
 /*! \brief Adds specified key/value pair to tree as a node. */
-tnode* tree_add( const char* key, const char* value, bool override, tnode** root );
+tnode* tree_add(
+  const char* key,
+  const char* value,
+  bool        override,
+  tnode**     root
+);
 
 /*! \brief Returns pointer to tree node that matches specified key */
-tnode* tree_find( const char* key, tnode* root );
+tnode* tree_find(
+  const char* key,
+  tnode*      root
+);
 
 /*! \brief Removes specified tree node from tree. */
-void tree_remove( const char* key, tnode** root );
+void tree_remove(
+  const char* key,
+  tnode**     root
+);
 
 /*! \brief Deallocates entire tree from memory. */
-void tree_dealloc( /*@null@*/tnode* root );
+void tree_dealloc(
+  /*@null@*/ tnode* root
+);
 
 #endif
 

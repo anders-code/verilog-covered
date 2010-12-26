@@ -27,7 +27,10 @@
 
 
 /*! \brief Creates new attribute parameter based on specified values. */
-attr_param* attribute_create( const char* name, expression* expr );
+attr_param* attribute_create(
+  const char* name,
+  expression* expr
+);
 
 /*! \brief Parses and handles specified attribute parameter list. */
 void attribute_parse(
@@ -38,7 +41,9 @@ void attribute_parse(
 );
 
 /*! \brief Deallocates entire attribute parameter list. */
-void attribute_dealloc( attr_param* ap );
+void attribute_dealloc(
+  attr_param* ap
+);
 
 #endif
 
