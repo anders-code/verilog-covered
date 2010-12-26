@@ -2,7 +2,7 @@
 #define __ENUMERATE_H__
 
 /*
- Copyright (c) 2006-2010 Trevor Williams
+ Copyright (c) 2006-2011 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -44,6 +44,10 @@ void enumerate_dealloc_list( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.4.16.3  2010/12/26 05:21:21  phase1geo
+ Updating all copyrights to include 2011.  Updating various files for 0.7.11
+ stable release.
+
  Revision 1.4.16.2  2010/01/04 22:05:06  phase1geo
  Updating copyright dates to include 2010.  Updating files for 0.7.8 stable
  release (this won't be happening for a bit).
