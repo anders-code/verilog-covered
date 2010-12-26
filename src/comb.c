@@ -1589,7 +1589,7 @@ static void combination_unary(
       (ESUPPL_EXCLUDED( exp->suppl ) && show_excluded) ) {
 
     char         spaces[30];
-    unsigned int eid_size;
+    unsigned int eid_size = 0;
 
     if( flag_output_exclusion_ids ) {
       eid_size = db_get_exclusion_id_size();
@@ -1691,7 +1691,7 @@ static void combination_event(
 
     char         spaces[30];
     unsigned int rv;
-    unsigned int eid_size;
+    unsigned int eid_size = 0;
 
     if( flag_output_exclusion_ids ) {
       eid_size = db_get_exclusion_id_size();
@@ -1797,7 +1797,7 @@ static void combination_two_vars(
       (ESUPPL_EXCLUDED( exp->suppl ) && show_excluded) ) {
 
     char         spaces[30];
-    unsigned int eid_size;
+    unsigned int eid_size = 0;
 
     if( flag_output_exclusion_ids ) {
       eid_size = db_get_exclusion_id_size();
@@ -2193,7 +2193,7 @@ static void combination_multi_expr_output(
   int          i;
   int          len        = strlen( line1 );
   int          info_index = 2;
-  unsigned int eid_size;
+  unsigned int eid_size   = 0;
 
   if( flag_output_exclusion_ids ) {
     eid_size = db_get_exclusion_id_size();
@@ -2324,7 +2324,7 @@ static void combination_multi_vars(
       unsigned int slen1;
       unsigned int slen2;
       unsigned int slen3;
-      unsigned int eid_size;
+      unsigned int eid_size = 0;
 
       if( flag_output_exclusion_ids ) {
         eid_size = db_get_exclusion_id_size();

@@ -20,7 +20,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include <config.h>
+#include "../config.h"
 
 #include "fstapi.h"
 #include "fastlz.h"

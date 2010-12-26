@@ -431,12 +431,12 @@ static void toggle_display_verbose(
   rpt_type   rtype   /*!< Specifies the type of output to generate */
 ) { PROFILE(TOGGLE_DISPLAY_VERBOSE);
 
-  func_iter    fi;        /* Functional unit iterator */
-  vsignal*     sig;       /* Pointer to current signal being evaluated */
-  unsigned int hit01;     /* Number of bits that toggled from 0 to 1 */
-  unsigned int hit10;     /* Number of bits that toggled from 1 to 0 */
-  char*        pname;     /* Printable version of signal name */
-  unsigned int eid_size;  /* String length of exclusion ID */
+  func_iter    fi;            /* Functional unit iterator */
+  vsignal*     sig;           /* Pointer to current signal being evaluated */
+  unsigned int hit01;         /* Number of bits that toggled from 0 to 1 */
+  unsigned int hit10;         /* Number of bits that toggled from 1 to 0 */
+  char*        pname;         /* Printable version of signal name */
+  unsigned int eid_size = 0;  /* String length of exclusion ID */
 
   switch( rtype ) {
     case RPT_TYPE_HIT  :  fprintf( ofile, "    Signals getting 100%% toggle coverage\n\n" );      break;
