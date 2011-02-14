@@ -535,7 +535,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* Decimal number */
-<PARSE>\'[sS]?[dD][ \t]*[0-9][0-9_]* {
+<PARSE>\'[sS]?[dD][ \t]*[0-9xzXZ][0-9xzXZ_]* {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      yylval.text = strdup_safe( yytext );

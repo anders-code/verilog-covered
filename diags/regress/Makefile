@@ -89,7 +89,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 nedge1          nested_block1   nested_block2   nested_block2.1 nested_block3 \
                 not1            null_stmt1      null_stmt1.1    null_stmt1.2    null_stmt1.3 \
                 null_stmt1.5    null_stmt1.6    null_stmt1.7    null_stmt1.8    null_stmt1.9 \
-                null_stmt1.10   param1          param1.1        param1.2        param1.3 \
+                null_stmt1.10   num1            param1          param1.1        param1.2        param1.3 \
                 param3          param3.1        param3.2        param3.3        param3.4 \
                 param3.5        param4          param4.1        param5          param6 \
                 param6.1        param7          param8          param8.1        param9 \
