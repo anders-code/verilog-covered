@@ -1,0 +1,12 @@
+5 14 1 1 main
+8 dir 2 -t (psys) 2 -i (main.dut) 2 -vcd (testb.vcd) 2 -o (testb.cdd) 2 -v (testb.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1
+15 main 0
+3 0 psys "main.dut" 0 testb.v 27 33 1
+2 1 31 a000a 1 1 1008 0 0 1 1 a
+2 2 31 90009 1 1b 1004 1 0 1 18 0 1 1 0 0 0
+2 3 31 50005 0 1 1410 0 0 1 1 c
+2 4 31 5000a 1 36 6 2 3
+1 a 1 28 8 1 0 0 0 1 17 1 1 0 0 0 0
+1 c 2 31 60005 1 0 0 0 1 17 1 1 0 0 0 0
+4 4 f 4 4 31

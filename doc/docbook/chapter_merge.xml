@@ -1,0 +1,259 @@
+<chapter id="chapter.merge">
+  <title>The merge Command</title>
+
+  <sect1 id="section.merge.using">
+    <title>Usage</title>
+    <para>
+      The merge command is initiated with the following call:
+    </para>
+    <para>
+      <code>covered merge [<emphasis>options</emphasis>] <emphasis>existing_CDD</emphasis> <emphasis>CDD_to_merge</emphasis>+</code>
+    </para>
+    <para>
+      The <emphasis>existing_CDD</emphasis> specifier relates to any existing CDD. If the -o option is not specified (see
+      below for details), this file will be replaced with the merged CDD created by the merge. This is important to
+      remember since merging is an irreversible operation (apart from generating a brand-new CDD from the design and
+      dumpfile using the score command).
+    </para>
+    <para>
+      The <emphasis>CDD_to_merge</emphasis> specifier relates to any existing CDD that is not the
+      <emphasis>existing_CDD</emphasis>. Though it is not illegal to merge the same CDD to itself, the result is the same
+      as the original CDD. Note that all files treated as <emphasis>CDD_to_merge</emphasis> are guaranteed not to be
+      modified by the merge command. These files are only read by Covered and then merged into the information contained
+      in the <emphasis>existing_CDD</emphasis>.
+    </para>
+  </sect1>
+
+  <sect1 id="section.merge.options">
+    <title>Options</title>
+    <para>
+      <table id="table.merge.options">
+        <title>Options to merge Command</title>
+        <tgroup cols='2'>
+          <thead>
+            <row>
+              <entry>
+                Option
+              </entry>
+              <entry>
+                Description
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                -d <emphasis>directory</emphasis>
+              </entry>
+              <entry>
+                Directory to search for CDD files to include.  This option is used in conjunction with the -ext option
+                which specifies the file extension to use for determining which files in the directory are CDD files.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -er (first|last|all|new|old)
+              </entry>
+              <entry>
+                <para>
+                  Specifies how to handle exclusion reason resolution.  If two or more CDD files being merged have exclusion
+                  reasons specified for the same coverage point, the exclusion reason needs to be resolved (unless it is the
+                  same string value).  If this option is not specified and a conflict is found, Covered will interactively
+                  request input for each exclusion as to how to handle it.  If this option is specified, it tells Covered
+                  how to handle all exclusion reason conflicts.  The values are as follows:
+                </para>
+                <para>
+                  <table id="table.merge.er.values">
+                    <tgroup cols='2'>
+                      <thead>
+                        <row>
+                          <entry>
+                            Value
+                          </entry>
+                          <entry>
+                            Description
+                          </entry>
+                        </row>
+                      </thead>
+                      <tbody>
+                        <row>
+                          <entry>
+                            first
+                          </entry>
+                          <entry>
+                            The CDD file that contained the first occurence of the exclusion should use its reason in the
+                            merged CDD file.
+                          </entry>
+                        </row>
+                        <row>
+                          <entry>
+                            last
+                          </entry>
+                          <entry>
+                            The last CDD file that conflicts with a previous CDD file should use its reason in the merged
+                            CDD file.
+                          </entry>
+                        </row>
+                        <row>
+                          <entry>
+                            all
+                          </entry>
+                          <entry>
+                            All conflicting coverage points will merge their exclusion reason information into a single
+                            exclusion reason.
+                          </entry>
+                        </row>
+                        <row>
+                          <entry>
+                            new
+                          </entry>
+                          <entry>
+                            The newest exclusion reason should be used (all exclusion reasons are timestamped).
+                          </entry>
+                        </row>
+                        <row>
+                          <entry>
+                            old
+                          </entry>
+                          <entry>
+                            The oldest exclusion reason should be used (all exclusion reasons are timestamped).
+                          </entry>
+                        </row>
+                      </tbody>
+                    </tgroup>
+                  </table>
+                </para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -ext <emphasis>extension</emphasis>
+              </entry>
+              <entry>
+                Used in conjunction with the -d option.  If no -ext options are specified on the command-line, the
+                default value of '.cdd' is used.  Note that a period (.) should be specified.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -f <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+                Name of file containing additional arguments to parse. You may specify this option more than once on a
+                command-line.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -h
+              </entry>
+              <entry>
+                Outputs usage information for the merge command.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -m <emphasis>message</emphasis>
+              </entry>
+              <entry>
+                Allows the user to specify information about this CDD file which can be most anything.  All messages
+                found in merged CDDs will not be included in the merged CDD file.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -o <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+                Name of CDD to write merged coverage information to (if not specified, the
+                <emphasis>existing_CDD</emphasis> is overwritten with merged CDD).
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </para>
+  </sect1>
+
+  <sect1 id="section.merge.rules">
+    <title>Merging Rules</title>
+    <para>
+      In previous versions of Covered, merging could only be accomplished when the top-most scored modules of each CDD
+      were the same the module.  Typically, the user would score the entire DUT in each diagnostic run, creating a set of
+      CDD files that could be merged together to see the overall coverage of the diagnostic runs.  While this capability
+      still exists, Covered has recently been enhanced to allow more complex merging which provides some new capabilities.
+    </para>
+
+    <sect2 id="section.merge.rules.block">
+      <title>Block Merging</title>
+      <para>
+        Covered's merging algorithms have now been enhanced to allow merging CDDs that are generated for different parts
+        of the same DUT.  That is to say that each instance or sub-tree in the design can be scored individually and can be
+        merged together.  This ability allows for the DUT to be split up into smaller parts, scored in parallel and then merged
+        back together to create a single CDD containing the scored results for the entire DUT.  This parallel scoring capability
+        can now be used to speed up scoring of large designs by taking advantage of multiple CPUs or CPU cores.
+      </para>
+      <para>
+        The following is an example of a DUT (top-most module of the DUT is block A) and the generic covered calls to score and
+        create a single CDD file containing coverage for the entire design.
+      </para>
+      <para>
+        <figure id="figure.merge.rules.block">
+          <title>Example of Verilog hierarchy to be scored in parallel</title>
+          <mediaobject><imageobject><imagedata fileref="img/vhier2.png" format="PNG"/></imageobject></mediaobject>
+        </figure>
+      </para>
+      <para>
+        The following commands could be used to score the DUT comprised of blocks A-G in parallel (each score command below could
+        occur in parallel with all other score commands).
+      </para>
+      <para>
+        <programlisting>
+  covered score -t A -i MAIN.A -e B -e C -o A.cdd ...
+  covered score -t B -i MAIN.A.B -e D -e E -o B.cdd ...
+  covered score -t C -i MAIN.A.C -e F -e G -o C.cdd ...
+  covered score -t D -i MAIN.A.C.D -o D.cdd ...
+  covered score -t E -i MAIN.A.C.E -o E.cdd ...
+  covered score -t F -i MAIN.A.B.F -o F.cdd ...
+  covered score -t G -i MAIN.A.B.G -o G.cdd ...
+
+  covered merge -o total.cdd A.cdd B.cdd C.cdd D.cdd E.cdd F.cdd G.cdd
+        </programlisting>
+      </para>
+      <para>
+        In addition to allowing for parallel scoring, this merge method allows users to gain coverage results for smaller
+        parts of the design and merge them into a single CDD containing coverage results for the entire design.  This can be
+        advantageous for those that are focused on increasing coverage for a specific portion of the design.  Scoring can be
+        done on that small part and the coverage gained can be added into an existing CDD containing coverage information for
+        the entire design.
+      </para>
+      <para>
+        Using <xref linkend="figure.merge.rules.block"/> this type of merging would be performed as such:
+      </para>
+      <para>
+        <programlisting>
+  covered score -t A -i MAIN.A total.cdd   // The initial coverage file for the entire design
+
+  covered score -t C -i MAIN.A.C -o CDE.cdd ...   // Coverage obtained for modules C, D and E only
+
+  covered merge total.cdd CDE.cdd
+        </programlisting>
+      </para>
+    </sect2>
+
+    <sect2 id="section.merge.rules.module">
+      <title>Single Module Merging</title>
+      <para>
+        Along with the capability to merge different portions of the same large design, it is also possible to merge CDDs that
+        were generated from different testbenches but have modules that are in common with each other.  This allows different
+        teams to work together to enhance coverage for shared design blocks.  It is important to note that when this type of
+        merging is being performed that the top-most covered module in the CDDs labeled <emphasis>CDD_to_merge</emphasis> exist
+        exactly once in the CDD labeled <emphasis>existing_CDD</emphasis> for instance coverage information to be reported
+        correctly.  If the module is instantiated more than once in the <emphasis>existing_CDD</emphasis>, the CDD will still
+        be merged but only the module coverage information will be correct.
+      </para>
+    </sect2>
+
+  </sect1>
+
+</chapter>

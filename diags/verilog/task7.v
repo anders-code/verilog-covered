@@ -10,14 +10,21 @@ module main;
 reg       x;
 reg [7:0] y;
 reg [3:0] z;
+reg       m;
+reg       n;
 
 initial begin
 	x = 1'b0;
 	y = 8'h10;
+	m = 1'b0;
+	n = 1'b0;
+	#5;
 	foobar( x, y, z );
+	m = (z == 4'h0);
 	#5;
 	x = 1'b1;
 	foobar( x, y, z );
+	n = (z == 4'h1);
 end
 
 task foobar (
@@ -35,7 +42,7 @@ initial begin
         $dumpfile( "task7.vcd" );
         $dumpvars( 0, main );
 `endif
-        #10;
+        #20;
         $finish;
 end
 

@@ -1,0 +1,109 @@
+#!/usr/bin/perl
+
+#	Name:		gen_test
+#
+#	Created by:	Trevor Williams  <phase1geo(gmail.com)>
+#
+#	Date:		3/14/2004
+#
+#	Purpose:	Generates templated diagnostic and configuration file for new diagnostic.
+#
+#	Usage:		gen_test <diagnostic_name> (<type>)
+#           <type> = NULL (generate typical Verilog and configuration file)
+#                    gen  (generate Verilog that does not dump and a suitable configuration file)
+#                    script (generates Verilog and regression script)
+
+$diag = $ARGV[0];
+$type = $ARGV[1];
+
+if( $diag eq "" ) {
+  print "Usage:  gen_test <diagnostic_name> (<type>)\n";
+  exit( 1 );
+}
+
+if( -e "${diag}.v" || -e "../regress/${diag}.cfg" || -e "../regress/${diag}.pl" ) {
+  print "Diagnostic already exists.  Not generating...\n";
+  exit( 1 );
+}
+
+# Generate the current date
+$date = `date +%m/%d/%Y`;  chomp( $date );
+
+# Generate author
+$author = `whoami`;  chomp( $author );
+if( $author eq "trevorw" ) {
+  $author = "Trevor Williams  (phase1geo\@gmail.com)";
+} else {
+  $author = "";
+}
+
+print "Generating test ${diag}...\n";
+
+# Generate template Verilog diagnostic
+open( DIAG, ">${diag}.v" ) || die "Can't open ${diag}: $!\n";
+print DIAG "/*\n";
+print DIAG " Name:        ${diag}.v\n";
+print DIAG " Author:      ${author}\n";
+print DIAG " Date:        ${date}\n";
+if( $type eq "script" ) {
+  print DIAG " Purpose:     See script for details.\n";
+} else {
+  print DIAG " Purpose:     \n";
+}
+print DIAG "*/\n\n";
+print DIAG "module main;\n\n";
+
+if( $type ne "gen" ) {
+  print DIAG "initial begin\n";
+  print DIAG "`ifdef DUMP\n";
+  print DIAG "        \$dumpfile( \"${diag}.vcd\" );\n";
+  print DIAG "        \$dumpvars( 0, main );\n";
+  print DIAG "`endif\n";
+  print DIAG "        #10;\n";
+  print DIAG "        \$finish;\n";
+  print DIAG "end\n\n";
+}
+
+print DIAG "endmodule\n";
+close( DIAG );
+
+# If the type is a script, create the script in the regress directory
+if( $type eq "script" ) {
+  
+  open( SCRIPT, ">../regress/${diag}.pl" ) || die "Can't open ../regress/${diag}.pl: $!\n";
+  
+  print SCRIPT "# Name:     ${diag}.pl\n";
+  print SCRIPT "# Author:   ${author}\n";
+  print SCRIPT "# Date:     ${date}\n";
+  print SCRIPT "# Purpose:  \n";
+  print SCRIPT "\n";  
+  print SCRIPT "require \"../verilog/regress_subs.pl\";\n";
+  print SCRIPT "\n";
+  print SCRIPT "# Initialize the diagnostic environment\n";
+  print SCRIPT "&initialize( \"${diag}\", 1, \@ARGV );\n";
+  print SCRIPT "\n";
+  print SCRIPT "# Perform diagnostic running code here\n";
+  print SCRIPT "&runScoreCommand( \"-t main -vcd ${diag}.vcd -v ${diag}.v -o ${diag}.cdd\" );\n";
+  print SCRIPT "\n";
+  print SCRIPT "# Perform the file comparison checks\n";
+  print SCRIPT "&checkTest( \"${diag}\", 1, 1 );\n";
+  print SCRIPT "\n";
+  print SCRIPT "exit 0;\n\n";
+  
+  close( SCRIPT );
+  
+# Otherwise, generate a configuration file in the regress directory
+} else {
+  
+  # Generate configuration file
+  open( CONF, ">../regress/${diag}.cfg" ) || die "Can't open ../regress/${diag}.cfg: $!\n";
+
+  if( $type eq "gen" ) {
+    print CONF "-t main -o ${diag}.cdd -v ${diag}.v -g 1\n";
+  } else {
+    print CONF "-t main -vcd ${diag}.vcd -o ${diag}.cdd -v ${diag}.v\n";
+  }
+
+  close( CONF );
+
+}

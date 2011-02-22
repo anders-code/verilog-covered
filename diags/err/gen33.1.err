@@ -1,0 +1,3 @@
+ERROR!  <<= operation found in block that is specified to not allow SystemVerilog syntax,
+        File: gen33.v, Line: 5, Column: 15
+ERROR!  Error in parsing design

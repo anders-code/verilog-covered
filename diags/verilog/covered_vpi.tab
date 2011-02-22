@@ -1,0 +1,1 @@
+$covered_sim  call=covered_sim_calltf  acc+=r,cbk:main+

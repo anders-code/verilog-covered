@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+
+# Name:    check_test
+# Author:  Trevor Williams  <phase1geo(gmail.com)>
+# Date:    12/28/2002
+# Purpose: Verifies that specified diagnostic successfully passed all phases of testing.
+# Note:    mode 0:  Normally run diagnostic error check (checks report and CDD files)
+#          mode 1:  Error diagnostic (checks output against *.err files)
+#          mode 2:  Skipped diagnostic (no check but increment PASSED count)
+#          mode 3:  Finish run (removes all *.done files if FAILED count == 0)
+#          mode 4:  Finish run but leave *.done files
+#          mode 5:  Run report file diagnostic error check (for use with LXT/VPI dump verification)
+
+require "regress_subs.pl";
+
+# Call the shared checkTest routine
+&checkTest( @ARGV );

@@ -1,0 +1,3 @@
+ERROR!  Arrayed instantiation syntax found in block that is specified to not allow Verilog-2001 syntax,
+        File: gen18.v, Line: 3, Column: 13
+ERROR!  Error in parsing design
